@@ -79,6 +79,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 /* ===== нижняя панель разделов (iOS) ===== */
 .tabbar{position:fixed;left:50%;bottom:calc(12px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:70;display:flex;gap:2px;padding:6px;border-radius:30px;background:var(--tb-bg,rgba(28,28,30,.72));-webkit-backdrop-filter:blur(26px) saturate(1.8);backdrop-filter:blur(26px) saturate(1.8);border:1px solid var(--tb-line,rgba(255,255,255,.1));box-shadow:0 12px 40px rgba(0,0,0,.35);transition:transform .35s cubic-bezier(.2,.9,.25,1)}
 .tab{position:relative;width:76px;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 4px 6px;border:0;background:none;border-radius:24px;color:var(--tb-fg,#8e8e93);font:600 10.5px/1 var(--ios);text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+@media (max-width:430px){.tab{width:64px}}
 .tab svg{width:25px;height:25px;transition:transform .3s cubic-bezier(.3,.7,.4,1.6)}
 .tab[aria-current="page"]{color:var(--tb-active,#fff);background:var(--tb-pill,rgba(255,255,255,.13))}
 .tab.bounce svg{animation:bounce .45s cubic-bezier(.3,.7,.4,1.5)}
@@ -465,7 +466,32 @@ body[data-theme="cal"] .seg{--seg-bg:var(--c-cell-out);--seg-fg:var(--c-fg);--se
 @media (max-width:640px){.rc-top{grid-template-columns:repeat(3,minmax(0,1fr))}.rc-g{grid-template-columns:100px minmax(0,1fr) 30px}}
 /* стена дропов */
 .fr-list{margin-top:18px}
-.fr-ava{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font:800 18px/1 var(--ios);color:#fff;letter-spacing:-.02em}
+.fr-ava{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font:800 18px/1 var(--ios);color:#fff;letter-spacing:-.02em;overflow:hidden;position:relative}
+.fr-ava img{width:100%;height:100%;object-fit:cover;display:block}
+.fr-ava svg{width:100%;height:100%;display:block}
+.fr-ava.md{width:40px;height:40px;font-size:17px;box-shadow:0 0 0 2px rgba(255,255,255,.35)}
+.fr-ava.sm{width:24px;height:24px;font-size:11px}
+.fr-ava.xs{width:18px;height:18px;font-size:9px;display:inline-grid;vertical-align:middle}
+.mt .ic .fr-ava{width:40px;height:40px}
+.ava-stack{display:inline-flex;align-items:center;vertical-align:middle}
+.ava-stack .fr-ava{box-shadow:0 0 0 2px var(--av-ring,#1c1c1e)}
+.ava-stack .fr-ava + .fr-ava{margin-left:-7px}
+.ava-stack .more{margin-left:4px;font:600 11px/1 var(--ios);opacity:.7}
+.rel .wait{display:flex;align-items:center;gap:6px;margin-top:5px;font-size:12px;opacity:.85;min-width:0}
+.rel .wait span.n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rel.fr-rel{opacity:.92}
+.rel.fr-rel .dd{opacity:.75}
+.av-prev{display:flex;justify-content:center;margin:6px 0 14px}
+.av-prev .fr-ava{width:110px;height:110px;font-size:46px}
+.av-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:8px;margin-top:8px}
+.av-grid button{border:0;padding:0;background:none;border-radius:50%;cursor:pointer;aspect-ratio:1;display:grid;place-items:center;outline:3px solid transparent;outline-offset:2px;transition:outline-color .15s,transform .15s}
+.av-grid button .fr-ava{width:100%;height:100%;font-size:22px}
+.av-grid button[aria-pressed="true"]{outline-color:#0a84ff}
+.av-grid button:hover{transform:scale(1.06)}
+.av-cols{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.av-cols button{width:32px;height:32px;border-radius:50%;border:0;cursor:pointer;outline:3px solid transparent;outline-offset:2px}
+.av-cols button[aria-pressed="true"]{outline-color:#fff}
+.av-lb{margin-top:14px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;opacity:.6}
 .fr-ava.big{width:84px;height:84px;font-size:36px}
 .fr-pct{flex:none;font:700 14px/1 var(--ios);padding:6px 10px;border-radius:999px;background:var(--c-cell-out);color:var(--c-fg);font-variant-numeric:tabular-nums}
 .fr-pct.hi{background:rgba(48,209,88,.18);color:#30d158}.fr-pct.mid{background:rgba(255,214,10,.18);color:#d6a700}.fr-pct.lo{background:rgba(255,69,58,.16);color:#ff453a}
@@ -475,6 +501,7 @@ body[data-theme="cal"] .seg{--seg-bg:var(--c-cell-out);--seg-fg:var(--c-fg);--se
 .fd-row .poster{flex:none;width:40px;border-radius:7px;background:var(--c-cell-out)}
 .fd-row .poster .ph{font-size:8px;color:var(--c-dim)}
 .fd-row .poster .rb,.fd-row .poster .medal,.fd-row .poster .blood{display:none}
+.fd-row .fr-ava.sm{margin-left:-4px}
 .fd-row .t{flex:1;min-width:0}.fd-row .t small{display:block;color:var(--c-dim);font-size:13px;margin-top:2px}
 .fd-row .r{flex:none;font:700 14px/1 var(--ios);padding:5px 8px;border-radius:999px}
 .fd-row .r.green{background:var(--r-green);color:#04230d}.fd-row .r.yellow{background:var(--r-yel);color:#1d1d1f}.fd-row .r.red{background:var(--r-red);color:#fff}
@@ -962,12 +989,12 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
   const KSTATUS = {playing:{l:"Смотрю",c:"#7cc4ff"}, done:{l:"Досмотрено",c:"#9be15d"}, played:{l:"Смотрел",c:"#c9c9d8"}, paused:{l:"Отложено",c:"#f2d43a"}, dropped:{l:"Брошено",c:"#ff8a86"}};
   const KORDER = ["playing","done","played","paused","dropped"];
   const TIERS = [["S","#ff5f57"],["A","#ff9f0a"],["B","#ffd60a"],["C","#30d158"],["D","#64d2ff"]];
-  const TAB_ORDER = ["games","kino","calendar","more"];
+  const TAB_ORDER = ["games","kino","calendar","people","more"];
   const ROUTES = {
     games:{w:"wGames",theme:"games",tab:"games"}, "games-future":{w:"wGames",theme:"games",tab:"games"},
     kino:{w:"wKino",theme:"kino",tab:"kino"}, "kino-future":{w:"wKino",theme:"kino",tab:"kino"},
     calendar:{w:"wApple",theme:"cal",tab:"calendar"},
-    more:{w:"wApple",theme:"cal",tab:"more"}, recap:{w:"wApple",theme:"cal",tab:"more"}, drops:{w:"wApple",theme:"cal",tab:"more"}, money:{w:"wApple",theme:"cal",tab:"more"}, ach:{w:"wApple",theme:"cal",tab:"more"}, people:{w:"wApple",theme:"cal",tab:"more"}, user:{w:"wApple",theme:"cal",tab:"more"}
+    more:{w:"wApple",theme:"cal",tab:"more"}, recap:{w:"wApple",theme:"cal",tab:"more"}, drops:{w:"wApple",theme:"cal",tab:"more"}, money:{w:"wApple",theme:"cal",tab:"more"}, ach:{w:"wApple",theme:"cal",tab:"more"}, people:{w:"wApple",theme:"cal",tab:"people"}, user:{w:"wApple",theme:"cal",tab:"people"}
   };
   const I = (d, extra = "") => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ${extra}>${d}</svg>`;
   const ICON = {
@@ -1084,7 +1111,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
   // ================= нижняя панель =================
   function renderTabbar(){
     const cur = (ROUTES[route] || ROUTES.games).tab, ac = activeContract();
-    $("tabbar").innerHTML = [["games","Игры"],["kino","Кино"],["calendar","Календарь"],["more","Ещё"]].map(([k,l]) =>
+    $("tabbar").innerHTML = [["games","Игры"],["kino","Кино"],["calendar","Календарь"],["people","Друзья"],["more","Ещё"]].map(([k,l]) =>
       `<a class="tab" href="#${k}" data-tab="${k}" ${cur === k ? 'aria-current="page"' : ""}>${ICON[k]}<span>${l}</span>${k === "games" && ac ? '<i class="dot"></i>' : ""}</a>`).join("");
   }
   $("tabbar").addEventListener("click", e => { const t = e.target.closest(".tab"); if (!t) return; t.classList.remove("bounce"); void t.offsetWidth; t.classList.add("bounce"); });
@@ -1145,16 +1172,23 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     return {t: `через ${dd}`, big: d, small: `${plural(d,"день","дня","дней")} до релиза`};
   }
   function releasesPanel(kind){
-    const list = items.filter(ofKind(kind)).filter(i => isSoon(i) && i.releaseDate).sort((a,b) => a.releaseDate.localeCompare(b.releaseDate));
+    if (ME) loadFriends();
+    const groups = new Map();
+    items.filter(ofKind(kind)).filter(i => isSoon(i) && i.releaseDate).forEach(i => groups.set(frKey(i), {it: i, mine: true, uids: [ME ? ME.id : ""]}));
+    (FR ? FR.items : []).filter(i => ME && i.uid !== ME.id && ofKind(kind)(i) && isSoon(i) && i.releaseDate).forEach(i => {
+      const g = groups.get(frKey(i)); if (g){ if (!g.uids.includes(i.uid)) g.uids.push(i.uid); } else groups.set(frKey(i), {it: i, mine: false, uids: [i.uid]}); });
+    const list = [...groups.values()].sort((a,b) => a.it.releaseDate.localeCompare(b.it.releaseDate));
     if (!list.length && !canWrite) return "";
     const MON = ["янв","фев","мар","апр","мая","июн","июл","авг","сен","окт","ноя","дек"];
-    const card = it => { const d = daysTo(it.releaseDate), dt = parseD(it.releaseDate), rc = relCount(it);
+    const card = gr => { const it = gr.it, mine = gr.mine, d = daysTo(it.releaseDate), dt = parseD(it.releaseDate), rc = relCount(it);
+      const names = gr.uids.map(u => u === (ME && ME.id) ? "ты" : frNick(u));
+      const wait = ME && FR && FR.profiles.length > 1 ? `<span class="wait">${avaStack(gr.uids)}<span class="n">${gr.uids.length > 1 ? "ждут" : "ждёт"} ${esc(names.join(", "))}</span></span>` : "";
       const pp = relPrec(it), ddIn = pp === "day" ? `<small>${MON[dt.getMonth()]}</small><b>${dt.getDate()}</b>` : pp === "month" ? `<small>${dt.getFullYear()}</small><b style="font-size:17px;text-transform:uppercase">${MON[dt.getMonth()]}</b>`
         : pp === "quarter" ? `<small>${dt.getFullYear()}</small><b style="font-size:20px">Q${relQ(dt)}</b>` : `<small>год</small><b style="font-size:17px">${dt.getFullYear()}</b>`;
-      return `<button class="rel" data-soon="${esc(it.id)}"><span class="dd${canWrite ? " editable" : ""}" ${canWrite ? `data-reldate="${esc(it.id)}" title="Поменять дату"` : ""}>${ddIn}</span>${posterHTML(it, {rate:false, tgt:false, badge:false})}
+      return `<button class="rel${mine ? "" : " fr-rel"}" ${mine ? `data-soon="${esc(it.id)}"` : `data-fi="${esc(it.uid + "/" + it.id)}"`}><span class="dd${canWrite && mine ? " editable" : ""}" ${canWrite && mine ? `data-reldate="${esc(it.id)}" title="Поменять дату"` : ""}>${ddIn}</span>${posterHTML(it, {rate:false, tgt:false, badge:false})}
         <span style="min-width:0"><h4>${esc(it.title)}</h4><div class="g">${esc([kind === "kino" ? KTYPES[it.type] : null, it.genre, dt.getFullYear() !== new Date().getFullYear() ? dt.getFullYear() : null].filter(Boolean).join(" · ") || "дата выхода " + fmtDate(it.releaseDate))}</div>
-        <span class="cd${rc.now ? " now" : ""}">${rc.t}</span></span></button>`; };
-    return `<div class="rel-box"><div class="rel-h"><h3>Календарь выходов</h3><small>${list.length ? `${list.length} в ожидании` : ""}</small><span style="flex:1"></span>
+        <span class="cd${rc.now ? " now" : ""}">${rc.t}</span>${wait}</span></button>`; };
+    return `<div class="rel-box"><div class="rel-h"><h3>Календарь выходов</h3><small>${list.length ? `${list.length} в ожидании${FR && FR.profiles.length > 1 ? " · твои и друзей" : ""}` : ""}</small><span style="flex:1"></span>
       ${canWrite ? `<button class="${kind === "games" ? "s-btn dark" : "k-btn sm"}" data-addsoon="${kind}" style="padding:7px 12px;font-size:13px">${ICON.plus}Ждать релиз</button>` : ""}</div>
       ${list.length ? `<div class="rel-list">${list.map(card).join("")}</div>` : `<div class="rel-empty">Добавь ${kind === "games" ? "игру" : "фильм или сериал"} с датой выхода, и тут пойдёт обратный отсчёт.</div>`}</div>`;
   }
@@ -1448,7 +1482,6 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
       ${backupBanner()}
       <div class="mt-grid">
         ${tile("linear-gradient(135deg,#e3008c,#5c2d91)", ICON.trophy, `Итоги ${recY}`, "Пройдено, дропнуто, топы и жанры", 'data-go="recap"', `${yearN}<small>за год</small>`, true)}
-        ${ME ? tile("linear-gradient(135deg,#0a84ff,#30d158)", ICON.people, "Друзья", "Профили, лента, совпадения вкусов", 'data-go="people"', FR ? `${FR.profiles.filter(p => p.user_id !== ME.id).length}<small>${plural(FR.profiles.length - 1, "человек", "человека", "человек")}</small>` : null, true) : ""}
         ${tile("#e81123", ICON.skull, "Стена дропов", "Всё брошенное", 'data-go="drops"', drops)}
         ${tile("#0078d4", ICON.tiers, "Тир-лист игр", `${tierG} разложено`, 'data-tier="games"')}
         ${tile("linear-gradient(135deg,#ff4b1f,#ff9f0a)", ICON.dice, "Рулетка игр", "Что пройти дальше", 'data-roul="games"', `${futG}<small>в пуле</small>`, true)}
@@ -1461,7 +1494,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
         ${tile("#5c2d91", ICON.sword, "Битва игр", "Одна из двух, пока не останется победитель", 'data-battle="games"')}
         ${tile("#e3008c", ICON.sword, "Битва кино", "То же для фильмов", 'data-battle="kino"')}
         ${tile("linear-gradient(135deg,#2d7d9a,#5e5ce6)", ICON.palette, "Тема", "Цвета сайта", 'data-theme-open="1"', null)}
-        ${tile("#38387a", ICON.edit, esc(NICK), "Профиль, бэкап, выход", 'data-profile="1"', null)}
+        ${tile("#38387a", ME ? avaHTML(myProf(), "md") : ICON.edit, esc(NICK), "Профиль, аватар, бэкап, выход", 'data-profile="1"', null)}
       </div>`;
   }
 
@@ -2694,7 +2727,81 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
   // ================= друзья =================
   const AVA = ["#0a84ff","#30d158","#ff9f0a","#ff375f","#bf5af2","#64d2ff","#ff453a","#ffd60a","#5e5ce6","#00c7be"];
   const avaColor = uid => AVA[[...String(uid)].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7) % AVA.length];
-  const avaHTML = (p, big) => `<span class="fr-ava${big ? " big" : ""}" style="background:${avaColor(p.user_id)}">${esc((p.nick || "?").slice(0, 1).toUpperCase())}</span>`;
+  const AVA_COLORS = ["#ff453a","#ff9f0a","#ffd60a","#30d158","#00c7be","#64d2ff","#0a84ff","#5e5ce6","#bf5af2","#ff375f","#a2845e","#3a3a3c"];
+  // простые мордочки: белая голова, тёмные черты, фон — цвет пользователя
+  const K = "#1d1d1f", Wh = "#fff";
+  const ANIMALS = {
+    cat:   ["Кот", `<path d="M17 25 15 11l12 8M47 25l2-14-12 8" fill="${Wh}"/><circle cx="32" cy="35" r="17" fill="${Wh}"/><circle cx="25.5" cy="33" r="2.4" fill="${K}"/><circle cx="38.5" cy="33" r="2.4" fill="${K}"/><path d="M30 39h4l-2 2.5z" fill="#ff8fa3"/><path d="M32 41.5c-1 2-3 2.5-4.5 1.5M32 41.5c1 2 3 2.5 4.5 1.5M14 38l8 1M14 42l8-1M50 38l-8 1M50 42l-8-1" stroke="${K}" stroke-width="1.6" fill="none" stroke-linecap="round"/>`],
+    dog:   ["Пёс", `<circle cx="32" cy="34" r="16" fill="${Wh}"/><ellipse cx="16.5" cy="31" rx="5.5" ry="11" fill="${K}" transform="rotate(15 16.5 31)"/><ellipse cx="47.5" cy="31" rx="5.5" ry="11" fill="${K}" transform="rotate(-15 47.5 31)"/><circle cx="26" cy="31" r="2.3" fill="${K}"/><circle cx="38" cy="31" r="2.3" fill="${K}"/><ellipse cx="32" cy="41" rx="7" ry="5.5" fill="#f2f2f2"/><ellipse cx="32" cy="38.5" rx="3.2" ry="2.3" fill="${K}"/><path d="M32 41v2.5M29 44.5c1.5 1 4.5 1 6 0" stroke="${K}" stroke-width="1.6" fill="none" stroke-linecap="round"/>`],
+    fox:   ["Лиса", `<path d="M14 14l9 13M50 14l-9 13" stroke="${Wh}" stroke-width="7" stroke-linecap="round"/><path d="M12 24c4-2 14 0 20 2 6-2 16-4 20-2-1 12-8 23-20 26C20 47 13 36 12 24z" fill="#ff7a1a"/><path d="M14 30c5 0 11 4 18 12 7-8 13-12 18-12-3 10-9 16-18 18-9-2-15-8-18-18z" fill="${Wh}"/><circle cx="25" cy="31" r="2.3" fill="${K}"/><circle cx="39" cy="31" r="2.3" fill="${K}"/><circle cx="32" cy="44.5" r="2.4" fill="${K}"/>`],
+    bear:  ["Медведь", `<circle cx="19" cy="20" r="6.5" fill="#8a5a3c"/><circle cx="45" cy="20" r="6.5" fill="#8a5a3c"/><circle cx="32" cy="34" r="17" fill="#a0694a"/><ellipse cx="32" cy="40" rx="8" ry="6.5" fill="#e8c9a8"/><circle cx="25.5" cy="31" r="2.3" fill="${K}"/><circle cx="38.5" cy="31" r="2.3" fill="${K}"/><ellipse cx="32" cy="37.5" rx="3" ry="2.2" fill="${K}"/><path d="M32 39.5v2.5M29.5 43c1.5 1 3.5 1 5 0" stroke="${K}" stroke-width="1.5" fill="none" stroke-linecap="round"/>`],
+    panda: ["Панда", `<circle cx="19" cy="20" r="6.5" fill="${K}"/><circle cx="45" cy="20" r="6.5" fill="${K}"/><circle cx="32" cy="34" r="17" fill="${Wh}"/><ellipse cx="25" cy="32" rx="4.5" ry="5.8" fill="${K}" transform="rotate(-25 25 32)"/><ellipse cx="39" cy="32" rx="4.5" ry="5.8" fill="${K}" transform="rotate(25 39 32)"/><circle cx="25.5" cy="31.5" r="1.4" fill="${Wh}"/><circle cx="38.5" cy="31.5" r="1.4" fill="${Wh}"/><ellipse cx="32" cy="39" rx="2.8" ry="2" fill="${K}"/><path d="M29.5 42.5c1.5 1 3.5 1 5 0" stroke="${K}" stroke-width="1.5" fill="none" stroke-linecap="round"/>`],
+    bunny: ["Заяц", `<ellipse cx="24.5" cy="15" rx="4.6" ry="12" fill="${Wh}"/><ellipse cx="39.5" cy="15" rx="4.6" ry="12" fill="${Wh}"/><ellipse cx="24.5" cy="15" rx="2" ry="8" fill="#ffb3c1"/><ellipse cx="39.5" cy="15" rx="2" ry="8" fill="#ffb3c1"/><circle cx="32" cy="37" r="15" fill="${Wh}"/><circle cx="26" cy="35" r="2.3" fill="${K}"/><circle cx="38" cy="35" r="2.3" fill="${K}"/><path d="M30 40h4l-2 2z" fill="#ff8fa3"/><path d="M32 42v2M30 46h4" stroke="${K}" stroke-width="1.5" stroke-linecap="round"/>`],
+    frog:  ["Жаба", `<circle cx="22" cy="22" r="8" fill="#5ed36a"/><circle cx="42" cy="22" r="8" fill="#5ed36a"/><ellipse cx="32" cy="37" rx="19" ry="14" fill="#5ed36a"/><circle cx="22" cy="21.5" r="4.5" fill="${Wh}"/><circle cx="42" cy="21.5" r="4.5" fill="${Wh}"/><circle cx="22.5" cy="22" r="2.3" fill="${K}"/><circle cx="42.5" cy="22" r="2.3" fill="${K}"/><path d="M19 38c6 6 20 6 26 0" stroke="${K}" stroke-width="2.2" fill="none" stroke-linecap="round"/><circle cx="18" cy="35" r="2.2" fill="#ff8fa3" opacity=".7"/><circle cx="46" cy="35" r="2.2" fill="#ff8fa3" opacity=".7"/>`],
+    owl:   ["Сова", `<path d="M15 16l8 8M49 16l-8 8" stroke="#8a5a3c" stroke-width="5" stroke-linecap="round"/><ellipse cx="32" cy="35" rx="18" ry="17" fill="#a0694a"/><circle cx="24.5" cy="31" r="7.5" fill="${Wh}"/><circle cx="39.5" cy="31" r="7.5" fill="${Wh}"/><circle cx="24.5" cy="31" r="3.4" fill="${K}"/><circle cx="39.5" cy="31" r="3.4" fill="${K}"/><path d="M29 38l3 5 3-5z" fill="#ffb21a"/><path d="M22 46c3 2 6 2 10 0 4 2 7 2 10 0" stroke="#e8c9a8" stroke-width="2" fill="none" stroke-linecap="round"/>`],
+    peng:  ["Пингвин", `<ellipse cx="32" cy="35" rx="18" ry="18" fill="${K}"/><path d="M32 26c-4-5-13-4-13 4 0 9 6 16 13 18 7-2 13-9 13-18 0-8-9-9-13-4z" fill="${Wh}"/><circle cx="26" cy="32" r="2.3" fill="${K}"/><circle cx="38" cy="32" r="2.3" fill="${K}"/><path d="M28 37h8l-4 4.5z" fill="#ffb21a"/>`],
+    pig:   ["Свин", `<path d="M17 24l-1-11 10 6M47 24l1-11-10 6" fill="#ffb3c1"/><circle cx="32" cy="35" r="17" fill="#ffc8d3"/><circle cx="25" cy="31" r="2.3" fill="${K}"/><circle cx="39" cy="31" r="2.3" fill="${K}"/><ellipse cx="32" cy="40" rx="7.5" ry="5.5" fill="#ff9fb3"/><ellipse cx="29.3" cy="40" rx="1.6" ry="2.3" fill="#c25d73"/><ellipse cx="34.7" cy="40" rx="1.6" ry="2.3" fill="#c25d73"/>`],
+    mouse: ["Мышь", `<circle cx="17" cy="22" r="10" fill="#c9c9d0"/><circle cx="47" cy="22" r="10" fill="#c9c9d0"/><circle cx="17" cy="22" r="6" fill="#ffb3c1"/><circle cx="47" cy="22" r="6" fill="#ffb3c1"/><circle cx="32" cy="37" r="15" fill="#dcdce2"/><circle cx="26.5" cy="35" r="2.3" fill="${K}"/><circle cx="37.5" cy="35" r="2.3" fill="${K}"/><circle cx="32" cy="41" r="2.4" fill="#ff8fa3"/><path d="M20 40l7 1M20 44l7-1M44 40l-7 1M44 44l-7-1" stroke="${K}" stroke-width="1.3" stroke-linecap="round"/>`],
+    racc:  ["Енот", `<path d="M15 24l2-11 9 7M49 24l-2-11-9 7" fill="#8e8e93"/><circle cx="32" cy="35" r="17" fill="#aeaeb2"/><path d="M15 31c5-5 12-5 17 0 5-5 12-5 17 0-2 6-9 8-17 4-8 4-15 2-17-4z" fill="${K}"/><circle cx="25" cy="32" r="2.2" fill="${Wh}"/><circle cx="39" cy="32" r="2.2" fill="${Wh}"/><path d="M24 42c4 6 12 6 16 0z" fill="${Wh}"/><ellipse cx="32" cy="41" rx="2.6" ry="1.9" fill="${K}"/>`],
+  };
+  const animalSVG = k => ANIMALS[k] ? `<svg viewBox="0 0 64 64" aria-hidden="true">${ANIMALS[k][1]}</svg>` : "";
+  const avaBg = p => p.ava_color || avaColor(p.user_id);
+  const avaHTML = (p, size) => { p = p || {}; size = size === true ? "big" : (size || "");
+    const inner = p.avatar ? `<img alt="" src="${publicUrl(p.avatar)}" loading="lazy" onerror="this.remove()">` : p.ava_animal && ANIMALS[p.ava_animal] ? animalSVG(p.ava_animal) : esc((p.nick || "?").slice(0, 1).toUpperCase());
+    return `<span class="fr-ava${size ? " " + size : ""}" style="background:${avaBg(p)}" title="${esc(p.nick || "")}">${inner}</span>`; };
+  let MEP = null; // мой профиль: ник, фото, зверь, цвет
+  const myProf = () => ({user_id: ME ? ME.id : "", nick: NICK, ...(MEP || {})});
+  const profOf = uid => uid === (ME && ME.id) ? myProf() : (FR && FR.profiles.find(x => x.user_id === uid)) || {user_id: uid, nick: "?"};
+  const avaStack = (uids, max = 5) => `<span class="ava-stack">${uids.slice(0, max).map(u => avaHTML(profOf(u), "sm")).join("")}${uids.length > max ? `<span class="more">+${uids.length - max}</span>` : ""}</span>`;
+  function avaSheet(first){
+    return new Promise(res => {
+      let st = {avatar: (MEP && MEP.avatar) || null, ava_animal: (MEP && MEP.ava_animal) || null, ava_color: (MEP && MEP.ava_color) || AVA_COLORS[Math.floor(Math.random() * AVA_COLORS.length)]}, file = null;
+      const prevP = () => ({...myProf(), ...st, avatar: file ? null : st.avatar});
+      const s = openSheet(`<h3>${first ? "Выбери аватарку" : "Аватар"}</h3><p class="sub">Видна друзьям в ленте, в профиле, у релизов и в совместной рулетке.</p>
+        <div class="av-prev" id="avPrev"></div>
+        <div class="acts"><label class="ib" for="avF">Загрузить фото</label><input type="file" id="avF" accept="image/*" hidden><button class="ib" id="avRm" ${st.avatar ? "" : "hidden"}>Убрать фото</button></div>
+        <div class="av-lb">Или зверь</div><div class="av-grid" id="avA"></div>
+        <div class="av-lb">Цвет фона</div><div class="av-cols" id="avC">${AVA_COLORS.map(c => `<button style="background:${c}" data-c="${c}" aria-label="Цвет"></button>`).join("")}</div>
+        <div class="acts" style="margin-top:18px"><button class="ib blue" id="avOk">${first ? "Готово" : "Сохранить"}</button><button class="ib" id="avNo">${first ? "Пропустить" : "Отмена"}</button></div>`, {onClose: () => res(null)});
+      const q = sel => s.el.querySelector(sel);
+      const draw = () => {
+        q("#avPrev").innerHTML = file ? `<span class="fr-ava" style="background:${st.ava_color}"><img alt="" src="${URL.createObjectURL(file)}"></span>` : avaHTML(prevP());
+        q("#avA").innerHTML = [["", "Буква"], ...Object.entries(ANIMALS).map(([k, v]) => [k, v[0]])].map(([k, l]) => `<button data-a="${k}" title="${l}" aria-pressed="${!file && !st.avatar && (st.ava_animal || "") === k}">${avaHTML({...myProf(), avatar: null, ava_animal: k || null, ava_color: st.ava_color})}</button>`).join("");
+        q("#avC").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.c === st.ava_color));
+        q("#avRm").hidden = !(st.avatar || file);
+      };
+      q("#avA").onclick = e => { const b = e.target.closest("[data-a]"); if (!b) return; st.ava_animal = b.dataset.a || null; st.avatar = null; file = null; draw(); };
+      q("#avC").onclick = e => { const b = e.target.closest("[data-c]"); if (!b) return; st.ava_color = b.dataset.c; draw(); };
+      q("#avF").onchange = e => { const f = e.target.files[0]; if (f){ file = f; draw(); } };
+      q("#avRm").onclick = () => { st.avatar = null; file = null; draw(); };
+      q("#avNo").onclick = async () => { if (first && !MEP?.ava_color){ await saveProf({ava_color: st.ava_color}); } s.close(); };
+      q("#avOk").onclick = async () => {
+        const btn = q("#avOk"); btn.disabled = true; btn.textContent = "Сохраняю…";
+        try {
+          if (file) st.avatar = await squareUpload(file);
+          if (await saveProf(st)){ toast("Аватар обновлён"); res(st); s.close(); }
+        } catch(e){ toast("Не получилось загрузить фото"); }
+        btn.disabled = false; btn.textContent = first ? "Готово" : "Сохранить";
+      };
+      draw();
+    });
+  }
+  async function squareUpload(file){
+    const img = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = URL.createObjectURL(file); });
+    const S = 320, c = document.createElement("canvas"); c.width = c.height = S;
+    const m = Math.min(img.naturalWidth, img.naturalHeight);
+    c.getContext("2d").drawImage(img, (img.naturalWidth - m) / 2, (img.naturalHeight - m) / 2, m, m, 0, 0, S, S);
+    const blob = await new Promise(ok => c.toBlob(ok, "image/jpeg", .88));
+    return (await assets.upload(blob, {type: "image/jpeg"})).id;
+  }
+  async function saveProf(patch){
+    const row = {user_id: ME.id, nick: NICK, ...patch};
+    const {error} = await SB.from("profiles").upsert(row);
+    if (error){ toast("Не сохранилось: " + error.message); return false; }
+    MEP = {...(MEP || {}), ...patch};
+    if (FR){ const p = FR.profiles.find(x => x.user_id === ME.id); if (p) Object.assign(p, patch); else FR.profiles.push(row); }
+    render(); return true;
+  }
   const frKey = it => (isGame(it) ? "g|" : "k|") + String(it.title || "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
   const frNick = uid => { const p = FR && FR.profiles.find(x => x.user_id === uid); return p ? p.nick : "кто-то"; };
   async function loadFriends(force){
@@ -2703,11 +2810,11 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     if (frLoading) return frLoading;
     frLoading = (async () => {
       try {
-        const [pr, it] = await Promise.all([SB.from("profiles").select("user_id,nick"), SB.rpc("public_items")]);
+        const [pr, it] = await Promise.all([SB.from("profiles").select("user_id,nick,avatar,ava_animal,ava_color"), SB.rpc("public_items")]);
         if (pr.error) throw pr.error; if (it.error) throw it.error;
         FR = {at: Date.now(), profiles: pr.data || [], items: (it.data || []).map(r => ({...(r.data || {}), id: r.id, uid: r.user_id, _upd: r.updated_at}))};
-      } catch(e){ toast("Не получилось загрузить друзей: " + (e.message || e)); }
-      frLoading = null; if (route === "people" || route === "user" || route === "more") render(); return FR;
+      } catch(e){ if (force || !FR) toast("Не получилось загрузить друзей: " + (e.message || e)); if (!FR) FR = {at: Date.now(), profiles: [], items: [], failed: true}; }
+      frLoading = null; render(); return FR;
     })();
     return frLoading;
   }
@@ -2748,11 +2855,11 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
   const agoTxt = d => { const n = Math.round((parseD(today()) - parseD(d)) / 864e5); return n <= 0 ? "сегодня" : n === 1 ? "вчера" : n < 30 ? `${n} ${plural(n, "день", "дня", "дней")} назад` : fmtDate(d); };
   const feedRow = (e, showNick = true) => {
     const r = typeof e.it.rating === "number" && /прошёл|дропнул|посмотрел|бросил/.test(e.verb) ? `<span class="r ${rateCls(e.it.rating)}">${num1(e.it.rating)}</span>` : "";
-    return `<button class="fd-row" data-fi="${esc(e.it.uid + "/" + e.it.id)}">${posterHTML(e.it, {rate:false, tgt:false, badge:false})}<span class="t">${showNick ? `<b>${esc(frNick(e.it.uid))}</b> ` : ""}${e.verb} <b>${esc(e.it.title)}</b><small>${agoTxt(e.d)}${isGame(e.it) ? " · игра" : " · " + esc(KTYPES[e.it.type] || "кино")}</small></span>${r}</button>`;
+    return `<button class="fd-row" data-fi="${esc(e.it.uid + "/" + e.it.id)}">${posterHTML(e.it, {rate:false, tgt:false, badge:false})}${showNick ? avaHTML(profOf(e.it.uid), "sm") : ""}<span class="t">${showNick ? `<b>${esc(frNick(e.it.uid))}</b> ` : ""}${e.verb} <b>${esc(e.it.title)}</b><small>${agoTxt(e.d)}${isGame(e.it) ? " · игра" : " · " + esc(KTYPES[e.it.type] || "кино")}</small></span>${r}</button>`;
   };
 
   function renderPeople(){
-    appleHead("Друзья", `<button class="a-link" data-go="more">‹ Ещё</button><button class="a-link" data-frrefresh="1">Обновить</button>`);
+    appleHead("Друзья", `<button class="a-link" data-frrefresh="1">Обновить</button>`);
     if (!ME){ $("aMain").innerHTML = `<div class="a-empty" style="margin-top:20px"><b>Нужно войти</b></div>`; return; }
     if (!FR){ $("aMain").innerHTML = `<h1 class="a-h1">Друзья</h1><p class="a-sub">Загружаю…</p>`; loadFriends(); return; }
     const others = FR.profiles.filter(p => p.user_id !== ME.id).map(p => {
@@ -2790,12 +2897,12 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
       : [["Смотрит", pool.filter(i => inLib(i) && i.status === "playing")], ["Посмотрено", pool.filter(i => inLib(i) && ["done", "played"].includes(i.status))], ["Отложено", pool.filter(i => inLib(i) && i.status === "paused")], ["Брошено", pool.filter(i => inLib(i) && i.status === "dropped")], ["На будущее", pool.filter(isFuture)], ["Ждёт премьеру", pool.filter(isSoon)]];
     const tiers = TIERS.map(([t, col]) => [t, col, pool.filter(i => inLib(i) && i.tier === t)]).filter(x => x[2].length);
     const feed = feedEvents(p.user_id).slice(0, 8);
-    $("aMain").innerHTML = `<div class="up-head">${avaHTML(p, true)}<div><h1 class="a-h1">${esc(p.nick)}</h1><p class="a-sub" style="margin-top:4px">${gl.length} ${plural(gl.length, "игра", "игры", "игр")} · ${kl.length} кино${feed[0] ? ` · последняя активность ${agoTxt(feed[0].d)}` : ""}</p></div></div>
+    $("aMain").innerHTML = `<div class="up-head">${avaHTML(p, "big")}<div><h1 class="a-h1">${esc(p.nick)}</h1><p class="a-sub" style="margin-top:4px">${gl.length} ${plural(gl.length, "игра", "игры", "игр")} · ${kl.length} кино${feed[0] ? ` · последняя активность ${agoTxt(feed[0].d)}` : ""}</p></div></div>
       <div class="rc-grid">${[[gl.filter(i => gStatus(i.status) === "done").length, "игр пройдено"], [kl.filter(i => ["done", "played"].includes(i.status)).length, "фильмов и сериалов"], [gl.filter(i => gStatus(i.status) === "dropped").length + kl.filter(i => i.status === "dropped").length, "дропов"], [avg != null ? num1(avg) : "—", "средняя оценка"]].map(([v, l]) => `<div class="rc-c"><b style="font-size:34px">${v}</b><small>${l}</small></div>`).join("")}</div>
       <div class="rc-sec"><h3>Совпадение вкусов</h3>
-        ${c.pct != null ? `<div class="cmp-big"><b>${c.pct}%</b><span>по ${c.common.length} ${plural(c.common.length, "общей оценке", "общим оценкам", "общим оценкам")}</span></div>` : `<p class="a-sub" style="margin:0">${c.common.length ? "Пока одна общая оценка, процент посчитаю от двух." : "Общих оценённых игр и фильмов пока нет."}</p>`}
-        ${same.length ? `<h3 style="margin:18px 0 4px;font-size:16px">Сошлись</h3>${same.map(x => `<div class="cmp-row"><span class="t">${esc(x.f.title)}</span><b>${num1(x.m.rating)}<small>ты</small></b><b>${num1(x.f.rating)}<small>${esc(p.nick.slice(0, 6))}</small></b></div>`).join("")}` : ""}
-        ${diffs.length ? `<h3 style="margin:18px 0 4px;font-size:16px">Разошлись сильнее всего</h3>${diffs.map(x => `<div class="cmp-row"><span class="t">${esc(x.f.title)}</span><b>${num1(x.m.rating)}<small>ты</small></b><b>${num1(x.f.rating)}<small>${esc(p.nick.slice(0, 6))}</small></b></div>`).join("")}` : ""}
+        ${c.pct != null ? `<div class="cmp-big"><span class="ava-stack" style="--av-ring:var(--c-cell)">${avaHTML(myProf(), "md")}${avaHTML(p, "md")}</span><b>${c.pct}%</b><span>по ${c.common.length} ${plural(c.common.length, "общей оценке", "общим оценкам", "общим оценкам")}</span></div>` : `<p class="a-sub" style="margin:0">${c.common.length ? "Пока одна общая оценка, процент посчитаю от двух." : "Общих оценённых игр и фильмов пока нет."}</p>`}
+        ${same.length ? `<h3 style="margin:18px 0 4px;font-size:16px">Сошлись</h3>${same.map(x => `<div class="cmp-row"><span class="t">${esc(x.f.title)}</span><b>${num1(x.m.rating)}<small>${avaHTML(myProf(), "xs")}</small></b><b>${num1(x.f.rating)}<small>${avaHTML(p, "xs")}</small></b></div>`).join("")}` : ""}
+        ${diffs.length ? `<h3 style="margin:18px 0 4px;font-size:16px">Разошлись сильнее всего</h3>${diffs.map(x => `<div class="cmp-row"><span class="t">${esc(x.f.title)}</span><b>${num1(x.m.rating)}<small>${avaHTML(myProf(), "xs")}</small></b><b>${num1(x.f.rating)}<small>${avaHTML(p, "xs")}</small></b></div>`).join("")}` : ""}
         <div class="acts" style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap"><button class="a-btn" data-coop="games">${ICON.dice} Во что поиграть вместе</button><button class="a-btn gray" data-coop="kino">${ICON.dice} Что посмотреть вместе</button></div>
       </div>
       ${recs.length ? `<h2 class="fr-h">${esc(p.nick)} советует<small>оценил на 8+, у тебя нет</small></h2><div class="fr-grid">${recs.map(card).join("")}</div>` : ""}
@@ -2813,38 +2920,40 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     const mine = items.find(i => frKey(i) === frKey(it));
     const s = openSheet(`<div class="qa-top">${posterHTML(it, {tgt:false})}<div><h3>${esc(it.title)}</h3>
         <p class="sub">${esc([g ? "Игра" : KTYPES[it.type], it.year, genres(it).slice(0, 3).join(", ")].filter(Boolean).join(" · "))}</p>
-        <p class="sub" style="margin-top:8px"><b style="color:inherit">${esc(frNick(uid))}</b>: ${esc(st)}${typeof it.rating === "number" ? ` · оценка <b style="color:inherit">${num1(it.rating)}</b>` : ""}${it.tier ? ` · тир ${esc(it.tier)}` : ""}</p>
+        <p class="sub" style="margin-top:8px">${avaHTML(profOf(uid), "xs")} <b style="color:inherit">${esc(frNick(uid))}</b>: ${esc(st)}${typeof it.rating === "number" ? ` · оценка <b style="color:inherit">${num1(it.rating)}</b>` : ""}${it.tier ? ` · тир ${esc(it.tier)}` : ""}</p>
         ${dates ? `<p class="sub" style="margin-top:4px">${esc(dates)}</p>` : ""}
         ${mine && typeof mine.rating === "number" ? `<p class="sub" style="margin-top:4px">Твоя оценка: <b style="color:inherit">${num1(mine.rating)}</b></p>` : ""}</div></div>
       ${it.desc ? `<p class="sub" style="margin:14px 0 0;max-height:150px;overflow:auto;white-space:pre-line">${esc(it.desc.slice(0, 900))}</p>` : ""}
-      <div class="acts" style="margin-top:16px">${have ? `<button class="ib full" disabled>Уже есть у тебя</button>` : `<button class="ib blue full" id="fiTake">Взять к себе в «На будущее»</button>`}</div>`);
+      <div class="acts" style="margin-top:16px">${have ? `<button class="ib full" disabled>Уже есть у тебя</button>` : `<button class="ib blue full" id="fiTake">${isSoon(it) ? "Тоже жду" : "Взять к себе в «На будущее»"}</button>`}</div>`);
     s.el.querySelector(".qa-top .poster").classList.add("qa-poster");
-    const b = s.el.querySelector("#fiTake"); if (b) b.onclick = async () => { b.disabled = true; b.textContent = "Добавляю…"; if (await takeFromFriend(it)) s.close(); else { b.disabled = false; b.textContent = "Взять к себе в «На будущее»"; } };
+    const b = s.el.querySelector("#fiTake"); if (b) b.onclick = async () => { b.disabled = true; b.textContent = "Добавляю…"; if (await takeFromFriend(it)) s.close(); else { b.disabled = false; b.textContent = isSoon(it) ? "Тоже жду" : "Взять к себе в «На будущее»"; } };
   }
   async function takeFromFriend(it){
     if (!db) return false;
     if (myKeys().has(frKey(it))){ toast("Уже есть у тебя"); return false; }
     const keep = ["title", "type", "genre", "desc", "year", "release", "coverPos", "epTotal"];
-    const body = {status: "future", createdAt: now(), updatedAt: now(), via: "friend:" + frNick(it.uid)};
+    const soon = isSoon(it) && it.releaseDate;
+    const body = {status: soon ? "soon" : "future", createdAt: now(), updatedAt: now(), via: "friend:" + frNick(it.uid)};
+    if (soon){ body.releaseDate = it.releaseDate; if (it.releasePrec) body.releasePrec = it.releasePrec; }
     keep.forEach(k => { if (it[k] != null) body[k] = it[k]; });
     if (it.cover && assets){
       try { const r = await fetch(publicUrl(it.cover)); if (!r.ok) throw 0; const bl = await r.blob(); body.cover = (await assets.upload(bl, {type: bl.type || "image/jpeg"})).id; } catch(e){ delete body.coverPos; }
     }
-    try { await db.collection("items").add(body); toast(`${it.title} — в «На будущее»`); return true; } catch(e){ toast("Не сохранилось"); return false; }
+    try { await db.collection("items").add(body); toast(soon ? `${it.title} — ждёшь вместе` : `${it.title} — в «На будущее»`); return true; } catch(e){ toast("Не сохранилось"); return false; }
   }
 
   function coopRoulette(kind){
     const p = FR && FR.profiles.find(x => x.user_id === viewUid); if (!p) return;
     const g = kind === "games", pick = list => list.filter(i => (g ? isGame(i) : !isGame(i)) && isFuture(i));
     const mineL = pick(items), theirL = pick(frItems(p.user_id)), tk = new Set(theirL.map(frKey));
-    const both = mineL.filter(i => tk.has(frKey(i))).map(i => ({it: i, who: "оба хотите"}));
-    const pool = both.length ? both : [...mineL.map(i => ({it: i, who: "из твоего списка"})), ...theirL.map(i => ({it: i, who: `из списка ${p.nick}`}))];
+    const both = mineL.filter(i => tk.has(frKey(i))).map(i => ({it: i, who: "оба хотите", uids: [ME.id, p.user_id]}));
+    const pool = both.length ? both : [...mineL.map(i => ({it: i, who: "из твоего списка", uids: [ME.id]})), ...theirL.map(i => ({it: i, who: `из списка ${p.nick}`, uids: [p.user_id]}))];
     const title = g ? "Во что поиграть вместе" : "Что посмотреть вместе";
     if (!pool.length){ openSheet(`<h3>${title}</h3><p class="sub">У вас обоих пусто в «На будущее»${g ? " для игр" : " для кино"}. Добавьте что-нибудь, и будет из чего крутить.</p>`); return; }
-    const s = openSheet(`<h3>${title}</h3><p class="sub">${both.length ? `Крутим из общего: ${both.length} ${plural(both.length, "позиция", "позиции", "позиций")} есть в «На будущее» у обоих.` : `Общего нет, крутим из обоих списков: ${pool.length} ${plural(pool.length, "позиция", "позиции", "позиций")}.`}</p>
+    const s = openSheet(`<h3>${title}</h3><div style="display:flex;justify-content:center;margin:4px 0 8px"><span class="ava-stack" style="--av-ring:#1c1c1e">${avaHTML(myProf(), "md")}${avaHTML(p, "md")}</span></div><p class="sub">${both.length ? `Крутим из общего: ${both.length} ${plural(both.length, "позиция", "позиции", "позиций")} есть в «На будущее» у обоих.` : `Общего нет, крутим из обоих списков: ${pool.length} ${plural(pool.length, "позиция", "позиции", "позиций")}.`}</p>
       <div class="cr-box" id="crBox"><div id="crP"></div><div class="t" id="crT"></div><div class="w" id="crW"></div></div>
       <div class="acts" style="margin-top:14px"><button class="ib blue" id="crGo">Крутить</button><span id="crX"></span></div>`);
-    const show = x => { s.el.querySelector("#crP").innerHTML = posterHTML(x.it, {rate:false, tgt:false, badge:false}); s.el.querySelector("#crT").textContent = x.it.title; s.el.querySelector("#crW").textContent = x.who; };
+    const show = x => { s.el.querySelector("#crP").innerHTML = posterHTML(x.it, {rate:false, tgt:false, badge:false}); s.el.querySelector("#crT").textContent = x.it.title; s.el.querySelector("#crW").innerHTML = `${avaStack(x.uids)} ${esc(x.who)}`; };
     let busy = false;
     const spin = () => {
       if (busy) return; busy = true; const box = s.el.querySelector("#crBox"); box.classList.remove("win"); box.classList.add("spin"); s.el.querySelector("#crX").innerHTML = "";
@@ -2931,11 +3040,12 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
 
   function profileSheet(){
     const s = openSheet(`<h3>Профиль</h3><p class="sub">${esc(ME.email || "")}</p>
-      <button class="ib full" id="pfNick">Ник: <b style="margin-left:6px">${esc(NICK)}</b></button>
+      <div class="acts" style="align-items:center">${avaHTML(myProf(), "md")}<button class="ib" id="pfAva">Аватар</button><button class="ib" id="pfNick" style="flex:1">Ник: <b style="margin-left:6px">${esc(NICK)}</b></button></div>
       <div class="acts" style="margin-top:12px"><button class="ib" id="pfExp">Скачать бэкап</button><label class="ib" for="pfImpF">Загрузить бэкап</label><input type="file" id="pfImpF" accept=".zip,.json,application/zip,application/json" hidden></div>
       <p class="sub" style="margin:12px 0 0">Бэкап — это zip-архив: все записи, обложки, обои и скриншоты. При загрузке записи, которые уже есть на полке, пропускаются. Старые бэкапы .json тоже подходят.</p>
       <div class="acts" style="margin-top:16px"><button class="ib red" id="pfOut">Выйти из аккаунта</button></div>`);
     s.el.querySelector("#pfNick").onclick = () => { s.close(); nickSheet(false); };
+    s.el.querySelector("#pfAva").onclick = () => { s.close(); avaSheet(false); };
     s.el.querySelector("#pfExp").onclick = e => runBackup(e.currentTarget);
     s.el.querySelector("#pfImpF").onchange = async e => {
       const f = e.target.files[0]; if (!f) return; const lb = s.el.querySelector('label[for="pfImpF"]');
@@ -3034,8 +3144,8 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
 
   async function start(user){
     ME = user;
-    const {data: prof} = await SB.from("profiles").select("nick").eq("user_id", user.id).maybeSingle();
-    if (prof && prof.nick) setNick(prof.nick); else await nickSheet(true);
+    const {data: prof} = await SB.from("profiles").select("nick,avatar,ava_animal,ava_color").eq("user_id", user.id).maybeSingle();
+    if (prof && prof.nick){ setNick(prof.nick); MEP = prof; } else { await nickSheet(true); MEP = {nick: NICK}; assets = makeBackend(SB, user.id).assets; await avaSheet(true); }
     const be = makeBackend(SB, user.id); db = be.db; assets = be.assets; canWrite = true;
     const timer = setTimeout(() => toast("Данные пока не подгрузились. Проверь интернет."), 12000);
     db.doc("meta/theme").onSnapshot(d => { theme = d.exists ? d.data() : null; applyTheme(theme); });

@@ -86,3 +86,8 @@ as $$
 $$;
 revoke all on function public.public_items() from public, anon;
 grant execute on function public.public_items() to authenticated;
+
+-- ===== аватарки =====
+alter table public.profiles add column if not exists avatar text;
+alter table public.profiles add column if not exists ava_animal text;
+alter table public.profiles add column if not exists ava_color text;
