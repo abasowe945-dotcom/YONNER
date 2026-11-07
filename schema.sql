@@ -71,3 +71,18 @@ create policy media_update on storage.objects for update to authenticated
   using (bucket_id = 'media' and (storage.foldername(name))[1] = (select auth.uid())::text);
 create policy media_delete on storage.objects for delete to authenticated
   using (bucket_id = 'media' and (storage.foldername(name))[1] = (select auth.uid())::text);
+
+-- ===== друзья: все вошедшие видят ники и полки друг друга (без заметок и причин дропа) =====
+drop policy if exists profiles_read_all on public.profiles;
+create policy profiles_read_all on public.profiles for select to authenticated using (true);
+
+create or replace function public.public_items()
+returns table (id text, user_id uuid, data jsonb, updated_at timestamptz)
+language sql stable security definer set search_path = ''
+as $$
+  select i.id, i.user_id, i.data - 'note' - 'dropReason', i.updated_at
+  from public.items i
+  where (select auth.uid()) is not null
+$$;
+revoke all on function public.public_items() from public, anon;
+grant execute on function public.public_items() to authenticated;

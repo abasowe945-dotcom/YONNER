@@ -464,6 +464,49 @@ body[data-theme="cal"] .seg{--seg-bg:var(--c-cell-out);--seg-fg:var(--c-fg);--se
 .rc-g .n{text-align:right;color:var(--c-dim);font-variant-numeric:tabular-nums}
 @media (max-width:640px){.rc-top{grid-template-columns:repeat(3,minmax(0,1fr))}.rc-g{grid-template-columns:100px minmax(0,1fr) 30px}}
 /* стена дропов */
+.fr-list{margin-top:18px}
+.fr-ava{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font:800 18px/1 var(--ios);color:#fff;letter-spacing:-.02em}
+.fr-ava.big{width:84px;height:84px;font-size:36px}
+.fr-pct{flex:none;font:700 14px/1 var(--ios);padding:6px 10px;border-radius:999px;background:var(--c-cell-out);color:var(--c-fg);font-variant-numeric:tabular-nums}
+.fr-pct.hi{background:rgba(48,209,88,.18);color:#30d158}.fr-pct.mid{background:rgba(255,214,10,.18);color:#d6a700}.fr-pct.lo{background:rgba(255,69,58,.16);color:#ff453a}
+.fd-row{display:flex;align-items:center;gap:12px;width:100%;padding:10px 16px;border:0;background:none;color:inherit;text-align:left;font:400 15px/1.3 var(--ios);cursor:pointer}
+.fd-row + .fd-row{border-top:1px solid var(--c-line)}
+.fd-row:hover{background:var(--c-cell-out)}
+.fd-row .poster{flex:none;width:40px;border-radius:7px;background:var(--c-cell-out)}
+.fd-row .poster .ph{font-size:8px;color:var(--c-dim)}
+.fd-row .poster .rb,.fd-row .poster .medal,.fd-row .poster .blood{display:none}
+.fd-row .t{flex:1;min-width:0}.fd-row .t small{display:block;color:var(--c-dim);font-size:13px;margin-top:2px}
+.fd-row .r{flex:none;font:700 14px/1 var(--ios);padding:5px 8px;border-radius:999px}
+.fd-row .r.green{background:var(--r-green);color:#04230d}.fd-row .r.yellow{background:var(--r-yel);color:#1d1d1f}.fd-row .r.red{background:var(--r-red);color:#fff}
+.up-head{display:flex;align-items:center;gap:18px;margin-top:6px}
+.up-head h1{margin:0}
+.fr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:16px;margin-top:12px}
+.fr-card{border:0;background:none;padding:0;text-align:left;color:inherit;cursor:pointer;transition:transform .15s}
+.fr-card:hover{transform:translateY(-2px)}
+.fr-card .poster{border-radius:12px;background:var(--c-cell-out)}
+.fr-card .poster .ph{font-size:13px;color:var(--c-dim);padding:8px}
+.fr-card .t{margin-top:7px;font-weight:600;font-size:14px;line-height:1.25}
+.fr-card .m{margin-top:2px;font-size:12.5px;color:var(--c-dim)}
+.fr-card.have .t::after{content:" · есть";color:#30d158;font-weight:500}
+.fr-h{margin:26px 0 0;font-size:20px;font-weight:700;letter-spacing:-.01em}
+.fr-h small{color:var(--c-dim);font-weight:500;margin-left:6px}
+.cmp-row{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:15px}
+.cmp-row + .cmp-row{border-top:1px solid var(--c-line)}
+.cmp-row .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cmp-row b{flex:none;width:40px;text-align:center;font-variant-numeric:tabular-nums}
+.cmp-row b small{display:block;font-size:10px;color:var(--c-dim);font-weight:500;text-transform:uppercase;letter-spacing:.06em}
+.cmp-big{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.cmp-big b{font-size:54px;font-weight:800;letter-spacing:-.04em;line-height:1}
+.cmp-big span{color:var(--c-dim);font-size:15px}
+.rc-sec .a-btn svg{width:18px;height:18px;flex:none}
+.cr-box{text-align:center;padding:6px 0 2px}
+.cr-box .poster{width:150px;margin:0 auto;border-radius:14px;background:var(--c-cell-out);transition:transform .2s}
+.cr-box .poster .ph{font-size:14px;color:var(--c-dim);padding:10px}
+.cr-box .t{margin-top:12px;font-size:22px;font-weight:700;letter-spacing:-.01em;min-height:28px}
+.cr-box .w{margin-top:4px;color:var(--c-dim);font-size:14px;min-height:18px}
+.cr-box.spin .poster{transform:scale(.94)}
+.cr-box.win .poster{animation:crWin .5s cubic-bezier(.3,.7,.4,1.5)}
+@keyframes crWin{0%{transform:scale(.8)}100%{transform:scale(1)}}
 .dr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:18px;margin-top:20px}
 .dr{border:0;background:none;padding:0;text-align:left;color:inherit;cursor:pointer}
 .dr .poster{border-radius:16px;background:#2c2c2e}
@@ -924,7 +967,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     games:{w:"wGames",theme:"games",tab:"games"}, "games-future":{w:"wGames",theme:"games",tab:"games"},
     kino:{w:"wKino",theme:"kino",tab:"kino"}, "kino-future":{w:"wKino",theme:"kino",tab:"kino"},
     calendar:{w:"wApple",theme:"cal",tab:"calendar"},
-    more:{w:"wApple",theme:"cal",tab:"more"}, recap:{w:"wApple",theme:"cal",tab:"more"}, drops:{w:"wApple",theme:"cal",tab:"more"}, money:{w:"wApple",theme:"cal",tab:"more"}, ach:{w:"wApple",theme:"cal",tab:"more"}
+    more:{w:"wApple",theme:"cal",tab:"more"}, recap:{w:"wApple",theme:"cal",tab:"more"}, drops:{w:"wApple",theme:"cal",tab:"more"}, money:{w:"wApple",theme:"cal",tab:"more"}, ach:{w:"wApple",theme:"cal",tab:"more"}, people:{w:"wApple",theme:"cal",tab:"more"}, user:{w:"wApple",theme:"cal",tab:"more"}
   };
   const I = (d, extra = "") => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ${extra}>${d}</svg>`;
   const ICON = {
@@ -932,6 +975,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     kino:I('<rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M7 4v16M17 4v16M3 9h4M17 9h4M3 15h4M17 15h4"/>'),
     soon:I('<path d="M6 2h12M6 22h12"/><path d="M7 2c0 5 10 6 10 10S7 17 7 22M17 2c0 5-10 6-10 10s10 5 10 10"/>'),
     calendar:I('<rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4"/>'),
+    people:I('<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.3-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/><circle cx="17" cy="9" r="2.6"/><path d="M16.5 14.6c2.7.1 4.6 1.8 5 4.9"/>'),
     more:I('<circle cx="5" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="19" cy="12" r="1.6" fill="currentColor"/>'),
     edit:I('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>'),
     img:I('<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/>'),
@@ -1229,6 +1273,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
   function achList(){ const st = achStats(); return ACH.map(([id,t,d,k,max,c]) => ({id, t, d, c, max, cur: Math.min(max, st[k] || 0), got: (st[k] || 0) >= max})); }
   let achSeen = null, achSaving = false, itemsLoaded = false;
   let lastBackup = null, autoBackup = null, backupBusy = false;
+  let viewUid = null, FR = null, frLoading = null, upKind = "games";
   async function checkAch(){
     if (!canWrite || !db || achSaving || !itemsLoaded) return;
     const got = achList().filter(a => a.got).map(a => a.id);
@@ -1403,6 +1448,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
       ${backupBanner()}
       <div class="mt-grid">
         ${tile("linear-gradient(135deg,#e3008c,#5c2d91)", ICON.trophy, `Итоги ${recY}`, "Пройдено, дропнуто, топы и жанры", 'data-go="recap"', `${yearN}<small>за год</small>`, true)}
+        ${ME ? tile("linear-gradient(135deg,#0a84ff,#30d158)", ICON.people, "Друзья", "Профили, лента, совпадения вкусов", 'data-go="people"', FR ? `${FR.profiles.filter(p => p.user_id !== ME.id).length}<small>${plural(FR.profiles.length - 1, "человек", "человека", "человек")}</small>` : null, true) : ""}
         ${tile("#e81123", ICON.skull, "Стена дропов", "Всё брошенное", 'data-go="drops"', drops)}
         ${tile("#0078d4", ICON.tiers, "Тир-лист игр", `${tierG} разложено`, 'data-tier="games"')}
         ${tile("linear-gradient(135deg,#ff4b1f,#ff9f0a)", ICON.dice, "Рулетка игр", "Что пройти дальше", 'data-roul="games"', `${futG}<small>в пуле</small>`, true)}
@@ -1533,12 +1579,14 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     ["wGames","wKino","wApple"].forEach(w => $(w).hidden = w !== r.w);
     if (r.w === "wGames") renderGames();
     else if (r.w === "wKino") renderKino();
-    else ({soon:renderSoon, calendar:renderCal, more:renderMore, recap:renderRecap, drops:renderDrops, money:renderMoney, ach:renderAch})[route]();
+    else ({soon:renderSoon, calendar:renderCal, more:renderMore, recap:renderRecap, drops:renderDrops, money:renderMoney, ach:renderAch, people:renderPeople, user:renderUser})[route]();
     $("addS").hidden = !canWrite || route !== "games"; $("addK").hidden = !canWrite || route !== "kino";
     renderTabbar();
     if (tierKind) renderTiers();
   }
-  function readHash(){ const h = location.hash.slice(1); route = ROUTES[h] ? h : "games"; }
+  function readHash(){ const h = decodeURIComponent(location.hash.slice(1));
+    if (h.startsWith("user:")){ route = "user"; viewUid = h.slice(5); return; }
+    route = ROUTES[h] && h !== "user" ? h : "games"; }
   function animateWorld(){
     const r = ROUTES[route], p = ROUTES[prevRoute] || r;
     const a = TAB_ORDER.indexOf(r.tab), b = TAB_ORDER.indexOf(p.tab);
@@ -1573,6 +1621,11 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     if ((el = pick("[data-battle]"))){ openBattle(el.dataset.battle); return; }
     if ((el = pick("[data-profile]"))){ if (ME) profileSheet(); return; }
     if ((el = pick("[data-backup]"))){ runBackup(el); return; }
+    if ((el = pick("[data-user]"))){ go("user:" + el.dataset.user); return; }
+    if ((el = pick("[data-fi]"))){ friendItemSheet(el.dataset.fi); return; }
+    if ((el = pick("[data-upk]"))){ upKind = el.dataset.upk; renderUser(); return; }
+    if ((el = pick("[data-coop]"))){ coopRoulette(el.dataset.coop); return; }
+    if ((el = pick("[data-frrefresh]"))){ loadFriends(true); return; }
     if ((el = pick("[data-theme-open]"))){ canWrite ? themeSheet() : toast("Тему может менять только владелец"); return; }
     if ((el = pick("[data-reldate]"))){ e.preventDefault(); relDateSheet(items.find(i => i.id === el.dataset.reldate)); return; }
     if ((el = pick("[data-soon]"))){ soonSheet(items.find(i => i.id === el.dataset.soon)); return; }
@@ -2638,6 +2691,172 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
       inp.addEventListener("keydown", e => { if (e.key === "Enter") ok(); });
     });
   }
+  // ================= друзья =================
+  const AVA = ["#0a84ff","#30d158","#ff9f0a","#ff375f","#bf5af2","#64d2ff","#ff453a","#ffd60a","#5e5ce6","#00c7be"];
+  const avaColor = uid => AVA[[...String(uid)].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7) % AVA.length];
+  const avaHTML = (p, big) => `<span class="fr-ava${big ? " big" : ""}" style="background:${avaColor(p.user_id)}">${esc((p.nick || "?").slice(0, 1).toUpperCase())}</span>`;
+  const frKey = it => (isGame(it) ? "g|" : "k|") + String(it.title || "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+  const frNick = uid => { const p = FR && FR.profiles.find(x => x.user_id === uid); return p ? p.nick : "кто-то"; };
+  async function loadFriends(force){
+    if (!SB || !ME) return null;
+    if (FR && !force && Date.now() - FR.at < 60000) return FR;
+    if (frLoading) return frLoading;
+    frLoading = (async () => {
+      try {
+        const [pr, it] = await Promise.all([SB.from("profiles").select("user_id,nick"), SB.rpc("public_items")]);
+        if (pr.error) throw pr.error; if (it.error) throw it.error;
+        FR = {at: Date.now(), profiles: pr.data || [], items: (it.data || []).map(r => ({...(r.data || {}), id: r.id, uid: r.user_id, _upd: r.updated_at}))};
+      } catch(e){ toast("Не получилось загрузить друзей: " + (e.message || e)); }
+      frLoading = null; if (route === "people" || route === "user" || route === "more") render(); return FR;
+    })();
+    return frLoading;
+  }
+  const frItems = uid => FR ? FR.items.filter(i => i.uid === uid) : [];
+  const myKeys = () => new Set(items.map(frKey));
+  function compat(uid){
+    const mine = new Map(items.filter(inLib).filter(i => typeof i.rating === "number").map(i => [frKey(i), i]));
+    const common = frItems(uid).filter(inLib).filter(i => typeof i.rating === "number" && mine.has(frKey(i)))
+      .map(f => ({f, m: mine.get(frKey(f)), d: Math.abs(f.rating - mine.get(frKey(f)).rating)}));
+    const pct = common.length >= 2 ? Math.max(0, Math.round(100 - common.reduce((s, c) => s + c.d, 0) / common.length * 12)) : null;
+    return {common, pct};
+  }
+  const pctCls = p => p == null ? "" : p >= 75 ? "hi" : p >= 50 ? "mid" : "lo";
+  function feedEvents(uid){
+    const ev = [];
+    for (const it of FR ? FR.items : []){
+      if (it.uid === ME.id || (uid && it.uid !== uid)) continue;
+      const add = (d, verb) => { if (d) ev.push({it, d: String(d).slice(0, 10), verb}); };
+      if (isGame(it)){
+        const s = gStatus(it.status);
+        if (it.status === "future") add(it.createdAt, "хочет поиграть в");
+        else if (it.status === "soon") add(it.createdAt, "ждёт релиз");
+        else if (s === "done") add(it.finishedAt || it.date, "прошёл");
+        else if (s === "dropped") add(it.finishedAt || it.date, "дропнул");
+        else if (s === "endless") add(it.date || it.createdAt, "залип в");
+        else add(it.date || it.createdAt, "начал играть в");
+      } else {
+        if (it.status === "future") add(it.createdAt, "хочет посмотреть");
+        else if (it.status === "soon") add(it.createdAt, "ждёт премьеру");
+        else if (it.status === "done" || it.status === "played") add(it.date || it.updatedAt, "посмотрел");
+        else if (it.status === "dropped") add(it.updatedAt || it._upd, "бросил");
+        else if (it.status === "paused") add(it.updatedAt || it._upd, "отложил");
+        else add(it.date || it.createdAt, "смотрит");
+      }
+    }
+    return ev.sort((a, b) => b.d.localeCompare(a.d));
+  }
+  const agoTxt = d => { const n = Math.round((parseD(today()) - parseD(d)) / 864e5); return n <= 0 ? "сегодня" : n === 1 ? "вчера" : n < 30 ? `${n} ${plural(n, "день", "дня", "дней")} назад` : fmtDate(d); };
+  const feedRow = (e, showNick = true) => {
+    const r = typeof e.it.rating === "number" && /прошёл|дропнул|посмотрел|бросил/.test(e.verb) ? `<span class="r ${rateCls(e.it.rating)}">${num1(e.it.rating)}</span>` : "";
+    return `<button class="fd-row" data-fi="${esc(e.it.uid + "/" + e.it.id)}">${posterHTML(e.it, {rate:false, tgt:false, badge:false})}<span class="t">${showNick ? `<b>${esc(frNick(e.it.uid))}</b> ` : ""}${e.verb} <b>${esc(e.it.title)}</b><small>${agoTxt(e.d)}${isGame(e.it) ? " · игра" : " · " + esc(KTYPES[e.it.type] || "кино")}</small></span>${r}</button>`;
+  };
+
+  function renderPeople(){
+    appleHead("Друзья", `<button class="a-link" data-go="more">‹ Ещё</button><button class="a-link" data-frrefresh="1">Обновить</button>`);
+    if (!ME){ $("aMain").innerHTML = `<div class="a-empty" style="margin-top:20px"><b>Нужно войти</b></div>`; return; }
+    if (!FR){ $("aMain").innerHTML = `<h1 class="a-h1">Друзья</h1><p class="a-sub">Загружаю…</p>`; loadFriends(); return; }
+    const others = FR.profiles.filter(p => p.user_id !== ME.id).map(p => {
+      const its = frItems(p.user_id), g = its.filter(i => isGame(i) && inLib(i)).length, k = its.filter(i => !isGame(i) && inLib(i)).length;
+      const last = its.reduce((m, i) => (i._upd || "") > m ? i._upd : m, "");
+      return {p, g, k, c: compat(p.user_id), last};
+    }).sort((a, b) => b.last.localeCompare(a.last));
+    const feed = feedEvents(null).slice(0, 40);
+    $("aMain").innerHTML = `<h1 class="a-h1">Друзья</h1><p class="a-sub">${others.length ? `${others.length} ${plural(others.length, "человек", "человека", "человек")} на NEXUS кроме тебя. Видно всё, кроме заметок и причин дропа.` : "Пока здесь никого, кроме тебя. Скинь друзьям ссылку на сайт."}</p>
+      ${others.length ? `<div class="mo-group fr-list">${others.map(o => `<button class="mo-row" data-user="${esc(o.p.user_id)}">${avaHTML(o.p)}<span class="t">${esc(o.p.nick)}<small>${o.g} ${plural(o.g, "игра", "игры", "игр")} · ${o.k} кино${o.last ? ` · активность ${agoTxt(o.last.slice(0, 10))}` : ""}</small></span>${o.c.pct != null ? `<span class="fr-pct ${pctCls(o.c.pct)}" title="Совпадение оценок">${o.c.pct}%</span>` : ""}<span class="chev">›</span></button>`).join("")}</div>` : ""}
+      <h2 class="fr-h">Лента</h2>
+      ${feed.length ? `<div class="mo-group" style="margin-top:12px">${feed.map(e => feedRow(e)).join("")}</div>` : `<div class="a-empty" style="margin-top:12px"><b>Тихо</b>Когда друзья начнут что-то добавлять, это появится здесь.</div>`}`;
+  }
+
+  function renderUser(){
+    appleHead("Профиль", `<button class="a-link" data-go="people">‹ Друзья</button>`);
+    if (!FR){ $("aMain").innerHTML = `<p class="a-sub">Загружаю…</p>`; loadFriends(); return; }
+    const p = FR.profiles.find(x => x.user_id === viewUid);
+    if (!p){ $("aMain").innerHTML = `<div class="a-empty" style="margin-top:20px"><b>Такого человека нет</b>Может, он удалил аккаунт.</div>`; return; }
+    if (p.user_id === ME.id){ go("more"); return; }
+    const its = frItems(p.user_id), lib = its.filter(inLib), mk = myKeys();
+    const gl = lib.filter(isGame), kl = lib.filter(i => !isGame(i));
+    const rated = lib.filter(i => typeof i.rating === "number"), avg = rated.length ? rated.reduce((s, i) => s + i.rating, 0) / rated.length : null;
+    const c = compat(p.user_id);
+    const diffs = [...c.common].sort((a, b) => b.d - a.d).filter(x => x.d >= 2).slice(0, 4);
+    const same = [...c.common].sort((a, b) => a.d - b.d || b.f.rating - a.f.rating).slice(0, 4);
+    const recs = lib.filter(i => typeof i.rating === "number" && i.rating >= 8 && !mk.has(frKey(i))).sort((a, b) => b.rating - a.rating).slice(0, 8);
+    const card = it => `<button class="fr-card${mk.has(frKey(it)) ? " have" : ""}" data-fi="${esc(it.uid + "/" + it.id)}">${posterHTML(it, {tgt:false})}<div class="t">${esc(it.title)}</div><div class="m">${esc(isGame(it) ? (isFuture(it) ? "на будущее" : isSoon(it) ? "ждёт релиз" : GSTATUS[gStatus(it.status)]) : (isFuture(it) ? "на будущее" : isSoon(it) ? "ждёт премьеру" : kSt(it.status).l))}</div></button>`;
+    const sec = (title, list) => list.length ? `<h2 class="fr-h">${title}<small>${list.length}</small></h2><div class="fr-grid">${list.map(card).join("")}</div>` : "";
+    const g = upKind === "games";
+    const pool = its.filter(i => g ? isGame(i) : !isGame(i));
+    const byRec = (a, b) => (b.finishedAt || b.date || b.createdAt || "").localeCompare(a.finishedAt || a.date || a.createdAt || "");
+    const groups = g
+      ? [["Играет", pool.filter(i => inLib(i) && ["playing", "endless"].includes(gStatus(i.status)))], ["Пройдено", pool.filter(i => inLib(i) && gStatus(i.status) === "done")], ["Дроп", pool.filter(i => inLib(i) && gStatus(i.status) === "dropped")], ["На будущее", pool.filter(isFuture)], ["Ждёт релиз", pool.filter(isSoon)]]
+      : [["Смотрит", pool.filter(i => inLib(i) && i.status === "playing")], ["Посмотрено", pool.filter(i => inLib(i) && ["done", "played"].includes(i.status))], ["Отложено", pool.filter(i => inLib(i) && i.status === "paused")], ["Брошено", pool.filter(i => inLib(i) && i.status === "dropped")], ["На будущее", pool.filter(isFuture)], ["Ждёт премьеру", pool.filter(isSoon)]];
+    const tiers = TIERS.map(([t, col]) => [t, col, pool.filter(i => inLib(i) && i.tier === t)]).filter(x => x[2].length);
+    const feed = feedEvents(p.user_id).slice(0, 8);
+    $("aMain").innerHTML = `<div class="up-head">${avaHTML(p, true)}<div><h1 class="a-h1">${esc(p.nick)}</h1><p class="a-sub" style="margin-top:4px">${gl.length} ${plural(gl.length, "игра", "игры", "игр")} · ${kl.length} кино${feed[0] ? ` · последняя активность ${agoTxt(feed[0].d)}` : ""}</p></div></div>
+      <div class="rc-grid">${[[gl.filter(i => gStatus(i.status) === "done").length, "игр пройдено"], [kl.filter(i => ["done", "played"].includes(i.status)).length, "фильмов и сериалов"], [gl.filter(i => gStatus(i.status) === "dropped").length + kl.filter(i => i.status === "dropped").length, "дропов"], [avg != null ? num1(avg) : "—", "средняя оценка"]].map(([v, l]) => `<div class="rc-c"><b style="font-size:34px">${v}</b><small>${l}</small></div>`).join("")}</div>
+      <div class="rc-sec"><h3>Совпадение вкусов</h3>
+        ${c.pct != null ? `<div class="cmp-big"><b>${c.pct}%</b><span>по ${c.common.length} ${plural(c.common.length, "общей оценке", "общим оценкам", "общим оценкам")}</span></div>` : `<p class="a-sub" style="margin:0">${c.common.length ? "Пока одна общая оценка, процент посчитаю от двух." : "Общих оценённых игр и фильмов пока нет."}</p>`}
+        ${same.length ? `<h3 style="margin:18px 0 4px;font-size:16px">Сошлись</h3>${same.map(x => `<div class="cmp-row"><span class="t">${esc(x.f.title)}</span><b>${num1(x.m.rating)}<small>ты</small></b><b>${num1(x.f.rating)}<small>${esc(p.nick.slice(0, 6))}</small></b></div>`).join("")}` : ""}
+        ${diffs.length ? `<h3 style="margin:18px 0 4px;font-size:16px">Разошлись сильнее всего</h3>${diffs.map(x => `<div class="cmp-row"><span class="t">${esc(x.f.title)}</span><b>${num1(x.m.rating)}<small>ты</small></b><b>${num1(x.f.rating)}<small>${esc(p.nick.slice(0, 6))}</small></b></div>`).join("")}` : ""}
+        <div class="acts" style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap"><button class="a-btn" data-coop="games">${ICON.dice} Во что поиграть вместе</button><button class="a-btn gray" data-coop="kino">${ICON.dice} Что посмотреть вместе</button></div>
+      </div>
+      ${recs.length ? `<h2 class="fr-h">${esc(p.nick)} советует<small>оценил на 8+, у тебя нет</small></h2><div class="fr-grid">${recs.map(card).join("")}</div>` : ""}
+      ${feed.length ? `<h2 class="fr-h">Недавнее</h2><div class="mo-group" style="margin-top:12px">${feed.map(e => feedRow(e, false)).join("")}</div>` : ""}
+      <div style="margin-top:28px" class="seg"><button data-upk="games" aria-pressed="${g}">Игры<small>${its.filter(isGame).length}</small></button><button data-upk="kino" aria-pressed="${!g}">Кино<small>${its.filter(i => !isGame(i)).length}</small></button></div>
+      ${groups.map(([t, l]) => sec(t, l.sort(byRec))).join("") || `<div class="a-empty" style="margin-top:16px"><b>Пусто</b>Здесь пока ничего.</div>`}
+      ${tiers.length ? `<h2 class="fr-h">Тир-лист</h2>${tiers.map(([t, col, l]) => `<div style="display:flex;gap:12px;align-items:flex-start;margin-top:12px"><span class="fr-ava" style="background:${col};color:#1d1d1f;border-radius:12px">${t}</span><div class="fr-grid" style="margin-top:0;flex:1;grid-template-columns:repeat(auto-fill,minmax(90px,1fr))">${l.sort((a, b) => (a.tierOrder ?? 0) - (b.tierOrder ?? 0)).map(card).join("")}</div></div>`).join("")}` : ""}`;
+  }
+
+  function friendItemSheet(key){
+    const [uid, id] = key.split("/"); const it = FR && FR.items.find(i => i.uid === uid && i.id === id); if (!it) return;
+    const g = isGame(it), have = myKeys().has(frKey(it));
+    const st = isFuture(it) ? "На будущее" : isSoon(it) ? (g ? "Ждёт релиз" : "Ждёт премьеру") : g ? GSTATUS[gStatus(it.status)] : kSt(it.status).l;
+    const dates = [it.date && !isFuture(it) ? `начал ${fmtDate(it.date)}` : "", it.finishedAt ? `закончил ${fmtDate(it.finishedAt)}` : "", it.releaseDate ? `выход ${relLabel(it)}` : (it.release ? `выход ${it.release}` : "")].filter(Boolean).join(" · ");
+    const mine = items.find(i => frKey(i) === frKey(it));
+    const s = openSheet(`<div class="qa-top">${posterHTML(it, {tgt:false})}<div><h3>${esc(it.title)}</h3>
+        <p class="sub">${esc([g ? "Игра" : KTYPES[it.type], it.year, genres(it).slice(0, 3).join(", ")].filter(Boolean).join(" · "))}</p>
+        <p class="sub" style="margin-top:8px"><b style="color:inherit">${esc(frNick(uid))}</b>: ${esc(st)}${typeof it.rating === "number" ? ` · оценка <b style="color:inherit">${num1(it.rating)}</b>` : ""}${it.tier ? ` · тир ${esc(it.tier)}` : ""}</p>
+        ${dates ? `<p class="sub" style="margin-top:4px">${esc(dates)}</p>` : ""}
+        ${mine && typeof mine.rating === "number" ? `<p class="sub" style="margin-top:4px">Твоя оценка: <b style="color:inherit">${num1(mine.rating)}</b></p>` : ""}</div></div>
+      ${it.desc ? `<p class="sub" style="margin:14px 0 0;max-height:150px;overflow:auto;white-space:pre-line">${esc(it.desc.slice(0, 900))}</p>` : ""}
+      <div class="acts" style="margin-top:16px">${have ? `<button class="ib full" disabled>Уже есть у тебя</button>` : `<button class="ib blue full" id="fiTake">Взять к себе в «На будущее»</button>`}</div>`);
+    s.el.querySelector(".qa-top .poster").classList.add("qa-poster");
+    const b = s.el.querySelector("#fiTake"); if (b) b.onclick = async () => { b.disabled = true; b.textContent = "Добавляю…"; if (await takeFromFriend(it)) s.close(); else { b.disabled = false; b.textContent = "Взять к себе в «На будущее»"; } };
+  }
+  async function takeFromFriend(it){
+    if (!db) return false;
+    if (myKeys().has(frKey(it))){ toast("Уже есть у тебя"); return false; }
+    const keep = ["title", "type", "genre", "desc", "year", "release", "coverPos", "epTotal"];
+    const body = {status: "future", createdAt: now(), updatedAt: now(), via: "friend:" + frNick(it.uid)};
+    keep.forEach(k => { if (it[k] != null) body[k] = it[k]; });
+    if (it.cover && assets){
+      try { const r = await fetch(publicUrl(it.cover)); if (!r.ok) throw 0; const bl = await r.blob(); body.cover = (await assets.upload(bl, {type: bl.type || "image/jpeg"})).id; } catch(e){ delete body.coverPos; }
+    }
+    try { await db.collection("items").add(body); toast(`${it.title} — в «На будущее»`); return true; } catch(e){ toast("Не сохранилось"); return false; }
+  }
+
+  function coopRoulette(kind){
+    const p = FR && FR.profiles.find(x => x.user_id === viewUid); if (!p) return;
+    const g = kind === "games", pick = list => list.filter(i => (g ? isGame(i) : !isGame(i)) && isFuture(i));
+    const mineL = pick(items), theirL = pick(frItems(p.user_id)), tk = new Set(theirL.map(frKey));
+    const both = mineL.filter(i => tk.has(frKey(i))).map(i => ({it: i, who: "оба хотите"}));
+    const pool = both.length ? both : [...mineL.map(i => ({it: i, who: "из твоего списка"})), ...theirL.map(i => ({it: i, who: `из списка ${p.nick}`}))];
+    const title = g ? "Во что поиграть вместе" : "Что посмотреть вместе";
+    if (!pool.length){ openSheet(`<h3>${title}</h3><p class="sub">У вас обоих пусто в «На будущее»${g ? " для игр" : " для кино"}. Добавьте что-нибудь, и будет из чего крутить.</p>`); return; }
+    const s = openSheet(`<h3>${title}</h3><p class="sub">${both.length ? `Крутим из общего: ${both.length} ${plural(both.length, "позиция", "позиции", "позиций")} есть в «На будущее» у обоих.` : `Общего нет, крутим из обоих списков: ${pool.length} ${plural(pool.length, "позиция", "позиции", "позиций")}.`}</p>
+      <div class="cr-box" id="crBox"><div id="crP"></div><div class="t" id="crT"></div><div class="w" id="crW"></div></div>
+      <div class="acts" style="margin-top:14px"><button class="ib blue" id="crGo">Крутить</button><span id="crX"></span></div>`);
+    const show = x => { s.el.querySelector("#crP").innerHTML = posterHTML(x.it, {rate:false, tgt:false, badge:false}); s.el.querySelector("#crT").textContent = x.it.title; s.el.querySelector("#crW").textContent = x.who; };
+    let busy = false;
+    const spin = () => {
+      if (busy) return; busy = true; const box = s.el.querySelector("#crBox"); box.classList.remove("win"); box.classList.add("spin"); s.el.querySelector("#crX").innerHTML = "";
+      const win = pool[Math.floor(Math.random() * pool.length)]; let n = 0; const total = pool.length > 1 ? 22 : 1;
+      const step = () => { n++; show(n >= total ? win : pool[Math.floor(Math.random() * pool.length)]);
+        if (n < total) setTimeout(step, 40 + n * n * .55); else { box.classList.remove("spin"); box.classList.add("win"); busy = false; s.el.querySelector("#crGo").textContent = "Ещё раз";
+          if (win.it.uid && !myKeys().has(frKey(win.it))){ s.el.querySelector("#crX").innerHTML = `<button class="ib" id="crTake">Взять к себе</button>`; s.el.querySelector("#crTake").onclick = async e => { e.target.disabled = true; if (await takeFromFriend(win.it)) e.target.textContent = "Добавлено"; else e.target.disabled = false; }; } } };
+      step();
+    };
+    s.el.querySelector("#crGo").onclick = spin; spin();
+  }
+
   // ================= бэкап: записи + картинки в одном zip =================
   const imgIds = it => [it.cover, it.wallpaper, ...(Array.isArray(it.shots) ? it.shots : [])].filter(x => typeof x === "string" && x);
   const MIME = {png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", webp: "image/webp", gif: "image/gif"};
@@ -2822,6 +3041,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     db.doc("meta/theme").onSnapshot(d => { theme = d.exists ? d.data() : null; applyTheme(theme); });
     Promise.all(["backup", "autobackup"].map(x => db.doc("meta/" + x).get().then(d => d.exists ? d.data() : null).catch(() => null)))
       .then(([b, a]) => { lastBackup = b; autoBackup = a; if (route === "more") render(); });
+    loadFriends();
     db.collection("items").onSnapshot(snap => {
       if (!snap.metadata.fromCache){ clearTimeout(timer); itemsLoaded = true; }
       items = snap.docs.map(d => ({id: d.id, ...d.data()}));
