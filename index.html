@@ -2561,7 +2561,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
           const {data: d, error} = await SB.functions.invoke("kino", {body: {url: raw}});
           let err = d && d.error;
           if (!d && error){ try { const j = await error.context.json(); err = j.error; } catch(e){ err = error.message; } }
-          if (err || !d) throw new Error(err === "captcha" ? "Кинопоиск закрылся капчей. Нужен бесплатный ключ API, напиши Claude" : err === "not_found" ? "Не нашёл этот фильм. Для новинок и редких фильмов нужен бесплатный ключ Кинопоиска, напиши Claude" : (err || "нет ответа"));
+          if (err || !d) throw new Error(err === "captcha" ? "Кинопоиск не ответил, попробуй ещё раз" : err === "not_found" ? "Не нашёл этот фильм на Кинопоиске. Проверь ссылку" : (err || "нет ответа"));
           const got = [], set = (id, v, label) => { if (v != null && v !== "" && $(id)){ $(id).value = v; if (label) got.push(label); } };
           set("f_title", d.title, "название"); set("f_originalTitle", d.originalTitle); set("f_year", d.year, "год");
           if (d.type && !$("f_type").dataset.touched){ $("f_type").value = d.type; serToggle(); }
@@ -3017,7 +3017,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     {v: "1.9", date: "2026-11-08", title: "Удобные страницы", kind: "minor", sec: {
       n: ["Логотип NEXUS в шапке светится при наведении и ведёт на главную",
           "Картинку для фона раздела и аватарки можно перетащить или вставить через Ctrl+V. Фон можно бросить прямо на плитку раздела в профиле",
-          "Кинопоиск без ключа: если сам сайт закрыт капчей, данные берутся из Википедии (Wikidata)"],
+          "<b>Кинопоиск по ссылке заработал</b>: подключён официальный доступ к данным, приходят рейтинг КП, актёры, сборы, сезоны и серии. Запасной путь через Википедию тоже остался"],
       c: ["Шапка остаётся сверху и на страницах игр и фильмов",
           "Большая заметная кнопка «Назад» вместо маленького крестика",
           "Кнопки «Редактировать» и «Фон страницы» переехали под постер"],
