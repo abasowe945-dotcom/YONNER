@@ -593,6 +593,29 @@ body[data-theme="games"] .sec-bg{--sb-ov:var(--s-bg)} body[data-theme="kino"] .s
 .fv-tile b{font-size:28px;font-weight:800;letter-spacing:-.02em}
 .fv-tile span{opacity:.75;font-size:14px}
 .fv-tile i{font-style:normal;font-weight:700;font-size:14px;margin-top:6px;color:#7cc4ff}
+.pn{margin-top:16px;background:var(--c-cell);border-radius:24px;padding:22px 22px 18px;box-shadow:var(--c-shadow);position:relative;overflow:hidden}
+.pn.latest{box-shadow:0 0 0 2px var(--c-ring),var(--c-shadow)}
+.pn-h{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.pn-v{font:800 15px/1 var(--ios);letter-spacing:.04em;padding:8px 12px;border-radius:12px;background:var(--c-cell-out);font-variant-numeric:tabular-nums}
+.pn-v.major{background:linear-gradient(135deg,#0a84ff,#5e5ce6);color:#fff}
+.pn-v.proto{background:linear-gradient(135deg,#ff9f0a,#ff375f);color:#fff}
+.pn-t{flex:1;min-width:200px}
+.pn-t b{display:block;font-size:20px;font-weight:700;letter-spacing:-.01em}
+.pn-t small{color:var(--c-dim);font-size:13px}
+.pn-new{font:800 11px/1 var(--ios);letter-spacing:.08em;color:#fff;background:#ff375f;padding:5px 8px;border-radius:999px}
+.pn-sec{margin-top:14px}
+.pn-sec h4{margin:0 0 6px;font:800 11.5px/1 var(--ios);letter-spacing:.1em;text-transform:uppercase}
+.pn-sec h4.n{color:#30d158}.pn-sec h4.c{color:#0a84ff}.pn-sec h4.f{color:#ff9f0a}.pn-sec h4.r{color:#ff453a}
+.pn-sec ul{margin:0;padding-left:20px}
+.pn-sec li{margin:4px 0;line-height:1.45}
+.pn-sec li b{font-weight:650}
+.pn-season{margin:34px 0 0;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--c-dim);font-weight:700;display:flex;align-items:center;gap:12px}
+.pn-season::after{content:"";flex:1;height:1px;background:var(--c-line)}
+.pn-quote{margin-top:12px;padding:10px 14px;border-left:3px solid var(--c-ring);background:var(--c-cell-out);border-radius:0 12px 12px 0;color:var(--c-dim);font-size:14px;font-style:italic}
+.s-card .poster,.k-card .poster,.fr-card .poster,.dr .poster,.rel .poster{transition:transform .4s cubic-bezier(.22,.8,.3,1),box-shadow .4s ease!important;will-change:transform}
+.s-card:hover,.k-card:hover,.fr-card:hover{position:relative;z-index:3}
+.s-card:hover .poster,.k-card:hover .poster{transform:translateY(-4px) scale(1.06)!important}
+.fr-card:hover .poster,.dr:hover .poster,.rel:hover .poster{transform:scale(1.06)!important}
 .dr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:18px;margin-top:20px}
 .dr{border:0;background:none;padding:0;text-align:left;color:inherit;cursor:pointer}
 .dr .poster{border-radius:16px;background:#2c2c2e}
@@ -1054,7 +1077,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     games:{w:"wGames",theme:"games",tab:"games"}, "games-future":{w:"wGames",theme:"games",tab:"games"},
     kino:{w:"wKino",theme:"kino",tab:"kino"}, "kino-future":{w:"wKino",theme:"kino",tab:"kino"},
     calendar:{w:"wApple",theme:"cal",tab:"calendar"},
-    more:{w:"wApple",theme:"cal",tab:"more"}, recap:{w:"wApple",theme:"cal",tab:"more"}, drops:{w:"wApple",theme:"cal",tab:"more"}, money:{w:"wApple",theme:"cal",tab:"more"}, ach:{w:"wApple",theme:"cal",tab:"more"}, people:{w:"wApple",theme:"cal",tab:"people"}, user:{w:"wApple",theme:"cal",tab:"people"}
+    more:{w:"wApple",theme:"cal",tab:"more"}, recap:{w:"wApple",theme:"cal",tab:"more"}, drops:{w:"wApple",theme:"cal",tab:"more"}, money:{w:"wApple",theme:"cal",tab:"more"}, ach:{w:"wApple",theme:"cal",tab:"more"}, patch:{w:"wApple",theme:"cal",tab:"more"}, people:{w:"wApple",theme:"cal",tab:"people"}, user:{w:"wApple",theme:"cal",tab:"people"}
   };
   const I = (d, extra = "") => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ${extra}>${d}</svg>`;
   const ICON = {
@@ -1070,6 +1093,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     dice:I('<rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8" cy="8" r="1.3" fill="currentColor"/><circle cx="16" cy="8" r="1.3" fill="currentColor"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/><circle cx="8" cy="16" r="1.3" fill="currentColor"/><circle cx="16" cy="16" r="1.3" fill="currentColor"/>'),
     tiers:I('<path d="M4 6h16M4 12h11M4 18h6"/>'),
     trophy:I('<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0Z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/>'),
+    scroll:I('<path d="M8 3h11a2 2 0 0 1 2 2v2h-4"/><path d="M17 7v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2h9"/><path d="M8 3a2 2 0 0 0-2 2v12M10 8h4M10 12h4"/>'),
     skull:I('<path d="M12 3a8 8 0 0 0-8 8c0 2.8 1.4 4.6 3 5.6V20h10v-3.4c1.6-1 3-2.8 3-5.6a8 8 0 0 0-8-8Z"/><circle cx="9" cy="11" r="1.6" fill="currentColor"/><circle cx="15" cy="11" r="1.6" fill="currentColor"/><path d="M10 20v-2M14 20v-2"/>'),
     plus:I('<path d="M12 5v14M5 12h14"/>'),
     sword:I('<path d="M14.5 17.5 3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2"/><path d="M9.5 17.5 21 6V3h-3L6.5 14.5M11 19l-6-6M8 16l-4 4M5 21l-2-2"/>'),
@@ -1552,6 +1576,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
         ${tile("#0063b1", ICON.calendar, "Календарь", "Всё по дням", 'data-go="calendar"', new Date().getDate())}
         ${tile("linear-gradient(135deg,#ffb900,#f7630c)", ICON.coin, "Деньги", `${fmtRub(moneyStats(null).spent)} на игры · ${fmtRub(moneyStats(null).saved)} сэкономлено`, 'data-go="money"', null, true)}
         ${tile("#00b294", ICON.star, "Ачивки", "Бейджи за дела", 'data-go="ach"', `${achList().filter(a => a.got).length}<small>из ${ACH.length}</small>`)}
+        ${tile("linear-gradient(135deg,#1b2838,#2a475e)", ICON.scroll, `Патчноуты`, `Что нового в ${PATCHES[0].v}`, 'data-go="patch"', patchUnseen() ? `NEW<small>${PATCHES[0].v}</small>` : `${PATCHES[0].v}<small>версия</small>`, true)}
         ${tile("#5c2d91", ICON.sword, "Битва игр", "Одна из двух, пока не останется победитель", 'data-battle="games"')}
         ${tile("#e3008c", ICON.sword, "Битва кино", "То же для фильмов", 'data-battle="kino"')}
         ${tile("linear-gradient(135deg,#2d7d9a,#5e5ce6)", ICON.palette, "Тема", "Цвета сайта", 'data-theme-open="1"', null)}
@@ -1673,7 +1698,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     ["wGames","wKino","wApple"].forEach(w => $(w).hidden = w !== r.w);
     if (r.w === "wGames") renderGames();
     else if (r.w === "wKino") renderKino();
-    else ({soon:renderSoon, calendar:renderCal, more:renderMore, recap:renderRecap, drops:renderDrops, money:renderMoney, ach:renderAch, people:renderPeople, user:renderUser})[route]();
+    else ({soon:renderSoon, calendar:renderCal, more:renderMore, recap:renderRecap, drops:renderDrops, money:renderMoney, ach:renderAch, patch:renderPatch, people:renderPeople, user:renderUser})[route]();
     fillMeSlots(); applySecBg();
     renderTabbar();
     if (tierKind) renderTiers();
@@ -2838,6 +2863,115 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
       inp.addEventListener("keydown", e => { if (e.key === "Enter") ok(); });
     });
   }
+  // ================= патчноуты =================
+  // Новые версии добавляются В НАЧАЛО списка. n — новое, c — изменено, f — исправлено, r — удалено.
+  const PATCHES = [
+    {v: "1.7", date: "2026-11-08", title: "Патчноуты", kind: "minor", sec: {
+      n: ["Раздел <b>Патчноуты</b> в «Ещё»: вся история изменений сайта, как у нормальных разработчиков игр",
+          "После обновления сайт один раз показывает, что нового в свежем патче",
+          "На плитке патчноутов горит <b>NEW</b>, пока не прочитал"],
+      c: ["При наведении на игру или фильм обложка плавно чуть увеличивается"]}},
+    {v: "1.6", date: "2026-11-08", title: "Steam по ссылке и чужие полки", kind: "minor", sec: {
+      n: ["<b>Автозаполнение по ссылке Steam</b>: вставь ссылку на игру, и подтянутся название, описание, жанры с метками, дата выхода, цена и вертикальная обложка",
+          "<b>Полка друга в родном стиле</b>: его игры в Steam-оформлении и кино в VOKINO, с фильтрами, поиском, сортировкой и тир-листом",
+          "Плашка «Полка Vas9» с совпадением вкусов и переключателем Игры/Кино"],
+      c: ["Профиль друга начинается с больших плиток Игры и Кино с обложками",
+          "Раздел Кино выровнен по центру и стал той же ширины, что Игры"]}},
+    {v: "1.5", date: "2026-11-08", title: "Шапка и фоны", kind: "minor", sec: {
+      n: ["<b>Профиль в шапке</b> на всех страницах: аватарка и ник, по нажатию открываются настройки",
+          "<b>Свой фон для каждого раздела</b> с размытием и затемнением",
+          "Кнопки <b>Тир-лист</b> и <b>Колесо фортуны</b> в овальных переливающихся рамках"],
+      c: ["Кнопка «Добавить» переехала к самим карточкам, рядом с сортировкой"]}},
+    {v: "1.4", date: "2026-11-08", title: "Аватарки", kind: "minor", sec: {
+      n: ["<b>Аватарки</b>: своё фото, один из 12 зверей или буква ника, плюс цвет фона",
+          "Выбор аватарки сразу после регистрации",
+          "<b>Общий календарь выходов</b>: видно, кто ещё ждёт релиз, и можно нажать «Тоже жду»",
+          "Мини-аватарки в ленте, совпадениях, рулетке и у релизов"],
+      c: ["«Друзья» стали отдельной вкладкой в нижней панели"]}},
+    {v: "1.3", date: "2026-11-08", title: "Друзья", kind: "major", sec: {
+      n: ["<b>Друзья</b>: все участники видят полки друг друга. Личные заметки и причины дропов скрыты на уровне базы",
+          "<b>Лента</b>: кто что начал, прошёл, дропнул и захотел",
+          "<b>Совпадение вкусов</b> в процентах: где сошлись и где разошлись сильнее всего",
+          "«Советует»: что друг оценил на 8+, а у тебя этого нет",
+          "<b>Взять к себе</b>: любая запись друга в один клик попадает в «На будущее» вместе с обложкой",
+          "<b>Совместная рулетка</b>: во что поиграть и что посмотреть вместе из общих списков"]}},
+    {v: "1.2", date: "2026-11-08", title: "Переезд и будущее без ценника", kind: "minor", sec: {
+      n: ["Вся полка из прототипа в Claude перенесена на сайт: 23 записи и 24 картинки"],
+      c: ["В «На будущее» и «Ждать релиз» больше нет цены и выбора Steam/Пиратка: они появляются, когда начинаешь играть",
+          "При старте игры сайт не даст сохранить, пока не выберешь Steam или Пиратку"]}},
+    {v: "1.1", date: "2026-11-08", title: "Бэкапы", kind: "minor", sec: {
+      n: ["<b>Бэкап с картинками</b>: zip с записями, обложками, обоями и скриншотами. Загрузка обратно заливает картинки заново",
+          "<b>Плашка бэкапа</b> в «Ещё»: сколько дней прошло, желтеет через 30 дней",
+          "<b>Автобэкап</b> раз в неделю через GitHub в приватный репозиторий. Заодно не даёт базе уснуть"]}},
+    {v: "1.0", date: "2026-11-07", title: "Релиз: NEXUS выходит в люди", kind: "major", sec: {
+      n: ["Сайт на <b>GitHub Pages</b> с базой <b>Supabase</b>: работает без Claude, с компа и с телефона",
+          "<b>Аккаунты</b>: вход по почте и паролю, у каждого своя полка",
+          "<b>Ник вместо H3RO</b>: каждый пишет свой, он встаёт в логотип и на оценки",
+          "Синхронизация между устройствами в реальном времени",
+          "Можно поставить на экран айфона как приложение"],
+      quote: "H3RO — это я. А теперь у каждого будет своё имя в логотипе."}},
+    // ----- сезон 0: прототип в Claude -----
+    {v: "0.8", season: 0, title: "Большой контентный патч", kind: "proto", sec: {
+      n: ["Дата выхода с точностью до года, квартала, месяца или дня",
+          "Битва игр и кино: одна из двух, пока не останется победитель",
+          "Прогресс сериалов по сериям с кнопкой +1",
+          "Скриншоты, деньги (траты и экономия на пиратке), ачивки, конструктор темы, обои для записей",
+          "Детектор застоя: игры, в которые давно не заходил"]}},
+    {v: "0.7", season: 0, title: "Колесо и цены", kind: "proto", sec: {
+      n: ["Колесо оценки вместо цифр", "Таймер прохождения", "Цены в рублях и тенге с пересчётом",
+          "Медаль за пройденное и кровавый прицел за дроп", "Вставка данных с Кинопоиска", "Быстрая смена статуса"],
+      c: ["Оценку можно менять прямо на странице записи", "Кнопка редактирования стала карандашом"]}},
+    {v: "0.6", season: 0, title: "Обновление «Всё и сразу»", kind: "proto", sec: {
+      n: ["<b>Контракты</b>: обещаешь себе сыграть N часов, иначе красная мишень",
+          "<b>Рулетка</b>: что пройти или посмотреть дальше", "Раздел «На будущее»", "Итоги года", "Стена дропов", "Тир-листы", "Календарь выходов"],
+      c: ["Единая нижняя панель в стиле iOS, микроанимации", "Окна игр стали круглее и темнее"]}},
+    {v: "0.5", season: 0, title: "Календарь", kind: "proto", sec: {
+      n: ["Даты начала и просмотра", "Календарь в стиле Apple с обложками в клетках", "Перетаскивание записей по дням", "Цвет клетки по оценке"]}},
+    {v: "0.4", season: 0, title: "Steam и Пиратка", kind: "proto", sec: {
+      n: ["Разделы Steam и Пиратка с иконками", "Стеклянный фон из размытой обложки в кино"],
+      f: ["Убраны пустые места в сетке"]}},
+    {v: "0.3", season: 0, title: "Форма из Steam", kind: "proto", sec: {
+      n: ["Быстрая вставка текста со страницы Steam: название, описание, жанры, дата, цена",
+          "Сменная обложка с зумом и кадрированием",
+          "Статусы игр: в процессе, пройдено, дроп с причиной"],
+      c: ["Игры в стиле Steam, кино в стиле VOKINO"]}},
+    {v: "0.2", season: 0, title: "H3RO NEXUS", kind: "proto", sec: {
+      n: ["Новое имя: <b>H3RO NEXUS</b>", "Обложки вставляются прямо из буфера обмена", "Вертикальные обложки"],
+      c: ["Фильмы, сериалы и аниме объединены в один раздел", "Окно записи стало подробнее"],
+      r: ["Статус «Хочу» и лишние поля"]}},
+    {v: "0.1", season: 0, title: "Медиаполка", kind: "proto", sec: {
+      n: ["Первая версия: каталог игр, фильмов и сериалов в стиле Steam",
+          "Идея подсмотрена у таблицы друга с рогаликами"],
+      quote: "Нулевой пациент. Собрано H3RO в Claude, когда сайта ещё не существовало."}},
+  ];
+  const PN_LABEL = {n: "Новое", c: "Изменено", f: "Исправлено", r: "Удалено"};
+  const lsGet = k => { try { return localStorage.getItem(k); } catch(e){ return null; } };
+  const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch(e){} };
+  const patchUnseen = () => lsGet("nexus_patch_seen") !== PATCHES[0].v;
+  const patchCard = (p, latest) => `<article class="pn${latest ? " latest" : ""}"><div class="pn-h"><span class="pn-v ${p.kind}">${p.kind === "proto" ? "v" : "Патч "}${esc(p.v)}</span>
+      <div class="pn-t"><b>${esc(p.title)}</b><small>${p.date ? fmtDate(p.date) : "прототип в Claude"}</small></div>${latest && patchUnseen() ? `<span class="pn-new">NEW</span>` : ""}</div>
+      ${Object.entries(PN_LABEL).filter(([k]) => p.sec[k] && p.sec[k].length).map(([k, l]) => `<div class="pn-sec"><h4 class="${k}">${l}</h4><ul>${p.sec[k].map(x => `<li>${x}</li>`).join("")}</ul></div>`).join("")}
+      ${(p.quote || p.sec.quote) ? `<div class="pn-quote">${esc(p.quote || p.sec.quote)}</div>` : ""}</article>`;
+  function renderPatch(){
+    appleHead("Патчноуты", `<button class="a-link" data-go="more">‹ Ещё</button>`);
+    const live = PATCHES.filter(p => p.season == null), proto = PATCHES.filter(p => p.season === 0);
+    $("aMain").innerHTML = `<h1 class="a-h1">Патчноуты</h1><p class="a-sub">Всё, что менялось на сайте, от свежего к старому. Текущая версия: <b>${PATCHES[0].v}</b>.</p>
+      <div class="pn-season">Сезон 1 · сайт</div>${live.map((p, i) => patchCard(p, i === 0)).join("")}
+      <div class="pn-season">Сезон 0 · прототип в Claude</div>${proto.map(p => patchCard(p, false)).join("")}`;
+    if (patchUnseen()){ lsSet("nexus_patch_seen", PATCHES[0].v); }
+  }
+  function patchPopup(){
+    if (!patchUnseen() || !ME) return;
+    if (lsGet("nexus_patch_pop") === PATCHES[0].v) return;
+    lsSet("nexus_patch_pop", PATCHES[0].v);
+    const p = PATCHES[0];
+    const s = openSheet(`<h3>Вышел патч ${esc(p.v)}</h3><p class="sub">${esc(p.title)}</p>
+      <ul style="margin:12px 0 0;padding-left:20px;line-height:1.5">${[...(p.sec.n || []), ...(p.sec.c || [])].slice(0, 5).map(x => `<li>${x}</li>`).join("")}</ul>
+      <div class="acts" style="margin-top:16px"><button class="ib blue" id="pnAll">Все патчноуты</button><button class="ib" id="pnOk">Понятно</button></div>`);
+    s.el.querySelector("#pnOk").onclick = () => s.close();
+    s.el.querySelector("#pnAll").onclick = () => { s.close(); go("patch"); };
+  }
+
   // ================= чип профиля и фоны разделов =================
   let SECBG = null;
   const SEC_NAMES = {games: "Игры", kino: "Кино", calendar: "Календарь", people: "Друзья", more: "Ещё"};
@@ -3314,7 +3448,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
   async function start(user){
     ME = user;
     const {data: prof} = await SB.from("profiles").select("nick,avatar,ava_animal,ava_color").eq("user_id", user.id).maybeSingle();
-    if (prof && prof.nick){ setNick(prof.nick); MEP = prof; } else { await nickSheet(true); MEP = {nick: NICK}; assets = makeBackend(SB, user.id).assets; await avaSheet(true); }
+    if (prof && prof.nick){ setNick(prof.nick); MEP = prof; setTimeout(patchPopup, 1500); } else { lsSet("nexus_patch_seen", PATCHES[0].v); lsSet("nexus_patch_pop", PATCHES[0].v); await nickSheet(true); MEP = {nick: NICK}; assets = makeBackend(SB, user.id).assets; await avaSheet(true); }
     const be = makeBackend(SB, user.id); db = be.db; assets = be.assets; canWrite = !FV;
     const timer = setTimeout(() => toast("Данные пока не подгрузились. Проверь интернет."), 12000);
     db.doc("meta/theme").onSnapshot(d => { theme = d.exists ? d.data() : null; applyTheme(theme); });
