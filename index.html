@@ -690,6 +690,14 @@ body[data-theme="kino"] .rel-box{--rel-bg:rgba(255,255,255,.05);--rel-line:rgba(
 @media (max-width:640px){.rel-list{grid-auto-columns:86%}}
 
 /* ===== плитки «Ещё» в стиле Metro ===== */
+.bk{display:flex;align-items:center;gap:12px;margin-top:18px;padding:12px 12px 12px 14px;border-radius:16px;background:rgba(48,209,88,.10);border:1px solid rgba(48,209,88,.28)}
+.bk.warn{background:rgba(255,159,10,.12);border-color:rgba(255,159,10,.4)}
+.bk-ic{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:15px;background:#30d158;color:#04210d}
+.bk.warn .bk-ic{background:#ff9f0a;color:#2a1700}
+.bk-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.bk-t b{font-size:15px;font-weight:650}.bk-t small{font-size:12.5px;color:var(--c-dim);line-height:1.3}
+.bk .ib{flex:none;white-space:nowrap}
+@media (max-width:520px){.bk{flex-wrap:wrap}.bk .ib{width:100%}}
 .mt-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:22px}
 .mt{position:relative;aspect-ratio:1/1;border:0;border-radius:10px;padding:16px;color:#fff;text-align:left;cursor:pointer;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;transition:transform .25s cubic-bezier(.3,.7,.4,1.3),box-shadow .2s;box-shadow:0 2px 10px rgba(0,0,0,.12)}
 .mt.wide{grid-column:span 2;aspect-ratio:auto}
@@ -852,6 +860,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
 <style>img{max-width:100%}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" defer></script>
 <script>window.supabase || document.write('<script src="https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"><\/script>')</script>
 </head>
 <body>
@@ -1219,6 +1228,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
   ];
   function achList(){ const st = achStats(); return ACH.map(([id,t,d,k,max,c]) => ({id, t, d, c, max, cur: Math.min(max, st[k] || 0), got: (st[k] || 0) >= max})); }
   let achSeen = null, achSaving = false, itemsLoaded = false;
+  let lastBackup = null, autoBackup = null, backupBusy = false;
   async function checkAch(){
     if (!canWrite || !db || achSaving || !itemsLoaded) return;
     const got = achList().filter(a => a.got).map(a => a.id);
@@ -1390,6 +1400,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     const tile = (bg, ic, lb, sub, attr, live, wide) => `<button class="mt${wide ? " wide" : ""}" style="background:${bg}" ${attr}>
       ${live != null ? `<span class="live">${live}</span>` : ""}<span class="ic">${ic}</span><span class="lb">${lb}<small>${sub}</small></span></button>`;
     $("aMain").innerHTML = `<h1 class="a-h1">Ещё</h1><p class="a-sub">${g} ${plural(g,"игра","игры","игр")} и ${k} ${plural(k,"запись","записи","записей")} кино на полке.</p>
+      ${backupBanner()}
       <div class="mt-grid">
         ${tile("linear-gradient(135deg,#e3008c,#5c2d91)", ICON.trophy, `Итоги ${recY}`, "Пройдено, дропнуто, топы и жанры", 'data-go="recap"', `${yearN}<small>за год</small>`, true)}
         ${tile("#e81123", ICON.skull, "Стена дропов", "Всё брошенное", 'data-go="drops"', drops)}
@@ -1561,6 +1572,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     if ((el = pick("[data-ctopen]"))){ const it = items.find(i => i.id === el.dataset.ctopen); if (it) contractSheet(it); return; }
     if ((el = pick("[data-battle]"))){ openBattle(el.dataset.battle); return; }
     if ((el = pick("[data-profile]"))){ if (ME) profileSheet(); return; }
+    if ((el = pick("[data-backup]"))){ runBackup(el); return; }
     if ((el = pick("[data-theme-open]"))){ canWrite ? themeSheet() : toast("Тему может менять только владелец"); return; }
     if ((el = pick("[data-reldate]"))){ e.preventDefault(); relDateSheet(items.find(i => i.id === el.dataset.reldate)); return; }
     if ((el = pick("[data-soon]"))){ soonSheet(items.find(i => i.id === el.dataset.soon)); return; }
@@ -2622,26 +2634,91 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
       inp.addEventListener("keydown", e => { if (e.key === "Enter") ok(); });
     });
   }
+  // ================= бэкап: записи + картинки в одном zip =================
+  const imgIds = it => [it.cover, it.wallpaper, ...(Array.isArray(it.shots) ? it.shots : [])].filter(x => typeof x === "string" && x);
+  const MIME = {png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", webp: "image/webp", gif: "image/gif"};
+  const extMime = p => MIME[(p.split(".").pop() || "").toLowerCase()] || "image/png";
+  const needZip = async () => { for (let i = 0; i < 50 && !window.JSZip; i++) await new Promise(r => setTimeout(r, 100)); if (!window.JSZip) throw new Error("nozip"); };
+  function saveBlob(blob, name){
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+  }
+  async function exportZip(onProg){
+    await needZip();
+    const zip = new JSZip(), ids = [...new Set(items.flatMap(imgIds))];
+    let done = 0, ok = 0, i = 0;
+    const worker = async () => { while (i < ids.length){ const id = ids[i++];
+      try { const r = await fetch(publicUrl(id), {cache: "force-cache"}); if (!r.ok) throw 0; zip.file("media/" + id, await r.blob()); ok++; } catch(e){}
+      done++; onProg && onProg(done, ids.length); } };
+    await Promise.all([worker(), worker(), worker(), worker()]);
+    zip.file("nexus.json", JSON.stringify({nexus: 2, nick: NICK, exportedAt: now(), items, theme}, null, 2));
+    const blob = await zip.generateAsync({type: "blob", compression: "STORE"});
+    saveBlob(blob, `${NICK}-nexus-${today()}.zip`);
+    const info = {at: now(), items: items.length, files: ok, missing: ids.length - ok};
+    lastBackup = info; try { await db.doc("meta/backup").set(info); } catch(e){}
+    return info;
+  }
+  async function runBackup(btn){
+    if (backupBusy || !ME) return; backupBusy = true;
+    const label = btn ? btn.textContent : "";
+    try {
+      const info = await exportZip((d, n) => { if (btn) btn.textContent = `Картинки ${d}/${n}…`; });
+      toast(`Бэкап готов: ${info.items} ${plural(info.items, "запись", "записи", "записей")}, ${info.files} ${plural(info.files, "картинка", "картинки", "картинок")}` + (info.missing ? `. Не скачалось: ${info.missing}` : ""));
+    } catch(e){ toast(e && e.message === "nozip" ? "Не загрузился модуль архива. Обнови страницу" : "Бэкап не получился"); }
+    backupBusy = false; if (btn) btn.textContent = label; if (route === "more") render();
+  }
+  async function importBackup(f, onProg){
+    let j, zip = null;
+    if (/\.zip$/i.test(f.name) || /zip/.test(f.type)){ await needZip(); zip = await JSZip.loadAsync(f); const jf = zip.file("nexus.json"); if (!jf) throw 0; j = JSON.parse(await jf.async("string")); }
+    else j = JSON.parse(await f.text());
+    const list = Array.isArray(j) ? j : j && j.items; if (!Array.isArray(list)) throw 0;
+    const k = i => (i.title || "").toLowerCase() + "|" + i.type, have = new Set(items.map(k));
+    const map = {}, mine = ME.id + "/";
+    const remap = async id => {
+      if (typeof id !== "string" || !id) return null; if (id in map) return map[id];
+      let nid = null; const zf = zip && zip.file("media/" + id);
+      if (zf){ try { const type = extMime(id); const b = await zf.async("blob"); nid = (await assets.upload(new Blob([b], {type}), {type})).id; } catch(e){} }
+      else if (id.startsWith(mine)) nid = id; // картинка ещё лежит на сервере
+      return map[id] = nid;
+    };
+    let n = 0, skip = 0, pics = 0, idx = 0;
+    for (const raw of list){
+      idx++; onProg && onProg(idx, list.length);
+      const {id, ...body} = raw || {}; if (!body.title){ continue; } if (have.has(k(body))){ skip++; continue; }
+      if (body.cover){ body.cover = await remap(body.cover); if (body.cover) pics++; else { delete body.cover; delete body.coverPos; } }
+      if (body.wallpaper){ body.wallpaper = await remap(body.wallpaper); if (body.wallpaper) pics++; else delete body.wallpaper; }
+      if (Array.isArray(body.shots)){ const out = []; for (const sId of body.shots){ const x = await remap(sId); if (x){ out.push(x); pics++; } } body.shots = out; } else delete body.shots;
+      await db.collection("items").add(body); have.add(k(body)); n++;
+    }
+    return {n, skip, pics};
+  }
+  function backupBanner(){
+    if (!ME) return "";
+    const at = [lastBackup && lastBackup.at, autoBackup && autoBackup.at].filter(Boolean).sort().pop();
+    const days = at ? Math.max(0, Math.floor((Date.now() - Date.parse(at)) / 864e5)) : null;
+    const warn = days == null || days >= 30;
+    const auto = at && autoBackup && autoBackup.at === at;
+    const when = days == null ? "Бэкапа ещё не было" : days === 0 ? "Бэкап сделан сегодня" : `Последний бэкап ${days} ${plural(days, "день", "дня", "дней")} назад`;
+    const sub = days == null ? "Скачай архив: записи, обложки, обои и скриншоты в одном файле"
+      : warn ? "Давно не сохранялся. Скачай свежий архив, чтобы ничего не потерять"
+      : auto ? "Автоматический, на GitHub. Можно скачать и свой архив" : "Записи и картинки сохранены в архив";
+    return `<div class="bk${warn ? " warn" : ""}"><span class="bk-ic">${warn ? "!" : "✓"}</span><div class="bk-t"><b>${when}</b><small>${sub}</small></div>
+      <button class="ib${warn ? " blue" : ""}" data-backup="1">${backupBusy ? "Собираю…" : "Скачать бэкап"}</button></div>`;
+  }
+
   function profileSheet(){
     const s = openSheet(`<h3>Профиль</h3><p class="sub">${esc(ME.email || "")}</p>
       <button class="ib full" id="pfNick">Ник: <b style="margin-left:6px">${esc(NICK)}</b></button>
-      <div class="acts" style="margin-top:12px"><button class="ib" id="pfExp">Скачать бэкап</button><label class="ib" for="pfImpF">Загрузить бэкап</label><input type="file" id="pfImpF" accept="application/json,.json" hidden></div>
-      <p class="sub" style="margin:12px 0 0">Бэкап — это файл со всеми записями. Обложки и скриншоты в него не входят, они хранятся на сервере.</p>
+      <div class="acts" style="margin-top:12px"><button class="ib" id="pfExp">Скачать бэкап</button><label class="ib" for="pfImpF">Загрузить бэкап</label><input type="file" id="pfImpF" accept=".zip,.json,application/zip,application/json" hidden></div>
+      <p class="sub" style="margin:12px 0 0">Бэкап — это zip-архив: все записи, обложки, обои и скриншоты. При загрузке записи, которые уже есть на полке, пропускаются. Старые бэкапы .json тоже подходят.</p>
       <div class="acts" style="margin-top:16px"><button class="ib red" id="pfOut">Выйти из аккаунта</button></div>`);
     s.el.querySelector("#pfNick").onclick = () => { s.close(); nickSheet(false); };
-    s.el.querySelector("#pfExp").onclick = () => {
-      const blob = new Blob([JSON.stringify({nexus: 1, nick: NICK, exportedAt: now(), items}, null, 2)], {type: "application/json"});
-      const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `${NICK}-nexus-${today()}.json`; document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(() => URL.revokeObjectURL(a.href), 2000);
-    };
+    s.el.querySelector("#pfExp").onclick = e => runBackup(e.currentTarget);
     s.el.querySelector("#pfImpF").onchange = async e => {
-      const f = e.target.files[0]; if (!f) return;
-      try { const j = JSON.parse(await f.text()); const list = Array.isArray(j) ? j : j.items; if (!Array.isArray(list)) throw 0;
-        const have = new Set(items.map(i => (i.title || "").toLowerCase() + "|" + i.type)); let n = 0;
-        for (const raw of list){ const {id, ...body} = raw; if (!body.title) continue; const key = body.title.toLowerCase() + "|" + body.type; if (have.has(key)) continue;
-          delete body.cover; delete body.coverPos; delete body.shots; delete body.wallpaper; await db.collection("items").add(body); have.add(key); n++; }
-        toast(`Загружено записей: ${n}`); s.close();
-      } catch(err){ toast("Не похоже на бэкап NEXUS"); }
+      const f = e.target.files[0]; if (!f) return; const lb = s.el.querySelector('label[for="pfImpF"]');
+      try { const r = await importBackup(f, (i, n) => { lb.textContent = `Загружаю ${i}/${n}…`; });
+        toast(`Загружено записей: ${r.n}` + (r.pics ? `, картинок: ${r.pics}` : "") + (r.skip ? `. Уже были: ${r.skip}` : "")); s.close();
+      } catch(err){ lb.textContent = "Загрузить бэкап"; toast("Не похоже на бэкап NEXUS"); }
     };
     s.el.querySelector("#pfOut").onclick = async () => { await SB.auth.signOut(); location.reload(); };
   }
@@ -2739,6 +2816,8 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     const be = makeBackend(SB, user.id); db = be.db; assets = be.assets; canWrite = true;
     const timer = setTimeout(() => toast("Данные пока не подгрузились. Проверь интернет."), 12000);
     db.doc("meta/theme").onSnapshot(d => { theme = d.exists ? d.data() : null; applyTheme(theme); });
+    Promise.all(["backup", "autobackup"].map(x => db.doc("meta/" + x).get().then(d => d.exists ? d.data() : null).catch(() => null)))
+      .then(([b, a]) => { lastBackup = b; autoBackup = a; if (route === "more") render(); });
     db.collection("items").onSnapshot(snap => {
       if (!snap.metadata.fromCache){ clearTimeout(timer); itemsLoaded = true; }
       items = snap.docs.map(d => ({id: d.id, ...d.data()}));
