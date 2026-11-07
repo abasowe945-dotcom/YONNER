@@ -2234,9 +2234,8 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
   function openKino(it){
     const st = kSt(it.status), gs = genres(it), cast = (it.cast || "").split(",").map(s => s.trim()).filter(Boolean);
     const meta = [it.year, KTYPES[it.type], gs.slice(0,3).join(", "), it.duration].filter(Boolean);
-    const facts = [["Год", it.year ? it.year + (it.seasons ? ` (${it.seasons} ${plural(it.seasons, "сезон", "сезона", "сезонов")})` : "") : null], ["Платформа", it.platform], ["Страна", it.country], ["Режиссёр", it.director], ["Сценарий", it.writer],
-      ["Продюсер", it.producer], ["Оператор", it.operator], ["Композитор", it.composer], ["Художник", it.designer], [isSeries(it) ? "Время серии" : "Длительность", it.duration],
-      ["Премьера в мире", it.premiereWorld], ["Премьера в России", it.premiereRu], ["Цифровой релиз", it.digital], ["Бюджет", it.budget], ["Сборы в мире", it.boxWorld],
+    const facts = [["Год", it.year], ["Страна", it.country], ["Режиссёр", it.director], ["Сценарий", it.writer], ["Длительность", it.duration],
+      ["Премьера в мире", it.premiereWorld], ["Премьера в России", it.premiereRu], ["Бюджет", it.budget], ["Сборы в мире", it.boxWorld],
       ["Моя оценка", typeof it.rating === "number" ? `${num1(it.rating)} / 10` : null], ["Тип", KTYPES[it.type]], [kinoDateLabel(it), fmtDate(itemDate(it))]].filter(f => f[1]);
     showView(`
       <div class="k-hero">
@@ -2277,17 +2276,14 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
 
   // ================= разбор текста Кинопоиска =================
   function parseKP(txt){
-    // ссылки вида [текст](url) -> текст, маркеры списков "* " убираем
-    txt = String(txt || "").replace(/\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/^[ \t]*[*•-][ \t]+/gm, "").replace(/^[ \t]*[*•][ \t]*$/gm, "");
     const lines = txt.split(/\r?\n/).map(l => l.replace(/[ \t ]+/g, " ").trim()).filter(Boolean), out = {};
     const LBL = {"год производства":"year","страна":"country","жанр":"genre","слоган":"tagline","режиссер":"director","режиссёр":"director","сценарий":"writer","продюсер":"producer",
-      "оператор":"operator","композитор":"composer","бюджет":"budget","сборы в мире":"boxWorld","премьера в мире":"premiereWorld","премьера в россии":"premiereRu","время серии":"duration","время":"duration","возраст":"age","платформа":"platform","художник":"designer","цифровой релиз":"digital"};
+      "оператор":"operator","композитор":"composer","бюджет":"budget","сборы в мире":"boxWorld","премьера в мире":"premiereWorld","премьера в россии":"premiereRu","время":"duration","возраст":"age"};
     const KEYS = Object.keys(LBL).sort((a,b) => b.length - a.length);
-    const IGN = ["монтаж","сборы в сша","сборы в россии","рейтинг mpaa","добавили в","и ждут премьеры","о фильме","о сериале","в главных ролях","роли дублировали","сиквелы","трейлер","добавить в папку","буду смотреть","оценить","рейтинг фильма","в списках","обзор","нашли ошибку","добавить инфо"];
+    const IGN = ["художник","монтаж","сборы в сша","сборы в россии","цифровой релиз","рейтинг mpaa","о фильме","о сериале","в главных ролях","роли дублировали","сиквелы","трейлер","добавить в папку","буду смотреть","оценить","рейтинг фильма","в списках","обзор","нашли ошибку","добавить инфо"];
     const labelOf = l => { const low = l.toLowerCase(); for (const k of KEYS) if (low === k || low.startsWith(k + " ") || low.startsWith(k + ":")) return [k, l.slice(k.length).replace(/^[:\s]+/, "")]; return null; };
     const isIgn = l => { const low = l.toLowerCase(); return IGN.some(k => low.startsWith(k)); };
     const clean = (v, key) => {
-      if (/^[—–-]+$/.test(v.trim())) return null;
       v = v.replace(/,?\s*(\.\.\.|…)\s*$/, "").replace(/\s+слова$/i, "").replace(/\s+сборы$/i, "").trim();
       if (key === "boxWorld" && v.includes("=")) v = v.split("=").pop().trim();
       if (key === "premiereWorld" || key === "premiereRu") v = v.split(/,\s*[«"]/)[0].replace(/,\s*$/, "").trim();
@@ -2300,9 +2296,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
       let v = m[1]; if (!v && lines[i+1] && !labelOf(lines[i+1]) && !isIgn(lines[i+1])) v = lines[i+1];
       if (v && out[LBL[m[0]]] == null){ const c = clean(v, LBL[m[0]]); if (c) out[LBL[m[0]]] = c; } });
     const head = lines.slice(0, Math.min(firstLabel, 12)).filter(l => !isIgn(l));
-    if (head[0]){ const m = head[0].match(/^(.+?)\s*\((?:(мини-сериал|сериал|мультсериал|аниме-сериал|аниме|мультфильм)\s*,?\s*)?(\d{4})(?:\s*[–-]\s*(?:\d{4}|\.\.\.|…))?\s*\)\s*$/i);
-      out.title = m ? m[1] : head[0]; if (m && !out.year) out.year = +m[3];
-      if (m && m[2]) out.kind = /аниме/i.test(m[2]) ? "anime" : /мультфильм/i.test(m[2]) ? "movie" : "series"; }
+    if (head[0]){ const m = head[0].match(/^(.+?)\s*\((\d{4})(?:\s*[–-]\s*(?:\d{4}|\.\.\.))?\)\s*$/); out.title = m ? m[1] : head[0]; if (m && !out.year) out.year = +m[2]; }
     if (head[1]){ const am = head[1].match(/^(.*?)\s*(\d{1,2}\+)\s*$/), name = am ? am[1] : head[1];
       if (am && !out.age) out.age = am[2];
       if (/[A-Za-z]/.test(name) && name.length < 80 && !/\d[.,]\d/.test(name)) out.originalTitle = name; }
@@ -2527,8 +2521,8 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
       let st = it.status === "wish" ? "future" : (it.status || "played");
       const watchedSt = x => x === "done" || x === "played";
       const kDate = watchedSt(st) ? (it.date || itemDate(it) || today()) : "";
-      const KPF = [["platform","Платформа"],["country","Страна"],["tagline","Слоган"],["director","Режиссёр"],["writer","Сценарий"],["producer","Продюсер"],["operator","Оператор"],["composer","Композитор"],["designer","Художник"],
-        ["budget","Бюджет"],["boxWorld","Сборы в мире"],["premiereWorld","Премьера в мире"],["premiereRu","Премьера в России"],["digital","Цифровой релиз"],["duration","Время / время серии"],["age","Возраст"],["kpRating","Рейтинг Кинопоиска"]];
+      const KPF = [["country","Страна"],["director","Режиссёр"],["writer","Сценарий"],["producer","Продюсер"],["operator","Оператор"],["composer","Композитор"],["duration","Время"],["age","Возраст"],
+        ["tagline","Слоган"],["budget","Бюджет"],["boxWorld","Сборы в мире"],["premiereWorld","Премьера в мире"],["premiereRu","Премьера в России"],["kpRating","Рейтинг Кинопоиска"]];
       showView(`
         <div class="k-form">
           <div>${posterBox()}</div>
@@ -2537,7 +2531,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
             ${lock ? `<p style="margin:0;color:var(--k-dim);text-transform:none;letter-spacing:0">${lock === "future" ? "Попадёт в «На будущее» и в пул рулетки." : "Попадёт в календарь выходов. Дата премьеры подтянется из Кинопоиска."}</p>` : ""}
             <div class="k-quick"><p><b>По ссылке с Кинопоиска.</b> Вставь ссылку на фильм или сериал, и подтянутся название, тип, год, жанры, описание, режиссёр, актёры, сезоны, премьера и постер.</p>
               <div class="s-link"><input class="k-in" id="f_url" inputmode="url" placeholder="kinopoisk.ru/film/301/"><button type="button" class="k-btn white sm" id="f_urlGo">Заполнить</button></div>
-              <p style="margin-top:12px"><b>Или вручную.</b> Выдели на странице Кинопоиска всё от названия до описания (вместе с блоком «О фильме» / «О сериале» и актёрами), скопируй и вставь сюда. Ссылки и списки можно не чистить.</p>
+              <p style="margin-top:12px"><b>Или вручную.</b> Выдели на странице всё от названия до блока «О фильме», скопируй и вставь сюда.</p>
               <textarea class="k-in" id="f_quick" style="min-height:70px" placeholder="Вставь сюда текст со страницы Кинопоиска"></textarea></div>
             <div class="k-two">
               <label>Название<input class="k-in" id="f_title" required value="${esc(it.title||"")}"></label>
@@ -2557,7 +2551,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
             <label>Жанры через запятую<input class="k-in" id="f_genre" value="${esc(it.genre||"")}"></label>
             <label>Коротко<input class="k-in" id="f_short" value="${esc(it.short||"")}"></label>
             <label>Описание<textarea class="k-in" id="f_desc">${esc(it.desc||"")}</textarea></label>
-            <details class="k-more" id="kMore" ${KPF.some(([k]) => it[k]) || it.cast ? "open" : ""}><summary>О фильме: платформа, страна, режиссёр, сценарий, премьеры, актёры</summary>
+            <details class="k-more" id="kMore" ${KPF.some(([k]) => it[k]) || it.cast ? "open" : ""}><summary>Подробности: режиссёр, страна, сборы, актёры</summary>
               <div class="k-two">${KPF.map(([k,l]) => `<label>${l}<input class="k-in" id="f_${k}" value="${esc(it[k] ?? "")}"></label>`).join("")}</div>
               <label style="margin-top:14px">В главных ролях<textarea class="k-in" id="f_cast" style="min-height:70px" placeholder="через запятую">${esc(it.cast||"")}</textarea></label>
             </details>
@@ -2605,8 +2599,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
         const r = parseKP($("f_quick").value), got = [];
         const NAMES = {title:"название",originalTitle:"оригинал",year:"год",genre:"жанры",short:"коротко",desc:"описание",cast:"актёров"};
         if (r.genre) r.genre = normGenres(r.genre, false);
-        if (r.kind && !$("f_type").dataset.touched){ $("f_type").value = r.kind; serToggle(); }
-        else if ((r.seasons || r.epTotal) && !$("f_type").dataset.touched){ $("f_type").value = "series"; serToggle(); }
+        if ((r.seasons || r.epTotal) && !$("f_type").dataset.touched){ $("f_type").value = "series"; serToggle(); }
         ["title","originalTitle","year","genre","short","desc","cast","seasons","epTotal",...KPF.map(x => x[0])].forEach(k => { if (r[k] != null && $("f_" + k)){ $("f_" + k).value = r[k]; if (NAMES[k]) got.push(NAMES[k]); } });
         const extra = KPF.filter(([k]) => r[k] != null).length;
         if (extra){ $("kMore").open = true; got.push(`${extra} ${plural(extra,"деталь","детали","деталей")}`); }
@@ -3031,14 +3024,11 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
   // ================= патчноуты =================
   // Новые версии добавляются В НАЧАЛО списка. n — новое, c — изменено, f — исправлено, r — удалено.
   const PATCHES = [
-    {v: "2.0", date: "2026-11-08", title: "Кинопоиск и пароли", kind: "minor", sec: {
-      n: ["Вставка текста с Кинопоиска понимает страницу целиком: ссылки, списки актёров, сериалы с сезонами. Скопируй от названия до описания и вставь",
-          "Новые поля фильма как на Кинопоиске: платформа, художник, цифровой релиз, время серии",
-          "<b>Глазик</b> в поле пароля: можно посмотреть, что ввёл",
+    {v: "2.0", date: "2026-11-08", title: "Пароли", kind: "minor", sec: {
+      n: ["<b>Глазик</b> в поле пароля: можно посмотреть, что ввёл",
           "<b>Забыли пароль?</b> на экране входа: письмо со ссылкой на новый пароль",
           "«Сменить пароль» в профиле",
-          "При регистрации и смене пароль вводится два раза, сайт проверяет, что они совпадают, и предупреждает о русской раскладке"],
-      c: ["Страница фильма показывает факты в порядке Кинопоиска: год с сезонами, платформа, страна, режиссёр, сценарий, продюсер, оператор, композитор, художник, премьеры"]}},
+          "При регистрации и смене пароль вводится два раза, сайт проверяет, что они совпадают, и предупреждает о русской раскладке"]}},
     {v: "1.9", date: "2026-11-08", title: "Удобные страницы", kind: "minor", sec: {
       n: ["Логотип NEXUS в шапке светится при наведении и ведёт на главную",
           "Картинку для фона раздела и аватарки можно перетащить или вставить через Ctrl+V. Фон можно бросить прямо на плитку раздела в профиле",
