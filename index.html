@@ -534,6 +534,42 @@ body[data-theme="cal"] .seg{--seg-bg:var(--c-cell-out);--seg-fg:var(--c-fg);--se
 .cr-box.spin .poster{transform:scale(.94)}
 .cr-box.win .poster{animation:crWin .5s cubic-bezier(.3,.7,.4,1.5)}
 @keyframes crWin{0%{transform:scale(.8)}100%{transform:scale(1)}}
+.top-pills{display:flex;gap:8px;flex-wrap:wrap}
+.pill-btn{--pill-bg:#1c1c1e;--pill-ring:linear-gradient(135deg,#7f5cff,#00c2ff);display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 16px 0 12px;border-radius:999px;border:1.5px solid transparent;
+  background:linear-gradient(var(--pill-bg),var(--pill-bg)) padding-box,var(--pill-ring) border-box;color:inherit;font:600 14px/1 var(--ios);cursor:pointer;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.18);transition:transform .15s cubic-bezier(.3,.7,.4,1.5),box-shadow .2s}
+.pill-btn:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(127,92,255,.28)}
+.pill-btn:active{transform:scale(.96)}
+.pill-btn svg{width:18px;height:18px;flex:none}
+.pill-btn.hot{--pill-ring:linear-gradient(135deg,#ff3b30,#ff9f0a,#ffd60a)}
+.pill-btn.hot:hover{box-shadow:0 6px 22px rgba(255,120,40,.3)}
+body[data-theme="games"] .pill-btn{--pill-bg:var(--s-panel2)}
+body[data-theme="kino"] .pill-btn{--pill-bg:var(--k-bg2)}
+body[data-theme="cal"] .pill-btn{--pill-bg:var(--c-cell)}
+.me-slot{margin-left:auto;display:flex}
+.k-top-in .me-slot,.a-top-in .me-slot{margin-left:0}
+.me-chip{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 14px 0 4px;border-radius:999px;border:1px solid rgba(128,128,128,.28);background:rgba(128,128,128,.12);color:inherit;font:600 14px/1 var(--ios);cursor:pointer;max-width:190px;transition:background .15s}
+.me-chip:hover{background:rgba(128,128,128,.22)}
+.me-chip .fr-ava{width:30px;height:30px;font-size:13px}
+.me-chip .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.s-top-in .me-slot{margin-left:0}
+.s-search,.k-search{flex-basis:120px!important}
+@media (max-width:1440px){.me-chip{padding:0 4px}.me-chip .nm{display:none}}
+@media (max-width:1380px){.k-clock{display:none}}
+@media (max-width:620px){.me-chip{padding:0 4px}.me-chip .nm{display:none}.pill-btn{height:34px;padding:0 12px 0 10px;font-size:13px}}
+.sec-bg{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.sec-bg i{position:absolute;inset:-40px;background-size:cover;background-position:center}
+.sec-bg::after{content:"";position:absolute;inset:0;background:var(--sb-ov,#000);opacity:var(--sb-dim,.6)}
+body.has-secbg{background:transparent!important}
+body[data-theme="games"] .sec-bg{--sb-ov:var(--s-bg)} body[data-theme="kino"] .sec-bg{--sb-ov:var(--k-bg)} body[data-theme="cal"] .sec-bg{--sb-ov:var(--c-bg)}
+.sb-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:8px}
+.sb-grid button{border:1px solid rgba(255,255,255,.14);border-radius:12px;aspect-ratio:3/4;background:#2c2c2e center/cover;color:#fff;font:600 11.5px/1.1 var(--ios);display:flex;align-items:flex-end;justify-content:center;padding:6px 4px;cursor:pointer;text-shadow:0 1px 4px rgba(0,0,0,.8);position:relative;overflow:hidden}
+.sb-grid button.on::before{content:"";position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:#30d158}
+.sb-prev{position:relative;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#2c2c2e;margin:6px 0 12px}
+.sb-prev i{position:absolute;inset:-30px;background:center/cover}
+.sb-prev b{position:absolute;inset:0;background:#000}
+.sb-prev span{position:absolute;inset:0;display:grid;place-items:center;color:#8e8e93;font-size:14px}
+.sb-rng{display:grid;grid-template-columns:110px 1fr 44px;align-items:center;gap:10px;margin-top:8px;font-size:14px}
+.sb-rng input{width:100%}
 .dr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:18px;margin-top:20px}
 .dr{border:0;background:none;padding:0;text-align:left;color:inherit;cursor:pointer}
 .dr .poster{border-radius:16px;background:#2c2c2e}
@@ -934,6 +970,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
 <script>window.supabase || document.write('<script src="https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"><\/script>')</script>
 </head>
 <body>
+<div class="sec-bg" id="secBg" hidden><i></i></div>
 
 
 <!-- ======== ИГРЫ ======== -->
@@ -943,8 +980,8 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     <div class="seg" id="gSeg"></div>
     <label class="s-search"><input id="qS" type="search" placeholder="поиск по играм" aria-label="Поиск игр">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.6-4.6"/></svg></label>
-    <button class="s-btn dark" id="tierS">Тир-лист</button>
-    <button class="s-btn" id="addS" hidden>+ Добавить</button>
+    <div class="top-pills"><button class="pill-btn" id="tierS">Тир-лист</button><button class="pill-btn hot" data-roul="games" id="rlTopS">Колесо фортуны</button></div>
+    <span class="me-slot"></span>
   </div></header>
   <main class="s-main" id="sMain"></main>
 </div>
@@ -956,16 +993,16 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     <div class="seg" id="kSeg"></div>
     <label class="k-search"><input id="qK" type="search" placeholder="Поиск..." aria-label="Поиск кино">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.6-4.6"/></svg></label>
-    <button class="k-btn sm" id="tierK">Тир-лист</button>
-    <button class="k-btn white sm" id="addK" hidden>+ Добавить</button>
+    <div class="top-pills"><button class="pill-btn" id="tierK">Тир-лист</button><button class="pill-btn hot" data-roul="kino" id="rlTopK">Колесо фортуны</button></div>
     <div class="k-clock" id="clock"></div>
+    <span class="me-slot"></span>
   </div></header>
   <main class="k-main" id="kMain"></main>
 </div>
 
 <!-- ======== APPLE-СТРАНИЦЫ ======== -->
 <div class="world" id="wApple" hidden>
-  <header class="a-top"><div class="a-top-in"><div class="a-logo"><span class="nick-t">H3RO</span> NEXUS <span id="aCrumb"></span></div><div style="margin-left:auto;display:flex;gap:8px" id="aTopActs"></div></div></header>
+  <header class="a-top"><div class="a-top-in"><div class="a-logo"><span class="nick-t">H3RO</span> NEXUS <span id="aCrumb"></span></div><div style="margin-left:auto;display:flex;gap:8px" id="aTopActs"></div><span class="me-slot"></span></div></header>
   <main class="a-main" id="aMain"></main>
 </div>
 
@@ -1405,7 +1442,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
       ${now.length ? `<div class="s-shelf-h">В процессе</div><div class="s-row">${now.map(gCard).join("")}</div>` : ""}
       <div class="s-bar"><div class="seg">${[["","Все",pool.length],["playing","В процессе",cnt("playing")],["endless","Бесконечные",cnt("endless")],["done","Пройдено",cnt("done")],["dropped","Дроп",cnt("dropped")]]
         .map(([v,l,n]) => `<button data-gf="${v}" aria-pressed="${gF===v}">${l}<small>${n}</small></button>`).join("")}</div>
-        <select class="s-sel" id="gSort" aria-label="Сортировка">${sortOpts(gSort)}</select></div>
+        <span style="display:flex;gap:10px;align-items:center"><select class="s-sel" id="gSort" aria-label="Сортировка">${sortOpts(gSort)}</select>${canWrite ? `<button class="s-btn" data-addk="games">${ICON.plus}Добавить</button>` : ""}</span></div>
       <section class="s-grid">${list.length ? list.map(gCard).join("") :
         `<div class="s-empty"><b>${pool.length ? "Ничего не найдено" : lib.length ? "В этом разделе пусто" : "Библиотека пуста"}</b>${pool.length ? "Сбрось фильтр или поиск." : lib.length ? "Укажи источник игры через «Изменить»." : "Жми «+ Добавить» и вставь данные со страницы игры в Steam."}</div>`}</section>`;
     $("gSort").onchange = e => { gSort = e.target.value; renderGames(); };
@@ -1440,7 +1477,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
       ${nowW.length ? `<div class="k-label">Смотрю сейчас</div><div class="k-row">${nowW.map(kCard).join("")}</div>` : ""}
       <div class="k-filters"><button class="k-chipb" data-kf="" aria-pressed="${kF===""}">Все</button>${KORDER.filter(s => lib.some(i => i.status === s)).map(s => `<button class="k-chipb" data-kf="${s}" aria-pressed="${kF===s}">${KSTATUS[s].l}</button>`).join("")}
         <span class="k-sepv"></span><button class="k-chipb" data-kt="" aria-pressed="${kT===""}">Всё кино</button>${[["movie","Фильмы"],["series","Сериалы"],["anime","Аниме"]].map(([k,l]) => `<button class="k-chipb" data-kt="${k}" aria-pressed="${kT===k}">${l}</button>`).join("")}
-        <span class="k-sepv"></span><select class="k-sel" id="kSort" aria-label="Сортировка">${sortOpts(kSort)}</select><span class="k-count">${lib.length ? `${list.length} из ${lib.length}` : ""}</span></div>
+        <span class="k-sepv"></span><select class="k-sel" id="kSort" aria-label="Сортировка">${sortOpts(kSort)}</select><span class="k-count">${lib.length ? `${list.length} из ${lib.length}` : ""}</span>${canWrite ? `<button class="k-btn white sm" data-addk="kino" style="margin-left:auto">${ICON.plus}Добавить</button>` : ""}</div>
       ${list.length ? [["movie","Фильмы"],["series","Сериалы"],["anime","Аниме"]].map(([t,l]) => { const part = list.filter(i => (i.type || "movie") === t); return part.length ? `<div class="k-sec"><h2>${l}</h2><span>${part.length}</span><i></i></div><section class="k-grid">${part.map(kCard).join("")}</section>` : ""; }).join("")
         : `<section class="k-grid"><div class="k-empty"><b>${lib.length ? "Ничего не нашлось" : "Здесь пока пусто"}</b>${lib.length ? "Сбрось фильтры или поиск." : "Жми «+ Добавить»."}</div></section>`}`;
     $("kSort").onchange = e => { kSort = e.target.value; renderKino(); };
@@ -1613,7 +1650,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     if (r.w === "wGames") renderGames();
     else if (r.w === "wKino") renderKino();
     else ({soon:renderSoon, calendar:renderCal, more:renderMore, recap:renderRecap, drops:renderDrops, money:renderMoney, ach:renderAch, people:renderPeople, user:renderUser})[route]();
-    $("addS").hidden = !canWrite || route !== "games"; $("addK").hidden = !canWrite || route !== "kino";
+    fillMeSlots(); applySecBg();
     renderTabbar();
     if (tierKind) renderTiers();
   }
@@ -1654,6 +1691,8 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     if ((el = pick("[data-battle]"))){ openBattle(el.dataset.battle); return; }
     if ((el = pick("[data-profile]"))){ if (ME) profileSheet(); return; }
     if ((el = pick("[data-backup]"))){ runBackup(el); return; }
+    if ((el = pick("[data-addk]"))){ openForm(null, el.dataset.addk); return; }
+    if ((el = pick("[data-secbg]"))){ bgSheet(el.dataset.secbg); return; }
     if ((el = pick("[data-user]"))){ go("user:" + el.dataset.user); return; }
     if ((el = pick("[data-fi]"))){ friendItemSheet(el.dataset.fi); return; }
     if ((el = pick("[data-upk]"))){ upKind = el.dataset.upk; renderUser(); return; }
@@ -1669,8 +1708,8 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
   $("qK").addEventListener("input", renderKino);
   $("tierS").onclick = () => openTiers("games");
   $("tierK").onclick = () => openTiers("kino");
-  $("addS").onclick = () => openForm(null, "games");
-  $("addK").onclick = () => openForm(null, "kino");
+  $("tierS").innerHTML = ICON.tiers + "<span>Тир-лист</span>"; $("tierK").innerHTML = ICON.tiers + "<span>Тир-лист</span>";
+  $("rlTopS").innerHTML = ICON.dice + "<span>Колесо фортуны</span>"; $("rlTopK").innerHTML = ICON.dice + "<span>Колесо фортуны</span>";
 
   // свайп между разделами
   (() => {
@@ -2724,6 +2763,50 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
       inp.addEventListener("keydown", e => { if (e.key === "Enter") ok(); });
     });
   }
+  // ================= чип профиля и фоны разделов =================
+  let SECBG = null;
+  const SEC_NAMES = {games: "Игры", kino: "Кино", calendar: "Календарь", people: "Друзья", more: "Ещё"};
+  function fillMeSlots(){
+    const html = ME ? `<button class="me-chip" data-profile="1" title="Профиль и настройки">${avaHTML(myProf(), "sm")}<span class="nm">${esc(NICK)}</span></button>` : "";
+    document.querySelectorAll(".me-slot").forEach(e => { if (e.innerHTML !== html) e.innerHTML = html; });
+  }
+  function applySecBg(){
+    const el = $("secBg"); if (!el) return;
+    const tab = (ROUTES[route] || ROUTES.games).tab, c = SECBG && SECBG[tab];
+    if (!c || !c.img){ el.hidden = true; document.body.classList.remove("has-secbg"); return; }
+    const url = publicUrl(c.img), i = el.querySelector("i");
+    if (i.dataset.u !== url){ i.style.backgroundImage = `url('${url}')`; i.dataset.u = url; }
+    i.style.filter = `blur(${c.blur ?? 0}px)`; el.style.setProperty("--sb-dim", (c.dim ?? 55) / 100);
+    el.hidden = false; document.body.classList.add("has-secbg");
+  }
+  function bgSheet(sec){
+    if (!ME || !db) return;
+    const cur = (SECBG && SECBG[sec]) || {};
+    let file = null, img = cur.img || null, blur = cur.blur ?? 0, dim = cur.dim ?? 55;
+    const s = openSheet(`<h3>Фон: ${esc(SEC_NAMES[sec] || sec)}</h3><p class="sub">Картинка встанет под весь раздел. Затемнение помогает читать текст поверх.</p>
+      <div class="sb-prev" id="sbP"><i></i><b></b><span>Без фона</span></div>
+      <div class="acts"><label class="ib" for="sbF">Выбрать картинку</label><input type="file" id="sbF" accept="image/*" hidden><button class="ib red" id="sbRm">Убрать фон</button></div>
+      <label class="sb-rng">Размытие<input type="range" id="sbB" min="0" max="30" value="${blur}"><span id="sbBv"></span></label>
+      <label class="sb-rng">Затемнение<input type="range" id="sbD" min="0" max="90" value="${dim}"><span id="sbDv"></span></label>
+      <div class="acts" style="margin-top:16px"><button class="ib blue" id="sbOk">Сохранить</button><button class="ib" id="sbNo">Отмена</button></div>`);
+    const q = x => s.el.querySelector(x);
+    const draw = () => { const u = file ? URL.createObjectURL(file) : img ? publicUrl(img) : "";
+      q("#sbP i").style.backgroundImage = u ? `url('${u}')` : "none"; q("#sbP i").style.filter = `blur(${blur * .5}px)`;
+      q("#sbP b").style.opacity = u ? dim / 100 : 0; q("#sbP span").hidden = !!u; q("#sbRm").hidden = !u;
+      q("#sbBv").textContent = blur + "px"; q("#sbDv").textContent = dim + "%"; };
+    q("#sbF").onchange = e => { const f = e.target.files[0]; if (f){ file = f; draw(); } };
+    q("#sbB").oninput = e => { blur = +e.target.value; draw(); };
+    q("#sbD").oninput = e => { dim = +e.target.value; draw(); };
+    q("#sbRm").onclick = () => { file = null; img = null; draw(); };
+    q("#sbNo").onclick = () => s.close();
+    q("#sbOk").onclick = async () => { const b = q("#sbOk"); b.disabled = true; b.textContent = "Сохраняю…";
+      try { if (file) img = await upload(file);
+        const next = {...(SECBG || {})}; if (img) next[sec] = {img, blur, dim}; else delete next[sec];
+        await db.doc("meta/bg").set(next); SECBG = next; applySecBg(); s.close(); toast(img ? "Фон сохранён" : "Фон убран");
+      } catch(e){ toast("Не сохранилось"); b.disabled = false; b.textContent = "Сохранить"; } };
+    draw();
+  }
+
   // ================= друзья =================
   const AVA = ["#0a84ff","#30d158","#ff9f0a","#ff375f","#bf5af2","#64d2ff","#ff453a","#ffd60a","#5e5ce6","#00c7be"];
   const avaColor = uid => AVA[[...String(uid)].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7) % AVA.length];
@@ -3041,11 +3124,16 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
   function profileSheet(){
     const s = openSheet(`<h3>Профиль</h3><p class="sub">${esc(ME.email || "")}</p>
       <div class="acts" style="align-items:center">${avaHTML(myProf(), "md")}<button class="ib" id="pfAva">Аватар</button><button class="ib" id="pfNick" style="flex:1">Ник: <b style="margin-left:6px">${esc(NICK)}</b></button></div>
-      <div class="acts" style="margin-top:12px"><button class="ib" id="pfExp">Скачать бэкап</button><label class="ib" for="pfImpF">Загрузить бэкап</label><input type="file" id="pfImpF" accept=".zip,.json,application/zip,application/json" hidden></div>
+      <div class="av-lb">Фоны разделов</div>
+      <div class="sb-grid">${Object.entries(SEC_NAMES).map(([k, l]) => { const c = SECBG && SECBG[k]; return `<button data-secbg="${k}" class="${c && c.img ? "on" : ""}" style="${c && c.img ? `background-image:linear-gradient(rgba(0,0,0,.15),rgba(0,0,0,.55)),url('${publicUrl(c.img)}')` : ""}">${l}</button>`; }).join("")}</div>
+      <div class="acts" style="margin-top:12px"><button class="ib" data-theme-open="1">Цвета сайта</button></div>
+      <div class="av-lb">Бэкап</div>
+      <div class="acts" style="margin-top:8px"><button class="ib" id="pfExp">Скачать бэкап</button><label class="ib" for="pfImpF">Загрузить бэкап</label><input type="file" id="pfImpF" accept=".zip,.json,application/zip,application/json" hidden></div>
       <p class="sub" style="margin:12px 0 0">Бэкап — это zip-архив: все записи, обложки, обои и скриншоты. При загрузке записи, которые уже есть на полке, пропускаются. Старые бэкапы .json тоже подходят.</p>
       <div class="acts" style="margin-top:16px"><button class="ib red" id="pfOut">Выйти из аккаунта</button></div>`);
     s.el.querySelector("#pfNick").onclick = () => { s.close(); nickSheet(false); };
     s.el.querySelector("#pfAva").onclick = () => { s.close(); avaSheet(false); };
+    s.el.querySelectorAll("[data-secbg],[data-theme-open]").forEach(b => b.addEventListener("click", () => s.close()));
     s.el.querySelector("#pfExp").onclick = e => runBackup(e.currentTarget);
     s.el.querySelector("#pfImpF").onchange = async e => {
       const f = e.target.files[0]; if (!f) return; const lb = s.el.querySelector('label[for="pfImpF"]');
@@ -3149,6 +3237,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     const be = makeBackend(SB, user.id); db = be.db; assets = be.assets; canWrite = true;
     const timer = setTimeout(() => toast("Данные пока не подгрузились. Проверь интернет."), 12000);
     db.doc("meta/theme").onSnapshot(d => { theme = d.exists ? d.data() : null; applyTheme(theme); });
+    db.doc("meta/bg").onSnapshot(d => { SECBG = d.exists ? d.data() : null; applySecBg(); });
     Promise.all(["backup", "autobackup"].map(x => db.doc("meta/" + x).get().then(d => d.exists ? d.data() : null).catch(() => null)))
       .then(([b, a]) => { lastBackup = b; autoBackup = a; if (route === "more") render(); });
     loadFriends();
