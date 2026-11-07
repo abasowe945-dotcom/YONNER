@@ -1775,7 +1775,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     if (via) patch.via = via;
     try { await write(it.id, patch); } catch(e){ toast("Не сохранилось"); return; }
     const upd = {...it, ...patch};
-    toast(isGame(it) ? "Погнали. Заполни инфу со Steam" : "Приятного просмотра");
+    toast(isGame(it) ? "Погнали. Выбери Steam или Пиратка и цену" : "Приятного просмотра");
     openForm(upd, isGame(it) ? "games" : "kino");
   }
 
@@ -2129,12 +2129,12 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
       el.onclick = () => edit(null); bindDrop(el, f => edit(f)); pasteTarget = f => edit(f);
     };
     if (g){
-      let st = gStatus(it.status), srcSel = srcOf(it) || (isNew && gSrc ? gSrc : "steam"), free = !!it.priceFree;
+      let st = gStatus(it.status), srcSel = srcOf(it) || (isNew && !lock ? (gSrc || "steam") : null), free = !!it.priceFree;
       const rub0 = typeof it.priceRub === "number" ? it.priceRub : (/₽|руб/i.test(it.price || "") ? +(it.price.replace(/\D/g, "")) || null : null);
       showView(`
         <div class="s-crumb"><a id="crumb">Все игры</a> &gt; ${isNew ? "Новая игра" : esc(it.title)}</div>
         <h2 class="s-title">${lock === "future" ? (isNew ? "На будущее" : "Изменить: на будущее") : lock === "soon" ? (isNew ? "Ждать релиз" : "Изменить релиз") : isNew ? "Добавить игру" : "Изменить игру"}</h2>
-        ${lock ? `<p style="margin:-8px 0 18px;color:var(--s-dim)">${lock === "future" ? "Попадёт в «На будущее» и в пул рулетки. Оценка и дата начала появятся, когда начнёшь играть." : "Попадёт в календарь выходов с обратным отсчётом."}</p>` : ""}
+        ${lock ? `<p style="margin:-8px 0 18px;color:var(--s-dim)">${lock === "future" ? "Попадёт в «На будущее» и в пул рулетки. Оценка, дата начала, цена и Steam/Пиратка — когда начнёшь играть." : "Попадёт в календарь выходов с обратным отсчётом."}</p>` : ""}
         <div class="s-form">
           <div>${posterBox()}</div>
           <form class="s-fields" id="editForm">
@@ -2147,12 +2147,14 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
               <label>Дата выхода<input class="s-in" id="f_release" placeholder="16 мая. 2024" value="${esc(it.release||"")}"></label>
               ${lock ? "" : `<label>Начал играть<input class="s-in" id="f_date" type="date" value="${esc(dateVal)}"></label>`}
             </div>`}
+            <div id="buyWrap" style="display:grid;gap:14px" ${lock || st === "future" ? "hidden" : ""}>
             <label>Цена<div class="price-row"><div class="cur"><input class="s-in" id="f_rub" inputmode="numeric" placeholder="1 999" value="${rub0 ?? ""}"><span>₽</span></div>
               <div class="cur"><input class="s-in" id="f_kzt" inputmode="numeric" placeholder="10 915" value="${rub0 != null ? Math.round(rub0 * KZT_PER_RUB) : ""}"><span>₸</span></div>
               <button type="button" class="free" id="f_free" aria-pressed="${!!it.priceFree}">Бесплатно</button></div>
               <span class="rate-note">Пиши в любом поле, второе посчитается само по курсу 1 ₽ = ${String(KZT_PER_RUB).replace(".", ",")} ₸. На странице игры цена в рублях.</span></label>
             ${lock ? "" : `<label>Моя оценка${wheelHTML("f_rating", it.rating)}</label>`}
             <label>Где взял<div class="chips" id="f_src">${["steam","pirate"].map(k => `<button type="button" class="${k}" data-v="${k}" aria-pressed="${k===srcSel}">${SRC_ICON[k]}${SRC_NAME[k]}</button>`).join("")}</div></label>
+            </div>
             ${lock ? "" : `<label>Статус<div class="chips" id="f_st">${Object.entries(GSTATUS).map(([k,l]) => `<button type="button" class="${k}" data-v="${k}" aria-pressed="${k===st}">${l}</button>`).join("")}<button type="button" data-v="future" aria-pressed="false">На будущее</button></div></label>`}
             <label id="dropWrap" ${st === "dropped" ? "" : "hidden"}>Причина дропа<textarea class="s-in" id="f_drop" style="min-height:80px" placeholder="Почему бросил">${esc(it.dropReason||"")}</textarea></label>
             <label>Мои заметки<textarea class="s-in" id="f_note" style="min-height:80px">${esc(it.note||"")}</textarea></label>
@@ -2163,7 +2165,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
       $("crumb").onclick = closeView;
       const chips = (id, fn) => $(id).onclick = e => { const b = e.target.closest("[data-v]"); if (!b) return; $(id).querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); fn(b.dataset.v); };
       chips("f_src", v => srcSel = v);
-      if (!lock) chips("f_st", v => { st = v; $("dropWrap").hidden = st !== "dropped"; });
+      if (!lock) chips("f_st", v => { st = v; $("dropWrap").hidden = st !== "dropped"; $("buyWrap").hidden = st === "future"; });
       genreChips("f_genre");
       const rel = lock === "soon" ? wireRelease() : null;
       const setFree = v => { free = v; $("f_free").setAttribute("aria-pressed", v); $("f_rub").disabled = $("f_kzt").disabled = v; };
@@ -2184,12 +2186,14 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
         if (got.length) toast("Нашёл: " + got.join(", ")); });
       $("editForm").onsubmit = async e => { e.preventDefault();
         if (lock) st = lock;
+        const later = st === "future" || st === "soon";
+        if (!later && !srcSel){ toast("Выбери, где взял: Steam или Пиратка"); $("buyWrap").scrollIntoView({behavior: "smooth", block: "center"}); return; }
         let relTxt = $("f_release") ? $("f_release").value.trim() : (it.release || ""), relD = null;
         if (lock === "soon"){ relD = rel.get(); if (!relD){ toast("Укажи дату или месяц выхода"); return; } if (!relTxt) relTxt = relLabel(relD); }
         const ym = (relD ? relD.releaseDate : relTxt).match(/(19|20)\d{2}/);
         const body = {type:"game", title:$("f_title").value.trim(), desc:$("f_desc").value.trim() || null, genre:$("f_genre").value.trim() || null,
-          release: relTxt || null, year: ym ? +ym[0] : (it.year || null), price: null, priceFree: free, priceRub: free ? null : (digits($("f_rub").value) ? +digits($("f_rub").value) : null),
-          rating: lock ? (it.rating ?? null) : wheelVal("f_rating"), date: lock ? null : ($("f_date").value || null), source: srcSel, status: st,
+          release: relTxt || null, year: ym ? +ym[0] : (it.year || null), price: later ? (it.price ?? null) : null, priceFree: later ? !!it.priceFree : free, priceRub: later ? (it.priceRub ?? null) : (free ? null : (digits($("f_rub").value) ? +digits($("f_rub").value) : null)),
+          rating: lock ? (it.rating ?? null) : wheelVal("f_rating"), date: lock ? null : ($("f_date").value || null), source: later ? (it.source || null) : srcSel, status: st,
           finishedAt: (st === "done" || st === "dropped") ? (it.finishedAt && gStatus(it.status) === st ? it.finishedAt : today()) : null, dropReason: st === "dropped" ? ($("f_drop").value.trim() || null) : null, note:$("f_note").value.trim() || null};
         if (relD) Object.assign(body, relD);
         await save(it, isNew, body, cover); };
