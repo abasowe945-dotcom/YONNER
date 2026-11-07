@@ -1098,6 +1098,9 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
 .eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:36px;height:36px;border:0;border-radius:10px;background:transparent;color:#8e8e93;cursor:pointer;display:grid;place-items:center}
 .eye:hover{color:#fff;background:rgba(255,255,255,.08)}
 .eye svg{width:19px;height:19px}
+.au-hint{margin:-4px 0 10px;font-size:13px;color:#8e8e93;min-height:0}
+.au-hint:empty{display:none}
+.au-hint.bad{color:#ff6961}.au-hint.ok{color:#30d158}
 .au-forgot{display:block;margin:14px auto 0;border:0;background:none;color:#0a84ff;font:500 14px/1 var(--ios);cursor:pointer;padding:6px 8px;border-radius:8px}
 .au-forgot:hover{background:rgba(10,132,255,.12)}
 .au-msg{min-height:20px;margin:12px 0 0;font-size:14px;color:#ffb340}
@@ -3033,7 +3036,8 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
           "Новые поля фильма как на Кинопоиске: платформа, художник, цифровой релиз, время серии",
           "<b>Глазик</b> в поле пароля: можно посмотреть, что ввёл",
           "<b>Забыли пароль?</b> на экране входа: письмо со ссылкой на новый пароль",
-          "«Сменить пароль» в профиле"],
+          "«Сменить пароль» в профиле",
+          "При регистрации и смене пароль вводится два раза, сайт проверяет, что они совпадают, и предупреждает о русской раскладке"],
       c: ["Страница фильма показывает факты в порядке Кинопоиска: год с сезонами, платформа, страна, режиссёр, сценарий, продюсер, оператор, композитор, художник, премьеры"]}},
     {v: "1.9", date: "2026-11-08", title: "Удобные страницы", kind: "minor", sec: {
       n: ["Логотип NEXUS в шапке светится при наведении и ведёт на главную",
@@ -3624,12 +3628,22 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     el.innerHTML = `<div class="au-box"><div class="au-logo">NEXUS</div><p class="au-sub">Твоя полка игр и кино. Войди или создай аккаунт.</p>
       <form id="auF"><label class="f">Почта<input class="in" id="auE" type="email" autocomplete="email" required></label>
         <label class="f">Пароль<span class="pw"><input class="in" id="auP" type="password" autocomplete="current-password" minlength="6" required><button type="button" class="eye" data-eye="auP" aria-label="Показать пароль"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></span></label>
+        <label class="f" id="auP2w" hidden>Повтори пароль<span class="pw"><input class="in" id="auP2" type="password" autocomplete="new-password" minlength="6"><button type="button" class="eye" data-eye="auP2" aria-label="Показать пароль"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></span></label>
+        <p class="au-hint" id="auH"></p>
         <div class="acts"><button class="ib blue" type="submit" id="auIn">Войти</button><button class="ib" type="button" id="auUp">Создать аккаунт</button></div>
         <button type="button" class="au-forgot" id="auFg">Забыли пароль?</button>
         <p class="au-msg" id="auM">${esc(msg || "")}</p></form></div>`;
+    const hint = () => { const a = $("auP").value, b = $("auP2").value, out = [];
+      if (/[а-яё]/i.test(a)) out.push("В пароле русские буквы. Проверь раскладку");
+      if (!$("auP2w").hidden && b) out.push(a === b ? "✓ Пароли совпадают" : "✗ Пароли не совпадают");
+      $("auH").textContent = out.join(" · "); $("auH").className = "au-hint" + (out.some(x => x.startsWith("✗") || x.includes("русские")) ? " bad" : b && a === b ? " ok" : ""); };
+    $("auP").addEventListener("input", hint); $("auP2").addEventListener("input", hint);
+    $("auIn").addEventListener("click", () => { $("auP2w").hidden = true; $("auUp").textContent = "Создать аккаунт"; hint(); });
     const go = async signUp => {
       const email = $("auE").value.trim(), password = $("auP").value;
       if (!email || password.length < 6){ $("auM").textContent = "Почта и пароль от 6 символов"; return; }
+      if (signUp && $("auP2w").hidden){ $("auP2w").hidden = false; $("auUp").textContent = "Готово, создать"; $("auM").textContent = "Повтори пароль ещё раз"; $("auP2").focus(); hint(); return; }
+      if (signUp && $("auP2").value !== password){ $("auM").textContent = "Пароли не совпадают"; $("auP2").focus(); return; }
       $("auM").textContent = signUp ? "Создаю аккаунт…" : "Вхожу…";
       const r = signUp ? await SB.auth.signUp({email, password}) : await SB.auth.signInWithPassword({email, password});
       if (r.error){ $("auM").textContent = /invalid login/i.test(r.error.message) ? "Неверная почта или пароль" : /already registered/i.test(r.error.message) ? "Такой аккаунт уже есть, жми «Войти»" : r.error.message; return; }
@@ -3655,10 +3669,12 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
   function passwordSheet(recovery){
     const s = openSheet(`<h3>${recovery ? "Новый пароль" : "Сменить пароль"}</h3><p class="sub">${recovery ? "Придумай новый пароль для входа." : "Новый пароль заработает сразу."} Минимум 6 символов.</p>
       <label class="f">Новый пароль<span class="pw"><input class="in" id="npP" type="password" autocomplete="new-password" minlength="6"><button type="button" class="eye" data-eye="npP" aria-label="Показать пароль">${EYE_SVG}</button></span></label>
+      <label class="f">Повтори пароль<span class="pw"><input class="in" id="npP2" type="password" autocomplete="new-password" minlength="6"><button type="button" class="eye" data-eye="npP2" aria-label="Показать пароль">${EYE_SVG}</button></span></label>
       <div class="acts" style="margin-top:12px"><button class="ib blue" id="npOk">Сохранить</button><button class="ib" id="npNo">Отмена</button></div>`);
     const q = x => s.el.querySelector(x); setTimeout(() => q("#npP").focus(), 60);
     q("#npNo").onclick = () => s.close();
     q("#npOk").onclick = async () => { const p = q("#npP").value; if (p.length < 6){ toast("Минимум 6 символов"); return; }
+      if (p !== q("#npP2").value){ toast("Пароли не совпадают"); return; } if (/[а-яё]/i.test(p) && !confirm("В пароле русские буквы. Точно так и оставить?")) return;
       q("#npOk").disabled = true; const {error} = await SB.auth.updateUser({password: p}); q("#npOk").disabled = false;
       if (error){ toast("Не получилось: " + error.message); return; } toast("Пароль обновлён"); s.close(); };
   }
