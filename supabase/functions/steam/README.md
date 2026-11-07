@@ -1,2 +1,4 @@
-Edge-функция `steam` развёрнута в Supabase (проект NEXUS). Её код хранится в самом Supabase:
-Dashboard → Edge Functions → steam. Сайт вызывает её из формы игры, когда вставляешь ссылку на Steam.
+Edge-функции NEXUS живут в Supabase (Dashboard → Edge Functions):
+- `steam` — данные игры по ссылке Steam.
+- `kino` — данные фильма по ссылке Кинопоиска. Для стабильной работы нужен секрет `KP_API_KEY`
+  (бесплатный ключ с kinopoiskapiunofficial.tech). Без ключа функция пробует саму страницу Кинопоиска.
