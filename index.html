@@ -1093,6 +1093,13 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
 .au-logo{font:800 34px/1 var(--ios);letter-spacing:.12em}
 .au-sub{margin:8px 0 20px;color:#8e8e93}
 .au-box label.f{display:grid;gap:6px;font-size:13px;color:#8e8e93;margin-bottom:12px}
+.pw{position:relative;display:block}
+.pw .in{width:100%;box-sizing:border-box;padding-right:46px}
+.eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:36px;height:36px;border:0;border-radius:10px;background:transparent;color:#8e8e93;cursor:pointer;display:grid;place-items:center}
+.eye:hover{color:#fff;background:rgba(255,255,255,.08)}
+.eye svg{width:19px;height:19px}
+.au-forgot{display:block;margin:14px auto 0;border:0;background:none;color:#0a84ff;font:500 14px/1 var(--ios);cursor:pointer;padding:6px 8px;border-radius:8px}
+.au-forgot:hover{background:rgba(10,132,255,.12)}
 .au-msg{min-height:20px;margin:12px 0 0;font-size:14px;color:#ffb340}
 </style>
 <style>img{max-width:100%}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
@@ -2224,8 +2231,9 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
   function openKino(it){
     const st = kSt(it.status), gs = genres(it), cast = (it.cast || "").split(",").map(s => s.trim()).filter(Boolean);
     const meta = [it.year, KTYPES[it.type], gs.slice(0,3).join(", "), it.duration].filter(Boolean);
-    const facts = [["Год", it.year], ["Страна", it.country], ["Режиссёр", it.director], ["Сценарий", it.writer], ["Длительность", it.duration],
-      ["Премьера в мире", it.premiereWorld], ["Премьера в России", it.premiereRu], ["Бюджет", it.budget], ["Сборы в мире", it.boxWorld],
+    const facts = [["Год", it.year ? it.year + (it.seasons ? ` (${it.seasons} ${plural(it.seasons, "сезон", "сезона", "сезонов")})` : "") : null], ["Платформа", it.platform], ["Страна", it.country], ["Режиссёр", it.director], ["Сценарий", it.writer],
+      ["Продюсер", it.producer], ["Оператор", it.operator], ["Композитор", it.composer], ["Художник", it.designer], [isSeries(it) ? "Время серии" : "Длительность", it.duration],
+      ["Премьера в мире", it.premiereWorld], ["Премьера в России", it.premiereRu], ["Цифровой релиз", it.digital], ["Бюджет", it.budget], ["Сборы в мире", it.boxWorld],
       ["Моя оценка", typeof it.rating === "number" ? `${num1(it.rating)} / 10` : null], ["Тип", KTYPES[it.type]], [kinoDateLabel(it), fmtDate(itemDate(it))]].filter(f => f[1]);
     showView(`
       <div class="k-hero">
@@ -2266,14 +2274,17 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
 
   // ================= разбор текста Кинопоиска =================
   function parseKP(txt){
+    // ссылки вида [текст](url) -> текст, маркеры списков "* " убираем
+    txt = String(txt || "").replace(/\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/^[ \t]*[*•-][ \t]+/gm, "").replace(/^[ \t]*[*•][ \t]*$/gm, "");
     const lines = txt.split(/\r?\n/).map(l => l.replace(/[ \t ]+/g, " ").trim()).filter(Boolean), out = {};
     const LBL = {"год производства":"year","страна":"country","жанр":"genre","слоган":"tagline","режиссер":"director","режиссёр":"director","сценарий":"writer","продюсер":"producer",
-      "оператор":"operator","композитор":"composer","бюджет":"budget","сборы в мире":"boxWorld","премьера в мире":"premiereWorld","премьера в россии":"premiereRu","время":"duration","возраст":"age"};
+      "оператор":"operator","композитор":"composer","бюджет":"budget","сборы в мире":"boxWorld","премьера в мире":"premiereWorld","премьера в россии":"premiereRu","время серии":"duration","время":"duration","возраст":"age","платформа":"platform","художник":"designer","цифровой релиз":"digital"};
     const KEYS = Object.keys(LBL).sort((a,b) => b.length - a.length);
-    const IGN = ["художник","монтаж","сборы в сша","сборы в россии","цифровой релиз","рейтинг mpaa","о фильме","о сериале","в главных ролях","роли дублировали","сиквелы","трейлер","добавить в папку","буду смотреть","оценить","рейтинг фильма","в списках","обзор","нашли ошибку","добавить инфо"];
+    const IGN = ["монтаж","сборы в сша","сборы в россии","рейтинг mpaa","добавили в","и ждут премьеры","о фильме","о сериале","в главных ролях","роли дублировали","сиквелы","трейлер","добавить в папку","буду смотреть","оценить","рейтинг фильма","в списках","обзор","нашли ошибку","добавить инфо"];
     const labelOf = l => { const low = l.toLowerCase(); for (const k of KEYS) if (low === k || low.startsWith(k + " ") || low.startsWith(k + ":")) return [k, l.slice(k.length).replace(/^[:\s]+/, "")]; return null; };
     const isIgn = l => { const low = l.toLowerCase(); return IGN.some(k => low.startsWith(k)); };
     const clean = (v, key) => {
+      if (/^[—–-]+$/.test(v.trim())) return null;
       v = v.replace(/,?\s*(\.\.\.|…)\s*$/, "").replace(/\s+слова$/i, "").replace(/\s+сборы$/i, "").trim();
       if (key === "boxWorld" && v.includes("=")) v = v.split("=").pop().trim();
       if (key === "premiereWorld" || key === "premiereRu") v = v.split(/,\s*[«"]/)[0].replace(/,\s*$/, "").trim();
@@ -2286,7 +2297,9 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
       let v = m[1]; if (!v && lines[i+1] && !labelOf(lines[i+1]) && !isIgn(lines[i+1])) v = lines[i+1];
       if (v && out[LBL[m[0]]] == null){ const c = clean(v, LBL[m[0]]); if (c) out[LBL[m[0]]] = c; } });
     const head = lines.slice(0, Math.min(firstLabel, 12)).filter(l => !isIgn(l));
-    if (head[0]){ const m = head[0].match(/^(.+?)\s*\((\d{4})(?:\s*[–-]\s*(?:\d{4}|\.\.\.))?\)\s*$/); out.title = m ? m[1] : head[0]; if (m && !out.year) out.year = +m[2]; }
+    if (head[0]){ const m = head[0].match(/^(.+?)\s*\((?:(мини-сериал|сериал|мультсериал|аниме-сериал|аниме|мультфильм)\s*,?\s*)?(\d{4})(?:\s*[–-]\s*(?:\d{4}|\.\.\.|…))?\s*\)\s*$/i);
+      out.title = m ? m[1] : head[0]; if (m && !out.year) out.year = +m[3];
+      if (m && m[2]) out.kind = /аниме/i.test(m[2]) ? "anime" : /мультфильм/i.test(m[2]) ? "movie" : "series"; }
     if (head[1]){ const am = head[1].match(/^(.*?)\s*(\d{1,2}\+)\s*$/), name = am ? am[1] : head[1];
       if (am && !out.age) out.age = am[2];
       if (/[A-Za-z]/.test(name) && name.length < 80 && !/\d[.,]\d/.test(name)) out.originalTitle = name; }
@@ -2511,8 +2524,8 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
       let st = it.status === "wish" ? "future" : (it.status || "played");
       const watchedSt = x => x === "done" || x === "played";
       const kDate = watchedSt(st) ? (it.date || itemDate(it) || today()) : "";
-      const KPF = [["country","Страна"],["director","Режиссёр"],["writer","Сценарий"],["producer","Продюсер"],["operator","Оператор"],["composer","Композитор"],["duration","Время"],["age","Возраст"],
-        ["tagline","Слоган"],["budget","Бюджет"],["boxWorld","Сборы в мире"],["premiereWorld","Премьера в мире"],["premiereRu","Премьера в России"],["kpRating","Рейтинг Кинопоиска"]];
+      const KPF = [["platform","Платформа"],["country","Страна"],["tagline","Слоган"],["director","Режиссёр"],["writer","Сценарий"],["producer","Продюсер"],["operator","Оператор"],["composer","Композитор"],["designer","Художник"],
+        ["budget","Бюджет"],["boxWorld","Сборы в мире"],["premiereWorld","Премьера в мире"],["premiereRu","Премьера в России"],["digital","Цифровой релиз"],["duration","Время / время серии"],["age","Возраст"],["kpRating","Рейтинг Кинопоиска"]];
       showView(`
         <div class="k-form">
           <div>${posterBox()}</div>
@@ -2521,7 +2534,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
             ${lock ? `<p style="margin:0;color:var(--k-dim);text-transform:none;letter-spacing:0">${lock === "future" ? "Попадёт в «На будущее» и в пул рулетки." : "Попадёт в календарь выходов. Дата премьеры подтянется из Кинопоиска."}</p>` : ""}
             <div class="k-quick"><p><b>По ссылке с Кинопоиска.</b> Вставь ссылку на фильм или сериал, и подтянутся название, тип, год, жанры, описание, режиссёр, актёры, сезоны, премьера и постер.</p>
               <div class="s-link"><input class="k-in" id="f_url" inputmode="url" placeholder="kinopoisk.ru/film/301/"><button type="button" class="k-btn white sm" id="f_urlGo">Заполнить</button></div>
-              <p style="margin-top:12px"><b>Или вручную.</b> Выдели на странице всё от названия до блока «О фильме», скопируй и вставь сюда.</p>
+              <p style="margin-top:12px"><b>Или вручную.</b> Выдели на странице Кинопоиска всё от названия до описания (вместе с блоком «О фильме» / «О сериале» и актёрами), скопируй и вставь сюда. Ссылки и списки можно не чистить.</p>
               <textarea class="k-in" id="f_quick" style="min-height:70px" placeholder="Вставь сюда текст со страницы Кинопоиска"></textarea></div>
             <div class="k-two">
               <label>Название<input class="k-in" id="f_title" required value="${esc(it.title||"")}"></label>
@@ -2541,7 +2554,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
             <label>Жанры через запятую<input class="k-in" id="f_genre" value="${esc(it.genre||"")}"></label>
             <label>Коротко<input class="k-in" id="f_short" value="${esc(it.short||"")}"></label>
             <label>Описание<textarea class="k-in" id="f_desc">${esc(it.desc||"")}</textarea></label>
-            <details class="k-more" id="kMore" ${KPF.some(([k]) => it[k]) || it.cast ? "open" : ""}><summary>Подробности: режиссёр, страна, сборы, актёры</summary>
+            <details class="k-more" id="kMore" ${KPF.some(([k]) => it[k]) || it.cast ? "open" : ""}><summary>О фильме: платформа, страна, режиссёр, сценарий, премьеры, актёры</summary>
               <div class="k-two">${KPF.map(([k,l]) => `<label>${l}<input class="k-in" id="f_${k}" value="${esc(it[k] ?? "")}"></label>`).join("")}</div>
               <label style="margin-top:14px">В главных ролях<textarea class="k-in" id="f_cast" style="min-height:70px" placeholder="через запятую">${esc(it.cast||"")}</textarea></label>
             </details>
@@ -2589,7 +2602,8 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
         const r = parseKP($("f_quick").value), got = [];
         const NAMES = {title:"название",originalTitle:"оригинал",year:"год",genre:"жанры",short:"коротко",desc:"описание",cast:"актёров"};
         if (r.genre) r.genre = normGenres(r.genre, false);
-        if ((r.seasons || r.epTotal) && !$("f_type").dataset.touched){ $("f_type").value = "series"; serToggle(); }
+        if (r.kind && !$("f_type").dataset.touched){ $("f_type").value = r.kind; serToggle(); }
+        else if ((r.seasons || r.epTotal) && !$("f_type").dataset.touched){ $("f_type").value = "series"; serToggle(); }
         ["title","originalTitle","year","genre","short","desc","cast","seasons","epTotal",...KPF.map(x => x[0])].forEach(k => { if (r[k] != null && $("f_" + k)){ $("f_" + k).value = r[k]; if (NAMES[k]) got.push(NAMES[k]); } });
         const extra = KPF.filter(([k]) => r[k] != null).length;
         if (extra){ $("kMore").open = true; got.push(`${extra} ${plural(extra,"деталь","детали","деталей")}`); }
@@ -3014,6 +3028,13 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
   // ================= патчноуты =================
   // Новые версии добавляются В НАЧАЛО списка. n — новое, c — изменено, f — исправлено, r — удалено.
   const PATCHES = [
+    {v: "2.0", date: "2026-11-08", title: "Кинопоиск и пароли", kind: "minor", sec: {
+      n: ["Вставка текста с Кинопоиска понимает страницу целиком: ссылки, списки актёров, сериалы с сезонами. Скопируй от названия до описания и вставь",
+          "Новые поля фильма как на Кинопоиске: платформа, художник, цифровой релиз, время серии",
+          "<b>Глазик</b> в поле пароля: можно посмотреть, что ввёл",
+          "<b>Забыли пароль?</b> на экране входа: письмо со ссылкой на новый пароль",
+          "«Сменить пароль» в профиле"],
+      c: ["Страница фильма показывает факты в порядке Кинопоиска: год с сезонами, платформа, страна, режиссёр, сценарий, продюсер, оператор, композитор, художник, премьеры"]}},
     {v: "1.9", date: "2026-11-08", title: "Удобные страницы", kind: "minor", sec: {
       n: ["Логотип NEXUS в шапке светится при наведении и ведёт на главную",
           "Картинку для фона раздела и аватарки можно перетащить или вставить через Ctrl+V. Фон можно бросить прямо на плитку раздела в профиле",
@@ -3513,13 +3534,14 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
       <div class="acts" style="align-items:center">${avaHTML(myProf(), "md")}<button class="ib" id="pfAva">Аватар</button><button class="ib" id="pfNick" style="flex:1">Ник: <b style="margin-left:6px">${esc(NICK)}</b></button></div>
       <div class="av-lb">Фоны разделов</div>
       <div class="sb-grid">${Object.entries(SEC_NAMES).map(([k, l]) => { const c = SECBG && SECBG[k]; return `<button data-secbg="${k}" class="${c && c.img ? "on" : ""}" style="${c && c.img ? `background-image:linear-gradient(rgba(0,0,0,.15),rgba(0,0,0,.55)),url('${publicUrl(c.img)}')` : ""}">${l}</button>`; }).join("")}</div>
-      <div class="acts" style="margin-top:12px"><button class="ib" data-theme-open="1">Цвета сайта</button></div>
+      <div class="acts" style="margin-top:12px"><button class="ib" data-theme-open="1">Цвета сайта</button><button class="ib" id="pfPw">Сменить пароль</button></div>
       <div class="av-lb">Бэкап</div>
       <div class="acts" style="margin-top:8px"><button class="ib" id="pfExp">Скачать бэкап</button><label class="ib" for="pfImpF">Загрузить бэкап</label><input type="file" id="pfImpF" accept=".zip,.json,application/zip,application/json" hidden></div>
       <p class="sub" style="margin:12px 0 0">Бэкап — это zip-архив: все записи, обложки, обои и скриншоты. При загрузке записи, которые уже есть на полке, пропускаются. Старые бэкапы .json тоже подходят.</p>
       <div class="acts" style="margin-top:16px"><button class="ib red" id="pfOut">Выйти из аккаунта</button></div>`);
     s.el.querySelector("#pfNick").onclick = () => { s.close(); nickSheet(false); };
     s.el.querySelector("#pfAva").onclick = () => { s.close(); avaSheet(false); };
+    s.el.querySelector("#pfPw").onclick = () => { s.close(); passwordSheet(false); };
     s.el.querySelectorAll("[data-secbg],[data-theme-open]").forEach(b => b.addEventListener("click", () => s.close()));
     s.el.querySelectorAll("[data-secbg]").forEach(b => bindDrop(b, f => { s.close(); bgSheet(b.dataset.secbg, f); }));
     s.el.querySelector("#pfExp").onclick = e => runBackup(e.currentTarget);
@@ -3601,8 +3623,9 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     const el = $("auth"); el.hidden = false; document.body.classList.add("ov-open");
     el.innerHTML = `<div class="au-box"><div class="au-logo">NEXUS</div><p class="au-sub">Твоя полка игр и кино. Войди или создай аккаунт.</p>
       <form id="auF"><label class="f">Почта<input class="in" id="auE" type="email" autocomplete="email" required></label>
-        <label class="f">Пароль<input class="in" id="auP" type="password" autocomplete="current-password" minlength="6" required></label>
+        <label class="f">Пароль<span class="pw"><input class="in" id="auP" type="password" autocomplete="current-password" minlength="6" required><button type="button" class="eye" data-eye="auP" aria-label="Показать пароль"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></span></label>
         <div class="acts"><button class="ib blue" type="submit" id="auIn">Войти</button><button class="ib" type="button" id="auUp">Создать аккаунт</button></div>
+        <button type="button" class="au-forgot" id="auFg">Забыли пароль?</button>
         <p class="au-msg" id="auM">${esc(msg || "")}</p></form></div>`;
     const go = async signUp => {
       const email = $("auE").value.trim(), password = $("auP").value;
@@ -3616,6 +3639,28 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     };
     $("auF").onsubmit = e => { e.preventDefault(); go(false); };
     $("auUp").onclick = () => go(true);
+    $("auFg").onclick = async () => {
+      const email = $("auE").value.trim();
+      if (!/\S+@\S+\.\S+/.test(email)){ $("auM").textContent = "Впиши почту выше, и я пришлю ссылку для нового пароля"; $("auE").focus(); return; }
+      $("auM").textContent = "Отправляю письмо…";
+      const {error} = await SB.auth.resetPasswordForEmail(email, {redirectTo: location.origin + location.pathname});
+      $("auM").textContent = error ? (/rate|limit|seconds/i.test(error.message) ? "Слишком часто, попробуй через минуту" : "Не отправилось: " + error.message)
+        : "Если такой аккаунт есть, на почту придёт письмо со ссылкой. Не пришло (проверь «Спам») — напиши владельцу сайта, он сбросит пароль вручную.";
+    };
+  }
+  const EYE_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>', EYE_OFF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 5.1A10.4 10.4 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.2 4.1M6.6 6.6C3.8 8.4 2 12 2 12s3.5 7 10 7c1.7 0 3.2-.4 4.5-1.1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
+  document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-eye]"); if (!b) return; e.preventDefault();
+    const inp = document.getElementById(b.dataset.eye); if (!inp) return; const show = inp.type === "password"; inp.type = show ? "text" : "password";
+    b.innerHTML = show ? EYE_OFF : EYE_SVG; b.setAttribute("aria-label", show ? "Скрыть пароль" : "Показать пароль"); inp.focus(); });
+  function passwordSheet(recovery){
+    const s = openSheet(`<h3>${recovery ? "Новый пароль" : "Сменить пароль"}</h3><p class="sub">${recovery ? "Придумай новый пароль для входа." : "Новый пароль заработает сразу."} Минимум 6 символов.</p>
+      <label class="f">Новый пароль<span class="pw"><input class="in" id="npP" type="password" autocomplete="new-password" minlength="6"><button type="button" class="eye" data-eye="npP" aria-label="Показать пароль">${EYE_SVG}</button></span></label>
+      <div class="acts" style="margin-top:12px"><button class="ib blue" id="npOk">Сохранить</button><button class="ib" id="npNo">Отмена</button></div>`);
+    const q = x => s.el.querySelector(x); setTimeout(() => q("#npP").focus(), 60);
+    q("#npNo").onclick = () => s.close();
+    q("#npOk").onclick = async () => { const p = q("#npP").value; if (p.length < 6){ toast("Минимум 6 символов"); return; }
+      q("#npOk").disabled = true; const {error} = await SB.auth.updateUser({password: p}); q("#npOk").disabled = false;
+      if (error){ toast("Не получилось: " + error.message); return; } toast("Пароль обновлён"); s.close(); };
   }
 
   async function start(user){
@@ -3647,7 +3692,10 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
       $("sMain").innerHTML = `<div class="s-empty" style="margin-top:20px"><b>Сайт ещё не подключён к базе</b>Открой файл config.js и вставь адрес и ключ проекта Supabase, как написано в инструкции.</div>`;
       return;
     }
-    SB = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY, {auth: {persistSession: true, autoRefreshToken: true}});
+    const recoveryLink = /type=recovery/.test(location.hash);
+    SB = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY, {auth: {persistSession: true, autoRefreshToken: true, detectSessionInUrl: true}});
+    SB.auth.onAuthStateChange(ev => { if (ev === "PASSWORD_RECOVERY") setTimeout(() => passwordSheet(true), 600); });
+    if (recoveryLink) setTimeout(() => { if (/access_token|type=recovery/.test(location.hash)) history.replaceState(null, "", location.pathname + "#games"); }, 1500);
     const {data: {session}} = await SB.auth.getSession();
     if (session) start(session.user); else authScreen();
   })();
