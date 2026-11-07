@@ -702,6 +702,12 @@ body[data-theme="cal"] .gh-logo:hover b{color:var(--c-ring)}
 .k-hcol{min-width:0}
 .drop{outline:2px dashed #0a84ff!important;outline-offset:3px}
 .sb-prev{cursor:pointer}
+.nd-row{display:flex;gap:8px;align-items:center}
+.nd-row input[type=date]{flex:1;min-width:0}
+.nd-row input[type=date]:disabled{opacity:.35}
+.nd-tog{flex:none;display:inline-flex!important;align-items:center;gap:7px;height:42px;padding:0 14px;border-radius:12px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);cursor:pointer;font-size:14px!important;letter-spacing:0!important;text-transform:none!important;color:inherit!important;white-space:nowrap;user-select:none}
+.nd-tog input{width:16px;height:16px;margin:0;accent-color:#0a84ff}
+.nd-tog:has(input:checked){border-color:#0a84ff;background:rgba(10,132,255,.16)}
 .dr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:18px;margin-top:20px}
 .dr{border:0;background:none;padding:0;text-align:left;color:inherit;cursor:pointer}
 .dr .poster{border-radius:16px;background:#2c2c2e}
@@ -1235,7 +1241,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
   const parseD = s => { const [y,m,d] = s.split("-").map(Number); return new Date(y, m-1, d); };
   const addDays = (s, n) => { const d = parseD(s); d.setDate(d.getDate() + n); return localDate(d); };
   const daysTo = s => Math.round((parseD(s) - parseD(today())) / 86400000);
-  const itemDate = it => isFuture(it) ? null : isSoon(it) ? (it.releaseDate || null) : (!isGame(it) && it.status !== "done" && it.status !== "played") ? null : (it.date || (it.createdAt ? localDate(new Date(it.createdAt)) : null));
+  const itemDate = it => isFuture(it) || it.noDate ? null : isSoon(it) ? (it.releaseDate || null) : (!isGame(it) && it.status !== "done" && it.status !== "played") ? null : (it.date || (it.createdAt ? localDate(new Date(it.createdAt)) : null));
   const fmtDate = s => s ? parseD(s).toLocaleDateString("ru-RU", {day:"numeric", month:"long", year:"numeric"}) : null;
   const plural = (n, a, b, c) => { const m = Math.abs(n) % 100, k = m % 10; return m > 10 && m < 20 ? c : k > 1 && k < 5 ? b : k === 1 ? a : c; };
   const kinoDateLabel = () => "Посмотрел";
@@ -2179,7 +2185,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
 
   function openGame(it){
     const s = gStatus(it.status), gs = genres(it), src = srcOf(it), c = it.contract, price = priceText(it), t = timerInfo(it);
-    const facts = [itemDate(it) ? ["Начал играть", fmtDate(itemDate(it))] : null, it.finishedAt && s !== "playing" ? [s === "done" ? "Прошёл" : "Дропнул", fmtDate(it.finishedAt)] : null,
+    const facts = [it.noDate ? ["Когда", "давно, без даты"] : itemDate(it) ? ["Начал играть", fmtDate(itemDate(it))] : null, it.finishedAt && s !== "playing" ? [s === "done" ? "Прошёл" : "Дропнул", fmtDate(it.finishedAt)] : null,
       src ? ["Источник", SRC_NAME[src]] : null, it.release ? ["Дата выхода", it.release] : (it.year ? ["Год выхода", it.year] : null), price ? ["Цена", price] : null, gs.length ? ["Жанр", gs.join(", ")] : null].filter(Boolean);
     let cbox = "";
     if (c){ const h = cHours(c), left = daysTo(c.deadline), pct = Math.min(100, h / c.goal * 100);
@@ -2236,7 +2242,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     const meta = [it.year, KTYPES[it.type], gs.slice(0,3).join(", "), it.duration].filter(Boolean);
     const facts = [["Год", it.year], ["Страна", it.country], ["Режиссёр", it.director], ["Сценарий", it.writer], ["Длительность", it.duration],
       ["Премьера в мире", it.premiereWorld], ["Премьера в России", it.premiereRu], ["Бюджет", it.budget], ["Сборы в мире", it.boxWorld],
-      ["Моя оценка", typeof it.rating === "number" ? `${num1(it.rating)} / 10` : null], ["Тип", KTYPES[it.type]], [kinoDateLabel(it), fmtDate(itemDate(it))]].filter(f => f[1]);
+      ["Моя оценка", typeof it.rating === "number" ? `${num1(it.rating)} / 10` : null], ["Тип", KTYPES[it.type]], [kinoDateLabel(it), it.noDate && ["done","played"].includes(it.status) ? "давно, без даты" : fmtDate(itemDate(it))]].filter(f => f[1]);
     showView(`
       <div class="k-hero">
         <div class="k-hcol">${posterHTML(it, {id:"heroPoster", editable: canWrite && !!assets, rate:false})}
@@ -2395,6 +2401,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
       if (i >= 0) list.splice(i, 1); else list.push(b.dataset.g); inp.value = list.join(", "); sync(); };
     inp.addEventListener("input", sync); sync();
   }
+  document.addEventListener("change", e => { if (e.target && e.target.id === "f_nodate" && $("f_date")){ $("f_date").disabled = e.target.checked; if (e.target.checked) $("f_date").value = ""; else if (!$("f_date").value) $("f_date").value = today(); } });
   function openForm(it, kind, opts = {}){
     const isNew = !it, lock = opts.lock || null;
     it = it || (kind === "games" ? {type:"game", status: lock || "playing"} : {type:"movie", status: lock || "playing"});
@@ -2430,7 +2437,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
             <label>Жанры<input class="s-in" id="f_genre" placeholder="выбери ниже или впиши свои через запятую" value="${esc(it.genre||"")}"><div class="gchips" id="gChips">${GAME_GENRES.map(x => `<button type="button" data-g="${x}">${x}</button>`).join("")}</div></label>
             ${lock === "soon" ? releaseFields(it, "s-in") : `<div class="s-two">
               <label>Дата выхода<input class="s-in" id="f_release" placeholder="16 мая. 2024" value="${esc(it.release||"")}"></label>
-              ${lock ? "" : `<label>Начал играть<input class="s-in" id="f_date" type="date" value="${esc(dateVal)}"></label>`}
+              ${lock ? "" : `<label>Начал играть<span class="nd-row"><input class="s-in" id="f_date" type="date" value="${it.noDate ? "" : esc(dateVal)}" ${it.noDate ? "disabled" : ""}><label class="nd-tog"><input type="checkbox" id="f_nodate" ${it.noDate ? "checked" : ""}><span>Без даты</span></label></span></label>`}
             </div>`}
             <div id="buyWrap" style="display:grid;gap:14px" ${lock || st === "future" ? "hidden" : ""}>
             <label>Цена<div class="price-row"><div class="cur"><input class="s-in" id="f_rub" inputmode="numeric" placeholder="1 999" value="${rub0 ?? ""}"><span>₽</span></div>
@@ -2513,8 +2520,8 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
         const ym = (relD ? relD.releaseDate : relTxt).match(/(19|20)\d{2}/);
         const body = {type:"game", title:$("f_title").value.trim(), desc:$("f_desc").value.trim() || null, genre:$("f_genre").value.trim() || null,
           release: relTxt || null, year: ym ? +ym[0] : (it.year || null), price: later ? (it.price ?? null) : null, priceFree: later ? !!it.priceFree : free, priceRub: later ? (it.priceRub ?? null) : (free ? null : (digits($("f_rub").value) ? +digits($("f_rub").value) : null)),
-          rating: lock ? (it.rating ?? null) : wheelVal("f_rating"), date: lock ? null : ($("f_date").value || null), source: later ? (it.source || null) : srcSel, status: st,
-          finishedAt: (st === "done" || st === "dropped") ? (it.finishedAt && gStatus(it.status) === st ? it.finishedAt : today()) : null, dropReason: st === "dropped" ? ($("f_drop").value.trim() || null) : null, note:$("f_note").value.trim() || null};
+          rating: lock ? (it.rating ?? null) : wheelVal("f_rating"), date: lock || ($("f_nodate") && $("f_nodate").checked) ? null : ($("f_date").value || null), noDate: !lock && !!($("f_nodate") && $("f_nodate").checked), source: later ? (it.source || null) : srcSel, status: st,
+          finishedAt: ($("f_nodate") && $("f_nodate").checked) ? null : (st === "done" || st === "dropped") ? (it.finishedAt && gStatus(it.status) === st ? it.finishedAt : today()) : null, dropReason: st === "dropped" ? ($("f_drop").value.trim() || null) : null, note:$("f_note").value.trim() || null};
         if (relD) Object.assign(body, relD);
         await save(it, isNew, body, cover); };
     } else {
@@ -2544,7 +2551,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
               <label class="ser-f" ${["series","anime"].includes(it.type) ? "" : "hidden"}>Сезонов<input class="k-in" id="f_seasons" type="number" min="1" value="${it.seasons ?? ""}"></label>
               <label class="ser-f" ${["series","anime"].includes(it.type) ? "" : "hidden"}>Серий всего<input class="k-in" id="f_epTotal" type="number" min="1" value="${it.epTotal ?? ""}"></label>
               <label class="ser-f" ${["series","anime"].includes(it.type) || lock ? "" : "hidden"} ${lock ? "hidden" : ""}>Посмотрено серий<input class="k-in" id="f_epWatched" type="number" min="0" value="${it.epWatched ?? ""}"></label>
-              ${lock ? "" : `<label>Дата просмотра<input class="k-in" id="f_date" type="date" value="${esc(kDate)}" placeholder="когда досмотришь"></label>`}
+              ${lock ? "" : `<label>Дата просмотра<span class="nd-row"><input class="k-in" id="f_date" type="date" value="${it.noDate ? "" : esc(kDate)}" placeholder="когда досмотришь" ${it.noDate ? "disabled" : ""}><label class="nd-tog"><input type="checkbox" id="f_nodate" ${it.noDate ? "checked" : ""}><span>Без даты</span></label></span></label>`}
             </div>
             ${lock === "soon" ? releaseFields(it, "k-in") : ""}
             ${lock ? "" : `<label>Моя оценка${wheelHTML("f_rating", it.rating)}</label>`}
@@ -2563,7 +2570,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
         </div>`, it.cover ? it : null);
       if (!lock) wireWheel("f_rating");
       const rel = lock === "soon" ? wireRelease() : null;
-      if (!lock) $("f_status").onchange = e => { st = e.target.value; $("dropWrap").hidden = st !== "dropped"; if (watchedSt(st) && !$("f_date").value) $("f_date").value = today(); };
+      if (!lock) $("f_status").onchange = e => { st = e.target.value; $("dropWrap").hidden = st !== "dropped"; if (watchedSt(st) && !$("f_date").value && !$("f_nodate").checked) $("f_date").value = today(); };
       const kpFill = async raw => {
         if (!/kinopoisk\.ru\/(film|series)\/\d+/i.test(String(raw || "")) && !/^\s*\d{2,10}\s*$/.test(String(raw || ""))){ toast("Не вижу ссылку на Кинопоиск"); return; }
         const btn = $("f_urlGo"); btn.disabled = true; btn.textContent = "Ищу…";
@@ -2613,7 +2620,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
         const n = id => $(id).value === "" ? null : +$(id).value, tx = id => $(id).value.trim() || null;
         if (lock) st = lock;
         let relD = null; if (lock === "soon"){ relD = rel.get(); if (!relD){ toast("Укажи дату или месяц выхода"); return; } }
-        const body = {title:$("f_title").value.trim(), originalTitle: tx("f_originalTitle"), type:$("f_type").value, status:st, rating: lock ? (it.rating ?? null) : wheelVal("f_rating"), year:n("f_year") || (relD ? +relD.releaseDate.slice(0,4) : null), date: !lock && watchedSt(st) ? ($("f_date").value || today()) : null,
+        const body = {title:$("f_title").value.trim(), originalTitle: tx("f_originalTitle"), type:$("f_type").value, status:st, rating: lock ? (it.rating ?? null) : wheelVal("f_rating"), year:n("f_year") || (relD ? +relD.releaseDate.slice(0,4) : null), date: !lock && watchedSt(st) && !$("f_nodate").checked ? ($("f_date").value || today()) : null, noDate: !lock && $("f_nodate").checked,
           genre: tx("f_genre"), short: tx("f_short"), desc: tx("f_desc"), cast: tx("f_cast"), dropReason: st === "dropped" ? tx("f_drop") : null, note: tx("f_note")};
         KPF.forEach(([k]) => { body[k] = tx("f_" + k); });
         const ser = ["series","anime"].includes(body.type);
@@ -3028,6 +3035,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
       n: ["<b>Глазик</b> в поле пароля: можно посмотреть, что ввёл",
           "<b>Забыли пароль?</b> на экране входа: письмо со ссылкой на новый пароль",
           "«Сменить пароль» в профиле",
+          "<b>Без даты</b> у даты начала игры и даты просмотра: для того, во что играл или что смотрел давно и уже не помнишь когда. Такие записи не попадают в календарь и итоги года",
           "При регистрации и смене пароль вводится два раза, сайт проверяет, что они совпадают, и предупреждает о русской раскладке"]}},
     {v: "1.9", date: "2026-11-08", title: "Удобные страницы", kind: "minor", sec: {
       n: ["Логотип NEXUS в шапке светится при наведении и ведёт на главную",
