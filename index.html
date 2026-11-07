@@ -297,7 +297,7 @@ body[data-theme="kino"]{background:var(--k-bg);color:var(--k-fg);font-family:var
 body[data-theme="kino"]::before{background:var(--k-bg)}
 body[data-theme="kino"] .seg{--seg-bg:rgba(255,255,255,.07);--seg-on:var(--k-acc);--seg-onfg:var(--k-accfg)}
 .k-top{position:sticky;top:env(safe-area-inset-top,0px);z-index:15;background:color-mix(in srgb,var(--k-bg) 88%,transparent);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
-.k-top-in{max-width:1500px;display:flex;align-items:center;gap:18px;min-height:70px;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px));flex-wrap:wrap}
+.k-top-in{max-width:1300px;margin:0 auto;display:flex;align-items:center;gap:18px;min-height:70px;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));flex-wrap:wrap}
 .k-logo{font-weight:800;font-size:24px;letter-spacing:.02em;line-height:1;white-space:nowrap}
 .k-logo span{display:inline-block;color:var(--k-bg);background:var(--white);border-radius:8px;padding:2px 5px 1px;margin:0 1px}
 .k-search{position:relative;flex:1 1 200px;max-width:300px;min-width:0}
@@ -313,7 +313,7 @@ body[data-theme="kino"] .seg{--seg-bg:rgba(255,255,255,.07);--seg-on:var(--k-acc
 .k-btn.sm{padding:9px 16px;font-size:14px;border-radius:999px}
 .k-btn.hot{background:linear-gradient(135deg,#ff375f,#ff9f0a);color:#fff}
 .k-btn.danger{background:transparent;color:#ff8a86;border:2px solid #5d3540}
-.k-main{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px));padding-top:8px;max-width:1500px}
+.k-main{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-top:8px;max-width:1300px;margin:0 auto}
 .k-h1{margin:10px 0 4px;font-size:clamp(30px,4vw,44px);font-weight:800;letter-spacing:-.01em}
 .k-stats{display:flex;flex-wrap:wrap;gap:8px 28px;color:var(--k-dim);font-size:15px}
 .k-stats b{color:var(--k-fg);font-weight:700;font-size:18px;margin-right:6px;font-variant-numeric:tabular-nums}
@@ -552,6 +552,8 @@ body[data-theme="cal"] .pill-btn{--pill-bg:var(--c-cell)}
 .me-chip .fr-ava{width:30px;height:30px;font-size:13px}
 .me-chip .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .s-top-in .me-slot{margin-left:0}
+.k-top-in{gap:14px}
+.k-top-in .me-chip{padding:0 4px}.k-top-in .me-chip .nm{display:none}
 .s-search,.k-search{flex-basis:120px!important}
 @media (max-width:1440px){.me-chip{padding:0 4px}.me-chip .nm{display:none}}
 @media (max-width:1380px){.k-clock{display:none}}
@@ -570,6 +572,27 @@ body[data-theme="games"] .sec-bg{--sb-ov:var(--s-bg)} body[data-theme="kino"] .s
 .sb-prev span{position:absolute;inset:0;display:grid;place-items:center;color:#8e8e93;font-size:14px}
 .sb-rng{display:grid;grid-template-columns:110px 1fr 44px;align-items:center;gap:10px;margin-top:8px;font-size:14px}
 .sb-rng input{width:100%}
+.s-link{display:flex;gap:8px;margin:8px 0 4px}
+.s-link .s-in{flex:1;min-width:0}
+.s-link .s-btn{flex:none}
+.s-link .s-btn[disabled]{opacity:.6;cursor:wait}
+.fv-ban{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:14px 0 6px;padding:12px 14px;border-radius:18px;background:rgba(127,127,140,.14);border:1px solid rgba(127,127,140,.22);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.fv-ban .t{flex:1;min-width:140px;display:flex;flex-direction:column;gap:3px}
+.fv-ban .t b{font-size:17px}
+.fv-ban .t small{opacity:.65;font-size:13px}
+.fv-ban .fv-back{color:inherit;opacity:.8;text-decoration:none;font-weight:600;padding:8px 12px;border-radius:12px;background:rgba(127,127,140,.18)}
+.fv-ban .fv-back:hover{opacity:1}
+.fv #rlS,.fv #btS,.fv #rlK,.fv #btK,.fv .pill-btn.hot,.fv #addFutS,.fv #addFutK{display:none!important}
+.fv-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:24px}
+.fv-tile{position:relative;display:flex;flex-direction:column;justify-content:flex-end;gap:4px;min-height:190px;padding:20px;border-radius:24px;overflow:hidden;text-decoration:none;color:#fff;isolation:isolate;transition:transform .2s cubic-bezier(.3,.7,.4,1.4)}
+.fv-tile:hover{transform:translateY(-3px)}
+.fv-tile.games{background:linear-gradient(135deg,#171a21,#1b2838 60%,#2a475e)}
+.fv-tile.kino{background:linear-gradient(135deg,#1a1530,#2b1f4d 60%,#5b2a6e)}
+.fv-tile .cv{position:absolute;right:-10px;top:14px;display:flex;gap:8px;z-index:-1;transform:rotate(-8deg);opacity:.85}
+.fv-tile .cv img{width:78px;aspect-ratio:2/3;object-fit:cover;border-radius:10px;box-shadow:0 8px 22px rgba(0,0,0,.45)}
+.fv-tile b{font-size:28px;font-weight:800;letter-spacing:-.02em}
+.fv-tile span{opacity:.75;font-size:14px}
+.fv-tile i{font-style:normal;font-weight:700;font-size:14px;margin-top:6px;color:#7cc4ff}
 .dr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:18px;margin-top:20px}
 .dr{border:0;background:none;padding:0;text-align:left;color:inherit;cursor:pointer}
 .dr .poster{border-radius:16px;background:#2c2c2e}
@@ -1147,7 +1170,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
 
   // ================= нижняя панель =================
   function renderTabbar(){
-    const cur = (ROUTES[route] || ROUTES.games).tab, ac = activeContract();
+    const cur = FV ? "people" : (ROUTES[route] || ROUTES.games).tab, ac = activeContract();
     $("tabbar").innerHTML = [["games","Игры"],["kino","Кино"],["calendar","Календарь"],["people","Друзья"],["more","Ещё"]].map(([k,l]) =>
       `<a class="tab" href="#${k}" data-tab="${k}" ${cur === k ? 'aria-current="page"' : ""}>${ICON[k]}<span>${l}</span>${k === "games" && ac ? '<i class="dot"></i>' : ""}</a>`).join("");
   }
@@ -1345,6 +1368,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
   let achSeen = null, achSaving = false, itemsLoaded = false;
   let lastBackup = null, autoBackup = null, backupBusy = false;
   let viewUid = null, FR = null, frLoading = null, upKind = "games";
+  let FV = null, MYITEMS = []; // FV — чью полку смотрим (uid), MYITEMS — свои записи
   async function checkAch(){
     if (!canWrite || !db || achSaving || !itemsLoaded) return;
     const got = achList().filter(a => a.got).map(a => a.id);
@@ -1411,12 +1435,12 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
   function renderGames(){
     const fut = route === "games-future";
     const all = items.filter(isGame), lib = all.filter(inLib), futs = all.filter(isFuture);
-    $("gSeg").innerHTML = `<a href="#games" ${!fut ? 'aria-current="page"' : ""}>Библиотека<small>${lib.length}</small></a><a href="#games-future" ${fut ? 'aria-current="page"' : ""}>На будущее<small>${futs.length}</small></a>`;
+    $("gSeg").innerHTML = `<a href="${rh("games")}" ${!fut ? 'aria-current="page"' : ""}>Библиотека<small>${lib.length}</small></a><a href="${rh("games-future")}" ${fut ? 'aria-current="page"' : ""}>На будущее<small>${futs.length}</small></a>`;
     const q = $("qS").value.trim().toLowerCase();
     const match = i => !q || [i.title,i.genre,i.desc,i.note].join(" ").toLowerCase().includes(q);
     if (fut){
       const list = futs.filter(match).sort(sorter("recent"));
-      $("sMain").innerHTML = `<div class="s-head"><h1 class="s-h1">На будущее</h1></div>
+      $("sMain").innerHTML = `${fvBanner("games")}<div class="s-head"><h1 class="s-h1">На будущее</h1></div>
         <div class="fut-head"><p>Что когда-нибудь пройду. Отсюда крутится рулетка.</p><span style="flex:1"></span>
           <button class="s-btn hot" id="rlS">${ICON.dice}Крутить рулетку</button><button class="s-btn dark" id="btS">${ICON.sword}Битва</button>${canWrite ? `<button class="s-btn dark" id="addFutS">${ICON.plus}Добавить</button>` : ""}</div>
         <section class="s-grid">${list.length ? list.map(gCard).join("") : `<div class="s-empty"><b>Пока пусто</b>Добавь игры с постером и жанром, потом рулетка выберет следующую.</div>`}</section>`;
@@ -1433,7 +1457,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     const now = pool.filter(i => gStatus(i.status) === "playing" || gStatus(i.status) === "endless");
     let list = pool.filter(i => (!gF || gStatus(i.status) === gF) && match(i));
     list.sort((a,b) => sorter(gSort)(a,b) || (a.title||"").localeCompare(b.title||"","ru"));
-    $("sMain").innerHTML = `${contractBanner()}${releasesPanel("games")}
+    $("sMain").innerHTML = `${FV ? fvBanner("games") : contractBanner() + releasesPanel("games")}
       <div class="s-head" style="margin-top:26px"><div><h1 class="s-h1">Библиотека</h1>
         <div class="src-pills">${[["","Все",lib.length,""],["steam","Steam",srcCount("steam"),SRC_ICON.steam],["pirate","Пиратка",srcCount("pirate"),SRC_ICON.pirate]]
           .map(([v,l,n,ic]) => `<button class="src-p ${v}" data-src="${v}" aria-pressed="${gSrc===v}">${ic ? `<span class="i">${ic}</span>` : ""}${l}<small>${n}</small></button>`).join("")}</div></div>
@@ -1452,12 +1476,12 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
   function renderKino(){
     const fut = route === "kino-future";
     const all = items.filter(i => !isGame(i)), lib = all.filter(inLib), futs = all.filter(isFuture);
-    $("kSeg").innerHTML = `<a href="#kino" ${!fut ? 'aria-current="page"' : ""}>Библиотека<small>${lib.length}</small></a><a href="#kino-future" ${fut ? 'aria-current="page"' : ""}>На будущее<small>${futs.length}</small></a>`;
+    $("kSeg").innerHTML = `<a href="${rh("kino")}" ${!fut ? 'aria-current="page"' : ""}>Библиотека<small>${lib.length}</small></a><a href="${rh("kino-future")}" ${fut ? 'aria-current="page"' : ""}>На будущее<small>${futs.length}</small></a>`;
     const q = $("qK").value.trim().toLowerCase();
     const match = i => !q || [i.title,i.genre,i.note].join(" ").toLowerCase().includes(q);
     if (fut){
       const list = futs.filter(match).sort(sorter("recent"));
-      $("kMain").innerHTML = `<h1 class="k-h1">На будущее</h1>
+      $("kMain").innerHTML = `${fvBanner("kino")}<h1 class="k-h1">На будущее</h1>
         <div class="k-filters" style="margin-top:12px"><span style="color:var(--k-dim)">Что посмотрю потом. Рулетка выберет за тебя.</span><span style="flex:1"></span>
           <button class="k-btn hot sm" id="rlK">${ICON.dice}Крутить рулетку</button><button class="k-btn sm" id="btK">${ICON.sword}Битва</button>${canWrite ? `<button class="k-btn sm" id="addFutK">${ICON.plus}Добавить</button>` : ""}</div>
         <section class="k-grid">${list.length ? list.map(kCard).join("") : `<div class="k-empty"><b>Пока пусто</b>Добавь фильмы и сериалы с постером и жанром.</div>`}</section>`;
@@ -1471,9 +1495,9 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     const nowW = lib.filter(i => i.status === "playing");
     let list = lib.filter(i => (!kF || i.status === kF) && (!kT || i.type === kT) && match(i));
     list.sort((a,b) => sorter(kSort)(a,b) || (a.title||"").localeCompare(b.title||"","ru"));
-    $("kMain").innerHTML = `<h1 class="k-h1">Кино и сериалы</h1>
+    $("kMain").innerHTML = `${fvBanner("kino")}<h1 class="k-h1">Кино и сериалы</h1>
       <div class="k-stats">${[[lib.length,"всего"],[lib.filter(i=>i.status==="done").length,"досмотрено"],[nowW.length,"смотрю"],[avg,"средняя оценка"]].map(([v,l]) => `<span><b>${esc(v)}</b>${l}</span>`).join("")}</div>
-      ${releasesPanel("kino")}
+      ${FV ? "" : releasesPanel("kino")}
       ${nowW.length ? `<div class="k-label">Смотрю сейчас</div><div class="k-row">${nowW.map(kCard).join("")}</div>` : ""}
       <div class="k-filters"><button class="k-chipb" data-kf="" aria-pressed="${kF===""}">Все</button>${KORDER.filter(s => lib.some(i => i.status === s)).map(s => `<button class="k-chipb" data-kf="${s}" aria-pressed="${kF===s}">${KSTATUS[s].l}</button>`).join("")}
         <span class="k-sepv"></span><button class="k-chipb" data-kt="" aria-pressed="${kT===""}">Всё кино</button>${[["movie","Фильмы"],["series","Сериалы"],["anime","Аниме"]].map(([k,l]) => `<button class="k-chipb" data-kt="${k}" aria-pressed="${kT===k}">${l}</button>`).join("")}
@@ -1655,6 +1679,9 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     if (tierKind) renderTiers();
   }
   function readHash(){ const h = decodeURIComponent(location.hash.slice(1));
+    const fv = h.match(/^fv:([^:]+):(games|games-future|kino|kino-future)$/);
+    if (fv){ setFV(fv[1]); route = fv[2]; return; }
+    setFV(null);
     if (h.startsWith("user:")){ route = "user"; viewUid = h.slice(5); return; }
     route = ROUTES[h] && h !== "user" ? h : "games"; }
   function animateWorld(){
@@ -1665,11 +1692,22 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
   }
   window.addEventListener("hashchange", () => { prevRoute = route; closeView(); closeTiers(); closeRoulette(); closeBattle(); readHash(); render(); animateWorld(); window.scrollTo(0,0); });
   const go = r => { location.hash = r; };
+  const rh = r => FV ? `#fv:${FV}:${r}` : "#" + r;
+  function setFV(uid){
+    if (uid === FV){ if (uid) items = frItems(uid); return; }
+    FV = uid; document.body.classList.toggle("fv", !!uid);
+    if (uid){ items = frItems(uid); canWrite = false; if (!FR) loadFriends(); }
+    else { items = MYITEMS; canWrite = !!(ME && db); }
+  }
 
   document.addEventListener("click", e => {
     const t = e.target;
     const pick = sel => t.closest && t.closest(sel);
     let el;
+    if (FV){
+      if (pick("[data-ep1],[data-epp],[data-epm],[data-played],[data-sdrop],[data-csess],[data-cfail],[data-cext],[data-reldate],[data-addsoon],[data-addk],[data-ctopen],[data-battle],[data-roul]")){ e.preventDefault(); return; }
+      if ((el = pick("[data-id],[data-fut],[data-soon]")) && !pick(".view") && !pick(".sheet")){ friendItemSheet(FV + "/" + (el.dataset.id || el.dataset.fut || el.dataset.soon)); return; }
+    }
     if ((el = pick("[data-src]"))){ gSrc = el.dataset.src; renderGames(); return; }
     if ((el = pick("[data-gf]"))){ gF = el.dataset.gf; renderGames(); return; }
     if ((el = pick("[data-kf]"))){ kF = el.dataset.kf; renderKino(); return; }
@@ -2263,7 +2301,9 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
         <div class="s-form">
           <div>${posterBox()}</div>
           <form class="s-fields" id="editForm">
-            <div class="s-quick"><p><b>Быстрая вставка.</b> Выдели на странице игры в Steam описание и блок с названием, жанром и датой выхода, скопируй и вставь сюда. Поля заполнятся сами.</p>
+            <div class="s-quick"><p><b>По ссылке из Steam.</b> Вставь ссылку на страницу игры, и подтянутся название, описание, жанры, дата выхода, цена и обложка.</p>
+              <div class="s-link"><input class="s-in" id="f_url" inputmode="url" placeholder="store.steampowered.com/app/1245620/..."><button type="button" class="s-btn" id="f_urlGo">Заполнить</button></div>
+              <p style="margin-top:12px"><b>Или вручную.</b> Выдели на странице игры текст с названием, жанром и датой, скопируй и вставь сюда.</p>
               <textarea class="s-in" id="f_quick" placeholder="Вставь сюда текст со страницы Steam"></textarea></div>
             <label>Название игры<input class="s-in" id="f_title" required value="${esc(it.title||"")}"></label>
             <label>Описание<textarea class="s-in" id="f_desc" style="min-height:130px">${esc(it.desc||"")}</textarea></label>
@@ -2300,7 +2340,42 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
       $("f_rub").addEventListener("input", e => { const v = digits(e.target.value); $("f_kzt").value = v ? Math.round(+v * KZT_PER_RUB) : ""; });
       $("f_kzt").addEventListener("input", e => { const v = digits(e.target.value); $("f_rub").value = v ? Math.round(+v / KZT_PER_RUB) : ""; });
       if (!lock) wireWheel("f_rating");
-      $("f_quick").addEventListener("input", () => { const r = parseSteam($("f_quick").value), got = [];
+      const steamFill = async raw => {
+        const m = String(raw || "").match(/store\.steampowered\.com\/app\/(\d+)/i) || String(raw || "").trim().match(/^(\d{2,10})$/);
+        if (!m){ toast("Не вижу ссылку на игру в Steam"); return; }
+        const btn = $("f_urlGo"); btn.disabled = true; btn.textContent = "Ищу…";
+        try {
+          const {data: d, error} = await SB.functions.invoke("steam", {body: {appid: m[1]}});
+          if (error || !d || d.error) throw new Error((d && d.error) || (error && error.message) || "нет ответа");
+          const got = [];
+          if (d.name){ $("f_title").value = d.name; got.push("название"); }
+          if (d.short){ $("f_desc").value = d.short; got.push("описание"); }
+          const mapped = (d.tags || []).filter(t => GENRE_MAP.some(([re, v]) => v && re.test(t)));
+          const coop = (d.categories || []).some(c => /кооп|co-?op/i.test(c)) ? ["Кооп"] : [];
+          const gs = normGenres([$("f_genre").value, ...(d.genres || []), ...mapped, ...coop].filter(Boolean).join(", "), true);
+          if (gs){ $("f_genre").value = gs; $("f_genre").dispatchEvent(new Event("input")); got.push("жанры"); }
+          const rd = d.release && d.release.date;
+          if (rd){ if ($("f_release")) $("f_release").value = rd; if (rel && rel.fill(toISO(rd))) {} got.push("дату выхода"); }
+          if (lock !== "future" && lock !== "soon"){
+            if (d.is_free){ setFree(true); got.push("цену"); }
+            else if (d.price && d.price.currency === "RUB"){ const r = Math.round(d.price.final / 100); setFree(false); $("f_rub").value = r; $("f_kzt").value = Math.round(r * KZT_PER_RUB); got.push("цену"); }
+            else if (d.priceKz && d.priceKz.currency === "KZT"){ const k = Math.round(d.priceKz.final / 100); setFree(false); $("f_kzt").value = k; $("f_rub").value = Math.round(k / KZT_PER_RUB); got.push("цену из тенге"); }
+          }
+          if (d.cover && !cover.file && !(cover.url && !isNew)){
+            const bin = Uint8Array.from(atob(d.cover), c => c.charCodeAt(0));
+            const f = new File([bin], "steam-cover.jpg", {type: d.coverType || "image/jpeg"});
+            cover = {file: f, url: URL.createObjectURL(f), pos: null, remove: false};
+            $("fPoster").outerHTML = posterBox(); wireFormPoster(); got.push("обложку");
+          }
+          toast(got.length ? "Подтянул: " + got.join(", ") : "Steam ничего не отдал");
+        } catch(e){ toast("Не получилось достать данные из Steam: " + (e.message || e)); }
+        btn.disabled = false; btn.textContent = "Заполнить";
+      };
+      $("f_urlGo").onclick = () => steamFill($("f_url").value);
+      $("f_url").addEventListener("keydown", e => { if (e.key === "Enter"){ e.preventDefault(); steamFill($("f_url").value); } });
+      $("f_url").addEventListener("paste", () => setTimeout(() => { if (/steampowered\.com\/app\/\d+/i.test($("f_url").value)) steamFill($("f_url").value); }, 0));
+      $("f_quick").addEventListener("input", () => { if (/^\s*https?:\/\/store\.steampowered\.com\/app\/\d+\S*\s*$/i.test($("f_quick").value)){ $("f_url").value = $("f_quick").value.trim(); $("f_quick").value = ""; steamFill($("f_url").value); return; }
+        const r = parseSteam($("f_quick").value), got = [];
         [["title","f_title","название"],["desc","f_desc","описание"],["genre","f_genre","жанры"],["release","f_release","дату"]].forEach(([k,id,l]) => { if (r[k] && $(id)){ $(id).value = r[k]; got.push(l); } });
         if (rel && r.release && rel.fill(toISO(r.release))) got.push("дату выхода");
         if (r.genre){ const merged = normGenres([$("f_genre").value, r.genre].join(", "), true); $("f_genre").value = merged; }
@@ -2896,15 +2971,16 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
         const [pr, it] = await Promise.all([SB.from("profiles").select("user_id,nick,avatar,ava_animal,ava_color"), SB.rpc("public_items")]);
         if (pr.error) throw pr.error; if (it.error) throw it.error;
         FR = {at: Date.now(), profiles: pr.data || [], items: (it.data || []).map(r => ({...(r.data || {}), id: r.id, uid: r.user_id, _upd: r.updated_at}))};
+        if (FV) items = frItems(FV);
       } catch(e){ if (force || !FR) toast("Не получилось загрузить друзей: " + (e.message || e)); if (!FR) FR = {at: Date.now(), profiles: [], items: [], failed: true}; }
       frLoading = null; render(); return FR;
     })();
     return frLoading;
   }
   const frItems = uid => FR ? FR.items.filter(i => i.uid === uid) : [];
-  const myKeys = () => new Set(items.map(frKey));
+  const myKeys = () => new Set(MYITEMS.map(frKey));
   function compat(uid){
-    const mine = new Map(items.filter(inLib).filter(i => typeof i.rating === "number").map(i => [frKey(i), i]));
+    const mine = new Map(MYITEMS.filter(inLib).filter(i => typeof i.rating === "number").map(i => [frKey(i), i]));
     const common = frItems(uid).filter(inLib).filter(i => typeof i.rating === "number" && mine.has(frKey(i)))
       .map(f => ({f, m: mine.get(frKey(f)), d: Math.abs(f.rating - mine.get(frKey(f)).rating)}));
     const pct = common.length >= 2 ? Math.max(0, Math.round(100 - common.reduce((s, c) => s + c.d, 0) / common.length * 12)) : null;
@@ -2941,6 +3017,13 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     return `<button class="fd-row" data-fi="${esc(e.it.uid + "/" + e.it.id)}">${posterHTML(e.it, {rate:false, tgt:false, badge:false})}${showNick ? avaHTML(profOf(e.it.uid), "sm") : ""}<span class="t">${showNick ? `<b>${esc(frNick(e.it.uid))}</b> ` : ""}${e.verb} <b>${esc(e.it.title)}</b><small>${agoTxt(e.d)}${isGame(e.it) ? " · игра" : " · " + esc(KTYPES[e.it.type] || "кино")}</small></span>${r}</button>`;
   };
 
+  function fvBanner(kind){
+    if (!FV) return "";
+    const p = profOf(FV), c = FR ? compat(FV) : {pct: null};
+    return `<div class="fv-ban">${avaHTML(p, "md")}<div class="t"><b>Полка ${esc(p.nick || "")}</b><small>${c.pct != null ? `совпадение вкусов ${c.pct}% · ` : ""}только просмотр, нажми на карточку, чтобы взять к себе</small></div>
+      <div class="seg"><a href="#fv:${esc(FV)}:games" ${kind === "games" ? 'aria-current="page"' : ""}>Игры</a><a href="#fv:${esc(FV)}:kino" ${kind === "kino" ? 'aria-current="page"' : ""}>Кино</a></div>
+      <a class="fv-back" href="#user:${esc(FV)}">‹ Профиль</a></div>`;
+  }
   function renderPeople(){
     appleHead("Друзья", `<button class="a-link" data-frrefresh="1">Обновить</button>`);
     if (!ME){ $("aMain").innerHTML = `<div class="a-empty" style="margin-top:20px"><b>Нужно войти</b></div>`; return; }
@@ -2982,6 +3065,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     const feed = feedEvents(p.user_id).slice(0, 8);
     $("aMain").innerHTML = `<div class="up-head">${avaHTML(p, "big")}<div><h1 class="a-h1">${esc(p.nick)}</h1><p class="a-sub" style="margin-top:4px">${gl.length} ${plural(gl.length, "игра", "игры", "игр")} · ${kl.length} кино${feed[0] ? ` · последняя активность ${agoTxt(feed[0].d)}` : ""}</p></div></div>
       <div class="rc-grid">${[[gl.filter(i => gStatus(i.status) === "done").length, "игр пройдено"], [kl.filter(i => ["done", "played"].includes(i.status)).length, "фильмов и сериалов"], [gl.filter(i => gStatus(i.status) === "dropped").length + kl.filter(i => i.status === "dropped").length, "дропов"], [avg != null ? num1(avg) : "—", "средняя оценка"]].map(([v, l]) => `<div class="rc-c"><b style="font-size:34px">${v}</b><small>${l}</small></div>`).join("")}</div>
+      <div class="fv-tiles">${[["games", "Игры", its.filter(isGame)], ["kino", "Кино", its.filter(i => !isGame(i))]].map(([k, l, arr]) => `<a class="fv-tile ${k}" href="#fv:${esc(p.user_id)}:${k}"><span class="cv">${arr.filter(i => i.cover).slice(0, 3).map(i => `<img alt="" src="${publicUrl(i.cover)}" loading="lazy">`).join("")}</span><b>${l}</b><span>${arr.filter(inLib).length} в библиотеке · ${arr.filter(isFuture).length} на будущее · ${arr.filter(isSoon).length} ждёт</span><i>Открыть полку ›</i></a>`).join("")}</div>
       <div class="rc-sec"><h3>Совпадение вкусов</h3>
         ${c.pct != null ? `<div class="cmp-big"><span class="ava-stack" style="--av-ring:var(--c-cell)">${avaHTML(myProf(), "md")}${avaHTML(p, "md")}</span><b>${c.pct}%</b><span>по ${c.common.length} ${plural(c.common.length, "общей оценке", "общим оценкам", "общим оценкам")}</span></div>` : `<p class="a-sub" style="margin:0">${c.common.length ? "Пока одна общая оценка, процент посчитаю от двух." : "Общих оценённых игр и фильмов пока нет."}</p>`}
         ${same.length ? `<h3 style="margin:18px 0 4px;font-size:16px">Сошлись</h3>${same.map(x => `<div class="cmp-row"><span class="t">${esc(x.f.title)}</span><b>${num1(x.m.rating)}<small>${avaHTML(myProf(), "xs")}</small></b><b>${num1(x.f.rating)}<small>${avaHTML(p, "xs")}</small></b></div>`).join("")}` : ""}
@@ -2989,10 +3073,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
         <div class="acts" style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap"><button class="a-btn" data-coop="games">${ICON.dice} Во что поиграть вместе</button><button class="a-btn gray" data-coop="kino">${ICON.dice} Что посмотреть вместе</button></div>
       </div>
       ${recs.length ? `<h2 class="fr-h">${esc(p.nick)} советует<small>оценил на 8+, у тебя нет</small></h2><div class="fr-grid">${recs.map(card).join("")}</div>` : ""}
-      ${feed.length ? `<h2 class="fr-h">Недавнее</h2><div class="mo-group" style="margin-top:12px">${feed.map(e => feedRow(e, false)).join("")}</div>` : ""}
-      <div style="margin-top:28px" class="seg"><button data-upk="games" aria-pressed="${g}">Игры<small>${its.filter(isGame).length}</small></button><button data-upk="kino" aria-pressed="${!g}">Кино<small>${its.filter(i => !isGame(i)).length}</small></button></div>
-      ${groups.map(([t, l]) => sec(t, l.sort(byRec))).join("") || `<div class="a-empty" style="margin-top:16px"><b>Пусто</b>Здесь пока ничего.</div>`}
-      ${tiers.length ? `<h2 class="fr-h">Тир-лист</h2>${tiers.map(([t, col, l]) => `<div style="display:flex;gap:12px;align-items:flex-start;margin-top:12px"><span class="fr-ava" style="background:${col};color:#1d1d1f;border-radius:12px">${t}</span><div class="fr-grid" style="margin-top:0;flex:1;grid-template-columns:repeat(auto-fill,minmax(90px,1fr))">${l.sort((a, b) => (a.tierOrder ?? 0) - (b.tierOrder ?? 0)).map(card).join("")}</div></div>`).join("")}` : ""}`;
+      ${feed.length ? `<h2 class="fr-h">Недавнее</h2><div class="mo-group" style="margin-top:12px">${feed.map(e => feedRow(e, false)).join("")}</div>` : ""}`;
   }
 
   function friendItemSheet(key){
@@ -3000,7 +3081,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     const g = isGame(it), have = myKeys().has(frKey(it));
     const st = isFuture(it) ? "На будущее" : isSoon(it) ? (g ? "Ждёт релиз" : "Ждёт премьеру") : g ? GSTATUS[gStatus(it.status)] : kSt(it.status).l;
     const dates = [it.date && !isFuture(it) ? `начал ${fmtDate(it.date)}` : "", it.finishedAt ? `закончил ${fmtDate(it.finishedAt)}` : "", it.releaseDate ? `выход ${relLabel(it)}` : (it.release ? `выход ${it.release}` : "")].filter(Boolean).join(" · ");
-    const mine = items.find(i => frKey(i) === frKey(it));
+    const mine = MYITEMS.find(i => frKey(i) === frKey(it));
     const s = openSheet(`<div class="qa-top">${posterHTML(it, {tgt:false})}<div><h3>${esc(it.title)}</h3>
         <p class="sub">${esc([g ? "Игра" : KTYPES[it.type], it.year, genres(it).slice(0, 3).join(", ")].filter(Boolean).join(" · "))}</p>
         <p class="sub" style="margin-top:8px">${avaHTML(profOf(uid), "xs")} <b style="color:inherit">${esc(frNick(uid))}</b>: ${esc(st)}${typeof it.rating === "number" ? ` · оценка <b style="color:inherit">${num1(it.rating)}</b>` : ""}${it.tier ? ` · тир ${esc(it.tier)}` : ""}</p>
@@ -3028,7 +3109,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
   function coopRoulette(kind){
     const p = FR && FR.profiles.find(x => x.user_id === viewUid); if (!p) return;
     const g = kind === "games", pick = list => list.filter(i => (g ? isGame(i) : !isGame(i)) && isFuture(i));
-    const mineL = pick(items), theirL = pick(frItems(p.user_id)), tk = new Set(theirL.map(frKey));
+    const mineL = pick(MYITEMS), theirL = pick(frItems(p.user_id)), tk = new Set(theirL.map(frKey));
     const both = mineL.filter(i => tk.has(frKey(i))).map(i => ({it: i, who: "оба хотите", uids: [ME.id, p.user_id]}));
     const pool = both.length ? both : [...mineL.map(i => ({it: i, who: "из твоего списка", uids: [ME.id]})), ...theirL.map(i => ({it: i, who: `из списка ${p.nick}`, uids: [p.user_id]}))];
     const title = g ? "Во что поиграть вместе" : "Что посмотреть вместе";
@@ -3060,16 +3141,16 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
   }
   async function exportZip(onProg){
     await needZip();
-    const zip = new JSZip(), ids = [...new Set(items.flatMap(imgIds))];
+    const zip = new JSZip(), ids = [...new Set(MYITEMS.flatMap(imgIds))];
     let done = 0, ok = 0, i = 0;
     const worker = async () => { while (i < ids.length){ const id = ids[i++];
       try { const r = await fetch(publicUrl(id), {cache: "force-cache"}); if (!r.ok) throw 0; zip.file("media/" + id, await r.blob()); ok++; } catch(e){}
       done++; onProg && onProg(done, ids.length); } };
     await Promise.all([worker(), worker(), worker(), worker()]);
-    zip.file("nexus.json", JSON.stringify({nexus: 2, nick: NICK, exportedAt: now(), items, theme}, null, 2));
+    zip.file("nexus.json", JSON.stringify({nexus: 2, nick: NICK, exportedAt: now(), items: MYITEMS, theme}, null, 2));
     const blob = await zip.generateAsync({type: "blob", compression: "STORE"});
     saveBlob(blob, `${NICK}-nexus-${today()}.zip`);
-    const info = {at: now(), items: items.length, files: ok, missing: ids.length - ok};
+    const info = {at: now(), items: MYITEMS.length, files: ok, missing: ids.length - ok};
     lastBackup = info; try { await db.doc("meta/backup").set(info); } catch(e){}
     return info;
   }
@@ -3087,7 +3168,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     if (/\.zip$/i.test(f.name) || /zip/.test(f.type)){ await needZip(); zip = await JSZip.loadAsync(f); const jf = zip.file("nexus.json"); if (!jf) throw 0; j = JSON.parse(await jf.async("string")); }
     else j = JSON.parse(await f.text());
     const list = Array.isArray(j) ? j : j && j.items; if (!Array.isArray(list)) throw 0;
-    const k = i => (i.title || "").toLowerCase() + "|" + i.type, have = new Set(items.map(k));
+    const k = i => (i.title || "").toLowerCase() + "|" + i.type, have = new Set(MYITEMS.map(k));
     const map = {}, mine = ME.id + "/";
     const remap = async id => {
       if (typeof id !== "string" || !id) return null; if (id in map) return map[id];
@@ -3234,7 +3315,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     ME = user;
     const {data: prof} = await SB.from("profiles").select("nick,avatar,ava_animal,ava_color").eq("user_id", user.id).maybeSingle();
     if (prof && prof.nick){ setNick(prof.nick); MEP = prof; } else { await nickSheet(true); MEP = {nick: NICK}; assets = makeBackend(SB, user.id).assets; await avaSheet(true); }
-    const be = makeBackend(SB, user.id); db = be.db; assets = be.assets; canWrite = true;
+    const be = makeBackend(SB, user.id); db = be.db; assets = be.assets; canWrite = !FV;
     const timer = setTimeout(() => toast("Данные пока не подгрузились. Проверь интернет."), 12000);
     db.doc("meta/theme").onSnapshot(d => { theme = d.exists ? d.data() : null; applyTheme(theme); });
     db.doc("meta/bg").onSnapshot(d => { SECBG = d.exists ? d.data() : null; applySecBg(); });
@@ -3243,8 +3324,9 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     loadFriends();
     db.collection("items").onSnapshot(snap => {
       if (!snap.metadata.fromCache){ clearTimeout(timer); itemsLoaded = true; }
-      items = snap.docs.map(d => ({id: d.id, ...d.data()}));
-      render(); checkAch();
+      MYITEMS = snap.docs.map(d => ({id: d.id, ...d.data()}));
+      if (!FV) items = MYITEMS;
+      render(); if (!FV) checkAch();
       if (openId && !$("view").hidden && $("heroPoster") && $("ce").hidden && !sheets.length) openItem(openId);
     }, e => { clearTimeout(timer); toast("Не получилось загрузить данные: " + e.message); });
     render();
