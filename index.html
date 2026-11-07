@@ -157,7 +157,7 @@ body[data-theme="games"] .seg{--seg-bg:var(--s-panel);--seg-on:var(--s-acc);--se
 .s-stat.blue b{color:var(--st-play)} .s-stat.green b{color:var(--st-done)} .s-stat.red b{color:var(--st-drop)}
 .s-shelf-h{margin:30px 0 12px;font-family:var(--s-display);font-weight:600;font-size:16px;letter-spacing:.12em;text-transform:uppercase;color:#fff;display:flex;align-items:center;gap:12px}
 .s-shelf-h::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--s-line),transparent)}
-.s-row{display:grid;grid-auto-flow:column;grid-auto-columns:160px;gap:16px;overflow-x:auto;padding:4px 2px 10px;scrollbar-width:thin}
+.s-row{display:grid;grid-auto-flow:column;grid-auto-columns:160px;gap:16px;overflow-x:auto;padding:26px 22px 30px;margin:-22px -22px -20px;scrollbar-width:thin}
 .s-bar{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:26px}
 .s-sel{margin-left:auto;background:var(--s-panel2);border:1px solid var(--s-line);border-radius:10px;padding:8px 10px;color:var(--s-fg);font-size:14px}
 .s-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:22px 16px;margin-top:20px}
@@ -678,6 +678,30 @@ body.enter .s-grid>*,body.enter .k-grid>*,body.enter .fr-grid>*,body.enter .dr-g
 .tilt-glare{position:absolute;inset:0;z-index:3;pointer-events:none;border-radius:inherit;opacity:0;transition:opacity .3s;background:radial-gradient(circle at var(--gx,50%) var(--gy,50%),rgba(255,255,255,.32),rgba(255,255,255,0) 55%);mix-blend-mode:overlay}
 .tilting .tilt-glare{opacity:1}
 @media (prefers-reduced-motion:reduce){body.enter *{animation:none!important}}
+.gh-logo{text-decoration:none;cursor:pointer;border-radius:10px;transition:text-shadow .35s ease,color .35s ease,transform .2s ease}
+.gh-logo b{transition:color .35s ease,text-shadow .35s ease}
+.gh-logo:hover{color:var(--gh-fg);text-shadow:0 0 14px rgba(10,132,255,.55),0 0 30px rgba(127,92,255,.35)}
+.gh-logo:hover b{color:#fff;text-shadow:0 0 10px rgba(127,170,255,.9),0 0 26px rgba(10,132,255,.6)}
+body[data-theme="cal"] .gh-logo:hover b{color:var(--c-ring)}
+.gh-logo:active{transform:scale(.97)}
+/* шапка видна и на страницах игр и фильмов */
+.gh{z-index:56}
+.view{top:var(--ghh,64px)!important}
+.s-close,.k-close{display:none!important}
+.v-back{position:fixed;z-index:6;top:calc(var(--ghh,64px) + 14px);left:max(16px,calc((100vw - 1300px) / 2 + 16px));display:inline-flex;align-items:center;gap:8px;height:46px;padding:0 20px 0 14px;border-radius:999px;border:1px solid rgba(255,255,255,.22);
+  background:rgba(30,30,34,.72);-webkit-backdrop-filter:blur(16px) saturate(1.6);backdrop-filter:blur(16px) saturate(1.6);color:#fff;font:700 16px/1 var(--ios);cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,.35);transition:transform .2s cubic-bezier(.3,.7,.4,1.5),background .2s}
+.v-back svg{width:20px;height:20px;transition:transform .2s}
+.v-back:hover{background:rgba(60,60,66,.85)}.v-back:hover svg{transform:translateX(-3px)}
+.v-back:active{transform:scale(.95)}
+.view .s-view,.view .k-view{padding-top:74px}
+/* кнопки под постером */
+.pv-acts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.pv-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:42px;border-radius:12px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);color:inherit;font:600 14px/1 var(--ios);cursor:pointer;transition:background .15s,transform .15s}
+.pv-btn svg{width:17px;height:17px}
+.pv-btn:hover{background:rgba(255,255,255,.16)}.pv-btn:active{transform:scale(.96)}
+.k-hcol{min-width:0}
+.drop{outline:2px dashed #0a84ff!important;outline-offset:3px}
+.sb-prev{cursor:pointer}
 .dr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:18px;margin-top:20px}
 .dr{border:0;background:none;padding:0;text-align:left;color:inherit;cursor:pointer}
 .dr .poster{border-radius:16px;background:#2c2c2e}
@@ -1080,7 +1104,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
 <body>
 <div class="sec-bg" id="secBg" hidden><i></i></div>
 <header class="gh" id="gh"><div class="gh-in">
-  <div class="gh-logo"><span class="nick-t">H3RO</span> <b>NEXUS</b><span class="gh-crumb" id="aCrumb"></span></div>
+  <a class="gh-logo" href="#games" title="На главную"><span class="nick-t">H3RO</span> <b>NEXUS</b><span class="gh-crumb" id="aCrumb"></span></a>
   <div class="gh-mid">
     <div class="seg gw gw-g" id="gSeg"></div><div class="seg gw gw-k" id="kSeg"></div>
     <div class="top-pills gw gw-g"><button class="pill-btn" id="tierS">Тир-лист</button><button class="pill-btn hot" data-roul="games" id="rlTopS">Колесо фортуны</button></div>
@@ -1788,6 +1812,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     const t = e.target;
     const pick = sel => t.closest && t.closest(sel);
     let el;
+    if (pick(".gh a, .gh button") && !$("view").hidden){ closeView(); if (pick(".gh-logo") && location.hash.replace("#", "") === "games"){ e.preventDefault(); } }
     if (FV){
       if (pick("[data-ep1],[data-epp],[data-epm],[data-played],[data-sdrop],[data-csess],[data-cfail],[data-cext],[data-reldate],[data-addsoon],[data-addk],[data-ctopen],[data-battle],[data-roul]")){ e.preventDefault(); return; }
       if ((el = pick("[data-id],[data-fut],[data-soon]")) && !pick(".view") && !pick(".sheet")){ friendItemSheet(FV + "/" + (el.dataset.id || el.dataset.fut || el.dataset.soon)); return; }
@@ -2090,7 +2115,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     const bg = it && it.wallpaper ? `<div class="bgimg wall" style="background-image:url('${blobUrl(it.wallpaper)}');filter:blur(${it.wallBlur ?? 6}px) brightness(${1 - (it.wallDim ?? 35) / 100})"></div>`
       : it && it.cover ? `<div class="bgimg" style="background-image:url('${blobUrl(it.cover)}')"></div>` : "";
     const cls = viewTheme === "games" ? "s-close" : "k-close";
-    $("view").innerHTML = `${bg}<div class="shade"></div><button class="${cls}" id="closeBtn" aria-label="Закрыть">${ICON.x}</button><div class="${viewTheme === "games" ? "s-view" : "k-view"}">${html}</div>`;
+    $("view").innerHTML = `${bg}<div class="shade"></div><button class="${cls}" id="closeBtnX" aria-label="Закрыть">${ICON.x}</button><button class="v-back" id="closeBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>Назад</button><div class="${viewTheme === "games" ? "s-view" : "k-view"}">${html}</div>`;
     $("view").classList.toggle("nocover", !(it && (it.cover || it.wallpaper)));
     $("view").classList.toggle("haswall", !!(it && it.wallpaper));
     $("view").hidden = false; document.body.classList.add("view-open");
@@ -2158,7 +2183,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     const lbl = `${src ? `<span>${SRC_ICON[src]}${SRC_NAME[src]}</span>` : ""}${hasActive(it) ? `<span style="color:#ff6961">${ICON.target}Контракт</span>` : ""}<span>${GSTATUS[s]}</span>`;
     showView(`
       <div class="s-crumb"><a id="crumb">Все игры</a> &gt; ${esc(it.title)}</div>
-      <div class="s-trow"><h2 class="s-title">${esc(it.title)}</h2>${canWrite ? `<button class="pen" id="editBtn" aria-label="Изменить" title="Изменить">${ICON.edit}</button>` : ""}${canWrite && assets ? `<button class="pen" id="wallBtn" aria-label="Обои карточки" title="Обои карточки">${ICON.wall}</button>` : ""}</div>
+      <div class="s-trow"><h2 class="s-title">${esc(it.title)}</h2>${"" ? `<button class="pen" aria-label="Изменить" title="Изменить">${ICON.edit}</button>` : ""}${"" ? `<button class="pen" aria-label="Обои карточки" title="Обои карточки">${ICON.wall}</button>` : ""}</div>
       <div class="s-store">
         <div>
           ${it.cover ? `<div class="s-banner"><img class="blur" alt="" src="${blobUrl(it.cover)}"><img class="front" alt="" src="${blobUrl(it.cover)}"><div class="lbl">${lbl}</div></div>`
@@ -2175,6 +2200,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
         </div>
         <div class="s-side">
           ${posterHTML(it, {id:"heroPoster", editable: canWrite && !!assets, tgt:false, rate:false})}
+          ${canWrite ? `<div class="pv-acts"><button class="pv-btn" id="editBtn">${ICON.edit}Редактировать</button>${assets ? `<button class="pv-btn" id="wallBtn">${ICON.wall}Фон страницы</button>` : ""}</div>` : ""}
           <dl class="s-facts">${facts.map(([k,v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("")}</dl>
           ${gs.length ? `<div class="s-tags">${gs.map(g => `<span>${esc(g)}</span>`).join("")}</div>` : ""}
           ${canWrite && (s === "playing" || s === "endless") && (!c || c.state !== "active") ? `<div class="s-acts" style="margin-top:16px"><button class="s-btn red" id="ctBtn">${ICON.target}Заключить контракт</button></div>` : ""}
@@ -2187,7 +2213,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
         ${price || src === "pirate" ? `<div class="s-pricebox">${price ? `<span class="p${src === "pirate" ? " strike" : ""}">${esc(price)}</span>` : ""}${src === "pirate" ? `<span class="st dropped" style="background:#d6a24a;color:#1a1208">0 ₽</span>` : `<span class="st ${s}">${GSTATUS[s]}</span>`}</div>` : ""}</div>`, it);
     $("crumb").onclick = closeView;
     if (!canWrite) return;
-    $("editBtn").onclick = () => openForm(it, "games");
+    if ($("editBtn")) $("editBtn").onclick = () => openForm(it, "games");
     $("stChips").onclick = e => { const b = e.target.closest("[data-st]"); if (b) quickStatus(it, b.dataset.st); };
     wireWheel("vRate", v => quickRate(it, v));
     if ($("ctBtn")) $("ctBtn").onclick = () => contractSheet(it);
@@ -2203,9 +2229,9 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
       ["Моя оценка", typeof it.rating === "number" ? `${num1(it.rating)} / 10` : null], ["Тип", KTYPES[it.type]], [kinoDateLabel(it), fmtDate(itemDate(it))]].filter(f => f[1]);
     showView(`
       <div class="k-hero">
-        ${posterHTML(it, {id:"heroPoster", editable: canWrite && !!assets, rate:false})}
+        <div class="k-hcol">${posterHTML(it, {id:"heroPoster", editable: canWrite && !!assets, rate:false})}
+          ${canWrite ? `<div class="pv-acts"><button class="pv-btn" id="editBtn">${ICON.edit}Редактировать</button>${assets ? `<button class="pv-btn" id="wallBtn">${ICON.wall}Фон страницы</button>` : ""}</div>` : ""}</div>
         <div class="k-glass" style="position:relative">
-          ${canWrite ? `<button class="pen k" id="editBtn" aria-label="Изменить" title="Изменить">${ICON.edit}</button>${assets ? `<button class="pen k w" id="wallBtn" aria-label="Обои карточки" title="Обои карточки">${ICON.wall}</button>` : ""}` : ""}
           <h2 class="k-title">${esc(it.title)}</h2>
           ${it.originalTitle || it.age ? `<div class="k-orig">${it.originalTitle ? `<span>${esc(it.originalTitle)}</span>` : ""}${it.age ? `<span class="k-age">${esc(it.age)}</span>` : ""}</div>` : ""}
           ${typeof it.rating === "number" || it.kpRating ? `<div class="k-score">${typeof it.rating === "number" ? `<span class="lg ${rateCls(it.rating)}">${esc(nickShort())}</span><span class="v">${num1(it.rating)}<small>/10</small></span>` : ""}
@@ -2231,7 +2257,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
         <dl class="k-facts">${facts.map(([k,v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>
       </div>`, it);
     if (!canWrite) return;
-    $("editBtn").onclick = () => openForm(it, "kino");
+    if ($("editBtn")) $("editBtn").onclick = () => openForm(it, "kino");
     $("stChips").onclick = e => { const b = e.target.closest("[data-st]"); if (b) quickStatus(it, b.dataset.st); };
     wireWheel("vRate", v => quickRate(it, v));
     wirePoster(it); wireShots(it);
@@ -2535,7 +2561,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
           const {data: d, error} = await SB.functions.invoke("kino", {body: {url: raw}});
           let err = d && d.error;
           if (!d && error){ try { const j = await error.context.json(); err = j.error; } catch(e){ err = error.message; } }
-          if (err || !d) throw new Error(err === "captcha" ? "Кинопоиск закрылся капчей. Нужен бесплатный ключ API, напиши Claude" : err === "not_found" ? "Фильм не найден" : (err || "нет ответа"));
+          if (err || !d) throw new Error(err === "captcha" ? "Кинопоиск закрылся капчей. Нужен бесплатный ключ API, напиши Claude" : err === "not_found" ? "Не нашёл этот фильм. Для новинок и редких фильмов нужен бесплатный ключ Кинопоиска, напиши Claude" : (err || "нет ответа"));
           const got = [], set = (id, v, label) => { if (v != null && v !== "" && $(id)){ $(id).value = v; if (label) got.push(label); } };
           set("f_title", d.title, "название"); set("f_originalTitle", d.originalTitle); set("f_year", d.year, "год");
           if (d.type && !$("f_type").dataset.touched){ $("f_type").value = d.type; serToggle(); }
@@ -2955,6 +2981,8 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
       inp.addEventListener("keydown", e => { if (e.key === "Enter") ok(); });
     });
   }
+  (() => { const g = $("gh"); if (!g) return; const set = () => document.documentElement.style.setProperty("--ghh", g.offsetHeight + "px"); set();
+    if (window.ResizeObserver) new ResizeObserver(set).observe(g); else addEventListener("resize", set); })();
   // ================= анимации: появление карточек и 3D-наклон =================
   const ANIM_GRIDS = ".s-grid,.k-grid,.fr-grid,.dr-grid,.s-row,.mt-grid,.rel-list,.so-list";
   function enterAnim(){
@@ -2986,6 +3014,14 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
   // ================= патчноуты =================
   // Новые версии добавляются В НАЧАЛО списка. n — новое, c — изменено, f — исправлено, r — удалено.
   const PATCHES = [
+    {v: "1.9", date: "2026-11-08", title: "Удобные страницы", kind: "minor", sec: {
+      n: ["Логотип NEXUS в шапке светится при наведении и ведёт на главную",
+          "Картинку для фона раздела и аватарки можно перетащить или вставить через Ctrl+V. Фон можно бросить прямо на плитку раздела в профиле",
+          "Кинопоиск без ключа: если сам сайт закрыт капчей, данные берутся из Википедии (Wikidata)"],
+      c: ["Шапка остаётся сверху и на страницах игр и фильмов",
+          "Большая заметная кнопка «Назад» вместо маленького крестика",
+          "Кнопки «Редактировать» и «Фон страницы» переехали под постер"],
+      f: ["Обложка в полке «В процессе» больше не обрезается при наведении"]}},
     {v: "1.8", date: "2026-11-08", title: "Единая шапка и живые обложки", kind: "major", sec: {
       n: ["<b>Кинопоиск по ссылке</b>: вставь ссылку на фильм или сериал, и подтянутся название, тип, год, жанры, описание, режиссёр, актёры, сезоны, премьера и постер",
           "<b>3D-обложки</b>: при наведении мыши обложка выезжает вперёд и наклоняется вслед за курсором, с бликом",
@@ -3120,12 +3156,12 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     i.style.filter = `blur(${c.blur ?? 0}px)`; el.style.setProperty("--sb-dim", (c.dim ?? 55) / 100);
     el.hidden = false; document.body.classList.add("has-secbg");
   }
-  function bgSheet(sec){
+  function bgSheet(sec, initFile){
     if (!ME || !db) return;
     const cur = (SECBG && SECBG[sec]) || {};
-    let file = null, img = cur.img || null, blur = cur.blur ?? 0, dim = cur.dim ?? 55;
-    const s = openSheet(`<h3>Фон: ${esc(SEC_NAMES[sec] || sec)}</h3><p class="sub">Картинка встанет под весь раздел. Затемнение помогает читать текст поверх.</p>
-      <div class="sb-prev" id="sbP"><i></i><b></b><span>Без фона</span></div>
+    let file = initFile || null, img = cur.img || null, blur = cur.blur ?? 0, dim = cur.dim ?? 55;
+    const s = openSheet(`<h3>Фон: ${esc(SEC_NAMES[sec] || sec)}</h3><p class="sub">Картинка встанет под весь раздел. Перетащи её сюда, вставь через Ctrl+V или выбери файл.</p>
+      <div class="sb-prev" id="sbP"><i></i><b></b><span>Перетащи картинку или нажми Ctrl+V</span></div>
       <div class="acts"><label class="ib" for="sbF">Выбрать картинку</label><input type="file" id="sbF" accept="image/*" hidden><button class="ib red" id="sbRm">Убрать фон</button></div>
       <label class="sb-rng">Размытие<input type="range" id="sbB" min="0" max="30" value="${blur}"><span id="sbBv"></span></label>
       <label class="sb-rng">Затемнение<input type="range" id="sbD" min="0" max="90" value="${dim}"><span id="sbDv"></span></label>
@@ -3135,7 +3171,9 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
       q("#sbP i").style.backgroundImage = u ? `url('${u}')` : "none"; q("#sbP i").style.filter = `blur(${blur * .5}px)`;
       q("#sbP b").style.opacity = u ? dim / 100 : 0; q("#sbP span").hidden = !!u; q("#sbRm").hidden = !u;
       q("#sbBv").textContent = blur + "px"; q("#sbDv").textContent = dim + "%"; };
-    q("#sbF").onchange = e => { const f = e.target.files[0]; if (f){ file = f; draw(); } };
+    const take = f => { if (f && f.type.startsWith("image/")){ file = f; draw(); } };
+    q("#sbF").onchange = e => take(e.target.files[0]);
+    pasteTarget = take; bindDrop(q("#sbP"), take); q("#sbP").onclick = () => q("#sbF").click();
     q("#sbB").oninput = e => { blur = +e.target.value; draw(); };
     q("#sbD").oninput = e => { dim = +e.target.value; draw(); };
     q("#sbRm").onclick = () => { file = null; img = null; draw(); };
@@ -3181,7 +3219,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     return new Promise(res => {
       let st = {avatar: (MEP && MEP.avatar) || null, ava_animal: (MEP && MEP.ava_animal) || null, ava_color: (MEP && MEP.ava_color) || AVA_COLORS[Math.floor(Math.random() * AVA_COLORS.length)]}, file = null;
       const prevP = () => ({...myProf(), ...st, avatar: file ? null : st.avatar});
-      const s = openSheet(`<h3>${first ? "Выбери аватарку" : "Аватар"}</h3><p class="sub">Видна друзьям в ленте, в профиле, у релизов и в совместной рулетке.</p>
+      const s = openSheet(`<h3>${first ? "Выбери аватарку" : "Аватар"}</h3><p class="sub">Видна друзьям в ленте, в профиле, у релизов и в совместной рулетке. Фото можно перетащить сюда или вставить через Ctrl+V.</p>
         <div class="av-prev" id="avPrev"></div>
         <div class="acts"><label class="ib" for="avF">Загрузить фото</label><input type="file" id="avF" accept="image/*" hidden><button class="ib" id="avRm" ${st.avatar ? "" : "hidden"}>Убрать фото</button></div>
         <div class="av-lb">Или зверь</div><div class="av-grid" id="avA"></div>
@@ -3196,7 +3234,9 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
       };
       q("#avA").onclick = e => { const b = e.target.closest("[data-a]"); if (!b) return; st.ava_animal = b.dataset.a || null; st.avatar = null; file = null; draw(); };
       q("#avC").onclick = e => { const b = e.target.closest("[data-c]"); if (!b) return; st.ava_color = b.dataset.c; draw(); };
-      q("#avF").onchange = e => { const f = e.target.files[0]; if (f){ file = f; draw(); } };
+      const takeAva = f => { if (f && f.type.startsWith("image/")){ file = f; draw(); } };
+      q("#avF").onchange = e => takeAva(e.target.files[0]);
+      pasteTarget = takeAva; bindDrop(q("#avPrev"), takeAva); bindDrop(s.el, takeAva);
       q("#avRm").onclick = () => { st.avatar = null; file = null; draw(); };
       q("#avNo").onclick = async () => { if (first && !MEP?.ava_color){ await saveProf({ava_color: st.ava_color}); } s.close(); };
       q("#avOk").onclick = async () => {
@@ -3481,6 +3521,7 @@ body[data-theme="kino"] .shots-h{color:var(--k-dim)}
     s.el.querySelector("#pfNick").onclick = () => { s.close(); nickSheet(false); };
     s.el.querySelector("#pfAva").onclick = () => { s.close(); avaSheet(false); };
     s.el.querySelectorAll("[data-secbg],[data-theme-open]").forEach(b => b.addEventListener("click", () => s.close()));
+    s.el.querySelectorAll("[data-secbg]").forEach(b => bindDrop(b, f => { s.close(); bgSheet(b.dataset.secbg, f); }));
     s.el.querySelector("#pfExp").onclick = e => runBackup(e.currentTarget);
     s.el.querySelector("#pfImpF").onchange = async e => {
       const f = e.target.files[0]; if (!f) return; const lb = s.el.querySelector('label[for="pfImpF"]');
