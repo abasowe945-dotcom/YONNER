@@ -2998,7 +2998,7 @@ body{overflow-x:clip}
 (() => {
   // ================= справочники =================
   const KTYPES = {movie:"Фильм", series:"Сериал", anime:"Аниме"};
-  const GSTATUS = {playing:"В процессе", endless:"Бесконечная", done:"Пройдено", dropped:"Дроп"};
+  const GSTATUS = {playing:"В процессе", endless:"Онлайн-игра", done:"Пройдено", dropped:"Дроп"};
   const KSTATUS = {playing:{l:"Смотрю",c:"#7cc4ff"}, done:{l:"Досмотрено",c:"#9be15d"}, played:{l:"Смотрел",c:"#c9c9d8"}, paused:{l:"Отложено",c:"#f2d43a"}, dropped:{l:"Брошено",c:"#ff8a86"}};
   const KORDER = ["playing","done","played","paused","dropped"];
   // 2.1: у фильмов только «Просмотрено» и «Отложено», у сериалов и аниме — «Смотрю» и «Брошено» (досмотренные помечаются сами по сериям)
@@ -3118,7 +3118,7 @@ body{overflow-x:clip}
     const gs0 = isGame(it) && inLib(it) ? gStatus(it.status) : null;
     if (gs0 === "done" && o.badge !== false) b += `<span class="medal" title="Пройдено">${ICON.medal}</span>`;
     if (gs0 === "dropped" && o.badge !== false) b += `<span class="blood" title="Дроп">${ICON.blood}</span>`;
-    if (gs0 === "endless" && o.badge !== false) b += `<span class="medal inf" title="Бесконечная">∞</span>`;
+    if (gs0 === "endless" && o.badge !== false) b += `<span class="medal inf" title="Онлайн-игра">∞</span>`;
     if (o.rate !== false && typeof it.rating === "number") b += `<span class="rb ${rateCls(it.rating)}${isGame(it) ? " bl" : ""}">${num1(it.rating)}</span>`;
     if (isGame(it) && hasActive(it) && o.tgt !== false) b += `<span class="tgt" title="Активный контракт">${ICON.target}</span>`;
     const s = isGame(it) && o.src ? srcOf(it) : null;
@@ -3337,7 +3337,7 @@ body{overflow-x:clip}
     ["fast","Спидраннер","Пройди игру быстрее чем за 3 дня","fast",1,"#64d2ff"],
     ["clean","Ни шагу назад","Пройденная игра в этом месяце и ни одного дропа","clean",1,"#64d2ff"],
     ["drop10","Беспощадный","Дропни 10 игр","drops",10,"#ff453a"],
-    ["endless","Вечный двигатель","Добавь бесконечную игру","endless",1,"#bf5af2"],
+    ["endless","Вечный двигатель","Добавь онлайн-игру","endless",1,"#bf5af2"],
     ["pirate5","Йо-хо-хо","5 пиратских игр","pirate",5,"#d6a24a"],
     ["saved5k","Капитан Джек","Сэкономь 5 000 ₽ на пиратке","saved",5000,"#d6a24a"],
     ["spent10k","Меценат","Потрать 10 000 ₽ на игры","spent",10000,"#0a84ff"],
@@ -3452,10 +3452,10 @@ body{overflow-x:clip}
       <div class="s-head" style="margin-top:26px"><div><div class="t-row"><h1 class="s-h1">Библиотека</h1>${futPill("games", futs.length)}</div>
         <div class="src-pills">${[["","Все",lib.length,""],["steam","Steam",srcCount("steam"),SRC_ICON.steam],["pirate","Пиратка",srcCount("pirate"),SRC_ICON.pirate]]
           .map(([v,l,n,ic]) => `<button class="src-p ${v}" data-src="${v}" aria-pressed="${gSrc===v}">${ic ? `<span class="i">${ic}</span>` : ""}${l}<small>${n}</small></button>`).join("")}</div></div>
-        <div class="s-stats">${[["",pool.length,"всего"],["blue",cnt("playing"),"в процессе"],["purple",cnt("endless"),"бесконечные"],["green",cnt("done"),"пройдено"],["red",cnt("dropped"),"дроп"],["",avg,"средняя"]]
+        <div class="s-stats">${[["",pool.length,"всего"],["blue",cnt("playing"),"в процессе"],["purple",cnt("endless"),"онлайн-игры"],["green",cnt("done"),"пройдено"],["red",cnt("dropped"),"дроп"],["",avg,"средняя"]]
           .map(([c,v,l]) => `<div class="s-stat ${c}"><b>${esc(v)}</b><small>${l}</small></div>`).join("")}</div></div>
       ${now.length ? `<div class="s-shelf-h">В процессе</div><div class="s-row">${now.map(gCard).join("")}</div>` : ""}
-      <div class="s-bar"><div class="seg">${[["","Все",pool.length],["playing","В процессе",cnt("playing")],["endless","Бесконечные",cnt("endless")],["done","Пройдено",cnt("done")],["dropped","Дроп",cnt("dropped")]]
+      <div class="s-bar"><div class="seg">${[["","Все",pool.length],["playing","В процессе",cnt("playing")],["endless","Онлайн-игры",cnt("endless")],["done","Пройдено",cnt("done")],["dropped","Дроп",cnt("dropped")]]
         .map(([v,l,n]) => `<button data-gf="${v}" aria-pressed="${gF===v}">${l}<small>${n}</small></button>`).join("")}</div>
         <span style="display:flex;gap:10px;align-items:center"><select class="s-sel" id="gSort" aria-label="Сортировка">${sortOpts(gSort)}</select>${canWrite ? `<button class="s-btn" data-addk="games">${ICON.plus}Добавить</button>` : ""}</span></div>
       <section class="s-grid">${list.length ? list.map(gCard).join("") :
@@ -5011,6 +5011,7 @@ body{overflow-x:clip}
         "Звук клика стал глуше, как в старых RPG",
         "Досмотрел все серии — сериал сам уходит из «Смотрю» в просмотренные",
         "В мероприятии на телефоне «Иду / не иду» и участники теперь сразу под описанием, выше стены. На компе они, как и раньше, справа",
+        "Статус игр «Бесконечная» переименован в «Онлайн-игра»",
         "В календаре нажми на день, где несколько игр и фильмов, — всплывёт окно со всеми карточками этого дня, выбирай нужную",
         "На телефоне разделы больше не перелистываются свайпом — только кнопками внизу. Полки, «Скоро выйдут» и другие окошки теперь спокойно листаются пальцем",
         "Фон профиля теперь кадрируется прямо в окне: тянешь картинку, крутишь масштаб колесом, ползунком или щипком. Рядом видно, как фон будет выглядеть на телефоне"],
