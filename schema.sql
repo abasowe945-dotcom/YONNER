@@ -94,3 +94,66 @@ alter table public.profiles add column if not exists ava_color text;
 
 -- ===== дни рождения (2.1) =====
 alter table public.profiles add column if not exists birthday date;
+
+-- ===== мероприятия, участники и стена (2.2) =====
+create table if not exists public.events (
+  id uuid primary key default gen_random_uuid(),
+  owner uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  title text not null check (char_length(title) between 1 and 80),
+  descr text check (char_length(descr) <= 3000),
+  place text check (char_length(place) <= 200),
+  starts_at timestamptz,
+  photo text,
+  created_at timestamptz not null default now()
+);
+create table if not exists public.event_members (
+  event_id uuid not null references public.events (id) on delete cascade,
+  user_id uuid not null references auth.users (id) on delete cascade,
+  status text not null default 'invited' check (status in ('invited','going','not')),
+  invited_by uuid references auth.users (id) on delete set null,
+  updated_at timestamptz not null default now(),
+  primary key (event_id, user_id)
+);
+create table if not exists public.event_posts (
+  id uuid primary key default gen_random_uuid(),
+  event_id uuid not null references public.events (id) on delete cascade,
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  body text check (char_length(body) <= 2000),
+  image text,
+  created_at timestamptz not null default now()
+);
+create index if not exists event_members_user_idx on public.event_members (user_id);
+create index if not exists event_posts_event_idx on public.event_posts (event_id, created_at);
+alter table public.events enable row level security;
+alter table public.event_members enable row level security;
+alter table public.event_posts enable row level security;
+drop policy if exists events_select on public.events;
+drop policy if exists events_insert on public.events;
+drop policy if exists events_update on public.events;
+drop policy if exists events_delete on public.events;
+create policy events_select on public.events for select to authenticated using (true);
+create policy events_insert on public.events for insert to authenticated with check ((select auth.uid()) = owner);
+create policy events_update on public.events for update to authenticated using ((select auth.uid()) = owner) with check ((select auth.uid()) = owner);
+create policy events_delete on public.events for delete to authenticated using ((select auth.uid()) = owner);
+drop policy if exists em_select on public.event_members;
+drop policy if exists em_insert on public.event_members;
+drop policy if exists em_update on public.event_members;
+drop policy if exists em_delete on public.event_members;
+create policy em_select on public.event_members for select to authenticated using (true);
+create policy em_insert on public.event_members for insert to authenticated
+  with check ((select auth.uid()) = user_id or ((select auth.uid()) = invited_by and status = 'invited'));
+create policy em_update on public.event_members for update to authenticated
+  using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy em_delete on public.event_members for delete to authenticated
+  using ((select auth.uid()) = user_id or exists (select 1 from public.events e where e.id = event_id and e.owner = (select auth.uid())));
+drop policy if exists ep_select on public.event_posts;
+drop policy if exists ep_insert on public.event_posts;
+drop policy if exists ep_delete on public.event_posts;
+create policy ep_select on public.event_posts for select to authenticated using (true);
+create policy ep_insert on public.event_posts for insert to authenticated with check ((select auth.uid()) = user_id);
+create policy ep_delete on public.event_posts for delete to authenticated
+  using ((select auth.uid()) = user_id or exists (select 1 from public.events e where e.id = event_id and e.owner = (select auth.uid())));
+revoke all on public.events, public.event_members, public.event_posts from anon;
+do $$ begin alter publication supabase_realtime add table public.events; exception when duplicate_object then null; end $$;
+do $$ begin alter publication supabase_realtime add table public.event_members; exception when duplicate_object then null; end $$;
+do $$ begin alter publication supabase_realtime add table public.event_posts; exception when duplicate_object then null; end $$;
