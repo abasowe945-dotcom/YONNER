@@ -2877,6 +2877,16 @@ body{overflow-x:clip}
 .eps-r button{width:34px;height:34px;border-radius:9px;border:0;background:#3a3a3c;color:#fff;cursor:pointer;font:700 16px/1 var(--ios);display:grid;place-items:center}
 .eps-r button svg{width:13px;height:13px}.eps-r .x{background:none;color:#8e8e93}
 .eps-r .u{color:#8e8e93;font-weight:500;font-size:12.5px}
+
+/* 3.2: крестики на полках «Смотрю», «Сейчас читаю», «Читаю»; дроп у друга */
+.rx-mag .sc-x{top:8px;right:8px;z-index:7}
+.rx-mag:hover .sc-x,.pf-c:hover .sc-x{opacity:1}
+.sc-x:hover{background:#ff453a}
+.gone{opacity:.25;transform:scale(.92)!important;transition:opacity .25s,transform .25s;pointer-events:none}
+.fi-t.dropped svg{color:#ff453a}
+.fi-take[hidden]{display:none}
+.fi-drop{margin-top:4px}
+.fi-drop textarea{min-height:64px;resize:vertical;font:400 14px/1.4 var(--ios)}
 </style>
 <style>img{max-width:100%}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 <script src="config.js"></script>
@@ -3226,7 +3236,7 @@ body{overflow-x:clip}
     const patch = {epWatched: w};
     if (w > 0 && it.status !== "playing" && it.status !== "done") patch.status = "playing";
     const finished = total && w >= total;
-    if (finished){ patch.status = "done"; patch.date = today(); }
+    if (finished){ patch.status = "done"; patch.date = today(); patch.noDate = null; patch.now = null; }
     else if (it.status === "done" && delta < 0){ patch.status = "playing"; patch.date = null; }
     try { await write(it.id, patch); toast(finished ? "Сериал досмотрен" : `${w}${total ? " из " + total : ""} серий`); if (finished) confetti(); } catch(e){ toast("Не сохранилось"); }
   }
@@ -4946,11 +4956,14 @@ body{overflow-x:clip}
         "<b>Окно серий</b>: нажми на сериал в «Смотрю» в профиле — видно, сколько серий из скольких посмотрено, и можно быстро поправить сезоны и серии, если Кинопоиск вставил неправильно",
         "<b>Архив мероприятий</b>: прошедшие уходят в свёрнутый «Архив», а длинный список прокручивается прямо в окне",
         "В рейтинге активности видно, когда человек последний раз что-то обновлял, и зелёная точка, если только что",
-        "Звук печатной машинки при наборе текста, на Enter — звоночек каретки"],
+        "Звук печатной машинки при наборе текста, на Enter — звоночек каретки",
+        "У друга игру можно взять как «Дропнул» — с причиной по желанию",
+        "Крестик на полках «Смотрю» и «Сейчас читаю» в профиле убирает с полки. В Читалке крестик на «Читаю» возвращает тайтл в «В планах» — из библиотеки он не пропадает"],
       c: ["<b>Деньги</b> считают только игры, которые ты добавил как «Играю». Давно пройденные и брошенные в траты не идут",
         "Добавляешь давно пройденную игру или просмотренный фильм — дата сама ставится «Без даты», и в календарь он не попадает. Если было сегодня — сними галочку",
         "Одинаковые игры и фильмы у друзей теперь узнаются, даже если названия чуть отличаются («Disco Elysium» и «Disco Elysium — The Final Cut») или добавлены по одной ссылке Steam/Кинопоиска. Совпадение вкусов считается точнее",
-        "Звук клика стал глуше, как в старых RPG"],
+        "Звук клика стал глуше, как в старых RPG",
+        "Досмотрел все серии — сериал сам уходит из «Смотрю» в просмотренные"],
       f: ["Записи, добавленные пачкой 8 ноября как давно пройденные, убраны из календаря и трат"]}},
     {v: "3.1", date: "2026-11-08", title: "Стена с реакциями, свои витрины и лента по людям", kind: "major", sec: {
       n: ["<b>Стена</b> в «Активности»: пиши посты, вставляй картинки и эмодзи. Картинку можно перетащить или вставить через Ctrl+V",
@@ -5391,26 +5404,32 @@ body{overflow-x:clip}
       ${it.desc ? `<p class="sub" style="margin:14px 0 0;max-height:150px;overflow:auto;white-space:pre-line">${esc(it.desc.slice(0, 900))}</p>` : ""}
       ${have ? `<div class="acts" style="margin-top:16px"><button class="ib full" disabled>Уже есть у тебя</button></div>`
         : isSoon(it) ? `<div class="acts" style="margin-top:16px"><button class="ib blue full" data-take="soon">Жду вместе</button></div>`
-        : `<div class="av-lb" style="margin-top:16px">Взять к себе как</div><div class="fi-take">${(g ? [["done", "Прошёл", ICON.medal], ["playing", "Играю", ICON.pad], ["future", "Буду проходить", ICON.clock]] : [["done", "Посмотрел", ICON.film], ...(isSerT(it.type) ? [["playing", "Смотрю", ICON.kino]] : []), ["future", "Буду смотреть", ICON.clock]]).map(([k, l, ic]) => `<button class="fi-t ${k}" data-take="${k}">${ic}<span>${l}</span></button>`).join("")}</div>`}`);
+        : `<div class="av-lb" style="margin-top:16px">Взять к себе как</div><div class="fi-take">${(g ? [["done", "Прошёл", ICON.medal], ["playing", "Играю", ICON.pad], ["dropped", "Дропнул", ICON.blood], ["future", "Буду проходить", ICON.clock]] : [["done", "Посмотрел", ICON.film], ...(isSerT(it.type) ? [["playing", "Смотрю", ICON.kino]] : []), ["future", "Буду смотреть", ICON.clock]]).map(([k, l, ic]) => `<button class="fi-t ${k}" data-take="${k}">${ic}<span>${l}</span></button>`).join("")}</div>
+        <div class="fi-drop" id="fiDrop" hidden><label class="f">Почему дропнул <small style="text-transform:none;letter-spacing:0;opacity:.7">по желанию</small><textarea class="in" id="fiDR" rows="2" maxlength="300" placeholder="Надоел гринд, сломался сюжет…"></textarea></label><div class="acts"><button class="ib red" data-take="dropped!">Дропнул</button><button class="ib" id="fiDN">Отмена</button></div></div>`}`);
     s.el.querySelector(".qa-top .poster").classList.add("qa-poster");
-    s.el.querySelectorAll("[data-take]").forEach(b => b.onclick = async () => { s.el.querySelectorAll("[data-take]").forEach(x => x.disabled = true); b.classList.add("busy");
-      const id = await takeFromFriend(it, b.dataset.take); if (id){ s.close(); if (b.dataset.take === "done") setTimeout(() => { if (!FV) openItem(id); else toast("Оценку поставишь в своей карточке"); }, 120); } else s.el.querySelectorAll("[data-take]").forEach(x => x.disabled = false); });
+    const fdN = s.el.querySelector("#fiDN"); if (fdN) fdN.onclick = () => { s.el.querySelector("#fiDrop").hidden = true; s.el.querySelector(".fi-take").hidden = false; };
+    s.el.querySelectorAll("[data-take]").forEach(b => b.onclick = async () => {
+      if (b.dataset.take === "dropped"){ s.el.querySelector(".fi-take").hidden = true; s.el.querySelector("#fiDrop").hidden = false; setTimeout(() => s.el.querySelector("#fiDR").focus(), 30); return; }
+      s.el.querySelectorAll("[data-take]").forEach(x => x.disabled = true); b.classList.add("busy");
+      const mode = b.dataset.take === "dropped!" ? "dropped" : b.dataset.take, reason = mode === "dropped" ? s.el.querySelector("#fiDR").value.trim() : "";
+      const id = await takeFromFriend(it, mode, reason); if (id){ s.close(); if (b.dataset.take === "done") setTimeout(() => { if (!FV) openItem(id); else toast("Оценку поставишь в своей карточке"); }, 120); } else s.el.querySelectorAll("[data-take]").forEach(x => x.disabled = false); });
   }
-  async function takeFromFriend(it, mode){
+  async function takeFromFriend(it, mode, reason){
     if (!db) return false;
     if (myKeys().hasIt(it)){ toast("Уже есть у тебя"); return false; }
     const keep = ["title", "type", "genre", "desc", "year", "release", "coverPos", "epTotal", "seasons", "seasonEps", "originalTitle", "director", "country", "duration", "steamId", "kpId"];
     const soon = isSoon(it) && it.releaseDate;
-    const st = soon ? "soon" : mode === "done" ? "done" : mode === "playing" ? "playing" : "future";
+    const st = soon ? "soon" : mode === "done" ? "done" : mode === "playing" ? "playing" : mode === "dropped" && isGame(it) ? "dropped" : "future";
     const body = {status: st, createdAt: now(), updatedAt: now(), via: "friend:" + frNick(it.uid)};
-    if (st === "done"){ body.date = today(); if (isGame(it)) body.finishedAt = today(); }
+    if (st === "done" || st === "dropped"){ body.noDate = true; if (isGame(it)) body.addedDone = true; }
+    if (st === "dropped") body.dropReason = reason || null;
     if (st === "playing") body.date = today();
     if (soon){ body.releaseDate = it.releaseDate; if (it.releasePrec) body.releasePrec = it.releasePrec; }
     keep.forEach(k => { if (it[k] != null) body[k] = it[k]; });
     if (it.cover && assets){
       try { const r = await fetch(publicUrl(it.cover)); if (!r.ok) throw 0; const bl = await r.blob(); body.cover = (await assets.upload(bl, {type: bl.type || "image/jpeg"})).id; } catch(e){ delete body.coverPos; }
     }
-    try { const {id} = await db.collection("items").add(body); toast(soon ? `${it.title} — ждёшь вместе` : st === "done" ? `${it.title} — ${isGame(it) ? "в пройденных" : "в просмотренных"}` : st === "playing" ? `${it.title} — ${isGame(it) ? "играешь" : "смотришь"}` : `${it.title} — в «На будущее»`); return id; } catch(e){ toast("Не сохранилось"); return false; }
+    try { const {id} = await db.collection("items").add(body); toast(soon ? `${it.title} — ждёшь вместе` : st === "done" ? `${it.title} — ${isGame(it) ? "в пройденных" : "в просмотренных"}` : st === "dropped" ? `${it.title} — в дропе` : st === "playing" ? `${it.title} — ${isGame(it) ? "играешь" : "смотришь"}` : `${it.title} — в «На будущее»`); return id; } catch(e){ toast("Не сохранилось"); return false; }
   }
 
   function coopRoulette(kind){
@@ -6522,7 +6541,7 @@ body{overflow-x:clip}
     const pool = READS.filter(r => !rType || r.type === rType), by = st => pool.filter(r => rNorm(r.status) === st);
     const fav = pool.filter(r => r.fav).sort(byAt("favAt")), done = by("done").sort(byAt("updatedAt")), reading = by("reading").sort(recentFirst), plan = by("plan").sort(byAt("createdAt"));
     const chRead = pool.reduce((s, r) => s + (+r.chRead || 0), 0), waiting = reading.filter(r => r.chTotal > (r.chRead || 0)).reduce((s, r) => s + (r.chTotal - (r.chRead || 0)), 0);
-    const mag = (r, i, pg) => `<button class="rx-mag" data-rd="${esc(r.id)}" style="--i:${i};--tilt:${(((i * 7) % 5) - 2) * 1.1}deg">${rCover(r)}${pg && r.chTotal ? `<span class="pg"><i style="width:${Math.min(100, (r.chRead || 0) / r.chTotal * 100)}%"></i></span>` : ""}</button>`;
+    const mag = (r, i, pg) => `<button class="rx-mag" data-rd="${esc(r.id)}" style="--i:${i};--tilt:${(((i * 7) % 5) - 2) * 1.1}deg">${rCover(r)}${pg ? `<span class="sc-x" role="button" data-unread="${esc(r.id)}" title="Убрать из «Читаю» — останется в библиотеке">${ICON.x}</span>` : ""}${pg && r.chTotal ? `<span class="pg"><i style="width:${Math.min(100, (r.chRead || 0) / r.chTotal * 100)}%"></i></span>` : ""}</button>`;
     const addMag = (n, st, fv) => `<button class="rx-mag rx-addm" type="button" data-radd2="${st}${fv ? ":fav" : ""}" style="--i:${n}"><span class="rx-cv"><span class="ph"><b>+</b><small>${fv ? "Любимое" : "Добавить"}</small></span></span></button>`;
     const shelf = (key, label, list, hint, pg) => `<section class="rx-shelf rx3-s s-${key}"><h2 class="rx-sh">${label}<small>${list.length}</small></h2>
       ${railHTML("rx-hs", list.map((r, i) => mag(r, i, pg)).join("") + addMag(list.length, key === "fav" ? "done" : key, key === "fav")).replace('class="hs-in"', 'class="hs-in rx-rack"')}
@@ -7149,7 +7168,7 @@ body{overflow-x:clip}
     const recG = [...g].sort(byAt("createdAt")).slice(0, 18);
     const doneG = g.filter(i => inLib(i) && gStatus(i.status) === "done").sort((a, b) => String(b.finishedAt || b.date || "").localeCompare(String(a.finishedAt || a.date || "")));
     // ---- кино
-    const favK = k.filter(i => i.fav).sort(byAt("favAt")), nowK = k.filter(i => i.now).sort(byAt("nowAt"));
+    const favK = k.filter(i => i.fav).sort(byAt("favAt")), nowK = k.filter(i => i.now && kNorm(i) !== "done").sort(byAt("nowAt"));
     const recK = [...k].sort(byAt("createdAt")).slice(0, 18);
     const seenK = k.filter(i => inLib(i) && kNorm(i) === "done").sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")) || byAt("createdAt")(a, b));
     const planK = k.filter(i => isFuture(i) || isSoon(i)).sort(byAt("createdAt"));
@@ -7157,7 +7176,7 @@ body{overflow-x:clip}
     const favR = rds.filter(r => r.fav).sort(byAt("favAt")), nowR = rds.filter(r => r.now).sort(byAt("nowAt"));
     const doneR = rds.filter(r => rNorm(r.status) === "done").sort(byAt("updatedAt"));
     const magAttr = r => mine ? `data-rd="${esc(r.id)}"` : `data-frd="${esc(uid + "/" + r.id)}"`;
-    const mag = (r, i, pg) => `<button class="rx-mag${pg ? " pg-on" : ""}" ${magAttr(r)} style="--i:${i};--tilt:${(((i * 7) % 5) - 2) * 1.1}deg">${rCover(r)}${pg ? (r.chTotal ? `<span class="pg" title="${r.chRead || 0} из ${r.chTotal} глав"><i style="width:${Math.min(100, (r.chRead || 0) / r.chTotal * 100)}%"></i></span><span class="pg-t">${r.chRead || 0} / ${r.chTotal} гл.</span>` : `<span class="pg-t">${r.chRead ? `${r.chRead} гл.` : "читает"}</span>`) : ""}</button>`;
+    const mag = (r, i, pg) => `<button class="rx-mag${pg ? " pg-on" : ""}" ${magAttr(r)} style="--i:${i};--tilt:${(((i * 7) % 5) - 2) * 1.1}deg">${rCover(r)}${pg && mine ? `<span class="sc-x" role="button" data-unnow="read:${esc(r.id)}" title="Убрать с полки">${ICON.x}</span>` : ""}${pg ? (r.chTotal ? `<span class="pg" title="${r.chRead || 0} из ${r.chTotal} глав"><i style="width:${Math.min(100, (r.chRead || 0) / r.chTotal * 100)}%"></i></span><span class="pg-t">${r.chRead || 0} / ${r.chTotal} гл.</span>` : `<span class="pg-t">${r.chRead ? `${r.chRead} гл.` : "читает"}</span>`) : ""}</button>`;
     const rack = (list, addKey, emptyTxt, pg) => `<div class="pf-shelf${pg ? " pg-sh" : ""}">${list.length || addKey ? railHTML("rx-hs", `${list.map((r, i) => mag(r, i, pg)).join("")}${addKey && mine ? `<button class="rx-mag rx-addm" type="button" data-pfpick="${addKey}" style="--i:${list.length}"><span class="rx-cv"><span class="ph"><b>+</b><small>Добавить</small></span></span></button>` : ""}`).replace('class="hs-in"', 'class="hs-in rx-rack"') : ""}${!list.length && !mine ? `<p class="pf-mute pf-ish">${emptyTxt}</p>` : ""}<div class="rx-plank"></div></div>`;
     // ---- шапка
     const libN = g.filter(inLib).length + k.filter(inLib).length + rds.length, L = pfLevel(libN);
@@ -7188,7 +7207,7 @@ body{overflow-x:clip}
     const kino = `<section class="pf-floor fl-k"><div class="pf-fh"><span class="ic">${ICON.kino}</span><h2>Кино и сериалы</h2><a href="${mine ? "#kino" : `#fv:${esc(uid)}:kino`}">вся полка ›</a></div>
         ${show("Любимые фильмы и сериалы", favK.length || null, favK.length || mine ? rail(favK, i => card(i, esc([KTYPES[i.type], i.year].filter(Boolean).join(" · "))), "kino:fav") : empty("Пока не выбрал любимые"), {cls: "fav"})}
         ${show("Смотрю", nowK.length || null, nowK.length || mine ? rail(nowK, i => { const et = +i.epTotal || 0, ew = +i.epWatched || 0;
-          return `<button class="pf-c" ${mine ? (isSerT(i.type) ? `data-epsh="${esc(i.id)}"` : `data-id="${esc(i.id)}"`) : `data-fi="${esc(uid + "/" + i.id)}"`}>${posterHTML(i, {tgt: false, rate: false})}${et ? `<span class="pf-pb" title="${ew} из ${et} серий"><i style="width:${Math.min(100, ew / et * 100)}%"></i></span>` : ""}<span class="ti">${esc(i.title)}</span><small>${et ? `${ew} из ${et} серий` : isSerT(i.type) ? (ew ? `${ew} ${plural(ew, "серия", "серии", "серий")}` : "смотрит") : "смотрит"}</small></button>`; }, "kino:now") : empty("Ничего не отметил"), {cls: "now-k"})}
+          return `<button class="pf-c" ${mine ? (isSerT(i.type) ? `data-epsh="${esc(i.id)}"` : `data-id="${esc(i.id)}"`) : `data-fi="${esc(uid + "/" + i.id)}"`}>${posterHTML(i, {tgt: false, rate: false})}${mine ? `<span class="sc-x" role="button" data-unnow="kino:${esc(i.id)}" title="Убрать с полки">${ICON.x}</span>` : ""}${et ? `<span class="pf-pb" title="${ew} из ${et} серий"><i style="width:${Math.min(100, ew / et * 100)}%"></i></span>` : ""}<span class="ti">${esc(i.title)}</span><small>${et ? `${ew} из ${et} серий` : isSerT(i.type) ? (ew ? `${ew} ${plural(ew, "серия", "серии", "серий")}` : "смотрит") : "смотрит"}</small></button>`; }, "kino:now") : empty("Ничего не отметил"), {cls: "now-k"})}
         ${recK.length ? show("Недавно добавленные", null, rail(recK, i => card(i, `${esc(stTxt(i))}${i.createdAt ? ` · ${fmtShort(i.createdAt)}` : ""}`))) : ""}
         ${show("Просмотренные", seenK.length || null, seenK.length ? rail(seenK, i => card(i, i.date ? `<span class="dt">${ICON.calendar}${fmtShort(i.date)}</span>` : "дата не указана")) : empty(mine ? "Просмотренное появится здесь с датой просмотра" : "Пока ничего не посмотрел"))}
         ${show("Буду смотреть", planK.length || null, planK.length ? rail(planK, i => card(i, esc(KTYPES[i.type] || "кино"))) : empty(mine ? "Отложи что-нибудь на потом — появится здесь" : "Список пуст", mine ? "kino:future" : null))}
@@ -7659,6 +7678,15 @@ body{overflow-x:clip}
       <p class="sub">${esc([SC_KIND[sc.kind][0], e.year].filter(Boolean).join(" · "))}</p><p class="sub" style="margin-top:8px">${avaHTML(profOf(sc.user_id), "xs")} витрина «${esc(sc.title)}»</p>
       ${e.note ? `<p class="sub" style="margin-top:8px;color:#e5e5ea">${esc(e.note)}</p>` : ""}${e.url ? `<p class="sub" style="margin-top:8px"><a href="${esc(e.url)}" target="_blank" rel="noopener" style="color:#64d2ff">Открыть ссылку ↗</a></p>` : ""}</div></div>`);
   }
+  document.addEventListener("click", async e => {
+    const x = e.target.closest && e.target.closest("[data-unnow],[data-unread]"); if (!x || !ME) return;
+    e.preventDefault(); e.stopPropagation();
+    if (x.dataset.unread){ const r = (READS || []).find(z => z.id === x.dataset.unread); if (!r) return; x.closest(".rx-mag").classList.add("gone");
+      if (await saveRead({...r, status: "plan"})){ toast(`«${r.title}» убран из «Читаю» — лежит в «В планах»`); SND.paper("soft"); render(); } return; }
+    const [k, id] = x.dataset.unnow.split(":"); x.closest(".pf-c,.rx-mag").classList.add("gone");
+    if (k === "read"){ const r = (READS || []).find(z => z.id === id); if (r && await saveRead({...r, now: null, nowAt: null})){ toast("Убрано с полки «Сейчас читаю»"); render(); } return; }
+    try { await db.doc("items/" + id).update({now: null, nowAt: null}); toast("Убрано с полки «Смотрю»"); } catch(_){ toast("Не сохранилось"); render(); }
+  }, true);
   document.addEventListener("click", e => {
     const el = e.target.closest && e.target.closest("[data-scnew],[data-scadd],[data-scedit],[data-scen],[data-scrm]"); if (!el || !ME) return;
     if (el.dataset.scrm){ e.preventDefault(); e.stopPropagation(); const [id, i] = el.dataset.scrm.split(":"), sc = scList(ME.id).find(x => x.id === id); if (!sc) return;
@@ -7778,9 +7806,9 @@ body{overflow-x:clip}
     q("#epAdd").onclick = () => { arr.push(arr[arr.length - 1] || 10); draw(); };
     q("#epNo").onclick = () => s.close();
     q("#epOk").onclick = async () => { const t = tot(), patch = {seasons: arr.length || null, seasonEps: arr.length ? arr.slice() : null, epTotal: t || null, epWatched: w};
-      if (t && w >= t && it.status !== "done"){ patch.status = "done"; patch.date = today(); }
+      if (t && w >= t && it.status !== "done"){ patch.status = "done"; patch.date = today(); patch.noDate = null; patch.now = null; }
       else if (it.status === "done" && t && w < t){ patch.status = "playing"; }
-      try { await write(it.id, patch); s.close(); toast(patch.status === "done" ? "Досмотрено" : "Сохранено"); if (patch.status === "done") confetti(); } catch(_){ toast("Не сохранилось"); } };
+      try { await write(it.id, patch); s.close(); toast(patch.status === "done" ? "Досмотрено — переехал в просмотренные" : "Сохранено"); if (patch.status === "done") confetti(); } catch(_){ toast("Не сохранилось"); } };
     draw();
   }
 
