@@ -2935,6 +2935,9 @@ body{overflow-x:clip}
 .cds-c .kd{display:inline-grid;place-items:center;width:16px;height:16px;border-radius:4px;color:#fff}.cds-c .kd svg{width:11px;height:11px}
 .cds-c .kd.g{background:var(--c-game,#0a84ff)}.cds-c .kd.k{background:var(--c-kino,#bf5af2)}
 @media (max-width:560px){.cds{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 8px}}
+
+.pf-more{display:block;margin-top:7px;padding:6px 0;border-radius:7px;background:rgba(165,148,255,.14);color:#c9bfff;text-align:center;font:700 12px/1 var(--ios);transition:background .15s}
+.pf-more:hover{background:rgba(165,148,255,.28);color:#fff}
 </style>
 <style>img{max-width:100%}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 <script src="config.js"></script>
@@ -5012,6 +5015,7 @@ body{overflow-x:clip}
         "Досмотрел все серии — сериал сам уходит из «Смотрю» в просмотренные",
         "В мероприятии на телефоне «Иду / не иду» и участники теперь сразу под описанием, выше стены. На компе они, как и раньше, справа",
         "Статус игр «Бесконечная» переименован в «Онлайн-игра»",
+        "В «Смотрю» под сериалом кнопка «Подробнее» — открывает его карточку. Нажатие на постер, как и раньше, открывает окно серий, а в нём тоже есть «Карточка сериала»",
         "В календаре нажми на день, где несколько игр и фильмов, — всплывёт окно со всеми карточками этого дня, выбирай нужную",
         "На телефоне разделы больше не перелистываются свайпом — только кнопками внизу. Полки, «Скоро выйдут» и другие окошки теперь спокойно листаются пальцем",
         "Фон профиля теперь кадрируется прямо в окне: тянешь картинку, крутишь масштаб колесом, ползунком или щипком. Рядом видно, как фон будет выглядеть на телефоне"],
@@ -7258,7 +7262,7 @@ body{overflow-x:clip}
     const kino = `<section class="pf-floor fl-k"><div class="pf-fh"><span class="ic">${ICON.kino}</span><h2>Кино и сериалы</h2><a href="${mine ? "#kino" : `#fv:${esc(uid)}:kino`}">вся полка ›</a></div>
         ${show("Любимые фильмы и сериалы", favK.length || null, favK.length || mine ? rail(favK, i => card(i, esc([KTYPES[i.type], i.year].filter(Boolean).join(" · "))), "kino:fav") : empty("Пока не выбрал любимые"), {cls: "fav"})}
         ${show("Смотрю", nowK.length || null, nowK.length || mine ? rail(nowK, i => { const et = +i.epTotal || 0, ew = +i.epWatched || 0;
-          return `<button class="pf-c" ${mine ? (isSerT(i.type) ? `data-epsh="${esc(i.id)}"` : `data-id="${esc(i.id)}"`) : `data-fi="${esc(uid + "/" + i.id)}"`}>${posterHTML(i, {tgt: false, rate: false})}${mine ? `<span class="sc-x" role="button" data-unnow="kino:${esc(i.id)}" title="Убрать с полки">${ICON.x}</span>` : ""}${et ? `<span class="pf-pb" title="${ew} из ${et} серий"><i style="width:${Math.min(100, ew / et * 100)}%"></i></span>` : ""}<span class="ti">${esc(i.title)}</span><small>${et ? `${ew} из ${et} серий` : isSerT(i.type) ? (ew ? `${ew} ${plural(ew, "серия", "серии", "серий")}` : "смотрит") : "смотрит"}</small></button>`; }, "kino:now") : empty("Ничего не отметил"), {cls: "now-k"})}
+          return `<button class="pf-c" ${mine ? (isSerT(i.type) ? `data-epsh="${esc(i.id)}"` : `data-id="${esc(i.id)}"`) : `data-fi="${esc(uid + "/" + i.id)}"`}>${posterHTML(i, {tgt: false, rate: false})}${mine ? `<span class="sc-x" role="button" data-unnow="kino:${esc(i.id)}" title="Убрать с полки">${ICON.x}</span>` : ""}${et ? `<span class="pf-pb" title="${ew} из ${et} серий"><i style="width:${Math.min(100, ew / et * 100)}%"></i></span>` : ""}<span class="ti">${esc(i.title)}</span><small>${et ? `${ew} из ${et} серий` : isSerT(i.type) ? (ew ? `${ew} ${plural(ew, "серия", "серии", "серий")}` : "смотрит") : "смотрит"}</small>${mine && isSerT(i.type) ? `<span class="pf-more" role="button" data-kmore="${esc(i.id)}">Подробнее ›</span>` : ""}</button>`; }, "kino:now") : empty("Ничего не отметил"), {cls: "now-k"})}
         ${recK.length ? show("Недавно добавленные", null, rail(recK, i => card(i, `${esc(stTxt(i))}${i.createdAt ? ` · ${fmtShort(i.createdAt)}` : ""}`))) : ""}
         ${show("Просмотренные", seenK.length || null, seenK.length ? rail(seenK, i => card(i, i.date ? `<span class="dt">${ICON.calendar}${fmtShort(i.date)}</span>` : "дата не указана")) : empty(mine ? "Просмотренное появится здесь с датой просмотра" : "Пока ничего не посмотрел"))}
         ${show("Буду смотреть", planK.length || null, planK.length ? rail(planK, i => card(i, esc(KTYPES[i.type] || "кино"))) : empty(mine ? "Отложи что-нибудь на потом — появится здесь" : "Список пуст", mine ? "kino:future" : null))}
@@ -7758,6 +7762,7 @@ body{overflow-x:clip}
       ${e.note ? `<p class="sub" style="margin-top:8px;color:#e5e5ea">${esc(e.note)}</p>` : ""}${e.url ? `<p class="sub" style="margin-top:8px"><a href="${esc(e.url)}" target="_blank" rel="noopener" style="color:#64d2ff">Открыть ссылку ↗</a></p>` : ""}</div></div>`);
   }
   document.addEventListener("click", async e => {
+    const km = e.target.closest && e.target.closest("[data-kmore]"); if (km && ME){ e.preventDefault(); e.stopPropagation(); openItem(km.dataset.kmore); return; }
     const x = e.target.closest && e.target.closest("[data-unnow],[data-unread]"); if (!x || !ME) return;
     e.preventDefault(); e.stopPropagation();
     if (x.dataset.unread){ const r = (READS || []).find(z => z.id === x.dataset.unread); if (!r) return; x.closest(".rx-mag").classList.add("gone");
@@ -7866,8 +7871,9 @@ body{overflow-x:clip}
       <div class="av-lb">Где я сейчас</div><div class="eps-at"><label>Сезон<select class="in" id="epS"></select></label><label>Серия<input class="in" id="epE" inputmode="numeric"></label></div>
       <div class="av-lb">Сезоны и серии <small style="text-transform:none;letter-spacing:0;opacity:.7">если Кинопоиск вставил неправильно</small></div>
       <div class="eps-se" id="epSe"></div><button class="ib" id="epAdd" style="margin-top:8px">${ICON.plus}Добавить сезон</button>
-      <div class="acts" style="margin-top:16px"><button class="ib blue" id="epOk">Сохранить</button><button class="ib" id="epNo">Отмена</button></div>`, {wide: true});
+      <div class="acts" style="margin-top:16px"><button class="ib blue" id="epOk">Сохранить</button><button class="ib" id="epCard">Карточка сериала</button><button class="ib" id="epNo">Отмена</button></div>`, {wide: true});
     const q = x => s.el.querySelector(x);
+    q("#epCard").onclick = () => { s.close(); setTimeout(() => openItem(it.id), 80); };
     const draw = () => { const t = tot(); w = Math.max(0, t ? Math.min(w, t) : w); const p = pos();
       q("#epP").innerHTML = `<div class="n"><b>${w}</b> из ${t || "?"} ${plural(t || w, "серии", "серий", "серий")}${arr.length ? `<span>S${p.s} · E${p.e}</span>` : ""}</div>
         <div class="segs">${arr.length ? arr.map((n, i) => { const before = arr.slice(0, i).reduce((x, y) => x + y, 0), pr = n ? Math.max(0, Math.min(1, (w - before) / n)) : 0; return `<i style="--n:${Math.max(1, n)}" title="${i + 1} сезон · ${n} сер."><u style="width:${(pr * 100).toFixed(1)}%"></u></i>`; }).join("") : `<i style="--n:1"><u style="width:${t ? Math.min(100, w / t * 100) : 0}%"></u></i>`}</div>`;
