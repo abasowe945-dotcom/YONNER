@@ -347,3 +347,58 @@ create policy nt_delete on public.notifications for delete to authenticated usin
 revoke all on public.notifications from anon;
 alter table public.notifications replica identity full;
 do $$ begin alter publication supabase_realtime add table public.notifications; exception when duplicate_object then null; end $$;
+
+-- ===== 3.4: тир-листы, книга жалоб и предложений, отметки на стенах мероприятий =====
+alter table public.notifications drop constraint if exists notifications_kind_check;
+alter table public.notifications add constraint notifications_kind_check check (kind in ('mention_post','mention_comment','comment','invite','mention_event','tier_reply'));
+
+create table if not exists public.tierlists (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users on delete cascade,
+  title text not null check (char_length(title) between 1 and 80),
+  tiers jsonb not null default '[]'::jsonb check (jsonb_typeof(tiers) = 'array' and jsonb_array_length(tiers) <= 20),
+  pool jsonb not null default '[]'::jsonb check (jsonb_typeof(pool) = 'array'),
+  pinned boolean not null default false,
+  reply_to uuid references public.tierlists(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create index if not exists tierlists_user_idx on public.tierlists(user_id);
+create index if not exists tierlists_reply_idx on public.tierlists(reply_to);
+alter table public.tierlists enable row level security;
+drop policy if exists tl_select on public.tierlists; create policy tl_select on public.tierlists for select to authenticated using (true);
+drop policy if exists tl_insert on public.tierlists; create policy tl_insert on public.tierlists for insert to authenticated with check (user_id = auth.uid());
+drop policy if exists tl_update on public.tierlists; create policy tl_update on public.tierlists for update to authenticated using (user_id = auth.uid()) with check (user_id = auth.uid());
+drop policy if exists tl_delete on public.tierlists; create policy tl_delete on public.tierlists for delete to authenticated using (user_id = auth.uid());
+
+create table if not exists public.feedback (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users on delete cascade,
+  body text check (body is null or char_length(body) <= 3000),
+  image text,
+  created_at timestamptz not null default now(),
+  check (body is not null or image is not null)
+);
+alter table public.feedback enable row level security;
+drop policy if exists fb_select on public.feedback; create policy fb_select on public.feedback for select to authenticated using (true);
+drop policy if exists fb_insert on public.feedback; create policy fb_insert on public.feedback for insert to authenticated with check (user_id = auth.uid());
+drop policy if exists fb_delete on public.feedback; create policy fb_delete on public.feedback for delete to authenticated using (user_id = auth.uid());
+
+create table if not exists public.feedback_votes (
+  feedback_id uuid not null references public.feedback(id) on delete cascade,
+  user_id uuid not null default auth.uid() references auth.users on delete cascade,
+  v smallint not null check (v in (-1, 1)),
+  created_at timestamptz not null default now(),
+  primary key (feedback_id, user_id)
+);
+alter table public.feedback_votes enable row level security;
+drop policy if exists fv_select on public.feedback_votes; create policy fv_select on public.feedback_votes for select to authenticated using (true);
+drop policy if exists fv_insert on public.feedback_votes; create policy fv_insert on public.feedback_votes for insert to authenticated with check (user_id = auth.uid());
+drop policy if exists fv_update on public.feedback_votes; create policy fv_update on public.feedback_votes for update to authenticated using (user_id = auth.uid()) with check (user_id = auth.uid());
+drop policy if exists fv_delete on public.feedback_votes; create policy fv_delete on public.feedback_votes for delete to authenticated using (user_id = auth.uid());
+revoke all on public.tierlists, public.feedback, public.feedback_votes from anon;
+do $$ begin
+  begin alter publication supabase_realtime add table public.tierlists; exception when others then null; end;
+  begin alter publication supabase_realtime add table public.feedback; exception when others then null; end;
+  begin alter publication supabase_realtime add table public.feedback_votes; exception when others then null; end;
+end $$;
