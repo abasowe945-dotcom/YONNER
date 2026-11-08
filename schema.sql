@@ -224,3 +224,99 @@ begin
 end $$;
 drop trigger if exists profiles_keep_pid on public.profiles;
 create trigger profiles_keep_pid before insert or update on public.profiles for each row execute function public.profiles_keep_pid();
+
+-- ===== 3.1: общая стена — посты, комменты, реакции, лайки комментов =====
+create table if not exists public.wall_posts (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  body text check (char_length(body) <= 4000),
+  image text,
+  created_at timestamptz not null default now(),
+  constraint wall_posts_not_empty check (body is not null or image is not null)
+);
+create table if not exists public.wall_comments (
+  id uuid primary key default gen_random_uuid(),
+  post_id uuid not null references public.wall_posts (id) on delete cascade,
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  body text check (char_length(body) <= 2000),
+  image text,
+  created_at timestamptz not null default now(),
+  constraint wall_comments_not_empty check (body is not null or image is not null)
+);
+create table if not exists public.wall_reactions (
+  post_id uuid not null references public.wall_posts (id) on delete cascade,
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  kind text not null check (kind in ('like','lol','cringe','poop','clown','party','cry','salute','skull','fire')),
+  created_at timestamptz not null default now(),
+  primary key (post_id, user_id, kind)
+);
+create table if not exists public.wall_comment_likes (
+  comment_id uuid not null references public.wall_comments (id) on delete cascade,
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (comment_id, user_id)
+);
+create index if not exists wall_posts_created_idx on public.wall_posts (created_at desc);
+create index if not exists wall_posts_user_idx on public.wall_posts (user_id);
+create index if not exists wall_comments_post_idx on public.wall_comments (post_id, created_at);
+create index if not exists wall_comments_user_idx on public.wall_comments (user_id);
+create index if not exists wall_reactions_user_idx on public.wall_reactions (user_id);
+create index if not exists wall_comment_likes_user_idx on public.wall_comment_likes (user_id);
+alter table public.wall_posts enable row level security;
+alter table public.wall_comments enable row level security;
+alter table public.wall_reactions enable row level security;
+alter table public.wall_comment_likes enable row level security;
+drop policy if exists wp_select on public.wall_posts;
+drop policy if exists wp_insert on public.wall_posts;
+drop policy if exists wp_delete on public.wall_posts;
+create policy wp_select on public.wall_posts for select to authenticated using (true);
+create policy wp_insert on public.wall_posts for insert to authenticated with check ((select auth.uid()) = user_id);
+create policy wp_delete on public.wall_posts for delete to authenticated using ((select auth.uid()) = user_id);
+drop policy if exists wc_select on public.wall_comments;
+drop policy if exists wc_insert on public.wall_comments;
+drop policy if exists wc_delete on public.wall_comments;
+create policy wc_select on public.wall_comments for select to authenticated using (true);
+create policy wc_insert on public.wall_comments for insert to authenticated with check ((select auth.uid()) = user_id);
+create policy wc_delete on public.wall_comments for delete to authenticated
+  using ((select auth.uid()) = user_id or exists (select 1 from public.wall_posts p where p.id = post_id and p.user_id = (select auth.uid())));
+drop policy if exists wr_select on public.wall_reactions;
+drop policy if exists wr_insert on public.wall_reactions;
+drop policy if exists wr_delete on public.wall_reactions;
+create policy wr_select on public.wall_reactions for select to authenticated using (true);
+create policy wr_insert on public.wall_reactions for insert to authenticated with check ((select auth.uid()) = user_id);
+create policy wr_delete on public.wall_reactions for delete to authenticated using ((select auth.uid()) = user_id);
+drop policy if exists wcl_select on public.wall_comment_likes;
+drop policy if exists wcl_insert on public.wall_comment_likes;
+drop policy if exists wcl_delete on public.wall_comment_likes;
+create policy wcl_select on public.wall_comment_likes for select to authenticated using (true);
+create policy wcl_insert on public.wall_comment_likes for insert to authenticated with check ((select auth.uid()) = user_id);
+create policy wcl_delete on public.wall_comment_likes for delete to authenticated using ((select auth.uid()) = user_id);
+revoke all on public.wall_posts, public.wall_comments, public.wall_reactions, public.wall_comment_likes from anon;
+do $$ begin alter publication supabase_realtime add table public.wall_posts; exception when duplicate_object then null; end $$;
+do $$ begin alter publication supabase_realtime add table public.wall_comments; exception when duplicate_object then null; end $$;
+do $$ begin alter publication supabase_realtime add table public.wall_reactions; exception when duplicate_object then null; end $$;
+do $$ begin alter publication supabase_realtime add table public.wall_comment_likes; exception when duplicate_object then null; end $$;
+
+-- ===== 3.1: свои витрины в профиле =====
+create table if not exists public.showcases (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  title text not null check (char_length(title) between 1 and 60),
+  kind text not null check (kind in ('game','kino','read')),
+  entries jsonb not null default '[]'::jsonb check (jsonb_typeof(entries) = 'array' and jsonb_array_length(entries) <= 200),
+  ord integer not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create index if not exists showcases_user_idx on public.showcases (user_id, ord);
+alter table public.showcases enable row level security;
+drop policy if exists sc_select on public.showcases;
+drop policy if exists sc_insert on public.showcases;
+drop policy if exists sc_update on public.showcases;
+drop policy if exists sc_delete on public.showcases;
+create policy sc_select on public.showcases for select to authenticated using (true);
+create policy sc_insert on public.showcases for insert to authenticated with check ((select auth.uid()) = user_id);
+create policy sc_update on public.showcases for update to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy sc_delete on public.showcases for delete to authenticated using ((select auth.uid()) = user_id);
+revoke all on public.showcases from anon;
+do $$ begin alter publication supabase_realtime add table public.showcases; exception when duplicate_object then null; end $$;

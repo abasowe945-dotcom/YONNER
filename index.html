@@ -2334,6 +2334,7 @@ body[data-route="home"] .a-main,body[data-route="user"] .a-main{max-width:1240px
 /* сейчас играю — широкие плашки как «недавняя активность» в Steam */
 .pf-now{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px}
 .pf-nw{position:relative;overflow:hidden;display:grid;grid-template-columns:74px minmax(0,1fr);gap:14px;align-items:center;padding:10px;border-radius:6px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:#fff;text-align:left;cursor:pointer;isolation:isolate;transition:border-color .2s,transform .2s}
+.pf-nw{contain:paint}
 .pf-nw .bgx{position:absolute;inset:-20px;z-index:-1;background:var(--bg) center/cover;filter:blur(22px) saturate(1.5) brightness(.45);transform:scale(1.1);transition:filter .3s}
 .pf-nw:hover{border-color:color-mix(in srgb,var(--fc) 60%,transparent);transform:translateY(-2px)}
 .pf-nw:hover .bgx{filter:blur(18px) saturate(1.7) brightness(.6)}
@@ -2581,7 +2582,7 @@ body.enter .k-grid.dvd-grid > *{animation:none}
   .pf-stats span{padding:12px 12px}.pf-stats b{font-size:24px}
   .pf-main{gap:24px}
   .pf-fh h2{font-size:20px}
-  .pf-box{padding:12px 12px 14px;margin:0 -4px}
+  .pf-box{padding:12px 12px 14px}
   .pf-c,.pf-add{width:108px}
   .pf-now{grid-template-columns:minmax(0,1fr)}
   .pf-nw{grid-template-columns:60px minmax(0,1fr)}.pf-nw .poster{width:60px}.pf-nw b{font-size:16px}
@@ -2605,6 +2606,183 @@ body.enter .k-grid.dvd-grid > *{animation:none}
 @media (max-width:720px){.sx,.sx.join{grid-template-columns:40px minmax(0,1fr) auto;gap:10px}.sx.join{grid-template-columns:40px minmax(0,1fr)}.sx .poster{width:40px}.sx .side{grid-column:auto}.sx .t b.ti{font-size:14px}.sx .side .fr-ava{display:none}}
 @media (max-width:640px){.s-row{margin-left:-16px;margin-right:-16px;padding-left:16px;padding-right:16px}}
 body{overflow-x:clip}
+
+/* ===== 3.1: стена, реакции, комменты, лента по людям ===== */
+.act-tabs{display:flex;gap:4px;padding:4px;margin:0 0 14px;border-radius:14px;background:var(--c-cell);box-shadow:var(--c-shadow)}
+.act-tabs button{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;border:0;border-radius:11px;background:none;color:var(--c-dim);font:700 14px/1 var(--ios);cursor:pointer;transition:background .2s,color .2s}
+.act-tabs button svg{width:17px;height:17px;flex:none}
+.act-tabs button small{font:700 11px/1 var(--ios);padding:3px 7px;border-radius:999px;background:var(--c-cell-out);color:var(--c-dim)}
+.act-tabs button[aria-pressed="true"]{background:var(--c-cell-out);color:var(--c-fg)}
+.act-tabs button[aria-pressed="true"] svg{color:var(--c-ring)}
+.wl{padding:14px}
+.wl-form,.wc-form{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:start}
+.wl-form > .fr-ava{width:40px;height:40px;font-size:17px}
+.in-w{min-width:0;border-radius:14px;background:var(--c-cell-out);border:1px solid var(--c-line);transition:border-color .2s}
+.in-w:focus-within{border-color:var(--c-ring)}
+.in-w textarea{display:block;width:100%;box-sizing:border-box;min-height:44px;max-height:220px;padding:11px 14px 6px;border:0;background:none;color:var(--c-fg);font:400 15px/1.4 var(--ios);resize:none;outline:none}
+.in-w textarea::placeholder{color:var(--c-dim)}
+.in-w .tools{display:flex;align-items:center;gap:4px;flex-wrap:wrap;padding:4px 6px 6px 8px}
+.wl-emo{display:flex;flex-wrap:wrap;gap:0;min-width:0}
+.wl-emo button{width:30px;height:30px;padding:4px;border:0;border-radius:8px;background:none;cursor:pointer;transition:transform .15s cubic-bezier(.3,1.6,.4,1),background .15s}
+.wl-emo button:hover{background:var(--c-cell);transform:scale(1.18)}
+.wl-emo .emo{width:22px;height:22px;margin:0}
+.in-w .att{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 9px;border-radius:8px;color:var(--c-dim);font:600 13px/1 var(--ios);cursor:pointer}
+.in-w .att svg{width:18px;height:18px}
+.in-w .att:hover{background:var(--c-cell);color:var(--c-fg)}
+.in-w .pv{display:inline-flex;align-items:center;gap:4px}
+.in-w .pv img{height:34px;max-width:60px;object-fit:cover;border-radius:6px}
+.in-w .pv button{width:22px;height:22px;border-radius:50%;border:0;background:var(--c-cell);color:var(--c-dim);cursor:pointer;font-size:11px}
+.in-w .send{margin-left:auto;height:32px;padding:0 14px;border-radius:9px;border:0;background:var(--c-ring);color:#fff;font:700 13px/1 var(--ios);cursor:pointer}
+.in-w .send:disabled{opacity:.6}
+.wl-form.drop .in-w,.wc-form.drop .in-w{border-style:dashed;border-color:var(--c-ring)}
+.wp{margin-top:14px;padding-top:14px;border-top:1px solid var(--c-line);animation:wcIn .35s cubic-bezier(.2,.9,.3,1.2)}
+.wp header{display:flex;align-items:center;gap:10px}
+.wp header .fr-ava{width:40px;height:40px;font-size:17px}
+.wp .who{min-width:0;flex:1}
+.wp .nk{display:block;padding:0;border:0;background:none;color:var(--c-fg);font:700 14.5px/1.2 var(--ios);cursor:pointer;text-align:left}
+.wp .nk:hover{text-decoration:underline}
+.wp .who small{display:block;margin-top:3px;color:var(--c-dim);font:500 12px/1 var(--ios)}
+.wp-del{width:30px;height:30px;border-radius:50%;border:0;background:none;color:var(--c-dim);display:grid;place-items:center;cursor:pointer;opacity:.6}
+.wp-del svg{width:15px;height:15px}.wp-del:hover{opacity:1;background:var(--c-cell-out)}
+.wp-t{margin:10px 0 0;font:400 15.5px/1.5 var(--ios);white-space:pre-wrap;word-wrap:break-word}
+.wp-t.big .emo{width:54px;height:54px}
+.wp-im{margin-top:10px}
+.wl-img{display:block;max-width:100%;max-height:460px;border-radius:12px;cursor:zoom-in;object-fit:contain;background:var(--c-cell-out)}
+.wp-rx{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-top:10px}
+.wrx{display:inline-flex;align-items:center;gap:5px;height:30px;padding:0 10px 0 6px;border-radius:999px;border:1px solid var(--c-line);background:var(--c-cell-out);color:var(--c-fg);font:700 13px/1 var(--ios);cursor:pointer;transition:transform .2s cubic-bezier(.3,1.6,.4,1),background .15s}
+.wrx .emo{width:20px;height:20px;margin:0}
+.wrx:hover{transform:scale(1.06)}
+.wrx.on{background:color-mix(in srgb,var(--c-ring) 18%,transparent);border-color:var(--c-ring);color:var(--c-ring)}
+.rx-add-w{position:relative;display:inline-flex}
+.rx-add{position:relative;display:inline-flex;align-items:center;height:30px;padding:0 9px 0 6px;border-radius:999px;border:1px dashed var(--c-line);background:none;color:var(--c-dim);cursor:pointer;filter:grayscale(1);opacity:.7;transition:filter .2s,opacity .2s}
+.rx-add .emo{width:18px;height:18px;margin:0}
+.rx-add i{font:700 14px/1 var(--ios);font-style:normal;margin-left:2px}
+.rx-add:hover{filter:none;opacity:1}
+.rx-pick{position:fixed;left:0;top:0;z-index:9500;display:flex;gap:2px;padding:6px;border-radius:999px;background:var(--c-cell);border:1px solid var(--c-line);box-shadow:0 14px 34px rgba(0,0,0,.35);white-space:nowrap}
+.rx-pick button{width:38px;height:38px;padding:5px;border:0;border-radius:50%;background:none;cursor:pointer;opacity:0;transform:translateY(8px) scale(.6);animation:rxIn .32s cubic-bezier(.3,1.6,.4,1) forwards;animation-delay:calc(var(--i) * 22ms);transition:transform .15s}
+.rx-pick button .emo{width:28px;height:28px;margin:0}
+.rx-pick button:hover{transform:scale(1.32) translateY(-4px)}
+.rx-pick button.on{background:color-mix(in srgb,var(--c-ring) 20%,transparent)}
+@keyframes rxIn{to{opacity:1;transform:none}}
+.rx-who{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 8px 0 4px;border:0;border-radius:999px;background:none;color:var(--c-dim);font:600 12px/1 var(--ios);cursor:pointer}
+.rx-who:hover{background:var(--c-cell-out)}
+.wp-cb{margin-left:auto;display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 10px;border:0;border-radius:999px;background:none;color:var(--c-dim);font:600 13px/1 var(--ios);cursor:pointer}
+.wp-cb svg{width:16px;height:16px}
+.wp-cb:hover,.wp-cb.on{background:var(--c-cell-out);color:var(--c-fg)}
+.wp-cm{margin:10px 0 0 50px;display:grid;gap:10px}
+.wp-all{justify-self:start;padding:0;border:0;background:none;color:var(--c-ring);font:600 13px/1 var(--ios);cursor:pointer}
+.wc3{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;align-items:start}
+.wc3 > .fr-ava{width:30px;height:30px;font-size:13px}
+.wc3 .b{min-width:0}
+.wc3 .bb{display:inline-block;max-width:100%;padding:8px 12px;border-radius:4px 16px 16px 16px;background:var(--c-cell-out)}
+.wc3 .nk{display:block;margin-bottom:2px;font-size:13px}
+.wc3 .tx{display:block;font:400 14.5px/1.4 var(--ios);white-space:pre-wrap;word-wrap:break-word}
+.wc3 .tx.big .emo{width:38px;height:38px}
+.wc3 .wl-img{margin-top:6px;max-height:280px}
+.wc3 .ft{display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px;margin:4px 0 0 4px;color:var(--c-dim);font:500 12px/1 var(--ios)}
+.wc3 .ft button{padding:0;border:0;background:none;color:var(--c-dim);font:600 12px/1 var(--ios);cursor:pointer}
+.wc3 .ft button:hover{color:var(--c-fg)}
+.wc3 .ft .lk.on{color:#ff375f}
+.wc3 .ft .who .fr-ava{width:18px;height:18px;font-size:8px}
+.wc3 .ft .del{opacity:.7}
+.wc-form > .fr-ava{width:30px;height:30px;font-size:13px}
+.wc-form .in-w textarea{min-height:38px;padding:9px 12px 4px;font-size:14.5px}
+.wc-form .wl-emo button{width:26px;height:26px;padding:3px}.wc-form .wl-emo .emo{width:19px;height:19px}
+/* лента по людям */
+.fb-feed2{padding:6px 14px}
+.fg{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;padding:12px 0;border-top:1px solid var(--c-line)}
+.fg:first-child{border-top:0}
+.fg-a{align-self:start;padding:0;border:0;background:none;cursor:pointer}
+.fg-a .fr-ava{width:42px;height:42px;font-size:18px}
+.fg-b{min-width:0}
+.fg-h{display:flex;align-items:baseline;gap:8px}
+.fg-n{padding:0;border:0;background:none;color:var(--c-fg);font:700 15px/1.2 var(--ios);cursor:pointer}
+.fg-n:hover{text-decoration:underline}
+.fg-d{color:var(--c-dim);font:500 12.5px/1 var(--ios)}
+.fg-l{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:4px;font:400 14px/1.4 var(--ios);color:var(--c-fg)}
+.fg-l li{position:relative;padding-left:14px}
+.fg-l li::before{content:"";position:absolute;left:2px;top:.6em;width:5px;height:5px;border-radius:50%;background:var(--c-ring);opacity:.7}
+.fg-l .vb{color:var(--c-dim)}
+.fg-l em{font-style:normal;color:var(--c-dim)}
+.fg-l .fg-more{color:var(--c-dim)}
+.fg-go{display:flex;align-items:center;gap:6px;margin-top:10px;padding:6px 12px 6px 6px;border:1px solid var(--c-line);border-radius:12px;background:var(--c-cell-out);color:var(--c-fg);cursor:pointer;max-width:100%;transition:background .15s}
+.fg-go:hover{background:color-mix(in srgb,var(--c-ring) 10%,var(--c-cell-out))}
+.fg-cv{width:34px;flex:none}
+.fg-cv .poster,.fg-cv .rx-cv{border-radius:5px;box-shadow:0 3px 8px rgba(0,0,0,.25)}
+.fg-cv .rx-cv > span:not(.ph),.fg-cv .rx-cv .ph b,.fg-cv .rx-cv .ph small,.fg-cv .rx-cv::before{display:none}
+.fg-cv .poster .ph{font-size:0}
+.fg-dt{margin-left:6px;display:flex;flex-direction:column;align-items:flex-start;gap:3px;font:700 13px/1 var(--ios);color:var(--c-ring);white-space:nowrap}
+.fg-dt small{font:500 11.5px/1 var(--ios);color:var(--c-dim)}
+.fg-next{width:100%;margin:6px 0 8px}
+.fgs-h{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.fgs-h > div{flex:1;min-width:0}.fgs-h h3{margin:0}.fgs-h .sub{margin:2px 0 0}
+.fgs{display:grid;gap:6px;max-height:min(64vh,620px);overflow:auto}
+.fgs-r{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:12px;align-items:center;padding:6px;border:0;border-radius:12px;background:#2c2c2e;color:#e5e5ea;text-align:left;cursor:pointer;font:400 14px/1.35 var(--ios)}
+.fgs-r:hover{background:#3a3a3c}
+.fgs-r .poster,.fgs-r .rx-cv{width:48px;border-radius:6px}
+.fgs-r .rx-cv > span:not(.ph):not(.ok){display:none}
+.fgs-r .t{min-width:0}.fgs-r .vb{color:#8e8e93;font-size:13px}
+.fgs-r b{display:block;font-size:15px;color:#fff;margin:2px 0}
+.fgs-r small{color:#8e8e93;font-size:12px}
+.fgs-r .r{font:700 12px/1 var(--ios);padding:5px 8px;border-radius:999px}
+.fgs-r .r.green{background:rgba(48,209,88,.18);color:#30d158}.fgs-r .r.yellow{background:rgba(255,214,10,.16);color:#ffd60a}.fgs-r .r.red{background:rgba(255,69,58,.16);color:#ff6b5e}
+.who-g{margin-top:10px}
+.who-h{display:flex;align-items:center;gap:8px;margin-bottom:4px;font:700 13px/1 var(--ios);color:#e5e5ea}
+.who-h .emo{width:22px;height:22px;margin:0}.who-h small{color:#8e8e93;font-weight:600}
+.who-r{display:flex;align-items:center;gap:10px;width:100%;padding:6px;border:0;border-radius:10px;background:none;color:#fff;font:600 14px/1 var(--ios);cursor:pointer;text-align:left}
+.who-r:hover{background:#2c2c2e}.who-r .fr-ava{width:32px;height:32px;font-size:14px}
+@media (max-width:720px){
+  .wl{padding:12px}
+  .wl-form > .fr-ava{display:none}.wl-form{grid-template-columns:minmax(0,1fr)}
+  .wp-cm{margin-left:0}
+  .wp-cb{margin-left:0}
+  .rx-pick{max-width:calc(100vw - 16px);flex-wrap:wrap;border-radius:20px;justify-content:center}
+  .rx-pick button{width:34px;height:34px}
+  .in-w .wl-emo{order:5;width:100%}
+}
+
+/* ===== 3.1: «Смотрю», «Сейчас читаю», свои витрины, взять у друга ===== */
+.pf-c{position:relative}
+.pf-pb{display:block;height:4px;margin-top:6px;border-radius:2px;background:rgba(255,255,255,.1);overflow:hidden}
+.pf-pb i{display:block;height:100%;border-radius:2px;background:linear-gradient(90deg,#7c6cff,#a594ff)}
+.rx-hs .rx-mag .pg{left:6px;right:6px;bottom:6px;height:4px;z-index:6;background:rgba(0,0,0,.45)}
+.rx-mag .pg-t{position:absolute;left:50%;bottom:16px;z-index:6;transform:translateX(-50%);padding:4px 8px;border-radius:6px;background:rgba(10,10,12,.78);color:#ffd9a6;font:700 11px/1 var(--ios);white-space:nowrap;box-shadow:0 4px 10px rgba(0,0,0,.4)}
+.rx-mag.pg-on .rx-cv .new,.rx-mag.pg-on .rx-cv .rb{display:none}
+.pf-floor.fl-s{--fc:#ff6fb1}
+.pf-fh-b{margin-left:auto;display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:8px;border:0;background:color-mix(in srgb,var(--fc) 18%,transparent);color:var(--fc);font:700 13px/1 var(--ios);cursor:pointer}
+.pf-fh-b svg{width:15px;height:15px}.pf-fh-b:hover{background:color-mix(in srgb,var(--fc) 28%,transparent)}
+.sc-k{padding:4px 8px;border-radius:6px;background:rgba(255,255,255,.06);color:var(--c-dim);font:600 11px/1 var(--ios)}
+.sc-box header .pf-mini{margin-left:auto}
+.sc-x{position:absolute;top:6px;right:6px;z-index:6;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:rgba(0,0,0,.65);color:#fff;opacity:0;transition:opacity .15s}
+.sc-x svg{width:12px;height:12px}
+.sc-c:hover .sc-x{opacity:1}
+@media (hover:none){.sc-x{opacity:.85}}
+.sc-kinds{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:6px 0 12px}
+.sc-kinds button{display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 8px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:#2c2c2e;color:#e5e5ea;font:700 13px/1.2 var(--ios);cursor:pointer}
+.sc-kinds button svg{width:24px;height:24px}
+.sc-kinds button[aria-pressed="true"]{background:rgba(255,111,177,.16);border-color:#ff6fb1;color:#ff9cc9}
+.sc-ideas{display:flex;flex-wrap:wrap;gap:6px;margin-top:-4px}
+.sc-ideas button{height:28px;padding:0 10px;border-radius:999px;border:1px dashed rgba(255,255,255,.18);background:none;color:#a1a1a6;font:600 12px/1 var(--ios);cursor:pointer}
+.sc-ideas button:hover{color:#fff;border-color:#ff6fb1}
+.sce{display:grid;gap:6px;max-height:min(50vh,460px);overflow:auto}
+.sce-r{display:grid;grid-template-columns:24px minmax(0,1fr) 34px 34px;gap:8px;align-items:center;padding:8px;border-radius:12px;background:#2c2c2e}
+.sce-r .n{color:#8e8e93;font:700 12px/1 var(--ios);text-align:center}
+.sce-r .t{min-width:0;color:#fff;font:600 14px/1.25 var(--ios)}
+.sce-r .t .in{margin-top:6px;height:34px;font-size:13px}
+.sce-r button{width:34px;height:34px;border-radius:9px;border:0;background:#3a3a3c;color:#e5e5ea;cursor:pointer;display:grid;place-items:center;font:700 15px/1 var(--ios)}
+.sce-r button svg{width:14px;height:14px}.sce-r button:disabled{opacity:.3}
+.sc-tabs{margin:8px 0 12px}
+.sc-ur{margin-top:8px}
+.sc-got{display:flex;align-items:center;gap:12px;padding:8px;border-radius:12px;background:#2c2c2e}
+.sc-got img{width:54px;aspect-ratio:2/3;object-fit:cover;border-radius:6px}
+.sc-got b{display:block;color:#fff;font:700 15px/1.25 var(--ios)}.sc-got small{color:#8e8e93}
+.fi-take{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:8px}
+.fi-t{display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 8px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:#2c2c2e;color:#e5e5ea;font:700 13.5px/1.2 var(--ios);cursor:pointer;transition:transform .15s,background .15s}
+.fi-t svg{width:24px;height:24px}
+.fi-t:hover{transform:translateY(-2px);background:#3a3a3c}
+.fi-t.done svg{color:#ffd60a}.fi-t.playing svg{color:#64d2ff}.fi-t.future svg{color:#bf5af2}
+.fi-t.busy{opacity:.6}.fi-t:disabled{cursor:default}
+@media (max-width:760px){.sc-kinds button{padding:12px 4px;font-size:12px}.pf-fh-b{padding:0 10px;font-size:12px}}
 </style>
 <style>img{max-width:100%}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 <script src="config.js"></script>
@@ -3381,7 +3559,7 @@ body{overflow-x:clip}
     if ((el = pick("[data-user]"))){ go("user:" + el.dataset.user); return; }
     if ((el = pick("[data-fi]"))){ friendItemSheet(el.dataset.fi); return; }
     if ((el = pick("[data-coop]"))){ coopRoulette(el.dataset.coop); return; }
-    if ((el = pick("[data-frrefresh]"))){ loadFriends(true); return; }
+    if ((el = pick("[data-frrefresh]"))){ loadFriends(true); loadWall(true); return; }
     if ((el = pick("[data-theme-open]"))){ canWrite ? themeSheet() : toast("Тему может менять только владелец"); return; }
     if ((el = pick("[data-reldate]"))){ e.preventDefault(); relDateSheet(items.find(i => i.id === el.dataset.reldate)); return; }
     if ((el = pick("[data-soon]"))){ soonSheet(items.find(i => i.id === el.dataset.soon)); return; }
@@ -4663,6 +4841,16 @@ body{overflow-x:clip}
   // ================= патчноуты =================
   // Новые версии добавляются В НАЧАЛО списка. n — новое, c — изменено, f — исправлено, r — удалено.
   const PATCHES = [
+    {v: "3.1", date: "2026-11-08", title: "Стена с реакциями, свои витрины и лента по людям", kind: "major", sec: {
+      n: ["<b>Стена</b> в «Активности»: пиши посты, вставляй картинки и эмодзи. Картинку можно перетащить или вставить через Ctrl+V",
+        "<b>Реакции на посты</b>: лайк, смех, кринж, какашка, клоун, праздник, плач, GG, череп и огонь. Нажми «кто» — увидишь, кто что поставил",
+        "<b>Комментарии</b> под постами: текст, эмодзи и картинки. На каждый комментарий можно поставить лайк и посмотреть, кто лайкнул",
+        "<b>Свои витрины в профиле</b>, как в Steam: «Создать витрину» → игры, кино или книги → название → наполняешь из своей коллекции, по ссылке (Steam, Кинопоиск, com-x) или вручную с постером. Витрины видят все",
+        "В профиле появились полки <b>«Смотрю»</b> с полоской просмотренных серий и <b>«Сейчас читаю»</b> с прогрессом по главам — их наполняешь сам",
+        "У друга в профиле или в ленте нажми на игру или фильм и выбери, как взять к себе: «Прошёл», «Играю», «Буду проходить» (для кино — «Посмотрел», «Смотрю», «Буду смотреть»)",
+        "Новые эмодзи: лайк, огонь, череп, GG, клоун, какашка, праздник"],
+      c: ["<b>Лента друзей</b> теперь собрана по людям и дням: ник, а под ним списком — что сделал. Видно и игры, и кино, и мангу. «Подробно» открывает всё с обложками",
+        "Стена и лента — две вкладки в центре «Активности»"]}},
     {v: "3.0", date: "2026-11-08", title: "Профиль как в Steam, новая Читалка и кино на DVD", kind: "major", sec: {
       n: ["<b>Главная — теперь твой профиль</b> в духе Steam: аватар, ник, уровень, статистика и этажи — игры, кино, книги. Друзья видят ровно такую же страницу, когда открывают твой профиль",
         "<b>Свой ID</b> у каждого аккаунта — виден в профиле, нажми, чтобы скопировать",
@@ -5016,10 +5204,10 @@ body{overflow-x:clip}
     if (frLoading) return frLoading;
     frLoading = (async () => {
       try {
-        let [pr, it, rd] = await Promise.all([SB.from("profiles").select(PF_COLS), SB.rpc("public_items"), SB.from("reads").select("id,user_id,data,updated_at")]);
+        let [pr, it, rd, sc] = await Promise.all([SB.from("profiles").select(PF_COLS), SB.rpc("public_items"), SB.from("reads").select("id,user_id,data,updated_at"), SB.from("showcases").select("*")]);
         if (pr.error) pr = await SB.from("profiles").select("user_id,nick,avatar,ava_animal,ava_color,birthday,created_at");
         if (pr.error) throw pr.error; if (it.error) throw it.error;
-        FR = {at: Date.now(), profiles: pr.data || [], items: (it.data || []).map(r => ({...(r.data || {}), id: r.id, uid: r.user_id, _upd: r.updated_at})), reads: rd && !rd.error ? (rd.data || []).map(r => ({...(r.data || {}), id: r.id, uid: r.user_id, _upd: r.updated_at})) : []};
+        FR = {at: Date.now(), profiles: pr.data || [], items: (it.data || []).map(r => ({...(r.data || {}), id: r.id, uid: r.user_id, _upd: r.updated_at})), reads: rd && !rd.error ? (rd.data || []).map(r => ({...(r.data || {}), id: r.id, uid: r.user_id, _upd: r.updated_at})) : [], showcases: sc && !sc.error ? (sc.data || []).map(x => ({...x, entries: Array.isArray(x.entries) ? x.entries : []})) : []};
         if (FV) items = frItems(FV);
       } catch(e){ if (force || !FR) toast("Не получилось загрузить друзей: " + (e.message || e)); if (!FR) FR = {at: Date.now(), profiles: [], items: [], failed: true}; }
       frLoading = null; render(); return FR;
@@ -5085,22 +5273,28 @@ body{overflow-x:clip}
         ${dates ? `<p class="sub" style="margin-top:4px">${esc(dates)}</p>` : ""}
         ${mine && typeof mine.rating === "number" ? `<p class="sub" style="margin-top:4px">Твоя оценка: <b style="color:inherit">${num1(mine.rating)}</b></p>` : ""}</div></div>
       ${it.desc ? `<p class="sub" style="margin:14px 0 0;max-height:150px;overflow:auto;white-space:pre-line">${esc(it.desc.slice(0, 900))}</p>` : ""}
-      <div class="acts" style="margin-top:16px">${have ? `<button class="ib full" disabled>Уже есть у тебя</button>` : `<button class="ib blue full" id="fiTake">${isSoon(it) ? "Жду" : "Взять к себе в «На будущее»"}</button>`}</div>`);
+      ${have ? `<div class="acts" style="margin-top:16px"><button class="ib full" disabled>Уже есть у тебя</button></div>`
+        : isSoon(it) ? `<div class="acts" style="margin-top:16px"><button class="ib blue full" data-take="soon">Жду вместе</button></div>`
+        : `<div class="av-lb" style="margin-top:16px">Взять к себе как</div><div class="fi-take">${(g ? [["done", "Прошёл", ICON.medal], ["playing", "Играю", ICON.pad], ["future", "Буду проходить", ICON.clock]] : [["done", "Посмотрел", ICON.film], ...(isSerT(it.type) ? [["playing", "Смотрю", ICON.kino]] : []), ["future", "Буду смотреть", ICON.clock]]).map(([k, l, ic]) => `<button class="fi-t ${k}" data-take="${k}">${ic}<span>${l}</span></button>`).join("")}</div>`}`);
     s.el.querySelector(".qa-top .poster").classList.add("qa-poster");
-    const b = s.el.querySelector("#fiTake"); if (b) b.onclick = async () => { b.disabled = true; b.textContent = "Добавляю…"; if (await takeFromFriend(it)) s.close(); else { b.disabled = false; b.textContent = isSoon(it) ? "Жду" : "Взять к себе в «На будущее»"; } };
+    s.el.querySelectorAll("[data-take]").forEach(b => b.onclick = async () => { s.el.querySelectorAll("[data-take]").forEach(x => x.disabled = true); b.classList.add("busy");
+      const id = await takeFromFriend(it, b.dataset.take); if (id){ s.close(); if (b.dataset.take === "done") setTimeout(() => { if (!FV) openItem(id); else toast("Оценку поставишь в своей карточке"); }, 120); } else s.el.querySelectorAll("[data-take]").forEach(x => x.disabled = false); });
   }
-  async function takeFromFriend(it){
+  async function takeFromFriend(it, mode){
     if (!db) return false;
     if (myKeys().has(frKey(it))){ toast("Уже есть у тебя"); return false; }
-    const keep = ["title", "type", "genre", "desc", "year", "release", "coverPos", "epTotal"];
+    const keep = ["title", "type", "genre", "desc", "year", "release", "coverPos", "epTotal", "originalTitle", "director", "country", "duration"];
     const soon = isSoon(it) && it.releaseDate;
-    const body = {status: soon ? "soon" : "future", createdAt: now(), updatedAt: now(), via: "friend:" + frNick(it.uid)};
+    const st = soon ? "soon" : mode === "done" ? "done" : mode === "playing" ? "playing" : "future";
+    const body = {status: st, createdAt: now(), updatedAt: now(), via: "friend:" + frNick(it.uid)};
+    if (st === "done"){ body.date = today(); if (isGame(it)) body.finishedAt = today(); }
+    if (st === "playing") body.date = today();
     if (soon){ body.releaseDate = it.releaseDate; if (it.releasePrec) body.releasePrec = it.releasePrec; }
     keep.forEach(k => { if (it[k] != null) body[k] = it[k]; });
     if (it.cover && assets){
       try { const r = await fetch(publicUrl(it.cover)); if (!r.ok) throw 0; const bl = await r.blob(); body.cover = (await assets.upload(bl, {type: bl.type || "image/jpeg"})).id; } catch(e){ delete body.coverPos; }
     }
-    try { await db.collection("items").add(body); toast(soon ? `${it.title} — ждёшь вместе` : `${it.title} — в «На будущее»`); return true; } catch(e){ toast("Не сохранилось"); return false; }
+    try { const {id} = await db.collection("items").add(body); toast(soon ? `${it.title} — ждёшь вместе` : st === "done" ? `${it.title} — ${isGame(it) ? "в пройденных" : "в просмотренных"}` : st === "playing" ? `${it.title} — ${isGame(it) ? "играешь" : "смотришь"}` : `${it.title} — в «На будущее»`); return id; } catch(e){ toast("Не сохранилось"); return false; }
   }
 
   function coopRoulette(kind){
@@ -5358,7 +5552,7 @@ body{overflow-x:clip}
     db.doc("meta/bg").onSnapshot(d => { SECBG = d.exists ? d.data() : null; applySecBg(); });
     Promise.all(["backup", "autobackup"].map(x => db.doc("meta/" + x).get().then(d => d.exists ? d.data() : null).catch(() => null)))
       .then(([b, a]) => { lastBackup = b; autoBackup = a; if (route === "more") render(); });
-    loadFriends(); loadEvents(); subscribeEvents(); loadReads().then(() => handleInbox());
+    loadFriends(); loadEvents(); subscribeEvents(); loadWall(); subscribeWall(); loadReads().then(() => handleInbox());
     db.collection("items").onSnapshot(snap => {
       if (!snap.metadata.fromCache){ clearTimeout(timer); itemsLoaded = true; }
       MYITEMS = snap.docs.map(d => ({id: d.id, ...d.data()}));
@@ -5683,19 +5877,11 @@ body{overflow-x:clip}
     appleHead("Активность", `<button class="a-link" data-frrefresh="1">Обновить</button>`);
     if (!ME){ $("aMain").innerHTML = `<div class="a-empty" style="margin-top:20px"><b>Нужно войти</b></div>`; return; }
     if (!FR){ $("aMain").innerHTML = `<h1 class="a-h1">Активность</h1><p class="a-sub">Загружаю…</p>`; loadFriends(); return; }
+    const fa = document.activeElement, fid = fa && fa.id && /^wl/.test(fa.id) ? fa.id : null, fsel = fid ? [fa.selectionStart, fa.selectionEnd] : null, sy = scrollY, td = today();
     const others = FR.profiles.filter(p => p.user_id !== ME.id).map(p => {
       const its = frItems(p.user_id), last = its.reduce((m, i) => (i._upd || "") > (m ? m._upd || "" : "") ? i : m, null);
       return {p, last, ts: last ? last._upd : "", c: compat(p.user_id), n: its.filter(inLib).length};
     }).sort((a, b) => (b.ts || "").localeCompare(a.ts || ""));
-    // лента по дням
-    const joins = FR.profiles.filter(p => p.created_at && p.user_id !== ME.id && Date.now() - Date.parse(p.created_at) < 60 * 864e5).map(p => ({join: true, p, d: localDate(new Date(p.created_at))}));
-    const feed = [...feedEvents(null), ...joins].sort((a, b) => b.d.localeCompare(a.d)).slice(0, 50), td = today(), yd = addDays(td, -1);
-    const dayLbl = d => d === td ? "Сегодня" : d === yd ? "Вчера" : parseD(d).toLocaleDateString("ru-RU", {day: "numeric", month: "long", ...(d.slice(0, 4) !== td.slice(0, 4) ? {year: "numeric"} : {})});
-    let feedH = "", lastDay = "";
-    feed.forEach(e => { if (e.d !== lastDay){ lastDay = e.d; feedH += `<div class="fd-day">${dayLbl(e.d)}</div>`; }
-      const r = !e.join && typeof e.it.rating === "number" && /прошёл|дропнул|посмотрел|бросил/.test(e.verb) ? `<span class="r ${rateCls(e.it.rating)}">${num1(e.it.rating)}</span>` : "";
-      if (e.join){ feedH += `<button class="sx join" data-user="${esc(e.p.user_id)}">${avaHTML(e.p)}<span class="t"><span class="nk">${esc(e.p.nick)}</span> <span class="vb">присоединился к NEXUS</span><small>новенький, загляни к нему на полку</small></span></button>`; return; }
-      feedH += `<button class="sx" data-fi="${esc(e.it.uid + "/" + e.it.id)}">${posterHTML(e.it, {rate:false, tgt:false, badge:false})}<span class="t"><span class="nk">${esc(frNick(e.it.uid))}</span> <span class="vb">${e.verb}</span><b class="ti">${esc(e.it.title)}</b><small>${isGame(e.it) ? "игра" : esc((KTYPES[e.it.type] || "кино").toLowerCase())}${genres(e.it)[0] ? " · " + esc(genres(e.it)[0].toLowerCase()) : ""}</small></span><span class="side">${r}${avaHTML(profOf(e.it.uid), "xs")}</span></button>`; });
     // друзья справа
     const friendsH = others.map(o => { const mins = o.ts ? (Date.now() - Date.parse(o.ts)) / 6e4 : 1e9, dot = mins < 20 ? "on" : mins < 1440 ? "rc" : "";
       return `<button class="fl-i" data-user="${esc(o.p.user_id)}"><span class="av">${avaHTML(o.p)}<i class="${dot}" title="${dot === "on" ? "только что был на сайте" : dot === "rc" ? "был сегодня" : ""}"></i></span>
@@ -5719,11 +5905,12 @@ body{overflow-x:clip}
     $("aMain").innerHTML = `<h1 class="a-h1">Активность</h1><p class="a-sub">${others.length ? `${others.length} ${plural(others.length, "человек", "человека", "человек")} на NEXUS кроме тебя. Видно всё, кроме заметок и причин дропа.` : "Пока здесь никого, кроме тебя. Скинь друзьям ссылку на сайт."}</p>
       <div class="fb">
         <aside class="fb-col fb-l">${eventsCard()}${bdH}</aside>
-        <section class="fb-feed-w">${watchCard()}<div class="fb-card fb-feed st"><h3>Лента<small>${feed.length ? `${feed.length} ${plural(feed.length, "событие", "события", "событий")}` : ""}</small></h3>
-          ${feed.length ? feedH : `<div class="a-empty"><b>Тихо</b>Когда друзья начнут что-то добавлять, это появится здесь.</div>`}</div></section>
+        <section class="fb-feed-w">${watchCard()}<div class="act-tabs" role="tablist"><button data-acttab="wall" aria-pressed="${actTab === "wall"}">${ICON.chat}Стена${WALL && WALL.posts.length ? `<small>${WALL.posts.length}</small>` : ""}</button><button data-acttab="feed" aria-pressed="${actTab === "feed"}">${ICON.people}Лента друзей</button></div>${actTab === "feed" ? feedCard() : wallCard()}</section>
         <aside class="fb-col fb-r"><div class="fb-card plain"><h3>Друзья<small>${others.length}</small></h3>${others.length ? `<div class="fl">${friendsH}</div>` : `<p class="a-sub" style="margin:0;font-size:13px">Скинь ссылку на сайт — тут появятся друзья и что они делали.</p>`}</div></aside>
       </div>`;
     document.querySelectorAll('[data-stack="1"]').forEach(wireStack);
+    wireWall3(); if (actTab === "wall" && !WALL) loadWall();
+    if (fid){ const n = $(fid); if (n){ n.focus({preventScroll: true}); try { n.setSelectionRange(fsel[0], fsel[1]); } catch(_){} } } if (Math.abs(scrollY - sy) > 2) scrollTo(0, sy);
   }
 
   // ================= 2.2: звуки — клики и трещотка =================
@@ -5881,7 +6068,8 @@ body{overflow-x:clip}
   }
 
   // ================= 2.2: эмодзи в стиле iOS =================
-  const EMO = [["lol", "😂", "смех"], ["angry", "😡", "злость"], ["poker", "😐", "покерфейс"], ["cringe", "😬", "кринж"], ["cry", "😭", "плач"]];
+  const EMO = [["lol", "😂", "смех"], ["angry", "😡", "злость"], ["poker", "😐", "покерфейс"], ["cringe", "😬", "кринж"], ["cry", "😭", "плач"],
+    ["like", "👍", "лайк"], ["fire", "🔥", "огонь"], ["skull", "💀", "череп"], ["salute", "🫡", "GG"], ["clown", "🤡", "клоун"], ["poop", "💩", "какашка"], ["party", "🎉", "праздник"]];
   const EMO_SVG = (() => {
     const face = (f = "url(#emY)") => `<circle cx="32" cy="32" r="29" fill="${f}"/><ellipse cx="24" cy="14" rx="13" ry="6" fill="#fff" opacity=".28"/>`, B = "#6b3c0b";
     return {
@@ -5889,13 +6077,22 @@ body{overflow-x:clip}
       angry: face("url(#emR)") + `<path d="M14 20l13 7M50 20l-13 7" stroke="#5a1200" stroke-width="4" stroke-linecap="round"/><ellipse cx="23" cy="32" rx="3.4" ry="4" fill="#5a1200"/><ellipse cx="41" cy="32" rx="3.4" ry="4" fill="#5a1200"/><path d="M22 48q10-8 20 0" stroke="#5a1200" stroke-width="3.8" fill="none" stroke-linecap="round"/>`,
       poker: face() + `<ellipse cx="23" cy="28" rx="3.3" ry="4.8" fill="${B}"/><ellipse cx="41" cy="28" rx="3.3" ry="4.8" fill="${B}"/><path d="M21 44h22" stroke="${B}" stroke-width="3.8" stroke-linecap="round"/>`,
       cringe: face() + `<ellipse cx="23" cy="25" rx="3.3" ry="4.8" fill="${B}"/><ellipse cx="41" cy="25" rx="3.3" ry="4.8" fill="${B}"/><rect x="14" y="36" width="36" height="14" rx="7" fill="#fff" stroke="${B}" stroke-width="2.8"/><path d="M15 43h34M23 36.5v13M32 36.5v13M41 36.5v13" stroke="${B}" stroke-width="1.7"/>`,
+      like: `<path d="M8 31a3 3 0 0 1 3-3h8v27h-8a3 3 0 0 1-3-3Z" fill="#e8890f"/><path d="M21 28l9-15c2.5-4.2 9-2.8 9 2.2V26h12.5a5.5 5.5 0 0 1 5.4 6.5l-3.3 18A6 6 0 0 1 46.7 55H21Z" fill="url(#emY)" stroke="#c97a10" stroke-width="2" stroke-linejoin="round"/><path d="M42 35h11M42 42h10M42 49h8" stroke="#c97a10" stroke-width="2" stroke-linecap="round" opacity=".55"/><ellipse cx="33" cy="20" rx="4" ry="2.4" fill="#fff" opacity=".35" transform="rotate(-55 33 20)"/>`,
+      fire: `<path d="M33 3c3 11 17 17 17 34a18 18 0 0 1-36 0c0-9 4-14 7-18 1 7 5 10 9 11-3-11 0-20 3-27Z" fill="url(#emF)"/><path d="M32 30c3 7 10 10 10 18a10 10 0 0 1-20 0c0-6 3-9 5-12 1 3 3 5 5 6-1-5-1-9 0-12Z" fill="#ffe36b"/>`,
+      skull: `<path d="M32 5C18 5 8 15 8 28c0 8 4 14 10 17v7a4 4 0 0 0 4 4h20a4 4 0 0 0 4-4v-7c6-3 10-9 10-17C56 15 46 5 32 5Z" fill="#f1f2f5" stroke="#b5b9c3" stroke-width="2"/><ellipse cx="22" cy="30" rx="7" ry="7.5" fill="#2b2f38"/><ellipse cx="42" cy="30" rx="7" ry="7.5" fill="#2b2f38"/><path d="M32 37l-4.5 8h9Z" fill="#2b2f38"/><path d="M26 50v6M32 50v6M38 50v6" stroke="#b5b9c3" stroke-width="2.2"/><ellipse cx="22" cy="14" rx="9" ry="4" fill="#fff" opacity=".7"/>`,
+      salute: face() + `<ellipse cx="40" cy="30" rx="3.2" ry="4.6" fill="${B}"/><ellipse cx="25" cy="32" rx="3.2" ry="4.6" fill="${B}"/><path d="M25 46h16" stroke="${B}" stroke-width="3.6" stroke-linecap="round"/><path d="M1 27c6-12 18-17 30-14l3 2c2 3 0 6-3 6l-17 5c-5 1-9 2-13 1Z" fill="url(#emY)" stroke="#c97a10" stroke-width="2" stroke-linejoin="round"/><path d="M14 17l12-3M12 22l15-3" stroke="#c97a10" stroke-width="1.6" stroke-linecap="round" opacity=".6"/>`,
+      clown: `<circle cx="11" cy="25" r="9" fill="#ff7a00"/><circle cx="53" cy="25" r="9" fill="#ff7a00"/><circle cx="15" cy="15" r="7" fill="#ffd60a"/><circle cx="49" cy="15" r="7" fill="#2fb4ff"/><circle cx="32" cy="35" r="24" fill="#fafafa" stroke="#d9d9de" stroke-width="1.2"/><path d="M18 27l5-6 5 6-5 6Z" fill="#2fb4ff"/><path d="M36 27l5-6 5 6-5 6Z" fill="#2fb4ff"/><circle cx="23" cy="27" r="2.2" fill="#222"/><circle cx="41" cy="27" r="2.2" fill="#222"/><circle cx="32" cy="37" r="6.5" fill="#ff2d2d"/><circle cx="30" cy="35" r="2" fill="#fff" opacity=".65"/><path d="M17 44q15 15 30 0q-15 7-30 0Z" fill="#e0242b"/>`,
+      poop: `<path d="M9 54c-3-9 5-13 9-13-3-8 4-13 9-13-1-8 5-12 10-13 3-1 4-4 3-8 9 4 8 13 5 16 8 0 11 6 9 11 8 1 11 9 7 14-1 4-4 6-8 6H17c-4 0-7-1-8-0Z" fill="url(#emP)"/><ellipse cx="25" cy="42" rx="5" ry="6" fill="#fff"/><ellipse cx="39" cy="42" rx="5" ry="6" fill="#fff"/><circle cx="26" cy="43.5" r="2.7" fill="#2a1505"/><circle cx="38" cy="43.5" r="2.7" fill="#2a1505"/><path d="M24 51q8 6 16 0" stroke="#2a1505" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M29 18q4-3 9-1" stroke="#fff" stroke-width="2" opacity=".3" fill="none" stroke-linecap="round"/>`,
+      party: `<path d="M7 59l12-37 23 23Z" fill="url(#emY)" stroke="#c97a10" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 44l9 9M16 33l16 16" stroke="#ff375f" stroke-width="4"/><path d="M33 21q7-8 2-15" stroke="#30d158" stroke-width="3.2" fill="none" stroke-linecap="round"/><path d="M43 31q9-4 15 3" stroke="#0a84ff" stroke-width="3.2" fill="none" stroke-linecap="round"/><circle cx="51" cy="13" r="3.2" fill="#ff375f"/><rect x="40" y="5" width="6" height="6" rx="1" fill="#ffd60a" transform="rotate(22 43 8)"/><circle cx="57" cy="44" r="2.8" fill="#bf5af2"/><rect x="25" y="9" width="5" height="5" rx="1" fill="#64d2ff" transform="rotate(-18 27 11)"/><rect x="49" y="22" width="5" height="5" rx="1" fill="#ff9f0a" transform="rotate(35 51 24)"/>`,
       cry: face() + `<path d="M15 19q5-4 11 0M49 19q-5-4-11 0" stroke="${B}" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M16 27q5 4 10 0M38 27q5 4 10 0" stroke="${B}" stroke-width="3.6" fill="none" stroke-linecap="round"/><path d="M17 29q-3 14-1 31h9q2-17-1-31Z" fill="url(#emT)" opacity=".95"/><path d="M40 29q-3 14-1 31h9q2-17-1-31Z" fill="url(#emT)" opacity=".95"/><path d="M23 40q9-6 18 0q2 12-9 13q-11-1-9-13Z" fill="${B}"/><path d="M27 49q5-3 10 0q-5 4-10 0Z" fill="#ff6b6b"/>`
     };
   })();
   document.body.insertAdjacentHTML("beforeend", `<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
     <radialGradient id="emY" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#ffec8f"/><stop offset=".55" stop-color="#fdc83a"/><stop offset="1" stop-color="#f0981a"/></radialGradient>
     <radialGradient id="emR" cx="40%" cy="30%" r="75%"><stop offset="0" stop-color="#ffb07a"/><stop offset=".5" stop-color="#f45d2c"/><stop offset="1" stop-color="#c41e0d"/></radialGradient>
-    <linearGradient id="emT" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a6e6ff"/><stop offset="1" stop-color="#2f9ff0"/></linearGradient></defs></svg>`);
+    <linearGradient id="emT" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a6e6ff"/><stop offset="1" stop-color="#2f9ff0"/></linearGradient>
+    <linearGradient id="emF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffb627"/><stop offset=".55" stop-color="#ff6a00"/><stop offset="1" stop-color="#e5260f"/></linearGradient>
+    <linearGradient id="emP" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a5683a"/><stop offset="1" stop-color="#5d3416"/></linearGradient></defs></svg>`);
   const emoSpan = k => `<span class="emo" title="${(EMO.find(x => x[0] === k) || [])[2] || ""}"><svg viewBox="0 0 64 64">${EMO_SVG[k]}</svg></span>`;
   const EMO_RE = new RegExp(EMO.map(x => x[1]).join("|"), "g");
   const richText = s => esc(s).replace(EMO_RE, ch => emoSpan(EMO.find(x => x[1] === ch)[0]));
@@ -6817,16 +7014,16 @@ body{overflow-x:clip}
     const recG = [...g].sort(byAt("createdAt")).slice(0, 18);
     const doneG = g.filter(i => inLib(i) && gStatus(i.status) === "done").sort((a, b) => String(b.finishedAt || b.date || "").localeCompare(String(a.finishedAt || a.date || "")));
     // ---- кино
-    const favK = k.filter(i => i.fav).sort(byAt("favAt"));
+    const favK = k.filter(i => i.fav).sort(byAt("favAt")), nowK = k.filter(i => i.now).sort(byAt("nowAt"));
     const recK = [...k].sort(byAt("createdAt")).slice(0, 18);
     const seenK = k.filter(i => inLib(i) && kNorm(i) === "done").sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")) || byAt("createdAt")(a, b));
     const planK = k.filter(i => isFuture(i) || isSoon(i)).sort(byAt("createdAt"));
     // ---- книги
-    const favR = rds.filter(r => r.fav).sort(byAt("favAt"));
+    const favR = rds.filter(r => r.fav).sort(byAt("favAt")), nowR = rds.filter(r => r.now).sort(byAt("nowAt"));
     const doneR = rds.filter(r => rNorm(r.status) === "done").sort(byAt("updatedAt"));
     const magAttr = r => mine ? `data-rd="${esc(r.id)}"` : `data-frd="${esc(uid + "/" + r.id)}"`;
-    const mag = (r, i) => `<button class="rx-mag" ${magAttr(r)} style="--i:${i};--tilt:${(((i * 7) % 5) - 2) * 1.1}deg">${rCover(r)}</button>`;
-    const rack = (list, addKey, emptyTxt) => `<div class="pf-shelf">${list.length || addKey ? railHTML("rx-hs", `${list.map(mag).join("")}${addKey && mine ? `<button class="rx-mag rx-addm" type="button" data-pfpick="${addKey}" style="--i:${list.length}"><span class="rx-cv"><span class="ph"><b>+</b><small>Добавить</small></span></span></button>` : ""}`).replace('class="hs-in"', 'class="hs-in rx-rack"') : ""}${!list.length && !mine ? `<p class="pf-mute pf-ish">${emptyTxt}</p>` : ""}<div class="rx-plank"></div></div>`;
+    const mag = (r, i, pg) => `<button class="rx-mag${pg ? " pg-on" : ""}" ${magAttr(r)} style="--i:${i};--tilt:${(((i * 7) % 5) - 2) * 1.1}deg">${rCover(r)}${pg ? (r.chTotal ? `<span class="pg" title="${r.chRead || 0} из ${r.chTotal} глав"><i style="width:${Math.min(100, (r.chRead || 0) / r.chTotal * 100)}%"></i></span><span class="pg-t">${r.chRead || 0} / ${r.chTotal} гл.</span>` : `<span class="pg-t">${r.chRead ? `${r.chRead} гл.` : "читает"}</span>`) : ""}</button>`;
+    const rack = (list, addKey, emptyTxt, pg) => `<div class="pf-shelf${pg ? " pg-sh" : ""}">${list.length || addKey ? railHTML("rx-hs", `${list.map((r, i) => mag(r, i, pg)).join("")}${addKey && mine ? `<button class="rx-mag rx-addm" type="button" data-pfpick="${addKey}" style="--i:${list.length}"><span class="rx-cv"><span class="ph"><b>+</b><small>Добавить</small></span></span></button>` : ""}`).replace('class="hs-in"', 'class="hs-in rx-rack"') : ""}${!list.length && !mine ? `<p class="pf-mute pf-ish">${emptyTxt}</p>` : ""}<div class="rx-plank"></div></div>`;
     // ---- шапка
     const libN = g.filter(inLib).length + k.filter(inLib).length + rds.length, L = pfLevel(libN);
     const bdN = p.birthday ? bdNext(p.birthday) : null, c = !mine && FR ? compat(uid) : {pct: null};
@@ -6855,12 +7052,15 @@ body{overflow-x:clip}
       </section>`;
     const kino = `<section class="pf-floor fl-k"><div class="pf-fh"><span class="ic">${ICON.kino}</span><h2>Кино и сериалы</h2><a href="${mine ? "#kino" : `#fv:${esc(uid)}:kino`}">вся полка ›</a></div>
         ${show("Любимые фильмы и сериалы", favK.length || null, favK.length || mine ? rail(favK, i => card(i, esc([KTYPES[i.type], i.year].filter(Boolean).join(" · "))), "kino:fav") : empty("Пока не выбрал любимые"), {cls: "fav"})}
+        ${show("Смотрю", nowK.length || null, nowK.length || mine ? rail(nowK, i => { const et = +i.epTotal || 0, ew = +i.epWatched || 0;
+          return `<button class="pf-c" ${mine ? `data-id="${esc(i.id)}"` : `data-fi="${esc(uid + "/" + i.id)}"`}>${posterHTML(i, {tgt: false, rate: false})}${et ? `<span class="pf-pb" title="${ew} из ${et} серий"><i style="width:${Math.min(100, ew / et * 100)}%"></i></span>` : ""}<span class="ti">${esc(i.title)}</span><small>${et ? `${ew} из ${et} серий` : isSerT(i.type) ? (ew ? `${ew} ${plural(ew, "серия", "серии", "серий")}` : "смотрит") : "смотрит"}</small></button>`; }, "kino:now") : empty("Ничего не отметил"), {cls: "now-k"})}
         ${recK.length ? show("Недавно добавленные", null, rail(recK, i => card(i, `${esc(stTxt(i))}${i.createdAt ? ` · ${fmtShort(i.createdAt)}` : ""}`))) : ""}
         ${show("Просмотренные", seenK.length || null, seenK.length ? rail(seenK, i => card(i, i.date ? `<span class="dt">${ICON.calendar}${fmtShort(i.date)}</span>` : "дата не указана")) : empty(mine ? "Просмотренное появится здесь с датой просмотра" : "Пока ничего не посмотрел"))}
         ${show("Буду смотреть", planK.length || null, planK.length ? rail(planK, i => card(i, esc(KTYPES[i.type] || "кино"))) : empty(mine ? "Отложи что-нибудь на потом — появится здесь" : "Список пуст", mine ? "kino:future" : null))}
       </section>`;
     const books = `<section class="pf-floor fl-r"><div class="pf-fh"><span class="ic">${BOOK_I}</span><h2>Книги, манга, комиксы</h2>${mine ? `<a href="#read">Читалка ›</a>` : ""}</div>
         ${show("Любимые тайтлы", favR.length || null, rack(favR, "read:fav", "Пока не выбрал любимые"), {cls: "shelf"})}
+        ${show("Сейчас читаю", nowR.length || null, rack(nowR, "read:now", "Ничего не отметил", true), {cls: "shelf"})}
         ${show("Прочитанные", doneR.length || null, rack(doneR, null, "Пока ничего не дочитал"), {cls: "shelf"})}
       </section>`;
     const side = `<aside class="pf-side">
@@ -6870,7 +7070,7 @@ body{overflow-x:clip}
       </aside>`;
     box.innerHTML = `<div class="pf${bg ? " has-bg" : ""}" style="--ac:${esc(p.ava_color || avaBg(p))}">
       ${head}
-      <div class="pf-cols"><div class="pf-main">${games}${kino}${books}</div>${side}</div></div>`;
+      <div class="pf-cols"><div class="pf-main">${games}${kino}${books}${scFloor(mine ? ME.id : uid, mine)}</div>${side}</div></div>`;
     wireHScrolls();
   }
 
@@ -6880,8 +7080,8 @@ body{overflow-x:clip}
     if (kind === "kino" && flag === "future"){ openForm(null, "kino", {lock: "future"}); return; }
     const isR = kind === "read";
     const pool = isR ? [...(READS || [])].sort(byAt("updatedAt")) : MYITEMS.filter(i => kind === "games" ? isGame(i) : !isGame(i)).sort((a, b) => (b[flag] ? 1 : 0) - (a[flag] ? 1 : 0) || byAt("updatedAt")(a, b));
-    const title = flag === "now" ? "Сейчас играю" : kind === "games" ? "Любимые игры" : kind === "kino" ? "Любимые фильмы и сериалы" : "Любимые тайтлы";
-    const hint = flag === "now" ? "Отметь игры, в которые играешь сейчас. Друзья увидят их наверху твоего профиля." : "Отметь любимое — оно встанет на витрину в профиле.";
+    const title = flag === "now" ? (kind === "games" ? "Сейчас играю" : kind === "kino" ? "Смотрю сейчас" : "Сейчас читаю") : kind === "games" ? "Любимые игры" : kind === "kino" ? "Любимые фильмы и сериалы" : "Любимые тайтлы";
+    const hint = flag === "now" ? (kind === "games" ? "Отметь игры, в которые играешь сейчас. Друзья увидят их наверху твоего профиля." : kind === "kino" ? "Отметь сериалы и фильмы, которые смотришь. Прогресс по сериям — полоской под обложкой." : "Отметь, что читаешь. Если указаны главы — будет полоска прогресса.") : "Отметь любимое — оно встанет на витрину в профиле.";
     const cell = x => `<button type="button" class="pk-c" data-k="${esc(x.id)}" aria-pressed="${!!x[flag]}">${isR ? rCover(x) : posterHTML(x, {tgt: false, rate: false, badge: false})}<i class="pk-ok">${CHECK_I}</i><span>${esc(x.title)}</span></button>`;
     const s = openSheet(`<h3>${title}</h3><p class="sub">${hint}</p>
       <label class="pk-q">${ICON.search}<input class="in" id="pkQ" placeholder="Найти на полке" autocomplete="off"></label>
@@ -6986,6 +7186,353 @@ body{overflow-x:clip}
     el.addEventListener("keydown", e => { if (e.key === "ArrowRight") step(1); if (e.key === "ArrowLeft") step(-1); });
     lay(); sync();
   }
+
+  ICON.chat = I('<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H10l-5 4v-4.2A2.5 2.5 0 0 1 4 13.5Z"/>');
+  // ================= 3.1: лента активности — по людям и дням =================
+  let feedN = 14, actTab = lsGet("nexus_acttab") === "feed" ? "feed" : "wall";
+  const RNOUN = {manga: "мангу", comic: "комикс", book: "книгу"};
+  const evKind = e => e.rd ? (RTYPE[e.rd.type] || "книга").toLowerCase() : isGame(e.it) ? "игра" : (KTYPES[e.it.type] || "кино").toLowerCase();
+  const evTitle = e => e.rd ? e.rd.title : e.it.title;
+  function feedGroups(){
+    const groups = [], idx = new Map();
+    const evs = [...pfEvents(null, false)];
+    FR.profiles.filter(p => p.created_at && ME && p.user_id !== ME.id && Date.now() - Date.parse(p.created_at) < 60 * 864e5)
+      .forEach(p => evs.push({join: true, uid: p.user_id, d: localDate(new Date(p.created_at)), ts: p.created_at, verb: "присоединился к NEXUS"}));
+    evs.sort((a, b) => b.d.localeCompare(a.d) || String(b.ts).localeCompare(String(a.ts)));
+    for (const e of evs){ const k = e.uid + "|" + e.d; let g = idx.get(k); if (!g){ g = {uid: e.uid, d: e.d, ev: []}; idx.set(k, g); groups.push(g); } g.ev.push(e); }
+    return groups;
+  }
+  // строки «прошёл A, B и ещё 2» — по одному глаголу на строку
+  function groupLines(g, max = 3){
+    const by = new Map();
+    g.ev.forEach(e => { const verb = e.join ? e.verb : e.rd && e.verb === "прочитал" ? "прочитал " + (RNOUN[e.rd.type] || "книгу") : e.verb; const k = verb + "|" + (e.join ? "j" : evKind(e)); if (!by.has(k)) by.set(k, {verb, kind: e.join ? "" : evKind(e), ev: []}); by.get(k).ev.push(e); });
+    const lines = [...by.values()];
+    return {html: lines.slice(0, max).map(l => `<li><span class="vb">${esc(l.verb)}</span>${l.ev[0].join ? "" : ` ${l.ev.slice(0, 2).map(e => `<b>${esc(evTitle(e))}</b>`).join(", ")}${l.ev.length > 2 ? ` <em>и ещё ${l.ev.length - 2}</em>` : ""}`}</li>`).join(""), more: Math.max(0, lines.length - max)};
+  }
+  function feedGroupHTML(g, i){
+    const p = profOf(g.uid), L = groupLines(g), covs = g.ev.filter(e => !e.join).slice(0, 4);
+    const td = today(), dl = g.d === td ? "сегодня" : g.d === addDays(td, -1) ? "вчера" : fmtShort(g.d);
+    return `<article class="fg"><button class="fg-a" data-user="${esc(g.uid)}">${avaHTML(p)}</button>
+      <div class="fg-b"><div class="fg-h"><button class="fg-n" data-user="${esc(g.uid)}">${esc(p.nick || "кто-то")}</button><span class="fg-d">${dl}</span></div>
+        <ul class="fg-l">${L.html}${L.more ? `<li class="fg-more">и ещё ${L.more} ${plural(L.more, "действие", "действия", "действий")}</li>` : ""}</ul>
+        ${g.ev[0].join ? "" : `<button class="fg-go" data-fgrp="${i}">${covs.map(e => `<span class="fg-cv">${e.rd ? rCover(e.rd) : posterHTML(e.it, {rate: false, tgt: false, badge: false})}</span>`).join("")}<span class="fg-dt">Подробно<small>${g.ev.length} ${plural(g.ev.length, "событие", "события", "событий")}</small></span></button>`}
+      </div></article>`;
+  }
+  let FGROUPS = [];
+  function feedGroupSheet(i){
+    const g = FGROUPS[i]; if (!g) return; const p = profOf(g.uid);
+    const row = e => { const r = e.it && typeof e.it.rating === "number" && /прошёл|дропнул|посмотрел|бросил/.test(e.verb) ? `<span class="r ${rateCls(e.it.rating)}">${num1(e.it.rating)}</span>` : e.rd && e.rd.myRating != null ? `<span class="r ${rateCls(e.rd.myRating)}">${num1(e.rd.myRating)}</span>` : "";
+      return `<button class="fgs-r" ${e.rd ? `data-frd="${esc(e.uid + "/" + e.rd.id)}"` : `data-fi="${esc(e.uid + "/" + e.it.id)}"`}>${e.rd ? rCover(e.rd) : posterHTML(e.it, {rate: false, tgt: false})}<span class="t"><span class="vb">${esc(e.verb)}</span><b>${esc(evTitle(e))}</b><small>${esc(evKind(e))}${e.it && genres(e.it)[0] ? " · " + esc(genres(e.it)[0].toLowerCase()) : ""}</small></span>${r}</button>`; };
+    const s = openSheet(`<div class="fgs-h">${avaHTML(p, "md")}<div><h3>${esc(p.nick || "")}</h3><p class="sub">${g.d === today() ? "Сегодня" : fmtDate(g.d)} · ${g.ev.length} ${plural(g.ev.length, "событие", "события", "событий")}</p></div><button class="ib" data-user="${esc(g.uid)}">Профиль</button></div>
+      <div class="fgs">${g.ev.filter(e => !e.join).map(row).join("")}</div>`, {wide: true});
+    s.el.addEventListener("click", e => { if (e.target.closest("[data-user]")) s.close(); });
+  }
+  function feedCard(){
+    if (!FR) return `<div class="fb-card"><p class="a-sub" style="margin:0">Загружаю…</p></div>`;
+    FGROUPS = feedGroups();
+    const list = FGROUPS.slice(0, feedN);
+    return `<div class="fb-card fb-feed2">${list.length ? list.map(feedGroupHTML).join("") : `<div class="a-empty"><b>Тихо</b>Когда друзья начнут что-то добавлять, это появится здесь.</div>`}
+      ${FGROUPS.length > feedN ? `<button class="ib fg-next" data-fmore="1">Показать ещё</button>` : ""}</div>`;
+  }
+
+  // ================= 3.1: стена — посты, реакции, комменты, лайки =================
+  const REACTS = [["like", "лайк"], ["lol", "смех"], ["cringe", "кринж"], ["poop", "какашка"], ["clown", "клоун"], ["party", "праздник"], ["cry", "плач"], ["salute", "GG"], ["skull", "череп"], ["fire", "огонь"]];
+  const RX_ORD = Object.fromEntries(REACTS.map(([k], i) => [k, i]));
+  let WALL = null, wLoading = null, wAgain = false, wDraft = {text: "", file: null};
+  const cDraft = {}, wOpen = new Set(), wAll = new Set();
+  async function loadWall(force){
+    if (!SB || !ME) return null;
+    if (WALL && !force && Date.now() - WALL.at < 20000) return WALL;
+    if (wLoading){ if (force) wAgain = true; return wLoading; }
+    wLoading = (async () => {
+      try {
+        const [p, c, r, l] = await Promise.all([SB.from("wall_posts").select("*").order("created_at", {ascending: false}).limit(120), SB.from("wall_comments").select("*").order("created_at", {ascending: true}), SB.from("wall_reactions").select("*"), SB.from("wall_comment_likes").select("*")]);
+        if (p.error) throw p.error;
+        WALL = {at: Date.now(), posts: p.data || [], comments: c.error ? [] : c.data || [], reacts: r.error ? [] : r.data || [], clikes: l.error ? [] : l.data || []};
+      } catch(e){ if (!WALL) WALL = {at: Date.now(), posts: [], comments: [], reacts: [], clikes: [], failed: true}; }
+      wLoading = null; if (route === "people") renderPeople();
+      if (wAgain){ wAgain = false; loadWall(true); }
+      return WALL;
+    })();
+    return wLoading;
+  }
+  let wSubT = 0;
+  function subscribeWall(){
+    if (!SB || !ME) return;
+    const kick = () => { clearTimeout(wSubT); wSubT = setTimeout(() => loadWall(true), 250); };
+    SB.channel("nexus-wall")
+      .on("postgres_changes", {event: "*", schema: "public", table: "wall_posts"}, p => { kick(); const n = p.new; if (p.eventType === "INSERT" && n && n.user_id !== ME.id && route !== "people") toast(`${frNick(n.user_id)} написал на стене`); })
+      .on("postgres_changes", {event: "*", schema: "public", table: "wall_comments"}, p => { kick(); const n = p.new; if (p.eventType === "INSERT" && n && n.user_id !== ME.id && WALL && WALL.posts.some(x => x.id === n.post_id && x.user_id === ME.id)) toast(`${frNick(n.user_id)} ответил на твой пост`); })
+      .on("postgres_changes", {event: "*", schema: "public", table: "wall_reactions"}, kick)
+      .on("postgres_changes", {event: "*", schema: "public", table: "wall_comment_likes"}, kick)
+      .on("postgres_changes", {event: "*", schema: "public", table: "showcases"}, () => { clearTimeout(subscribeWall.t); subscribeWall.t = setTimeout(() => loadFriends(true), 400); })
+      .subscribe();
+  }
+  const nickOf = uid => ME && uid === ME.id ? "Ты" : (profOf(uid).nick || "кто-то");
+  const whoTitle = uids => uids.map(nickOf).join(", ");
+  const imgThumb = path => `<img class="wl-img" src="${publicUrl(path)}" alt="" data-vkimg="${esc(path)}" loading="lazy">`;
+  const emoBar = id => `<span class="wl-emo" data-emobar="${id}">${EMO.map(([k, ch, l]) => `<button type="button" data-emo="${ch}" title="${l}" aria-label="${l}">${emoSpan(k)}</button>`).join("")}</span>`;
+  function postHTML(p){
+    const mine = p.user_id === ME.id, pr = profOf(p.user_id);
+    const rx = WALL.reacts.filter(r => r.post_id === p.id), by = new Map();
+    rx.forEach(r => { if (!by.has(r.kind)) by.set(r.kind, []); by.get(r.kind).push(r.user_id); });
+    const chips = [...by.entries()].sort((a, b) => b[1].length - a[1].length || RX_ORD[a[0]] - RX_ORD[b[0]]);
+    const cm = WALL.comments.filter(c => c.post_id === p.id), open = wOpen.has(p.id), all = wAll.has(p.id), shown = all ? cm : cm.slice(-3);
+    const ppl = [...new Set(rx.map(r => r.user_id))];
+    const cmt = c => { const lk = WALL.clikes.filter(l => l.comment_id === c.id), on = lk.some(l => l.user_id === ME.id);
+      return `<div class="wc3">${avaHTML(profOf(c.user_id), "sm")}<div class="b"><div class="bb"><button class="nk" ${c.user_id !== ME.id ? `data-user="${esc(c.user_id)}"` : ""}>${esc(nickOf(c.user_id))}</button>${c.body ? `<span class="tx${onlyEmo(c.body) ? " big" : ""}">${richText(c.body)}</span>` : ""}${c.image ? imgThumb(c.image) : ""}</div>
+        <div class="ft"><span>${esc(agoTs(c.created_at))}</span><button class="lk${on ? " on" : ""}" data-wcl="${esc(c.id)}">${on ? "♥" : "♡"} Нравится${lk.length ? ` · ${lk.length}` : ""}</button>${lk.length ? `<button class="who" data-wclwho="${esc(c.id)}" title="${esc(whoTitle(lk.map(l => l.user_id)))}">${avaStack(lk.map(l => l.user_id), 3)}</button>` : ""}${c.user_id === ME.id || mine ? `<button class="del" data-wcdel="${esc(c.id)}">удалить</button>` : ""}</div></div></div>`; };
+    const d = cDraft[p.id] || {text: "", file: null};
+    return `<article class="wp" data-wp="${esc(p.id)}">
+      <header>${avaHTML(pr)}<div class="who"><button class="nk" ${!mine ? `data-user="${esc(p.user_id)}"` : ""}>${esc(mine ? (pr.nick || NICK) : pr.nick || "кто-то")}</button><small>${esc(vkDate(p.created_at))}</small></div>${mine ? `<button class="wp-del" data-wdel="${esc(p.id)}" title="Удалить пост" aria-label="Удалить пост">${ICON.x}</button>` : ""}</header>
+      ${p.body ? `<div class="wp-t${onlyEmo(p.body) ? " big" : ""}">${richText(p.body)}</div>` : ""}${p.image ? `<div class="wp-im">${imgThumb(p.image)}</div>` : ""}
+      <div class="wp-rx">${chips.map(([k, uids]) => `<button class="wrx${uids.includes(ME.id) ? " on" : ""}" data-wr="${esc(p.id)}:${k}" title="${esc((REACTS.find(x => x[0] === k) || [])[1] + ": " + whoTitle(uids))}">${emoSpan(k)}<b>${uids.length}</b></button>`).join("")}
+        <span class="rx-add-w"><button class="rx-add" data-wrp="${esc(p.id)}" aria-label="Поставить реакцию" title="Реакция">${emoSpan("like")}<i>+</i></button></span>
+        ${ppl.length ? `<button class="rx-who" data-wwho="${esc(p.id)}">${avaStack(ppl, 4)}<span>кто</span></button>` : ""}
+        <button class="wp-cb${open ? " on" : ""}" data-wcopen="${esc(p.id)}">${ICON.chat}${cm.length ? `${cm.length} ${plural(cm.length, "коммент", "коммента", "комментов")}` : "Комментировать"}</button></div>
+      ${open ? `<div class="wp-cm">${cm.length > shown.length ? `<button class="wp-all" data-wcall="${esc(p.id)}">Показать все ${cm.length}</button>` : ""}${shown.map(cmt).join("")}
+        <div class="wc-form" data-cf="${esc(p.id)}">${avaHTML(myProf(), "sm")}<div class="in-w"><textarea id="wlC-${esc(p.id)}" rows="1" maxlength="2000" placeholder="Комментарий…">${esc(d.text)}</textarea>
+          <div class="tools">${emoBar("c-" + p.id)}<label class="att" title="Картинка">${ICON.img}<input type="file" accept="image/*" hidden data-cfile="${esc(p.id)}"></label><span class="pv">${d.file ? `<img src="${URL.createObjectURL(d.file)}" alt=""><button type="button" data-cfrm="${esc(p.id)}">✕</button>` : ""}</span><button class="send" type="button" data-csend="${esc(p.id)}">Отправить</button></div></div></div></div>` : ""}
+    </article>`;
+  }
+  function wallCard(){
+    if (!WALL){ loadWall(); return `<div class="fb-card"><p class="a-sub" style="margin:0">Загружаю стену…</p></div>`; }
+    const posts = WALL.posts;
+    return `<div class="fb-card wl">
+      <div class="wl-form">${avaHTML(myProf())}<div class="in-w"><textarea id="wlT" maxlength="4000" rows="2" placeholder="Что нового? Скриншот, мем, мнение о сериале…">${esc(wDraft.text)}</textarea>
+        <div class="tools">${emoBar("p")}<label class="att" title="Прикрепить картинку">${ICON.img}<span>Фото</span><input type="file" id="wlF" accept="image/*" hidden></label><span class="pv" id="wlP">${wDraft.file ? `<img src="${URL.createObjectURL(wDraft.file)}" alt=""><button type="button" data-wfrm="1">✕</button>` : ""}</span><button class="send" type="button" id="wlGo">Опубликовать</button></div></div></div>
+      ${WALL.failed ? `<p class="a-sub" style="margin:14px 0 0">Стена пока не загрузилась. Нажми «Обновить» наверху.</p>` : ""}
+      ${posts.length ? posts.map(postHTML).join("") : `<div class="a-empty" style="margin-top:12px"><b>Стена пустая</b>Напиши первым — мем, скрин или что сейчас смотришь.</div>`}</div>`;
+  }
+  function wireWall3(){
+    const t = $("wlT"); if (!t) return;
+    t.oninput = () => { wDraft.text = t.value; autoGrow(t); }; autoGrow(t);
+    const take = f => { if (!f || !f.type.startsWith("image/")) return; wDraft.file = f; renderPeople(); };
+    $("wlF").onchange = e => take(e.target.files[0]);
+    bindDrop(document.querySelector(".wl-form"), take); pasteTarget = take;
+    $("wlGo").onclick = sendPost;
+    t.addEventListener("keydown", e => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)){ e.preventDefault(); sendPost(); } });
+    document.querySelectorAll(".wc-form textarea").forEach(c => { const id = c.closest("[data-cf]").dataset.cf; autoGrow(c);
+      c.oninput = () => { (cDraft[id] = cDraft[id] || {text: "", file: null}).text = c.value; autoGrow(c); };
+      c.addEventListener("focus", () => { pasteTarget = f => { if (!f || !f.type.startsWith("image/")) return; (cDraft[id] = cDraft[id] || {text: ""}).file = f; renderPeople(); }; });
+      c.addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey){ e.preventDefault(); sendComment(id); } }); });
+    document.querySelectorAll(".wc-form").forEach(f => bindDrop(f, file => { if (!file.type.startsWith("image/")) return; const id = f.dataset.cf; (cDraft[id] = cDraft[id] || {text: ""}).file = file; renderPeople(); }));
+  }
+  const autoGrow = t => { t.style.height = "auto"; t.style.height = Math.min(220, t.scrollHeight + 2) + "px"; };
+  async function sendPost(){
+    const t = $("wlT"), body = t.value.trim(); if (!body && !wDraft.file){ t.focus(); return; }
+    const b = $("wlGo"); b.disabled = true; b.textContent = "Публикую…";
+    try { const image = wDraft.file ? await upload(wDraft.file) : null;
+      const {error} = await SB.from("wall_posts").insert({id: crypto.randomUUID(), user_id: ME.id, body: body || null, image, created_at: now()}); if (error) throw error;
+      wDraft = {text: "", file: null}; SND.click("soft"); await loadWall(true);
+    } catch(err){ toast("Не опубликовалось: " + ((err && err.message) || err)); b.disabled = false; b.textContent = "Опубликовать"; }
+  }
+  async function sendComment(id){
+    const d = cDraft[id] || {text: "", file: null}, body = String(d.text || "").trim(); if (!body && !d.file) return;
+    const b = document.querySelector(`[data-csend="${CSS.escape(id)}"]`); if (b){ b.disabled = true; b.textContent = "…"; }
+    try { const image = d.file ? await upload(d.file) : null;
+      const {error} = await SB.from("wall_comments").insert({id: crypto.randomUUID(), post_id: id, user_id: ME.id, body: body || null, image, created_at: now()}); if (error) throw error;
+      cDraft[id] = {text: "", file: null}; wAll.add(id); SND.click("soft"); await loadWall(true);
+      setTimeout(() => { const c = $("wlC-" + id); if (c) c.focus(); }, 30);
+    } catch(err){ toast("Не отправилось: " + ((err && err.message) || err)); if (b){ b.disabled = false; b.textContent = "Отправить"; } }
+  }
+  async function toggleReact(id, kind){
+    const mine = WALL.reacts.some(r => r.post_id === id && r.user_id === ME.id && r.kind === kind);
+    if (mine) WALL.reacts = WALL.reacts.filter(r => !(r.post_id === id && r.user_id === ME.id && r.kind === kind));
+    else { WALL.reacts.push({post_id: id, user_id: ME.id, kind}); SND.click("soft"); }
+    renderPeople();
+    const r = mine ? await SB.from("wall_reactions").delete().eq("post_id", id).eq("user_id", ME.id).eq("kind", kind) : await SB.from("wall_reactions").insert({post_id: id, user_id: ME.id, kind, created_at: now()});
+    if (r.error){ toast("Не получилось"); loadWall(true); }
+  }
+  async function toggleCLike(id){
+    const mine = WALL.clikes.some(l => l.comment_id === id && l.user_id === ME.id);
+    if (mine) WALL.clikes = WALL.clikes.filter(l => !(l.comment_id === id && l.user_id === ME.id)); else { WALL.clikes.push({comment_id: id, user_id: ME.id}); SND.click("soft"); }
+    renderPeople();
+    const r = mine ? await SB.from("wall_comment_likes").delete().eq("comment_id", id).eq("user_id", ME.id) : await SB.from("wall_comment_likes").insert({comment_id: id, user_id: ME.id, created_at: now()});
+    if (r.error){ toast("Не получилось"); loadWall(true); }
+  }
+  function whoSheet(title, groups){
+    const s = openSheet(`<h3>${esc(title)}</h3>${groups.map(([label, ic, uids]) => `<div class="who-g"><div class="who-h">${ic || ""}<b>${esc(label)}</b><small>${uids.length}</small></div>${uids.map(u => `<button class="who-r" ${ME && u !== ME.id ? `data-user="${esc(u)}"` : ""}>${avaHTML(profOf(u))}<span>${esc(nickOf(u))}</span></button>`).join("")}</div>`).join("")}`);
+    s.el.addEventListener("click", e => { if (e.target.closest("[data-user]")) s.close(); });
+  }
+  function reactPicker(btn, id){
+    document.querySelectorAll(".rx-pick").forEach(x => x.remove());
+    const w = btn.closest(".rx-add-w"), mineK = new Set(WALL.reacts.filter(r => r.post_id === id && r.user_id === ME.id).map(r => r.kind));
+    const pop = document.createElement("div"); pop.className = "rx-pick";
+    pop.innerHTML = REACTS.map(([k, l], i) => `<button type="button" class="${mineK.has(k) ? "on" : ""}" data-wr="${esc(id)}:${k}" title="${l}" style="--i:${i}">${emoSpan(k)}</button>`).join("");
+    document.body.appendChild(pop);
+    const b = btn.getBoundingClientRect(), r = pop.getBoundingClientRect();
+    pop.style.left = Math.max(8, Math.min(b.left - 6, innerWidth - r.width - 8)) + "px";
+    pop.style.top = (b.top - r.height - 8 < 60 ? b.bottom + 8 : b.top - r.height - 8) + "px";
+  }
+  document.addEventListener("pointerdown", e => { if (!e.target.closest(".rx-pick,.rx-add")) document.querySelectorAll(".rx-pick").forEach(x => x.remove()); }, {passive: true});
+  addEventListener("scroll", () => document.querySelectorAll(".rx-pick").forEach(x => x.remove()), {passive: true});
+  document.addEventListener("change", e => { const f = e.target.closest && e.target.closest("[data-cfile]"); if (!f) return; const id = f.dataset.cfile, file = f.files[0]; if (!file) return; (cDraft[id] = cDraft[id] || {text: ""}).file = file; renderPeople(); });
+  document.addEventListener("click", async e => {
+    const el = e.target.closest && e.target.closest("[data-wr],[data-wrp],[data-wwho],[data-wcl],[data-wclwho],[data-wcopen],[data-wcall],[data-wdel],[data-wcdel],[data-csend],[data-cfrm],[data-wfrm],[data-emobar] [data-emo],[data-fgrp],[data-fmore],[data-acttab]");
+    if (!el || !ME) return;
+    if (el.dataset.emo){ const bar = el.closest("[data-emobar]").dataset.emobar, t = bar === "p" ? $("wlT") : $("wlC-" + bar.slice(2)); if (!t) return;
+      const a = t.selectionStart ?? t.value.length, z = t.selectionEnd ?? a; t.value = t.value.slice(0, a) + el.dataset.emo + t.value.slice(z); t.dispatchEvent(new Event("input")); t.focus(); const p = a + el.dataset.emo.length; t.setSelectionRange(p, p); return; }
+    if (el.dataset.acttab){ actTab = el.dataset.acttab; lsSet("nexus_acttab", actTab); renderPeople(); return; }
+    if (el.dataset.fgrp != null){ feedGroupSheet(+el.dataset.fgrp); return; }
+    if (el.dataset.fmore){ feedN += 14; renderPeople(); return; }
+    if (!WALL) return;
+    if (el.dataset.wr){ const [id, k] = el.dataset.wr.split(":"); document.querySelectorAll(".rx-pick").forEach(x => x.remove()); toggleReact(id, k); return; }
+    if (el.dataset.wrp){ reactPicker(el, el.dataset.wrp); return; }
+    if (el.dataset.wwho){ const rx = WALL.reacts.filter(r => r.post_id === el.dataset.wwho);
+      whoSheet("Реакции", REACTS.map(([k, l]) => [l, emoSpan(k), rx.filter(r => r.kind === k).map(r => r.user_id)]).filter(g => g[2].length)); return; }
+    if (el.dataset.wcl){ toggleCLike(el.dataset.wcl); return; }
+    if (el.dataset.wclwho){ whoSheet("Понравилось", [["Нравится", "♥", WALL.clikes.filter(l => l.comment_id === el.dataset.wclwho).map(l => l.user_id)]]); return; }
+    if (el.dataset.wcopen){ const id = el.dataset.wcopen; wOpen.has(id) ? wOpen.delete(id) : wOpen.add(id); renderPeople(); if (wOpen.has(id)) setTimeout(() => { const c = $("wlC-" + id); if (c && innerWidth > 760) c.focus(); }, 30); return; }
+    if (el.dataset.wcall){ wAll.add(el.dataset.wcall); renderPeople(); return; }
+    if (el.dataset.csend){ sendComment(el.dataset.csend); return; }
+    if (el.dataset.cfrm){ if (cDraft[el.dataset.cfrm]) cDraft[el.dataset.cfrm].file = null; renderPeople(); return; }
+    if (el.dataset.wfrm){ wDraft.file = null; renderPeople(); return; }
+    if (el.dataset.wdel){ if (!confirm("Удалить пост вместе с комментариями?")) return; const {error} = await SB.from("wall_posts").delete().eq("id", el.dataset.wdel); if (error){ toast("Не удалилось"); return; } loadWall(true); return; }
+    if (el.dataset.wcdel){ if (!confirm("Удалить комментарий?")) return; const {error} = await SB.from("wall_comments").delete().eq("id", el.dataset.wcdel); if (error){ toast("Не удалилось"); return; } loadWall(true); return; }
+  });
+
+  // ================= 3.1: свои витрины в профиле (как в Steam) =================
+  const SC_KIND = {game: ["Игры", "игр"], kino: ["Кино и сериалы", "кино"], read: ["Книги и манга", "книг"]};
+  const scList = uid => (FR && FR.showcases ? FR.showcases.filter(x => x.user_id === uid) : []).sort((a, b) => (a.ord - b.ord) || String(a.created_at).localeCompare(String(b.created_at)));
+  // запись витрины: ссылка на свою запись (ref) или самостоятельная карточка (t, cover, url, year, note)
+  function scResolve(e, sc){
+    if (e.ref){
+      if (sc.kind === "read"){ const r = ME && sc.user_id === ME.id ? (READS || []).find(x => x.id === e.ref) : frReads(sc.user_id).find(x => x.id === e.ref); if (r) return {read: r}; }
+      else { const it = ME && sc.user_id === ME.id ? MYITEMS.find(x => x.id === e.ref) : frItems(sc.user_id).find(x => x.id === e.ref); if (it) return {it}; }
+    }
+    return {free: e};
+  }
+  const scFreeItem = (e, sc) => ({id: "x", title: e.t || "Без названия", cover: e.cover || null, type: sc.kind === "game" ? "game" : e.type || "movie", status: "x"});
+  function scCard(e, i, sc, mine){
+    const r = scResolve(e, sc), del = mine ? `<span class="sc-x" role="button" data-scrm="${esc(sc.id)}:${i}" title="Убрать из витрины">${ICON.x}</span>` : "";
+    if (r.read) return `<button class="pf-c sc-c" ${mine ? `data-rd="${esc(r.read.id)}"` : `data-frd="${esc(sc.user_id + "/" + r.read.id)}"`}>${rCover(r.read)}${del}<span class="ti">${esc(r.read.title)}</span>${e.note ? `<small>${esc(e.note)}</small>` : ""}</button>`;
+    if (r.it) return `<button class="pf-c sc-c" ${mine ? `data-id="${esc(r.it.id)}"` : `data-fi="${esc(sc.user_id + "/" + r.it.id)}"`}>${posterHTML(r.it, {tgt: false})}${del}<span class="ti">${esc(r.it.title)}</span>${e.note ? `<small>${esc(e.note)}</small>` : ""}</button>`;
+    const f = scFreeItem(e, sc);
+    return `<button class="pf-c sc-c" data-scen="${esc(sc.id)}:${i}">${sc.kind === "read" ? rCover({title: f.title, cover: f.cover, coverUrl: e.coverUrl || null}) : posterHTML(f, {tgt: false, badge: false})}${del}<span class="ti">${esc(f.title)}</span>${e.note || e.year ? `<small>${esc(e.note || e.year)}</small>` : ""}</button>`;
+  }
+  function scBox(sc, mine){
+    const add = mine ? `<button class="pf-add" type="button" data-scadd="${esc(sc.id)}"><i>${ICON.plus}</i><span>Добавить</span></button>` : "";
+    const body = sc.entries.length || mine ? railHTML("pf-rail", sc.entries.map((e, i) => scCard(e, i, sc, mine)).join("") + add) : `<div class="pf-empty"><span>Пока пусто</span></div>`;
+    return `<section class="pf-box sc-box"><header><h3>${esc(sc.title)}<small>${sc.entries.length}</small></h3><span class="sc-k">${SC_KIND[sc.kind][0]}</span>${mine ? `<button class="pf-mini" data-scedit="${esc(sc.id)}">${ICON.edit}Настроить</button>` : ""}</header>${body}</section>`;
+  }
+  function scFloor(uid, mine){
+    const list = scList(uid);
+    if (!list.length && !mine) return "";
+    return `<section class="pf-floor fl-s"><div class="pf-fh"><span class="ic">${ICON.star}</span><h2>Витрины</h2>${mine ? `<button class="pf-fh-b" data-scnew="1">${ICON.plus}Создать витрину</button>` : ""}</div>
+      ${list.map(sc => scBox(sc, mine)).join("")}
+      ${!list.length && mine ? `<div class="pf-empty"><span>Своя полка на любой вкус: «Нелюбимые игры», «Фильмы на Новый год», «Манга, от которой плакал». Её увидят все, кто зайдёт в профиль.</span><button class="pf-eb" type="button" data-scnew="1">${ICON.plus}Создать</button></div>` : ""}</section>`;
+  }
+  async function scSave(sc){
+    const row = {id: sc.id, user_id: ME.id, title: sc.title, kind: sc.kind, entries: sc.entries, ord: sc.ord || 0, updated_at: now()};
+    const {error} = await SB.from("showcases").upsert(row);
+    if (error){ toast("Не сохранилось: " + error.message); return false; }
+    if (FR){ FR.showcases = FR.showcases || []; const i = FR.showcases.findIndex(x => x.id === sc.id); if (i >= 0) FR.showcases[i] = {...FR.showcases[i], ...row}; else FR.showcases.push({...row, created_at: now()}); }
+    if (route === "home") render(); return true;
+  }
+  function scNewSheet(){
+    let kind = "game";
+    const s = openSheet(`<h3>Новая витрина</h3><p class="sub">Выбери, что будет на полке, и придумай название. Витрину увидят все, кто откроет твой профиль.</p>
+      <div class="sc-kinds" id="scK">${Object.entries(SC_KIND).map(([k, [l]]) => `<button type="button" data-k="${k}" aria-pressed="${k === kind}">${k === "game" ? ICON.games : k === "kino" ? ICON.kino : BOOK_I}<span>${l}</span></button>`).join("")}</div>
+      <label class="f">Название<input class="in" id="scT" maxlength="60" placeholder="Например: Нелюбимые игры" autocomplete="off"></label>
+      <div class="sc-ideas" id="scI"></div>
+      <div class="acts" style="margin-top:12px"><button class="ib blue" id="scOk">Создать и наполнить</button><button class="ib" id="scNo">Отмена</button></div>`);
+    const q = x => s.el.querySelector(x);
+    const IDEAS = {game: ["Нелюбимые игры", "Лучший кооп", "Игры детства", "Платина", "Переоценённые"], kino: ["Фильмы на Новый год", "Пересматриваю каждый год", "Разочарование года", "Смотреть с девушкой", "Лучшие концовки"], read: ["Манга, от которой плакал", "Комиксы для старта", "Бросил на середине", "Лучшая рисовка"]};
+    const ideas = () => { q("#scI").innerHTML = IDEAS[kind].map(t => `<button type="button" data-t="${esc(t)}">${esc(t)}</button>`).join(""); };
+    q("#scK").onclick = e => { const b = e.target.closest("[data-k]"); if (!b) return; kind = b.dataset.k; q("#scK").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); ideas(); SND.tick(.5); };
+    q("#scI").onclick = e => { const b = e.target.closest("[data-t]"); if (b){ q("#scT").value = b.dataset.t; q("#scT").focus(); } };
+    q("#scNo").onclick = () => s.close();
+    q("#scOk").onclick = async () => { const t = q("#scT").value.trim(); if (!t){ q("#scT").focus(); toast("Дай витрине название"); return; }
+      const sc = {id: crypto.randomUUID(), title: t, kind, entries: [], ord: scList(ME.id).length}; q("#scOk").disabled = true;
+      if (await scSave(sc)){ s.close(); toast("Витрина создана"); setTimeout(() => scAddSheet(sc.id), 200); } else q("#scOk").disabled = false; };
+    ideas(); setTimeout(() => q("#scT").focus(), 60);
+  }
+  function scEditSheet(id){
+    const sc0 = scList(ME.id).find(x => x.id === id); if (!sc0) return; const sc = JSON.parse(JSON.stringify(sc0));
+    const draw = () => sc.entries.map((e, i) => { const r = scResolve(e, sc), t = r.read ? r.read.title : r.it ? r.it.title : e.t;
+      return `<div class="sce-r"><span class="n">${i + 1}</span><span class="t">${esc(t || "Без названия")}<input class="in" data-note="${i}" value="${esc(e.note || "")}" placeholder="подпись, по желанию" maxlength="60"></span><button type="button" data-up="${i}" title="Выше" ${i ? "" : "disabled"}>↑</button><button type="button" data-rm="${i}" title="Убрать">${ICON.x}</button></div>`; }).join("") || `<p class="sub">Пока пусто.</p>`;
+    const s = openSheet(`<h3>Витрина</h3><label class="f">Название<input class="in" id="sceT" maxlength="60" value="${esc(sc.title)}"></label>
+      <div class="av-lb">Что на полке · ${SC_KIND[sc.kind][0]}</div><div class="sce" id="sceL">${draw()}</div>
+      <div class="acts" style="margin-top:14px"><button class="ib blue" id="sceOk">Сохранить</button><button class="ib" id="sceAdd">${ICON.plus}Добавить</button><button class="ib red" id="sceDel">Удалить витрину</button></div>`, {wide: true});
+    const q = x => s.el.querySelector(x);
+    q("#sceL").addEventListener("input", e => { const n = e.target.dataset.note; if (n != null) sc.entries[+n].note = e.target.value.trim() || null; });
+    q("#sceL").onclick = e => { const up = e.target.closest("[data-up]"), rm = e.target.closest("[data-rm]");
+      if (up){ const i = +up.dataset.up; [sc.entries[i - 1], sc.entries[i]] = [sc.entries[i], sc.entries[i - 1]]; q("#sceL").innerHTML = draw(); }
+      if (rm){ sc.entries.splice(+rm.dataset.rm, 1); q("#sceL").innerHTML = draw(); } };
+    q("#sceAdd").onclick = () => { s.close(); scAddSheet(id); };
+    q("#sceDel").onclick = async () => { if (!confirm(`Удалить витрину «${sc.title}»?`)) return; const {error} = await SB.from("showcases").delete().eq("id", id); if (error){ toast("Не удалилось"); return; }
+      FR.showcases = FR.showcases.filter(x => x.id !== id); s.close(); render(); };
+    q("#sceOk").onclick = async () => { sc.title = q("#sceT").value.trim() || sc.title; if (await scSave(sc)){ s.close(); toast("Сохранено"); } };
+  }
+  // добавить в витрину: из коллекции, по ссылке или вручную
+  function scAddSheet(id){
+    const sc = scList(ME.id).find(x => x.id === id); if (!sc) return;
+    let tab = "lib", file = null, coverUrl = null, got = null;
+    const pool = sc.kind === "read" ? [...(READS || [])].sort(byAt("updatedAt")) : MYITEMS.filter(i => sc.kind === "game" ? isGame(i) : !isGame(i)).sort(byAt("updatedAt"));
+    const has = ref => sc.entries.some(e => e.ref === ref);
+    const linkHint = sc.kind === "game" ? "Ссылка на игру в Steam" : sc.kind === "kino" ? "Ссылка на Кинопоиск" : "Ссылка на com-x или readmanga";
+    const s = openSheet(`<h3>Добавить в «${esc(sc.title)}»</h3>
+      <div class="rs-seg sc-tabs" id="scTb"><button type="button" data-t="lib" aria-pressed="true">Из коллекции</button><button type="button" data-t="url" aria-pressed="false">По ссылке</button><button type="button" data-t="man" aria-pressed="false">Вручную</button></div>
+      <div id="scP-lib"><label class="pk-q">${ICON.search}<input class="in" id="scQ" placeholder="Найти на полке" autocomplete="off"></label>
+        <div class="pk" id="scPk">${pool.length ? pool.map(x => `<button type="button" class="pk-c" data-k="${esc(x.id)}" aria-pressed="${has(x.id)}">${sc.kind === "read" ? rCover(x) : posterHTML(x, {tgt: false, rate: false, badge: false})}<i class="pk-ok">${CHECK_I}</i><span>${esc(x.title)}</span></button>`).join("") : `<p class="sub" style="grid-column:1/-1">В коллекции пусто — добавь по ссылке или вручную.</p>`}</div></div>
+      <div id="scP-url" hidden><label class="f">${linkHint}<span class="rs-q"><input class="in" id="scU" inputmode="url" placeholder="https://" autocomplete="off"><button type="button" class="rs-find" id="scUGo" title="Найти">${ICON.search}</button></span></label><div id="scUR" class="sc-ur"></div></div>
+      <div id="scP-man" hidden><div class="rs3"><div class="rs3-cv" id="scCv"></div><div class="rs3-f">
+        <label class="f">Название<input class="in" id="scMT" maxlength="120" autocomplete="off"></label>
+        <label class="f">Год<input class="in" id="scMY" inputmode="numeric" maxlength="4"></label>
+        <label class="f">Подпись<input class="in" id="scMN" maxlength="60" placeholder="почему тут, по желанию"></label></div></div></div>
+      <div class="acts" style="margin-top:14px"><button class="ib blue" id="scDone">Готово</button><button class="ib" id="scAddOne" hidden>Добавить на витрину</button></div>`, {wide: true});
+    const q = x => s.el.querySelector(x);
+    const showTab = t => { tab = t; ["lib", "url", "man"].forEach(k => q("#scP-" + k).hidden = k !== t); q("#scTb").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.t === t)); q("#scAddOne").hidden = t === "lib"; if (t === "man") drawCv(); };
+    q("#scTb").onclick = e => { const b = e.target.closest("[data-t]"); if (b) showTab(b.dataset.t); };
+    q("#scQ").addEventListener("input", e => { const v = e.target.value.trim().toLowerCase(); s.el.querySelectorAll("#scPk .pk-c").forEach(b => b.hidden = !!v && !b.textContent.toLowerCase().includes(v)); });
+    q("#scPk").onclick = e => { const b = e.target.closest(".pk-c"); if (!b) return; const ref = b.dataset.k, on = !has(ref);
+      if (on){ const x = pool.find(i => i.id === ref); sc.entries.push({ref, t: x.title, cover: x.cover || null}); } else sc.entries = sc.entries.filter(e2 => e2.ref !== ref);
+      b.setAttribute("aria-pressed", on); SND.tick(.7); };
+    const drawCv = () => { const src = file ? URL.createObjectURL(file) : coverUrl; q("#scCv").innerHTML = src ? `<span class="rx-cv"><img src="${esc(src)}" alt="" referrerpolicy="no-referrer"></span>` : `<span class="rx-cv rs-empty"><span class="ph"><i class="rs-up">${ICON.up}</i><b>Перетащи постер</b><small>или нажми, или Ctrl+V</small></span></span>`; };
+    const take = f => { if (!f || !f.type.startsWith("image/")) return; file = f; coverUrl = null; if (tab !== "man") showTab("man"); drawCv(); };
+    q("#scCv").onclick = () => { const i = document.createElement("input"); i.type = "file"; i.accept = "image/*"; i.onchange = () => take(i.files[0]); i.click(); };
+    bindDrop(q("#scCv"), take, u => { file = null; coverUrl = u; drawCv(); }); pasteTarget = take;
+    const b64file = (b64, type) => { try { const bin = Uint8Array.from(atob(b64), c => c.charCodeAt(0)); return new File([bin], "cover.jpg", {type: type || "image/jpeg"}); } catch(_){ return null; } };
+    q("#scUGo").onclick = async () => { const u = q("#scU").value.trim(); if (!u){ q("#scU").focus(); return; } const out = q("#scUR"); out.innerHTML = `<p class="sub">Ищу…</p>`; got = null;
+      try {
+        if (sc.kind === "game"){ const m = u.match(/store\.steampowered\.com\/app\/(\d+)/i) || u.match(/^(\d{2,10})$/); if (!m) throw new Error("это не ссылка на игру в Steam");
+          const {data: d, error} = await SB.functions.invoke("steam", {body: {appid: m[1]}}); if (error || !d || d.error) throw new Error((d && d.error) || "Steam не ответил");
+          got = {t: d.name, year: (String((d.release && d.release.date) || "").match(/\d{4}/) || [])[0] || null, url: u, file: d.cover ? b64file(d.cover, d.coverType) : null}; }
+        else if (sc.kind === "kino"){ const {data: d, error} = await SB.functions.invoke("kino", {body: {url: u}}); if (error || !d || d.error) throw new Error((d && d.error) === "not_found" ? "не нашёл фильм" : "Кинопоиск не ответил");
+          got = {t: d.title, year: d.year || null, url: u, type: d.type || "movie", file: d.cover ? b64file(d.cover, d.coverType) : null}; }
+        else { const d = await readerFetch(u); got = {t: d.title, year: d.year || null, url: u, file: d.cover ? b64file(d.cover, d.coverType) : null, coverUrl: d.coverUrl || null}; }
+        if (!got.t) throw new Error("не нашёл название");
+        const src = got.file ? URL.createObjectURL(got.file) : got.coverUrl;
+        out.innerHTML = `<div class="sc-got">${src ? `<img src="${esc(src)}" alt="" referrerpolicy="no-referrer">` : ""}<div><b>${esc(got.t)}</b><small>${esc(got.year || "")}</small></div></div>`;
+      } catch(err){ out.innerHTML = `<p class="sub">Не вышло: ${esc(err.message || err)}. Добавь вручную.</p>`; } };
+    q("#scU").addEventListener("keydown", e => { if (e.key === "Enter"){ e.preventDefault(); q("#scUGo").click(); } });
+    q("#scAddOne").onclick = async () => { const b = q("#scAddOne"); let e = null;
+      if (tab === "url"){ if (!got){ toast("Сначала найди по ссылке"); return; } e = {t: got.t, year: got.year, url: got.url, type: got.type || null, f: got.file, coverUrl: got.coverUrl || null}; }
+      else { const t = q("#scMT").value.trim(); if (!t){ q("#scMT").focus(); toast("Нужно название"); return; } e = {t, year: q("#scMY").value.trim() || null, note: q("#scMN").value.trim() || null, f: file, coverUrl}; }
+      b.disabled = true; b.textContent = "Добавляю…";
+      try { const cover = e.f && assets ? await upload(e.f) : null; const entry = {t: e.t, cover, year: e.year || null, url: e.url || null, note: e.note || null, type: e.type || null}; if (!cover && e.coverUrl) entry.coverUrl = e.coverUrl;
+        sc.entries.push(entry); if (await scSave(sc)){ toast(`«${e.t}» на витрине`); file = null; coverUrl = null; got = null; q("#scMT").value = ""; q("#scMY").value = ""; q("#scMN").value = ""; q("#scU").value = ""; q("#scUR").innerHTML = ""; drawCv(); }
+      } catch(err){ toast("Не загрузилось"); }
+      b.disabled = false; b.textContent = "Добавить на витрину"; };
+    q("#scDone").onclick = async () => { if (tab === "lib" || sc.entries.length !== (scList(ME.id).find(x => x.id === id) || {entries: []}).entries.length) await scSave(sc); s.close(); };
+  }
+  function scEntrySheet(key){
+    const [id, i] = key.split(":"), sc = FR && FR.showcases && FR.showcases.find(x => x.id === id); if (!sc) return; const e = sc.entries[+i]; if (!e) return;
+    const src = e.cover ? publicUrl(e.cover) : e.coverUrl;
+    openSheet(`<div class="rs-top">${src ? `<span class="rx-cv"><img src="${esc(src)}" alt="" referrerpolicy="no-referrer"></span>` : `<span class="rx-cv"><span class="ph" style="--h:${rHue(e.t)}"><b>${esc(e.t)}</b></span></span>`}<div><h3 style="margin-bottom:4px">${esc(e.t)}</h3>
+      <p class="sub">${esc([SC_KIND[sc.kind][0], e.year].filter(Boolean).join(" · "))}</p><p class="sub" style="margin-top:8px">${avaHTML(profOf(sc.user_id), "xs")} витрина «${esc(sc.title)}»</p>
+      ${e.note ? `<p class="sub" style="margin-top:8px;color:#e5e5ea">${esc(e.note)}</p>` : ""}${e.url ? `<p class="sub" style="margin-top:8px"><a href="${esc(e.url)}" target="_blank" rel="noopener" style="color:#64d2ff">Открыть ссылку ↗</a></p>` : ""}</div></div>`);
+  }
+  document.addEventListener("click", e => {
+    const el = e.target.closest && e.target.closest("[data-scnew],[data-scadd],[data-scedit],[data-scen],[data-scrm]"); if (!el || !ME) return;
+    if (el.dataset.scrm){ e.preventDefault(); e.stopPropagation(); const [id, i] = el.dataset.scrm.split(":"), sc = scList(ME.id).find(x => x.id === id); if (!sc) return;
+      const c = JSON.parse(JSON.stringify(sc)); c.entries.splice(+i, 1); scSave(c); return; }
+    if (el.dataset.scnew){ scNewSheet(); return; }
+    if (el.dataset.scadd){ scAddSheet(el.dataset.scadd); return; }
+    if (el.dataset.scedit){ scEditSheet(el.dataset.scedit); return; }
+    if (el.dataset.scen){ scEntrySheet(el.dataset.scen); return; }
+  }, true);
 
   // ================= запуск =================
   readHash(); render();
