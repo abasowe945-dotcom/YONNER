@@ -91,3 +91,6 @@ grant execute on function public.public_items() to authenticated;
 alter table public.profiles add column if not exists avatar text;
 alter table public.profiles add column if not exists ava_animal text;
 alter table public.profiles add column if not exists ava_color text;
+
+-- ===== дни рождения (2.1) =====
+alter table public.profiles add column if not exists birthday date;
