@@ -200,3 +200,27 @@ do $$ begin alter table public.events add constraint events_kind_chk check (kind
 revoke all on public.reads, public.event_post_likes from anon;
 do $$ begin alter publication supabase_realtime add table public.event_post_likes; exception when duplicate_object then null; end $$;
 do $$ begin alter publication supabase_realtime add table public.profiles; exception when duplicate_object then null; end $$;
+
+-- ===== 3.0: свой ID у каждого аккаунта и фон профиля, который видят все =====
+alter table public.profiles add column if not exists pid integer;
+alter table public.profiles add column if not exists bg text;
+alter table public.profiles add column if not exists bg_dim smallint;
+-- номера по порядку регистрации, начиная с 1001
+do $$ begin
+  if exists (select 1 from public.profiles where pid is null) then
+    with o as (select user_id, row_number() over (order by created_at, user_id) rn from public.profiles where pid is null)
+    update public.profiles p set pid = (select coalesce(max(pid), 1000) from public.profiles) + o.rn from o where p.user_id = o.user_id;
+  end if;
+end $$;
+do $$ begin alter table public.profiles add constraint profiles_pid_key unique (pid); exception when duplicate_object or duplicate_table then null; end $$;
+do $$ begin alter table public.profiles add constraint profiles_bg_dim_chk check (bg_dim is null or bg_dim between 0 and 90); exception when duplicate_object then null; end $$;
+-- новичок получает следующий номер; поменять свой номер нельзя
+create or replace function public.profiles_keep_pid() returns trigger language plpgsql set search_path = '' as $$
+begin
+  if tg_op = 'UPDATE' then new.pid := old.pid;
+  elsif new.pid is null then new.pid := (select coalesce(max(p.pid), 1000) + 1 from public.profiles p);
+  end if;
+  return new;
+end $$;
+drop trigger if exists profiles_keep_pid on public.profiles;
+create trigger profiles_keep_pid before insert or update on public.profiles for each row execute function public.profiles_keep_pid();
