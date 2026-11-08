@@ -2635,13 +2635,13 @@ body{overflow-x:clip}
 .in-w .send{margin-left:auto;height:32px;padding:0 14px;border-radius:9px;border:0;background:var(--c-ring);color:#fff;font:700 13px/1 var(--ios);cursor:pointer}
 .in-w .send:disabled{opacity:.6}
 .wl-form.drop .in-w,.wc-form.drop .in-w{border-style:dashed;border-color:var(--c-ring)}
-.wp{margin-top:14px;padding-top:14px;border-top:1px solid var(--c-line);animation:wcIn .35s cubic-bezier(.2,.9,.3,1.2)}
-.wp header{display:flex;align-items:center;gap:10px}
-.wp header .fr-ava{width:40px;height:40px;font-size:17px}
-.wp .who{min-width:0;flex:1}
-.wp .nk{display:block;padding:0;border:0;background:none;color:var(--c-fg);font:700 14.5px/1.2 var(--ios);cursor:pointer;text-align:left}
-.wp .nk:hover{text-decoration:underline}
-.wp .who small{display:block;margin-top:3px;color:var(--c-dim);font:500 12px/1 var(--ios)}
+.wpost{margin-top:14px;padding-top:14px;border-top:1px solid var(--c-line);animation:wcIn .35s cubic-bezier(.2,.9,.3,1.2)}
+.wpost header{display:flex;align-items:center;gap:10px}
+.wpost header .fr-ava{width:40px;height:40px;font-size:17px}
+.wpost .who{min-width:0;flex:1}
+.wpost .nk{display:block;padding:0;border:0;background:none;color:var(--c-fg);font:700 14.5px/1.2 var(--ios);cursor:pointer;text-align:left}
+.wpost .nk:hover{text-decoration:underline}
+.wpost .who small{display:block;margin-top:3px;color:var(--c-dim);font:500 12px/1 var(--ios)}
 .wp-del{width:30px;height:30px;border-radius:50%;border:0;background:none;color:var(--c-dim);display:grid;place-items:center;cursor:pointer;opacity:.6}
 .wp-del svg{width:15px;height:15px}.wp-del:hover{opacity:1;background:var(--c-cell-out)}
 .wp-t{margin:10px 0 0;font:400 15.5px/1.5 var(--ios);white-space:pre-wrap;word-wrap:break-word}
@@ -2783,6 +2783,100 @@ body{overflow-x:clip}
 .fi-t.done svg{color:#ffd60a}.fi-t.playing svg{color:#64d2ff}.fi-t.future svg{color:#bf5af2}
 .fi-t.busy{opacity:.6}.fi-t:disabled{cursor:default}
 @media (max-width:760px){.sc-kinds button{padding:12px 4px;font-size:12px}.pf-fh-b{padding:0 10px;font-size:12px}}
+
+/* ===== 3.2: календарь ГО ПОСМОТРИМ, окно серий, мероприятия, рейтинг ===== */
+.nd-hint{display:block;margin-top:6px;color:var(--k-dim,#9d9db3);font:500 12px/1.4 var(--ios);text-transform:none;letter-spacing:0}
+.gw-cal{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:0;border:0;background:none;color:inherit;text-align:left;cursor:pointer;min-width:0}
+.gw-cal b{font:900 20px/1 var(--ios);letter-spacing:.02em;white-space:nowrap}.gw-cal b span{color:#e50914}
+.gw-cal small{color:#9b9b9b;font:500 12.5px/1.3 var(--ios)}
+.gw-cal:hover small{color:#fff}
+.gw-tl{display:flex;align-items:center;gap:8px;min-width:0}
+.gw-tl b{min-width:0;flex:0 1 auto}
+.gw-by{flex:none;display:inline-flex;align-items:center;gap:4px;max-width:46%;padding:2px 8px 2px 2px;border-radius:999px;background:rgba(255,255,255,.1);color:#e5e5ea;font:600 11.5px/1.2 var(--ios);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gw-by .fr-ava{width:16px;height:16px;font-size:8px}
+.wcal-pg{max-width:1100px;margin:0 auto}
+.wcal-top{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.wcal-top .a-h1{margin:0;font-weight:900;letter-spacing:.01em}.wcal-top .a-h1 span{color:#e50914}
+.wcal-top .gw-new{margin-left:auto}
+.wcal{position:relative;margin-top:18px;padding:16px;border-radius:20px;background:var(--c-cell);box-shadow:var(--c-shadow)}
+.wcal-nav{display:flex;align-items:center;gap:6px;margin:0 0 12px}
+.wcal-nav b{min-width:150px;text-align:center;font:800 20px/1 var(--ios);text-transform:capitalize}
+.wcal-nav button{width:34px;height:34px;border-radius:50%;border:0;background:var(--c-cell-out);color:var(--c-fg);display:grid;place-items:center;cursor:pointer}
+.wcal-nav button svg{width:16px;height:16px}
+.wcal-nav .wcal-today{width:auto;padding:0 12px;border-radius:999px;margin-left:auto;font:600 13px/1 var(--ios)}
+.wcal-g{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.wcal-w{padding:2px 6px 6px;color:var(--c-dim);font:700 11px/1 var(--ios);text-transform:uppercase;letter-spacing:.06em}
+.wcal-d{position:relative;min-height:104px;padding:6px;border-radius:10px;border:1px solid var(--c-line);background:none;color:var(--c-fg);text-align:left;display:flex;flex-direction:column;gap:4px;font:inherit;overflow:hidden}
+.wcal-d.o{border-color:transparent}
+.wcal-d .n{font:600 13px/1 var(--ios);font-style:normal;color:var(--c-dim)}
+.wcal-d.td{border-color:#e50914}.wcal-d.td .n{color:#e50914;font-weight:800}
+.wcal-d.has{cursor:pointer;background:var(--c-cell-out);transition:transform .2s cubic-bezier(.3,1.4,.4,1),box-shadow .2s}
+.wcal-d.has:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.25)}
+.wcal-d.past{opacity:.55}
+.wcal-e{display:flex;flex-direction:column;gap:3px;min-width:0}
+.wcal-e .cv{display:block;width:100%;height:38px;border-radius:6px;background:#2c2c2e center 30%/cover}
+.wcal-e .stack{display:flex;height:38px}
+.wcal-e .stack .cv{flex:1;margin-left:-6px;border:2px solid var(--c-cell-out)}.wcal-e .stack .cv:first-child{margin-left:0}
+.wcal-e b{font:700 12.5px/1.2 var(--ios);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.wcal-e small{display:flex;align-items:center;gap:4px;color:var(--c-dim);font:500 11px/1.2 var(--ios);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wcal-e small .fr-ava{width:14px;height:14px;font-size:7px;flex:none}
+.wcal-d.multi .wcal-e b{color:#e50914}
+.wcal-pop{position:absolute;z-index:20;width:300px;max-width:calc(100% - 16px);padding:8px;border-radius:16px;background:var(--c-cell);border:1px solid var(--c-line);box-shadow:0 20px 50px rgba(0,0,0,.4);animation:wcIn .25s cubic-bezier(.2,.9,.3,1.2)}
+.wcal-pop .h{padding:4px 6px 8px;color:var(--c-dim);font:700 12px/1 var(--ios);text-transform:uppercase;letter-spacing:.06em}
+.wcal-pop button{display:grid;grid-template-columns:44px minmax(0,1fr);gap:10px;align-items:center;width:100%;padding:6px;border:0;border-radius:12px;background:none;color:var(--c-fg);text-align:left;cursor:pointer;font:inherit}
+.wcal-pop button:hover{background:var(--c-cell-out)}
+.wcal-pop .poster{width:44px;border-radius:6px}
+.wcal-pop b{display:block;font:700 14px/1.25 var(--ios)}
+.wcal-pop small{display:flex;align-items:center;gap:4px;margin-top:2px;color:var(--c-dim);font:500 12px/1.2 var(--ios)}
+.wcal-pop small .fr-ava{width:15px;height:15px;font-size:7px}
+.wcal-h{display:flex;align-items:baseline;gap:10px;margin:28px 0 12px;font:800 22px/1 var(--ios)}
+.wcal-h small{color:var(--c-dim);font:600 14px/1 var(--ios)}
+.wcal-arch{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px}
+.wca-r{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:12px;align-items:center;padding:8px;border:0;border-radius:14px;background:var(--c-cell);color:var(--c-fg);text-align:left;cursor:pointer;font:inherit;box-shadow:var(--c-shadow)}
+.wca-r:hover{background:var(--c-cell-out)}
+.wca-r .poster{width:48px;border-radius:7px}
+.wca-r .poster .rb,.wca-r .poster .medal{display:none}
+.wca-r b{display:block;font:700 14.5px/1.25 var(--ios)}
+.wca-r small{display:flex;align-items:center;gap:4px;margin-top:3px;color:var(--c-dim);font:500 12px/1.2 var(--ios)}
+.wca-r small .fr-ava{width:15px;height:15px;font-size:7px}
+@media (max-width:760px){
+  .wcal{padding:10px;border-radius:16px}.wcal-g{gap:3px}
+  .wcal-d{min-height:64px;padding:4px;border-radius:8px}
+  .wcal-e .cv,.wcal-e .stack{height:26px}
+  .wcal-e b,.wcal-e small{display:none}
+  .wcal-nav b{min-width:0;flex:1;font-size:17px}
+  .wcal-arch{grid-template-columns:minmax(0,1fr)}
+}
+.ev-scroll{max-height:236px;overflow-y:auto;overscroll-behavior:contain;margin:0 -4px;padding:0 4px;scrollbar-width:thin}
+.ev-arch{margin-top:8px;border-top:1px solid var(--c-line);padding-top:6px}
+.ev-arch summary{display:flex;align-items:center;gap:8px;cursor:pointer;list-style:none;padding:6px 4px;color:var(--c-dim);font:700 13px/1 var(--ios)}
+.ev-arch summary::-webkit-details-marker{display:none}
+.ev-arch summary small{margin-left:auto;font-weight:500}
+.ev-arch summary::after{content:"›";transition:transform .2s}
+.ev-arch[open] summary::after{transform:rotate(90deg)}
+.ev-arch .ev-row{opacity:.6}
+.pf-av{position:relative;display:inline-flex}
+.pf-av i{position:absolute;right:-2px;bottom:-2px;width:12px;height:12px;border-radius:50%;border:2px solid #15171d}
+.pf-av i.on{background:#30d158}.pf-av i.rc{background:#57cbde}
+.pf-tr .upd{color:#8f95a3}.pf-tr .upd.fresh{color:#57cbde}
+.eps-h{display:grid;grid-template-columns:70px minmax(0,1fr);gap:14px;align-items:center;margin-bottom:12px}
+.eps-h .poster{width:70px;border-radius:8px}
+.eps-h h3{margin:0}
+.eps-p .n{display:flex;align-items:baseline;gap:8px;font:500 15px/1 var(--ios);color:#a1a1a6}
+.eps-p .n b{font:800 34px/1 var(--ios);color:#fff}
+.eps-p .n span{margin-left:auto;padding:5px 9px;border-radius:8px;background:#2c2c2e;color:#a594ff;font:800 13px/1 var(--ios)}
+.eps-p .segs{display:flex;gap:3px;margin-top:10px}
+.eps-p .segs i{flex:var(--n) 1 0;height:8px;border-radius:4px;background:#3a3a3c;overflow:hidden}
+.eps-p .segs u{display:block;height:100%;background:linear-gradient(90deg,#7c6cff,#a594ff);text-decoration:none}
+.eps-b{display:flex;gap:8px;margin:14px 0 4px}.eps-b .ib{flex:1}
+.eps-at{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.eps-at label{display:grid;gap:6px;color:#8e8e93;font:600 12px/1 var(--ios)}
+.eps-se{display:grid;gap:6px;max-height:min(40vh,320px);overflow:auto}
+.eps-r{display:grid;grid-template-columns:minmax(0,1fr) 34px 70px 34px auto 34px;gap:6px;align-items:center;padding:6px 8px;border-radius:12px;background:#2c2c2e;color:#e5e5ea;font:600 14px/1 var(--ios)}
+.eps-r .in{height:34px;text-align:center;padding:0 6px}
+.eps-r button{width:34px;height:34px;border-radius:9px;border:0;background:#3a3a3c;color:#fff;cursor:pointer;font:700 16px/1 var(--ios);display:grid;place-items:center}
+.eps-r button svg{width:13px;height:13px}.eps-r .x{background:none;color:#8e8e93}
+.eps-r .u{color:#8e8e93;font-weight:500;font-size:12.5px}
 </style>
 <style>img{max-width:100%}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 <script src="config.js"></script>
@@ -2858,7 +2952,7 @@ body{overflow-x:clip}
   const TIERS = [["S","#ff5f57"],["A","#ff9f0a"],["B","#ffd60a"],["C","#30d158"],["D","#64d2ff"]];
   const TAB_ORDER = ["home","games","kino","read","calendar","people","more"];
   const ROUTES = {
-    home:{w:"wApple",theme:"cal",tab:"home"}, read:{w:"wApple",theme:"cal",tab:"read"}, watch:{w:"wApple",theme:"cal",tab:"people"},
+    home:{w:"wApple",theme:"cal",tab:"home"}, read:{w:"wApple",theme:"cal",tab:"read"}, watch:{w:"wApple",theme:"cal",tab:"people"}, watchcal:{w:"wApple",theme:"cal",tab:"people"},
     games:{w:"wGames",theme:"games",tab:"games"}, "games-future":{w:"wGames",theme:"games",tab:"games"},
     kino:{w:"wKino",theme:"kino",tab:"kino"}, "kino-future":{w:"wKino",theme:"kino",tab:"kino"},
     calendar:{w:"wApple",theme:"cal",tab:"calendar"},
@@ -3139,7 +3233,7 @@ body{overflow-x:clip}
   // деньги
   const priceOf = it => it.priceFree ? 0 : (typeof it.priceRub === "number" ? it.priceRub : (/₽|руб/i.test(it.price || "") ? (+String(it.price).replace(/\D/g, "") || 0) : 0));
   function moneyStats(Y){
-    const g = items.filter(i => isGame(i) && inLib(i) && priceOf(i) > 0);
+    const g = items.filter(i => isGame(i) && inLib(i) && priceOf(i) > 0 && !i.addedDone && !(i.noDate && ["done", "dropped"].includes(gStatus(i.status))));
     const inY = i => !Y || (itemDate(i) || "").startsWith(Y + "-");
     const paid = g.filter(i => srcOf(i) !== "pirate" && inY(i)), pir = g.filter(i => srcOf(i) === "pirate" && inY(i));
     const sum = a => a.reduce((s, i) => s + priceOf(i), 0);
@@ -3429,7 +3523,7 @@ body{overflow-x:clip}
   function renderMoney(){
     appleHead("Деньги", `<button class="a-link" data-go="more">‹ Ещё</button>`);
     const Y = recY, m = moneyStats(Y), all = moneyStats(null);
-    const months = Array.from({length:12}, (_, i) => m.paid.filter(x => itemDate(x).startsWith(`${Y}-${pad(i+1)}-`)).reduce((s, x) => s + priceOf(x), 0));
+    const months = Array.from({length:12}, (_, i) => m.paid.filter(x => (itemDate(x) || "").startsWith(`${Y}-${pad(i+1)}-`)).reduce((s, x) => s + priceOf(x), 0));
     const maxM = Math.max(1, ...months), MN = ["Я","Ф","М","А","М","И","И","А","С","О","Н","Д"];
     const top = [...m.paid, ...m.pir].sort((a,b) => priceOf(b) - priceOf(a)).slice(0, 5);
     const avg = m.paid.length ? m.spent / m.paid.length : 0;
@@ -3494,7 +3588,7 @@ body{overflow-x:clip}
     document.body.dataset.world = r.w; if (r.w !== "wApple"){ $("aCrumb").textContent = ""; $("aTopActs").innerHTML = ""; }
     if (r.w === "wGames") renderGames();
     else if (r.w === "wKino") renderKino();
-    else ({soon:renderSoon, calendar:renderCal, more:renderMore, recap:renderRecap, drops:renderDrops, money:renderMoney, ach:renderAch, patch:renderPatch, people:renderPeople, user:() => renderProfile(viewUid), event:renderEvent, watch:renderWatch, home:() => renderProfile(null), read:renderRead})[route]();
+    else ({soon:renderSoon, calendar:renderCal, more:renderMore, recap:renderRecap, drops:renderDrops, money:renderMoney, ach:renderAch, patch:renderPatch, people:renderPeople, user:() => renderProfile(viewUid), event:renderEvent, watch:renderWatch, home:() => renderProfile(null), read:renderRead, watchcal:() => renderWatchCal()})[route]();
     document.body.dataset.route = route;
     fillMeSlots(); applySecBg(); wireCarousels(); wireHScrolls(); document.querySelectorAll('[data-stack="1"]').forEach(wireStack); syncHead(); renderFw();
     renderTabbar();
@@ -4149,6 +4243,7 @@ body{overflow-x:clip}
   }
   function openForm(it, kind, opts = {}){
     const isNew = !it, lock = opts.lock || null;
+    FORM_NEW = isNew && !lock; fdTouched = false; FORM_IDS = {}; setTimeout(ndAuto, 60);
     it = it || (kind === "games" ? {type:"game", status: lock || "playing"} : {type:"movie", status: lock || "done"});
     const g = isGame(it); useWorld(it);
     const dateVal = isNew ? today() : (itemDate(it) || today());
@@ -4221,7 +4316,7 @@ body{overflow-x:clip}
       $("f_kzt").addEventListener("input", e => { const v = digits(e.target.value); $("f_rub").value = v ? Math.round(+v / KZT_PER_RUB) : ""; });
       if (!lock) wireWheel("f_rating");
       const steamFill = async raw => {
-        const m = String(raw || "").match(/store\.steampowered\.com\/app\/(\d+)/i) || String(raw || "").trim().match(/^(\d{2,10})$/);
+        const m = String(raw || "").match(/store\.steampowered\.com\/app\/(\d+)/i) || String(raw || "").trim().match(/^(\d{2,10})$/); if (m) FORM_IDS.steamId = m[1];
         if (!m){ kit.sum("bad", "Это не похоже на ссылку на игру в Steam. Заполни вручную в «Подробнее»"); kit.openDr(true); return; }
         const btn = $("f_urlGo"); btn.disabled = true; btn.textContent = "Ищу…"; kit.sum("busy");
         try {
@@ -4375,6 +4470,7 @@ body{overflow-x:clip}
         if (!/kinopoisk\.ru\/(film|series)\/\d+/i.test(String(raw || "")) && !/^\s*\d{2,10}\s*$/.test(String(raw || ""))){ kit.sum("bad", "Это не похоже на ссылку на Кинопоиск. Заполни вручную в «Подробнее»"); kit.openDr(true); return; }
         const btn = $("f_urlGo"); btn.disabled = true; btn.textContent = "Ищу…"; kit.sum("busy");
         try {
+          const kpm = String(raw || "").match(/kinopoisk\.ru\/(?:film|series)\/(\d+)/i); if (kpm) FORM_IDS.kpId = kpm[1];
           const {data: d, error} = await SB.functions.invoke("kino", {body: {url: raw}});
           let err = d && d.error;
           if (!d && error){ try { const j = await error.context.json(); err = j.error; } catch(e){ err = error.message; } }
@@ -4450,6 +4546,8 @@ body{overflow-x:clip}
       if (cover.remove){ body.cover = null; body.coverPos = null; }
       else { if (cover.file) body.cover = await upload(cover.file); if (cover.url || cover.file) body.coverPos = cover.pos || null; }
       let id = it.id;
+      if (FORM_IDS.steamId && isGame(body)) body.steamId = FORM_IDS.steamId; if (FORM_IDS.kpId && !isGame(body)) body.kpId = FORM_IDS.kpId;
+      if (isNew && isGame(body) && (body.status === "done" || body.status === "dropped")) body.addedDone = true;
       if (isNew && pfPend && Date.now() - pfPend.t < 15 * 6e4 && (pfPend.kind === "games") === isGame(body)){ body[pfPend.flag] = true; body[pfPend.flag + "At"] = body.updatedAt; pfPend = null; }
       if (isNew){ body.createdAt = body.updatedAt; id = (await db.collection("items").add(body)).id; }
       else await db.doc("items/" + it.id).update(body);
@@ -4841,6 +4939,19 @@ body{overflow-x:clip}
   // ================= патчноуты =================
   // Новые версии добавляются В НАЧАЛО списка. n — новое, c — изменено, f — исправлено, r — удалено.
   const PATCHES = [
+    {v: "3.2", date: "2026-11-08", title: "Календарь просмотров, честные траты и звуки старой школы", kind: "minor", silent: true, sec: {
+      n: ["<b>Календарь ГО ПОСМОТРИМ</b>: нажми на шапку окна — откроется месяц, где в каждый день видно, что смотрим и кто предложил. Несколько сеансов в день — нажми на день, всплывёт список",
+        "<b>Архив просмотров</b> — прошедшие сеансы под календарём",
+        "В ГО ПОСМОТРИМ у каждого фильма видно, кто его предложил",
+        "<b>Окно серий</b>: нажми на сериал в «Смотрю» в профиле — видно, сколько серий из скольких посмотрено, и можно быстро поправить сезоны и серии, если Кинопоиск вставил неправильно",
+        "<b>Архив мероприятий</b>: прошедшие уходят в свёрнутый «Архив», а длинный список прокручивается прямо в окне",
+        "В рейтинге активности видно, когда человек последний раз что-то обновлял, и зелёная точка, если только что",
+        "Звук печатной машинки при наборе текста, на Enter — звоночек каретки"],
+      c: ["<b>Деньги</b> считают только игры, которые ты добавил как «Играю». Давно пройденные и брошенные в траты не идут",
+        "Добавляешь давно пройденную игру или просмотренный фильм — дата сама ставится «Без даты», и в календарь он не попадает. Если было сегодня — сними галочку",
+        "Одинаковые игры и фильмы у друзей теперь узнаются, даже если названия чуть отличаются («Disco Elysium» и «Disco Elysium — The Final Cut») или добавлены по одной ссылке Steam/Кинопоиска. Совпадение вкусов считается точнее",
+        "Звук клика стал глуше, как в старых RPG"],
+      f: ["Записи, добавленные пачкой 8 ноября как давно пройденные, убраны из календаря и трат"]}},
     {v: "3.1", date: "2026-11-08", title: "Стена с реакциями, свои витрины и лента по людям", kind: "major", sec: {
       n: ["<b>Стена</b> в «Активности»: пиши посты, вставляй картинки и эмодзи. Картинку можно перетащить или вставить через Ctrl+V",
         "<b>Реакции на посты</b>: лайк, смех, кринж, какашка, клоун, праздник, плач, GG, череп и огонь. Нажми «кто» — увидишь, кто что поставил",
@@ -5045,7 +5156,8 @@ body{overflow-x:clip}
   const PN_LABEL = {n: "Новое", c: "Изменено", f: "Исправлено", r: "Удалено"};
   const lsGet = k => { try { return localStorage.getItem(k); } catch(e){ return null; } };
   const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch(e){} };
-  const patchUnseen = () => lsGet("nexus_patch_seen") !== PATCHES[0].v;
+  const PATCH_LOUD = () => PATCHES.find(p => !p.silent && p.season == null) || PATCHES[0];
+  const patchUnseen = () => { const v = lsGet("nexus_patch_seen"), L = PATCH_LOUD(); return v !== L.v && !PATCHES.slice(0, PATCHES.indexOf(L)).some(p => p.v === v); };
   const patchCard = (p, latest) => `<article class="pn${latest ? " latest" : ""}"><div class="pn-h"><span class="pn-v ${p.kind}">${p.kind === "proto" ? "v" : "Патч "}${esc(p.v)}</span>
       <div class="pn-t"><b>${esc(p.title)}</b><small>${p.date ? fmtDate(p.date) : "прототип в Claude"}</small></div>${latest && patchUnseen() ? `<span class="pn-new">NEW</span>` : ""}</div>
       ${Object.entries(PN_LABEL).filter(([k]) => p.sec[k] && p.sec[k].length).map(([k, l]) => `<div class="pn-sec"><h4 class="${k}">${l}</h4><ul>${p.sec[k].map(x => `<li>${x}</li>`).join("")}</ul></div>`).join("")}
@@ -5056,13 +5168,13 @@ body{overflow-x:clip}
     $("aMain").innerHTML = `<h1 class="a-h1">Патчноуты</h1><p class="a-sub">Всё, что менялось на сайте, от свежего к старому. Текущая версия: <b>${PATCHES[0].v}</b>.</p>
       <div class="pn-season">Сезон 1 · сайт</div>${live.map((p, i) => patchCard(p, i === 0)).join("")}
       <div class="pn-season">Сезон 0 · прототип в Claude</div>${proto.map(p => patchCard(p, false)).join("")}`;
-    if (patchUnseen()){ lsSet("nexus_patch_seen", PATCHES[0].v); }
+    if (patchUnseen()){ lsSet("nexus_patch_seen", PATCH_LOUD().v); }
   }
   function patchPopup(){
     if (!patchUnseen() || !ME) return;
-    if (lsGet("nexus_patch_pop") === PATCHES[0].v) return;
-    lsSet("nexus_patch_pop", PATCHES[0].v);
-    const p = PATCHES[0];
+    const p = PATCH_LOUD();
+    if (lsGet("nexus_patch_pop") === p.v) return;
+    lsSet("nexus_patch_pop", p.v);
     const s = openSheet(`<h3>Вышел патч ${esc(p.v)}</h3><p class="sub">${esc(p.title)}</p>
       <ul style="margin:12px 0 0;padding-left:20px;line-height:1.5">${[...(p.sec.n || []), ...(p.sec.c || [])].slice(0, 5).map(x => `<li>${x}</li>`).join("")}</ul>
       <div class="acts" style="margin-top:16px"><button class="ib blue" id="pnAll">Все патчноуты</button><button class="ib" id="pnOk">Понятно</button></div>`);
@@ -5196,7 +5308,10 @@ body{overflow-x:clip}
     if (FR){ const p = FR.profiles.find(x => x.user_id === ME.id); if (p) Object.assign(p, patch); else FR.profiles.push(row); }
     render(); return true;
   }
-  const frKey = it => (isGame(it) ? "g|" : "k|") + String(it.title || "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+  const normT = t => String(t || "").toLowerCase().replace(/[™®©]/g, "").replace(/\b(the|game of the year|goty|definitive|remastered|remaster|deluxe|complete|enhanced|ultimate|director'?s cut|final cut|edition)\b/g, " ").replace(/(^|[^\p{L}])(издание|издания|изд)(?=[^\p{L}]|$)/gu, " ").replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+  const frKeys = it => { const p = isGame(it) ? "g|" : "k|", out = [p + normT(it.title)]; if (it.originalTitle) out.push(p + normT(it.originalTitle)); if (it.steamId) out.push("g|s:" + it.steamId); if (it.kpId) out.push("k|kp:" + it.kpId); return [...new Set(out.filter(k => k.length > 2))]; };
+  const frKey = it => frKeys(it)[0];
+  const sameIt = (a, b) => { const kb = frKeys(b); return frKeys(a).some(k => kb.includes(k)); };
   const frNick = uid => { const p = FR && FR.profiles.find(x => x.user_id === uid); return p ? p.nick : "кто-то"; };
   async function loadFriends(force){
     if (!SB || !ME) return null;
@@ -5215,11 +5330,12 @@ body{overflow-x:clip}
     return frLoading;
   }
   const frItems = uid => FR ? FR.items.filter(i => i.uid === uid) : [];
-  const myKeys = () => new Set(MYITEMS.map(frKey));
+  const myKeys = () => { const s = new Set(); MYITEMS.forEach(i => frKeys(i).forEach(k => s.add(k))); s.hasIt = it => frKeys(it).some(k => s.has(k)); return s; };
   function compat(uid){
-    const mine = new Map(MYITEMS.filter(inLib).filter(i => typeof i.rating === "number").map(i => [frKey(i), i]));
-    const common = frItems(uid).filter(inLib).filter(i => typeof i.rating === "number" && mine.has(frKey(i)))
-      .map(f => ({f, m: mine.get(frKey(f)), d: Math.abs(f.rating - mine.get(frKey(f)).rating)}));
+    const mine = new Map(); MYITEMS.filter(inLib).filter(i => typeof i.rating === "number").forEach(i => frKeys(i).forEach(k => { if (!mine.has(k)) mine.set(k, i); }));
+    const hit = f => { const k = frKeys(f).find(x => mine.has(x)); return k ? mine.get(k) : null; };
+    const common = frItems(uid).filter(inLib).filter(i => typeof i.rating === "number" && hit(i))
+      .map(f => { const m = hit(f); return {f, m, d: Math.abs(f.rating - m.rating)}; });
     const pct = common.length >= 2 ? Math.max(0, Math.round(100 - common.reduce((s, c) => s + c.d, 0) / common.length * 12)) : null;
     return {common, pct};
   }
@@ -5263,10 +5379,10 @@ body{overflow-x:clip}
   }
   function friendItemSheet(key){
     const [uid, id] = key.split("/"); const it = FR && FR.items.find(i => i.uid === uid && i.id === id); if (!it) return;
-    const g = isGame(it), have = myKeys().has(frKey(it));
+    const g = isGame(it), have = myKeys().hasIt(it);
     const st = isFuture(it) ? "На будущее" : isSoon(it) ? (g ? "Ждёт релиз" : "Ждёт премьеру") : g ? GSTATUS[gStatus(it.status)] : kLab(it).l;
     const dates = [it.date && !isFuture(it) ? `начал ${fmtDate(it.date)}` : "", it.finishedAt ? `закончил ${fmtDate(it.finishedAt)}` : "", it.releaseDate ? `выход ${relLabel(it)}` : (it.release ? `выход ${it.release}` : "")].filter(Boolean).join(" · ");
-    const mine = MYITEMS.find(i => frKey(i) === frKey(it));
+    const mine = MYITEMS.find(i => sameIt(i, it));
     const s = openSheet(`<div class="qa-top">${posterHTML(it, {tgt:false})}<div><h3>${esc(it.title)}</h3>
         <p class="sub">${esc([g ? "Игра" : KTYPES[it.type], it.year, genres(it).slice(0, 3).join(", ")].filter(Boolean).join(" · "))}</p>
         <p class="sub" style="margin-top:8px">${avaHTML(profOf(uid), "xs")} <b style="color:inherit">${esc(frNick(uid))}</b>: ${esc(st)}${typeof it.rating === "number" ? ` · оценка <b style="color:inherit">${num1(it.rating)}</b>` : ""}${it.tier ? ` · тир ${esc(it.tier)}` : ""}</p>
@@ -5282,8 +5398,8 @@ body{overflow-x:clip}
   }
   async function takeFromFriend(it, mode){
     if (!db) return false;
-    if (myKeys().has(frKey(it))){ toast("Уже есть у тебя"); return false; }
-    const keep = ["title", "type", "genre", "desc", "year", "release", "coverPos", "epTotal", "originalTitle", "director", "country", "duration"];
+    if (myKeys().hasIt(it)){ toast("Уже есть у тебя"); return false; }
+    const keep = ["title", "type", "genre", "desc", "year", "release", "coverPos", "epTotal", "seasons", "seasonEps", "originalTitle", "director", "country", "duration", "steamId", "kpId"];
     const soon = isSoon(it) && it.releaseDate;
     const st = soon ? "soon" : mode === "done" ? "done" : mode === "playing" ? "playing" : "future";
     const body = {status: st, createdAt: now(), updatedAt: now(), via: "friend:" + frNick(it.uid)};
@@ -5300,8 +5416,8 @@ body{overflow-x:clip}
   function coopRoulette(kind){
     const p = FR && FR.profiles.find(x => x.user_id === viewUid); if (!p) return;
     const g = kind === "games", pick = list => list.filter(i => (g ? isGame(i) : !isGame(i)) && isFuture(i));
-    const mineL = pick(MYITEMS), theirL = pick(frItems(p.user_id)), tk = new Set(theirL.map(frKey));
-    const both = mineL.filter(i => tk.has(frKey(i))).map(i => ({it: i, who: "оба хотите", uids: [ME.id, p.user_id]}));
+    const mineL = pick(MYITEMS), theirL = pick(frItems(p.user_id)), tk = new Set(theirL.flatMap(frKeys));
+    const both = mineL.filter(i => frKeys(i).some(k => tk.has(k))).map(i => ({it: i, who: "оба хотите", uids: [ME.id, p.user_id]}));
     const pool = both.length ? both : [...mineL.map(i => ({it: i, who: "из твоего списка", uids: [ME.id]})), ...theirL.map(i => ({it: i, who: `из списка ${p.nick}`, uids: [p.user_id]}))];
     const title = g ? "Во что поиграть вместе" : "Что посмотреть вместе";
     if (!pool.length){ openSheet(`<h3>${title}</h3><p class="sub">У вас обоих пусто в «На будущее»${g ? " для игр" : " для кино"}. Добавьте что-нибудь, и будет из чего крутить.</p>`); return; }
@@ -5315,7 +5431,7 @@ body{overflow-x:clip}
       const win = pool[Math.floor(Math.random() * pool.length)]; let n = 0; const total = pool.length > 1 ? 22 : 1;
       const step = () => { n++; show(n >= total ? win : pool[Math.floor(Math.random() * pool.length)]);
         if (n < total) setTimeout(step, 40 + n * n * .55); else { box.classList.remove("spin"); box.classList.add("win"); busy = false; s.el.querySelector("#crGo").textContent = "Ещё раз";
-          if (win.it.uid && !myKeys().has(frKey(win.it))){ s.el.querySelector("#crX").innerHTML = `<button class="ib" id="crTake">Взять к себе</button>`; s.el.querySelector("#crTake").onclick = async e => { e.target.disabled = true; if (await takeFromFriend(win.it)) e.target.textContent = "Добавлено"; else e.target.disabled = false; }; } } };
+          if (win.it.uid && !myKeys().hasIt(win.it)){ s.el.querySelector("#crX").innerHTML = `<button class="ib" id="crTake">Взять к себе</button>`; s.el.querySelector("#crTake").onclick = async e => { e.target.disabled = true; if (await takeFromFriend(win.it)) e.target.textContent = "Добавлено"; else e.target.disabled = false; }; } } };
       step();
     };
     s.el.querySelector("#crGo").onclick = spin; spin();
@@ -5919,15 +6035,31 @@ body{overflow-x:clip}
     const ac = () => { if (!ctx){ const A = window.AudioContext || window.webkitAudioContext; if (!A) return null; try { ctx = new A(); } catch(_){ return null; } } if (ctx.state === "suspended") ctx.resume(); return ctx; };
     const noise = (c, dur) => { const k = dur + "|" + c.sampleRate; if (bufs[k]) return bufs[k]; const b = c.createBuffer(1, Math.ceil(c.sampleRate * dur), c.sampleRate), d = b.getChannelData(0);
       for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d.length, 4); return bufs[k] = b; };
+    // глухой щелчок, как в старых RPG: деревянный «тук» и приглушённый шорох
     function click(kind){
       if (!on) return; const c = ac(); if (!c) return; const t = c.currentTime;
-      const f = kind === "tab" ? 430 : kind === "soft" ? 980 : 690;
-      const o = c.createOscillator(), g = c.createGain(); o.type = "sine";
-      o.frequency.setValueAtTime(f * 1.7, t); o.frequency.exponentialRampToValueAtTime(f, t + .028);
-      g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(kind === "soft" ? .03 : .065, t + .004); g.gain.exponentialRampToValueAtTime(.0001, t + .075);
-      o.connect(g).connect(c.destination); o.start(t); o.stop(t + .08);
-      const n = c.createBufferSource(), bp = c.createBiquadFilter(), ng = c.createGain(); n.buffer = noise(c, .014);
-      bp.type = "bandpass"; bp.frequency.value = 3400; bp.Q.value = 1.4; ng.gain.value = .09; n.connect(bp).connect(ng).connect(c.destination); n.start(t);
+      const f = kind === "tab" ? 150 : kind === "soft" ? 260 : 195, v = kind === "soft" ? .11 : .2;
+      const o = c.createOscillator(), g = c.createGain(), lp = c.createBiquadFilter(); o.type = "triangle";
+      o.frequency.setValueAtTime(f * 1.9, t); o.frequency.exponentialRampToValueAtTime(f, t + .035);
+      lp.type = "lowpass"; lp.frequency.value = 900; lp.Q.value = .7;
+      g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(v, t + .005); g.gain.exponentialRampToValueAtTime(.0001, t + .11);
+      o.connect(lp).connect(g).connect(c.destination); o.start(t); o.stop(t + .12);
+      const n = c.createBufferSource(), f2 = c.createBiquadFilter(), ng = c.createGain(); n.buffer = noise(c, .03);
+      f2.type = "lowpass"; f2.frequency.value = 1300; ng.gain.value = kind === "soft" ? .12 : .22; n.connect(f2).connect(ng).connect(c.destination); n.start(t);
+    }
+    // печатная машинка: удар литеры, на пробел глуше, на Enter — звоночек каретки
+    let lastKey = 0;
+    function type(kind = "key"){
+      if (!on) return; const c = ac(); if (!c) return; const now = performance.now(); if (now - lastKey < 22) return; lastKey = now; const t = c.currentTime;
+      const n = c.createBufferSource(), bp = c.createBiquadFilter(), g = c.createGain(); n.buffer = noise(c, kind === "space" ? .045 : .03);
+      bp.type = "bandpass"; bp.frequency.value = kind === "space" ? 900 : 2300 + Math.random() * 900; bp.Q.value = kind === "space" ? 1.2 : 3.2;
+      g.gain.value = kind === "space" ? .32 : .26 + Math.random() * .08; n.connect(bp).connect(g).connect(c.destination); n.start(t);
+      const o = c.createOscillator(), og = c.createGain(); o.type = "square"; o.frequency.setValueAtTime(kind === "space" ? 95 : 140 + Math.random() * 40, t); o.frequency.exponentialRampToValueAtTime(60, t + .04);
+      const ol = c.createBiquadFilter(); ol.type = "lowpass"; ol.frequency.value = 500;
+      og.gain.setValueAtTime(.0001, t); og.gain.exponentialRampToValueAtTime(kind === "space" ? .09 : .06, t + .003); og.gain.exponentialRampToValueAtTime(.0001, t + .06);
+      o.connect(ol).connect(og).connect(c.destination); o.start(t); o.stop(t + .07);
+      if (kind === "enter"){ [2093, 4186, 6279].forEach((fq, i) => { const b = c.createOscillator(), bg = c.createGain(); b.type = "sine"; b.frequency.value = fq * (1 + Math.random() * .002);
+        bg.gain.setValueAtTime(.0001, t + .05); bg.gain.exponentialRampToValueAtTime([.07, .03, .012][i], t + .055); bg.gain.exponentialRampToValueAtTime(.0001, t + .9); b.connect(bg).connect(c.destination); b.start(t + .05); b.stop(t + .95); }); }
     }
     // щелчок трещотки: короткий шум через узкий фильтр, выше и громче на скорости
     function tick(speed = .3){
@@ -5954,7 +6086,7 @@ body{overflow-x:clip}
       if (kind === "flip"){ const o = c.createOscillator(), og = c.createGain(); o.type = "sine"; o.frequency.setValueAtTime(180, t + dur * .7); o.frequency.exponentialRampToValueAtTime(90, t + dur);
         og.gain.setValueAtTime(.0001, t + dur * .7); og.gain.exponentialRampToValueAtTime(.05, t + dur * .74); og.gain.exponentialRampToValueAtTime(.0001, t + dur + .05); o.connect(og).connect(c.destination); o.start(t + dur * .7); o.stop(t + dur + .06); }
     }
-    return {click, tick, paper, get on(){ return on; }, set(v){ on = v; lsSet("nexus_snd", v ? "1" : "0"); if (v) click(); }};
+    return {click, tick, paper, type, get on(){ return on; }, set(v){ on = v; lsSet("nexus_snd", v ? "1" : "0"); if (v) click(); }};
   })();
   document.addEventListener("pointerdown", e => {
     if (e.button) return; const t = e.target.closest && e.target.closest("button,a,[role=button],summary,select,label.nd-tog,.fx,.k-card,.s-card");
@@ -6161,13 +6293,13 @@ body{overflow-x:clip}
     if (!EV){ loadEvents(); return `<div class="fb-card ev-card"><h3>${ICON.party} Мероприятия</h3><p class="a-sub" style="margin:0;font-size:13px">Загружаю…</p></div>`; }
     const inv = myInvites(), MON = ["янв","фев","мар","апр","мая","июн","июл","авг","сен","окт","ноя","дек"];
     const up = EV.events.filter(e => e.kind !== "watch" && !evPast(e)).sort((a, b) => (a.starts_at || "9").localeCompare(b.starts_at || "9"));
-    const past = EV.events.filter(e => e.kind !== "watch" && evPast(e)).sort((a, b) => b.starts_at.localeCompare(a.starts_at)).slice(0, 2);
+    const past = EV.events.filter(e => e.kind !== "watch" && evPast(e)).sort((a, b) => b.starts_at.localeCompare(a.starts_at));
     const th = e => { const s = evStart(e); return `<span class="ev-th" style="--g:${evBg(e)}">${e.photo ? "" : s ? `<small>${MON[s.getMonth()]}</small><b>${s.getDate()}</b>` : `<b>?</b>`}</span>`; };
     const row = e => { const go_ = evMem(e.id).filter(m => m.status === "going"); return `<button class="ev-row${evPast(e) ? " past" : ""}" data-ev="${esc(e.id)}">${th(e)}<span class="t"><b>${esc(e.title)}</b><small>${esc(evIn(e) || evWhen(e))}${go_.length ? ` · ${go_.length} ${plural(go_.length, "идёт", "идут", "идут")}` : ""}</small></span>${go_.length ? avaStack(go_.map(m => m.user_id), 3) : ""}</button>`; };
     const note = "Notification" in window && Notification.permission === "default" ? `<button class="ev-note" data-notif="1">Включить уведомления о приглашениях</button>` : "";
     return `<div class="fb-card ev-card"><h3>${ICON.party} Мероприятия<button class="ev-add" data-evnew="1" title="Создать мероприятие" aria-label="Создать мероприятие">+</button></h3>
       ${inv.filter(m => evById(m.event_id).kind !== "watch").map(m => { const e = evById(m.event_id); return `<div class="ev-inv"><div class="k">${esc(frNick(m.invited_by || e.owner))} зовёт</div>${row(e)}<div class="acts"><button class="ib green" data-rsvp="${esc(e.id)}:going">Иду</button><button class="ib" data-rsvp="${esc(e.id)}:not">Не иду</button></div></div>`; }).join("")}
-      ${up.filter(e => !inv.some(m => m.event_id === e.id)).map(row).join("")}${past.map(row).join("")}
+      <div class="ev-scroll">${up.filter(e => !inv.some(m => m.event_id === e.id)).map(row).join("")}</div>${past.length ? `<details class="ev-arch"><summary>Архив<small>${past.length} ${plural(past.length, "прошедшее", "прошедших", "прошедших")}</small></summary><div class="ev-scroll">${past.map(row).join("")}</div></details>` : ""}
       ${EV.events.some(e => e.kind !== "watch") ? "" : `<p class="a-sub" style="margin:0 0 10px;font-size:13px">Пока ничего не запланировано. Кино, катка, шашлыки — позови всех.</p><button class="ib blue bd-set" data-evnew="1">Создать мероприятие</button>`}
       ${note}</div>`;
   }
@@ -6766,9 +6898,10 @@ body{overflow-x:clip}
     if (!EV) return "";
     const inv = new Set(myInvites().map(m => m.event_id));
     const list = EV.events.filter(e => e.kind === "watch" && !evPast(e)).sort((a, b) => (a.starts_at || "9").localeCompare(b.starts_at || "9"));
-    return `<section class="gw-card"><div class="gw-h"><b>ГО <span>ПОСМОТРИМ</span></b><small>${list.length ? `${list.length} ${plural(list.length, "сеанс", "сеанса", "сеансов")}` : "онлайн или киновечером"}</small><button class="gw-new" data-wnew="1">+ Позвать смотреть</button></div>
+    const archN = EV.events.filter(e => e.kind === "watch" && evPast(e)).length;
+    return `<section class="gw-card"><div class="gw-h"><button class="gw-cal" data-wcal="1" title="Календарь просмотров"><b>ГО <span>ПОСМОТРИМ</span></b><small>${list.length ? `${list.length} ${plural(list.length, "сеанс", "сеанса", "сеансов")}` : "онлайн или киновечером"} · календарь${archN ? ` и архив (${archN})` : ""} ›</small></button><button class="gw-new" data-wnew="1">+ Позвать смотреть</button></div>
       ${list.length ? `<div class="gw-stack-w${list.length > 1 ? " multi" : ""}"><div class="gw-stack" data-stack="1" style="--n:${Math.min(list.length, 4)}">${list.map(e => { const f = filmItem(e), goN = evMem(e.id).filter(m => m.status === "going");
-        return `<button class="gw-t${inv.has(e.id) ? " inv" : ""}" data-w="${esc(e.id)}">${posterHTML(f, {tgt:false, rate:false})}<span style="min-width:0"><span class="md">${e.mode === "cinema" ? POPCORN_I + "киновечер" : MONITOR_I + "онлайн"}</span><b>${esc(f.title || e.title)}</b><small>${esc(evIn(e) || evWhen(e))}${goN.length ? ` · ${goN.length} ${plural(goN.length, "идёт", "идут", "идут")}` : ""}${inv.has(e.id) ? " · тебя зовут" : ""}</small></span></button>`; }).join("")}</div>${list.length > 1 ? `<div class="gw-nav"><button type="button" data-gws="-1" aria-label="Предыдущий">${CHEV_L}</button><span class="gw-dots">${list.map(() => "<i></i>").join("")}</span><button type="button" data-gws="1" aria-label="Следующий">${CHEV_R}</button></div>` : ""}</div>`
+        return `<button class="gw-t${inv.has(e.id) ? " inv" : ""}" data-w="${esc(e.id)}">${posterHTML(f, {tgt:false, rate:false})}<span style="min-width:0"><span class="md">${e.mode === "cinema" ? POPCORN_I + "киновечер" : MONITOR_I + "онлайн"}</span><span class="gw-tl"><b>${esc(f.title || e.title)}</b><span class="gw-by" title="Предложил">${avaHTML(profOf(e.owner), "xs")}${esc(ME && e.owner === ME.id ? "ты" : profOf(e.owner).nick || "кто-то")}</span></span><small>${esc(evIn(e) || evWhen(e))}${goN.length ? ` · ${goN.length} ${plural(goN.length, "идёт", "идут", "идут")}` : ""}${inv.has(e.id) ? " · тебя зовут" : ""}</small></span></button>`; }).join("")}</div>${list.length > 1 ? `<div class="gw-nav"><button type="button" data-gws="-1" aria-label="Предыдущий">${CHEV_L}</button><span class="gw-dots">${list.map(() => "<i></i>").join("")}</span><button type="button" data-gws="1" aria-label="Следующий">${CHEV_R}</button></div>` : ""}</div>`
         : `<p class="gw-empty">Выбери фильм из своей полки или из релизов, назначь время — друзья получат приглашение.</p>`}</section>`;
   }
   function watchSheet(e){
@@ -6982,12 +7115,14 @@ body{overflow-x:clip}
   function topHTML3(n){
     if (!FR) return `<p class="pf-mute">Загружаю…</p>`;
     const since = Date.now() - 30 * 864e5, by = new Map();
-    FR.profiles.forEach(p => by.set(p.user_id, {p: ME && p.user_id === ME.id ? {...p, ...myProf()} : p, n: 0, lib: 0}));
-    FR.items.forEach(i => { const r = by.get(i.uid); if (!r) return; if (inLib(i)) r.lib++; if (Date.parse(i._upd || i.updatedAt || i.createdAt || 0) > since) r.n++; });
-    (FR.reads || []).forEach(x => { const r = by.get(x.uid); if (!r) return; r.lib++; if (Date.parse(x._upd || x.updatedAt || 0) > since) r.n++; });
+    FR.profiles.forEach(p => by.set(p.user_id, {p: ME && p.user_id === ME.id ? {...p, ...myProf()} : p, n: 0, lib: 0, last: ""}));
+    const seen = (r, ts) => { if (ts && String(ts) > r.last) r.last = String(ts); };
+    FR.items.forEach(i => { const r = by.get(i.uid); if (!r) return; if (inLib(i)) r.lib++; seen(r, i._upd); if (Date.parse(i._upd || i.updatedAt || i.createdAt || 0) > since) r.n++; });
+    (FR.reads || []).forEach(x => { const r = by.get(x.uid); if (!r) return; r.lib++; seen(r, x._upd); if (Date.parse(x._upd || x.updatedAt || 0) > since) r.n++; });
+    if (WALL){ WALL.posts.forEach(x => { const r = by.get(x.user_id); if (r) seen(r, x.created_at); }); WALL.comments.forEach(x => { const r = by.get(x.user_id); if (r) seen(r, x.created_at); }); }
     const t = [...by.values()].sort((a, b) => b.n - a.n || b.lib - a.lib).slice(0, n), mx = Math.max(1, ...t.map(x => x.n));
-    return `<ol class="pf-top">${t.map(({p, n: k, lib}, i) => { const me = ME && p.user_id === ME.id;
-      return `<li><button class="pf-tr${me ? " me" : ""}" ${me ? 'data-go="home"' : `data-user="${esc(p.user_id)}"`}><span class="n r${i + 1}">${i + 1}</span>${avaHTML(p)}<span class="t"><b>${esc(p.nick)}${me ? " <em>ты</em>" : ""}</b><small>${k} ${plural(k, "действие", "действия", "действий")} · ${lib} на полках</small><span class="bar"><i style="width:${Math.round(k / mx * 100)}%"></i></span></span><span class="lv" title="Уровень">${pfLevel(lib).lv}</span></button></li>`; }).join("")}</ol>`;
+    return `<ol class="pf-top">${t.map(({p, n: k, lib, last}, i) => { const me = ME && p.user_id === ME.id, mins = last ? (Date.now() - Date.parse(last)) / 6e4 : 1e9;
+      return `<li><button class="pf-tr${me ? " me" : ""}" ${me ? 'data-go="home"' : `data-user="${esc(p.user_id)}"`}><span class="n r${i + 1}">${i + 1}</span><span class="pf-av">${avaHTML(p)}${mins < 30 ? '<i class="on" title="обновлял только что"></i>' : mins < 1440 ? '<i class="rc" title="обновлял сегодня"></i>' : ""}</span><span class="t"><b>${esc(p.nick)}${me ? " <em>ты</em>" : ""}</b><small>${last ? `<span class="upd${mins < 1440 ? " fresh" : ""}">обновлял ${esc(agoTs(last))}${mins >= 1 && mins < 1440 ? " назад" : ""}</span> · ` : ""}${k} ${plural(k, "действие", "действия", "действий")} · ${lib} на полках</small><span class="bar"><i style="width:${Math.round(k / mx * 100)}%"></i></span></span><span class="lv" title="Уровень">${pfLevel(lib).lv}</span></button></li>`; }).join("")}</ol>`;
   }
   function renderProfile(uid){
     const mine = !uid || (ME && uid === ME.id); PF_BG = null;
@@ -7053,7 +7188,7 @@ body{overflow-x:clip}
     const kino = `<section class="pf-floor fl-k"><div class="pf-fh"><span class="ic">${ICON.kino}</span><h2>Кино и сериалы</h2><a href="${mine ? "#kino" : `#fv:${esc(uid)}:kino`}">вся полка ›</a></div>
         ${show("Любимые фильмы и сериалы", favK.length || null, favK.length || mine ? rail(favK, i => card(i, esc([KTYPES[i.type], i.year].filter(Boolean).join(" · "))), "kino:fav") : empty("Пока не выбрал любимые"), {cls: "fav"})}
         ${show("Смотрю", nowK.length || null, nowK.length || mine ? rail(nowK, i => { const et = +i.epTotal || 0, ew = +i.epWatched || 0;
-          return `<button class="pf-c" ${mine ? `data-id="${esc(i.id)}"` : `data-fi="${esc(uid + "/" + i.id)}"`}>${posterHTML(i, {tgt: false, rate: false})}${et ? `<span class="pf-pb" title="${ew} из ${et} серий"><i style="width:${Math.min(100, ew / et * 100)}%"></i></span>` : ""}<span class="ti">${esc(i.title)}</span><small>${et ? `${ew} из ${et} серий` : isSerT(i.type) ? (ew ? `${ew} ${plural(ew, "серия", "серии", "серий")}` : "смотрит") : "смотрит"}</small></button>`; }, "kino:now") : empty("Ничего не отметил"), {cls: "now-k"})}
+          return `<button class="pf-c" ${mine ? (isSerT(i.type) ? `data-epsh="${esc(i.id)}"` : `data-id="${esc(i.id)}"`) : `data-fi="${esc(uid + "/" + i.id)}"`}>${posterHTML(i, {tgt: false, rate: false})}${et ? `<span class="pf-pb" title="${ew} из ${et} серий"><i style="width:${Math.min(100, ew / et * 100)}%"></i></span>` : ""}<span class="ti">${esc(i.title)}</span><small>${et ? `${ew} из ${et} серий` : isSerT(i.type) ? (ew ? `${ew} ${plural(ew, "серия", "серии", "серий")}` : "смотрит") : "смотрит"}</small></button>`; }, "kino:now") : empty("Ничего не отметил"), {cls: "now-k"})}
         ${recK.length ? show("Недавно добавленные", null, rail(recK, i => card(i, `${esc(stTxt(i))}${i.createdAt ? ` · ${fmtShort(i.createdAt)}` : ""}`))) : ""}
         ${show("Просмотренные", seenK.length || null, seenK.length ? rail(seenK, i => card(i, i.date ? `<span class="dt">${ICON.calendar}${fmtShort(i.date)}</span>` : "дата не указана")) : empty(mine ? "Просмотренное появится здесь с датой просмотра" : "Пока ничего не посмотрел"))}
         ${show("Буду смотреть", planK.length || null, planK.length ? rail(planK, i => card(i, esc(KTYPES[i.type] || "кино"))) : empty(mine ? "Отложи что-нибудь на потом — появится здесь" : "Список пуст", mine ? "kino:future" : null))}
@@ -7283,7 +7418,7 @@ body{overflow-x:clip}
       return `<div class="wc3">${avaHTML(profOf(c.user_id), "sm")}<div class="b"><div class="bb"><button class="nk" ${c.user_id !== ME.id ? `data-user="${esc(c.user_id)}"` : ""}>${esc(nickOf(c.user_id))}</button>${c.body ? `<span class="tx${onlyEmo(c.body) ? " big" : ""}">${richText(c.body)}</span>` : ""}${c.image ? imgThumb(c.image) : ""}</div>
         <div class="ft"><span>${esc(agoTs(c.created_at))}</span><button class="lk${on ? " on" : ""}" data-wcl="${esc(c.id)}">${on ? "♥" : "♡"} Нравится${lk.length ? ` · ${lk.length}` : ""}</button>${lk.length ? `<button class="who" data-wclwho="${esc(c.id)}" title="${esc(whoTitle(lk.map(l => l.user_id)))}">${avaStack(lk.map(l => l.user_id), 3)}</button>` : ""}${c.user_id === ME.id || mine ? `<button class="del" data-wcdel="${esc(c.id)}">удалить</button>` : ""}</div></div></div>`; };
     const d = cDraft[p.id] || {text: "", file: null};
-    return `<article class="wp" data-wp="${esc(p.id)}">
+    return `<article class="wpost" data-wp="${esc(p.id)}">
       <header>${avaHTML(pr)}<div class="who"><button class="nk" ${!mine ? `data-user="${esc(p.user_id)}"` : ""}>${esc(mine ? (pr.nick || NICK) : pr.nick || "кто-то")}</button><small>${esc(vkDate(p.created_at))}</small></div>${mine ? `<button class="wp-del" data-wdel="${esc(p.id)}" title="Удалить пост" aria-label="Удалить пост">${ICON.x}</button>` : ""}</header>
       ${p.body ? `<div class="wp-t${onlyEmo(p.body) ? " big" : ""}">${richText(p.body)}</div>` : ""}${p.image ? `<div class="wp-im">${imgThumb(p.image)}</div>` : ""}
       <div class="wp-rx">${chips.map(([k, uids]) => `<button class="wrx${uids.includes(ME.id) ? " on" : ""}" data-wr="${esc(p.id)}:${k}" title="${esc((REACTS.find(x => x[0] === k) || [])[1] + ": " + whoTitle(uids))}">${emoSpan(k)}<b>${uids.length}</b></button>`).join("")}
@@ -7533,6 +7668,121 @@ body{overflow-x:clip}
     if (el.dataset.scedit){ scEditSheet(el.dataset.scedit); return; }
     if (el.dataset.scen){ scEntrySheet(el.dataset.scen); return; }
   }, true);
+
+  // ================= 3.2: давно пройденное — «Без даты», чтобы не попадало в календарь =================
+  let FORM_NEW = false, fdTouched = false, FORM_IDS = {};
+  function ndAuto(){
+    if (!FORM_NEW || fdTouched) return; const nd = $("f_nodate"); if (!nd) return;
+    const chip = document.querySelector('#f_st [aria-pressed="true"]'), cur = chip ? chip.dataset.v : ($("f_status") ? $("f_status").value : "");
+    const old = ["done", "played", "dropped"].includes(cur);
+    if (nd.checked !== old){ nd.checked = old; nd.dispatchEvent(new Event("change", {bubbles: true})); }
+    const row = nd.closest(".nd-row"); if (!row) return; let h = row.parentElement.querySelector(".nd-hint");
+    if (old && !h){ h = document.createElement("small"); h.className = "nd-hint"; h.textContent = "Давно прошёл или посмотрел — оставь «Без даты», в календарь и траты не попадёт. Было сегодня — сними галочку."; row.after(h); }
+    if (!old && h) h.remove();
+  }
+  document.addEventListener("click", e => { if (e.target.closest && e.target.closest("#f_st,#f_stc")) setTimeout(ndAuto, 0); });
+  document.addEventListener("change", e => { const t = e.target; if (!t) return; if (t.id === "f_status") setTimeout(ndAuto, 0); if ((t.id === "f_date" || t.id === "f_nodate") && e.isTrusted) fdTouched = true; });
+  document.addEventListener("input", e => { if (e.target && e.target.id === "f_date" && e.isTrusted) fdTouched = true; });
+
+  // ================= 3.2: печатная машинка =================
+  document.addEventListener("keydown", e => {
+    if (e.repeat || e.ctrlKey || e.metaKey || e.altKey) return; const t = e.target; if (!t || !(t.matches && t.matches("input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]),textarea,[contenteditable]"))) return;
+    if (e.key === "Enter") SND.type("enter"); else if (e.key === " ") SND.type("space"); else if (e.key.length === 1 || e.key === "Backspace" || e.key === "Delete") SND.type("key");
+  }, true);
+
+  // ================= 3.2: календарь ГО ПОСМОТРИМ и архив просмотров =================
+  let wcY = new Date().getFullYear(), wcM = new Date().getMonth();
+  const whoProp = e => ME && e.owner === ME.id ? "ты" : (profOf(e.owner).nick || "кто-то");
+  const evTime = e => { const s = evStart(e); return s ? s.toLocaleTimeString("ru-RU", {hour: "2-digit", minute: "2-digit"}) : ""; };
+  function renderWatchCal(){
+    appleHead("ГО ПОСМОТРИМ", `<button class="a-link" data-go="people">‹ Активность</button>`);
+    if (!ME){ $("aMain").innerHTML = `<div class="a-empty"><b>Нужно войти</b></div>`; return; }
+    if (!EV){ $("aMain").innerHTML = `<p class="a-sub" style="padding:40px">Загружаю…</p>`; loadEvents(); return; }
+    if (!FR) loadFriends();
+    const all = EV.events.filter(e => e.kind === "watch" && e.starts_at), by = new Map();
+    all.forEach(e => { const k = localDate(evStart(e)); if (!by.has(k)) by.set(k, []); by.get(k).push(e); });
+    by.forEach(l => l.sort((a, b) => a.starts_at.localeCompare(b.starts_at)));
+    const first = new Date(wcY, wcM, 1), st = (first.getDay() + 6) % 7, dim = new Date(wcY, wcM + 1, 0).getDate(), td = today();
+    let cells = ["пн", "вт", "ср", "чт", "пт", "сб", "вс"].map(x => `<span class="wcal-w">${x}</span>`).join("");
+    for (let i = 0; i < st; i++) cells += `<span class="wcal-d o"></span>`;
+    for (let d = 1; d <= dim; d++){
+      const key = `${wcY}-${pad(wcM + 1)}-${pad(d)}`, l = by.get(key) || [], past = key < td;
+      const cls = `wcal-d${key === td ? " td" : ""}${l.length ? " has" : ""}${past ? " past" : ""}`;
+      if (!l.length){ cells += `<span class="${cls}"><i class="n">${d}</i></span>`; continue; }
+      if (l.length === 1){ const e = l[0], f = filmItem(e);
+        cells += `<button class="${cls}" data-w="${esc(e.id)}"><i class="n">${d}</i><span class="wcal-e">${f.cover ? `<span class="cv" style="background-image:url('${publicUrl(f.cover)}')"></span>` : ""}<b>${esc(f.title || e.title)}</b><small>${evTime(e)} · ${avaHTML(profOf(e.owner), "xs")} ${esc(whoProp(e))}</small></span></button>`; continue; }
+      cells += `<button class="${cls} multi" data-wday="${key}"><i class="n">${d}</i><span class="wcal-e"><span class="stack">${l.slice(0, 3).map(e => { const f = filmItem(e); return `<span class="cv" style="${f.cover ? `background-image:url('${publicUrl(f.cover)}')` : ""}"></span>`; }).join("")}</span><b>${l.length} ${plural(l.length, "просмотр", "просмотра", "просмотров")}</b><small>${esc([...new Set(l.map(whoProp))].join(", "))}</small></span></button>`;
+    }
+    const arch = all.filter(evPast).sort((a, b) => b.starts_at.localeCompare(a.starts_at));
+    const up = all.filter(e => !evPast(e)).length;
+    $("aMain").innerHTML = `<div class="wcal-pg">
+      <div class="wcal-top"><h1 class="a-h1">ГО <span>ПОСМОТРИМ</span></h1><button class="gw-new" data-wnew="1">+ Позвать смотреть</button></div>
+      <p class="a-sub">${up ? `${up} ${plural(up, "сеанс", "сеанса", "сеансов")} впереди` : "Пока ничего не назначено"}. Нажми на фильм — откроется сеанс.</p>
+      <div class="wcal" id="wcal"><div class="wcal-nav"><button data-wcm="-1" aria-label="Прошлый месяц">${CHEV_L}</button><b>${MONTHS_NOM[wcM]}${wcY !== new Date().getFullYear() ? " " + wcY : ""}</b><button data-wcm="1" aria-label="Следующий месяц">${CHEV_R}</button>${wcY !== new Date().getFullYear() || wcM !== new Date().getMonth() ? `<button class="wcal-today" data-wcm="0">Сегодня</button>` : ""}</div>
+        <div class="wcal-g">${cells}</div></div>
+      <h2 class="wcal-h">Архив просмотров<small>${arch.length}</small></h2>
+      ${arch.length ? `<div class="wcal-arch">${arch.map(e => { const f = filmItem(e), goers = evMem(e.id).filter(m => m.status === "going").map(m => m.user_id);
+        return `<button class="wca-r" data-w="${esc(e.id)}">${posterHTML(f, {tgt: false, rate: false, badge: false})}<span class="t"><b>${esc(f.title || e.title)}</b><small>${esc(evWhen(e))} · ${e.mode === "cinema" ? "киновечер" : "онлайн"}</small><small>предложил ${avaHTML(profOf(e.owner), "xs")} ${esc(whoProp(e))}</small></span>${goers.length ? avaStack(goers, 4) : ""}</button>`; }).join("")}</div>`
+        : `<p class="a-sub">Здесь появятся сеансы, которые уже прошли.</p>`}</div>`;
+  }
+  function wcalPop(btn){
+    document.querySelectorAll(".wcal-pop").forEach(x => x.remove());
+    const l = EV.events.filter(e => e.kind === "watch" && e.starts_at && localDate(evStart(e)) === btn.dataset.wday).sort((a, b) => a.starts_at.localeCompare(b.starts_at));
+    const box = $("wcal"), pop = document.createElement("div"); pop.className = "wcal-pop";
+    pop.innerHTML = `<div class="h">${parseD(btn.dataset.wday).toLocaleDateString("ru-RU", {day: "numeric", month: "long", weekday: "long"})}</div>${l.map(e => { const f = filmItem(e);
+      return `<button data-w="${esc(e.id)}">${posterHTML(f, {tgt: false, rate: false, badge: false})}<span><b>${esc(f.title || e.title)}</b><small>${evTime(e)} · ${e.mode === "cinema" ? "киновечер" : "онлайн"}</small><small>${avaHTML(profOf(e.owner), "xs")} предложил ${esc(whoProp(e))}</small></span></button>`; }).join("")}`;
+    box.appendChild(pop);
+    const b = btn.getBoundingClientRect(), r = box.getBoundingClientRect(), pw = pop.offsetWidth, ph = pop.offsetHeight;
+    let x = b.left - r.left + b.width / 2 - pw / 2; x = Math.max(8, Math.min(r.width - pw - 8, x));
+    let y = b.bottom - r.top + 6; if (y + ph > r.height + 120 && b.top - r.top - ph - 6 > 0) y = b.top - r.top - ph - 6;
+    pop.style.left = x + "px"; pop.style.top = y + "px"; SND.click("soft");
+  }
+  document.addEventListener("pointerdown", e => { if (!e.target.closest(".wcal-pop,[data-wday]")) document.querySelectorAll(".wcal-pop").forEach(x => x.remove()); }, {passive: true});
+  document.addEventListener("click", e => { const el = e.target.closest && e.target.closest("[data-wday],[data-wcm],[data-wcal],[data-epsh]"); if (!el || !ME) return;
+    if (el.dataset.wday){ wcalPop(el); return; }
+    if (el.dataset.wcm != null){ const d = +el.dataset.wcm; if (!d){ wcY = new Date().getFullYear(); wcM = new Date().getMonth(); } else { wcM += d; if (wcM < 0){ wcM = 11; wcY--; } if (wcM > 11){ wcM = 0; wcY++; } } renderWatchCal(); return; }
+    if (el.dataset.wcal){ go("watchcal"); return; }
+    if (el.dataset.epsh){ epSheet(el.dataset.epsh); return; }
+  });
+
+  // ================= 3.2: окно серий — прогресс и правка сезонов =================
+  function epSheet(id){
+    const it = MYITEMS.find(i => i.id === id); if (!it) return;
+    let arr = Array.isArray(it.seasonEps) && it.seasonEps.length ? it.seasonEps.map(n => Math.max(0, +n || 0)) : +it.seasons > 0 ? Array(+it.seasons).fill(0) : [];
+    if (!arr.length && +it.epTotal) arr = [+it.epTotal];
+    let w = +it.epWatched || 0;
+    const tot = () => arr.reduce((s, n) => s + n, 0) || (arr.length ? 0 : +it.epTotal || 0);
+    const pos = () => { let left = w; for (let i = 0; i < arr.length; i++){ if (left <= arr[i]) return {s: i + 1, e: left}; left -= arr[i]; } return {s: arr.length || 1, e: left}; };
+    const s = openSheet(`<div class="eps-h">${posterHTML(it, {tgt: false, rate: false})}<div><h3>${esc(it.title)}</h3><p class="sub">${esc([KTYPES[it.type], it.year].filter(Boolean).join(" · "))}</p></div></div>
+      <div class="eps-p" id="epP"></div>
+      <div class="eps-b"><button class="ib" id="epM">−1</button><button class="ib blue" id="epPl">+1 серия</button></div>
+      <div class="av-lb">Где я сейчас</div><div class="eps-at"><label>Сезон<select class="in" id="epS"></select></label><label>Серия<input class="in" id="epE" inputmode="numeric"></label></div>
+      <div class="av-lb">Сезоны и серии <small style="text-transform:none;letter-spacing:0;opacity:.7">если Кинопоиск вставил неправильно</small></div>
+      <div class="eps-se" id="epSe"></div><button class="ib" id="epAdd" style="margin-top:8px">${ICON.plus}Добавить сезон</button>
+      <div class="acts" style="margin-top:16px"><button class="ib blue" id="epOk">Сохранить</button><button class="ib" id="epNo">Отмена</button></div>`, {wide: true});
+    const q = x => s.el.querySelector(x);
+    const draw = () => { const t = tot(); w = Math.max(0, t ? Math.min(w, t) : w); const p = pos();
+      q("#epP").innerHTML = `<div class="n"><b>${w}</b> из ${t || "?"} ${plural(t || w, "серии", "серий", "серий")}${arr.length ? `<span>S${p.s} · E${p.e}</span>` : ""}</div>
+        <div class="segs">${arr.length ? arr.map((n, i) => { const before = arr.slice(0, i).reduce((x, y) => x + y, 0), pr = n ? Math.max(0, Math.min(1, (w - before) / n)) : 0; return `<i style="--n:${Math.max(1, n)}" title="${i + 1} сезон · ${n} сер."><u style="width:${(pr * 100).toFixed(1)}%"></u></i>`; }).join("") : `<i style="--n:1"><u style="width:${t ? Math.min(100, w / t * 100) : 0}%"></u></i>`}</div>`;
+      q("#epS").innerHTML = (arr.length ? arr : [0]).map((n, i) => `<option value="${i + 1}"${p.s === i + 1 ? " selected" : ""}>${i + 1}</option>`).join(""); q("#epE").value = arr.length ? p.e : w;
+      q("#epSe").innerHTML = arr.map((n, i) => `<div class="eps-r"><span>${i + 1} сезон</span><button type="button" data-sd="${i}:-1">−</button><input class="in" data-si="${i}" inputmode="numeric" value="${n || ""}" placeholder="?"><button type="button" data-sd="${i}:1">+</button><span class="u">серий</span><button type="button" class="x" data-sx="${i}" title="Убрать сезон">${ICON.x}</button></div>`).join("") || `<p class="sub" style="margin:0">Сезоны не указаны — добавь хотя бы один.</p>`;
+      q("#epM").disabled = !w; };
+    q("#epM").onclick = () => { w = Math.max(0, w - 1); draw(); SND.tick(.6); };
+    q("#epPl").onclick = () => { const t = tot(); if (t && w >= t) return; w++; draw(); SND.tick(.8); };
+    const setAt = () => { const si = +q("#epS").value || 1, ei = Math.max(0, parseInt(q("#epE").value, 10) || 0); w = arr.length ? arr.slice(0, si - 1).reduce((a, b) => a + b, 0) + Math.min(ei, arr[si - 1] || ei) : ei; draw(); };
+    q("#epS").onchange = setAt; q("#epE").onchange = setAt;
+    q("#epSe").addEventListener("change", e => { const i = e.target.dataset.si; if (i != null){ arr[+i] = Math.max(0, parseInt(e.target.value, 10) || 0); draw(); } });
+    q("#epSe").onclick = e => { const d = e.target.closest("[data-sd]"), x = e.target.closest("[data-sx]");
+      if (d){ const [i, k] = d.dataset.sd.split(":").map(Number); arr[i] = Math.max(0, (arr[i] || 0) + k); draw(); }
+      if (x){ arr.splice(+x.dataset.sx, 1); draw(); } };
+    q("#epAdd").onclick = () => { arr.push(arr[arr.length - 1] || 10); draw(); };
+    q("#epNo").onclick = () => s.close();
+    q("#epOk").onclick = async () => { const t = tot(), patch = {seasons: arr.length || null, seasonEps: arr.length ? arr.slice() : null, epTotal: t || null, epWatched: w};
+      if (t && w >= t && it.status !== "done"){ patch.status = "done"; patch.date = today(); }
+      else if (it.status === "done" && t && w < t){ patch.status = "playing"; }
+      try { await write(it.id, patch); s.close(); toast(patch.status === "done" ? "Досмотрено" : "Сохранено"); if (patch.status === "done") confetti(); } catch(_){ toast("Не сохранилось"); } };
+    draw();
+  }
 
   // ================= запуск =================
   readHash(); render();
