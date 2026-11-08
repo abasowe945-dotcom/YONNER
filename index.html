@@ -1765,7 +1765,7 @@ body[data-route="read"]{--c-bg:#161616;--c-fg:#fff;--c-dim:#9a9a9a;--c-cell:#1f1
 .rx-cv img{position:relative;z-index:1}
 .rx-cv .tp,.rx-cv .new{z-index:2}
 .rx-list .rx-cv .ph{padding:5px}.rx-list .rx-cv .ph b,.rx-list .rx-cv .ph small,.rx-list .rx-cv .ph::before{display:none}
-.rx-imp{margin:0 0 18px;border-radius:14px;background:var(--c-cell);overflow:hidden}
+.rx-imp{margin:0 0 26px;text-align:left;border-radius:14px;background:var(--c-cell);overflow:hidden}
 .rx-imp summary{list-style:none;display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;user-select:none}
 .rx-imp summary::-webkit-details-marker{display:none}
 .rx-imp summary > span{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:rgba(245,166,35,.15);color:#f5a623;flex:none}
@@ -2426,7 +2426,7 @@ body.has-secbg[data-route="home"],body.has-secbg[data-route="user"]{background:t
 /* фон профиля — лист */
 .pfb-prev{position:relative;aspect-ratio:16/7;border-radius:12px;overflow:hidden;background:#1c1c1e;cursor:pointer;margin:6px 0 4px;outline:none}
 .pfb-prev .im{position:absolute;inset:0;background:center/cover}
-.pfb-prev .sh{position:absolute;inset:0;background:#0b0c10;transition:opacity .2s}
+.pfb-prev .pfb-dim{position:absolute;inset:0;background:#0b0c10;transition:opacity .2s}
 .pfb-prev .lb{position:absolute;left:16px;bottom:14px;display:flex;align-items:center;gap:10px;color:#fff;font:800 20px/1 var(--ios)}
 .pfb-prev .hint{position:absolute;right:14px;top:12px;padding:6px 10px;border-radius:8px;background:rgba(0,0,0,.55);color:#fff;font:600 12px/1 var(--ios)}
 .pfb-prev.blank .im{background:radial-gradient(60% 80% at 20% 20%,#5e5ce655,transparent),#151519}
@@ -4675,6 +4675,7 @@ body{overflow-x:clip}
         "Полки листаются: тяни мышкой влево-вправо или жми стрелки по краям",
         "Добавление тайтла вручную: перетащи постер, впиши название, крутани оценку колесом, по желанию — описание. Новый тип — «Книга»",
         "Прочитанное отмечается зелёной галочкой на обложке",
+        "Перенос с com-x и readmanga (закладка, файл, ссылка) теперь наверху Читалки",
         "<b>Кино на DVD</b>: обложки в коробках, при наведении выезжает диск, при открытии полки коробки пролистываются",
         "Кино по умолчанию стоит в порядке просмотра, по месяцам, а на коробке — наклейка с датой",
         "<b>Контракт</b>: срок выбираешь сам — 3 дня, неделя, 2 недели, месяц или своя дата. Сразу видно, сколько часов в день нужно"],
@@ -4682,7 +4683,8 @@ body{overflow-x:clip}
         "Лента в «Активности» в том же стиле, что окна «Мероприятия» и «Дни рождения»",
         "«ГО ПОСМОТРИМ»: сеансы лежат стопкой — видно, что в очереди есть ещё. Листай мышкой, свайпом или стрелками",
         "В Читалке остались три статуса: «В планах», «Читаю», «Прочитано». «Отложено» теперь показывается как «В планах»"],
-      f: ["Кнопка «Заполнить» по ссылке Steam снова работает, в том числе для игр, которых нет в российском Steam (Ubisoft и другие)"],
+      f: ["Затемнение в окне «Фон профиля» теперь ложится на всю картинку, а не на её часть",
+        "Кнопка «Заполнить» по ссылке Steam снова работает, в том числе для игр, которых нет в российском Steam (Ubisoft и другие)"],
       r: ["С главной убраны плитки разделов и автоматические «Играю», «Смотрю», «Читаю»",
         "Из профиля друга убраны кнопки «Поиграть вместе» и «Посмотреть вместе»"]}},
     {v: "2.5", date: "2026-11-08", title: "Полки с журналами и свой порядок игр", kind: "minor", sec: {
@@ -6208,16 +6210,16 @@ body{overflow-x:clip}
       <div class="rx3-top"><h1 class="rx-h">${BOOK_I} Читалка</h1>
         <div class="rx-sub">${[["", "Всё", READS.length], ...Object.entries(RTYPE).map(([k, l]) => [k, RTYPE_PL[k] || l, READS.filter(r => r.type === k).length])].filter(([v, , n]) => !v || n || v === rType).map(([v, l, n]) => `<button data-rt="${v}" aria-pressed="${rType === v}">${l}<small>${n}</small></button>`).join("")}</div>
         <div class="rx3-stats"><span><b>${pool.length}</b>тайтлов</span><span><b>${chRead}</b>глав прочитано</span>${waiting ? `<span class="hot"><b>${waiting}</b>новых глав ждут</span>` : ""}<span><b>${done.length}</b>прочитано</span></div></div>
-      ${shelf("fav", "Любимые", fav, "Поставь сюда любимые тайтлы — они же будут на витрине в профиле.")}
-      ${shelf("done", "Прочитано", done, "Дочитанное встанет сюда с зелёной галочкой.")}
-      ${shelf("reading", "Читаю", reading, "То, что читаешь сейчас. Прогресс по главам — полоской снизу.", true)}
-      ${crate}
       <details class="rx-imp" id="rxImp"${!READS.length || lsGet("nexus_rimp") === "1" ? " open" : ""}><summary><span>${ICON.up}</span><b>Перенести с com-x или readmanga</b><small>закладка · файл · ссылка</small></summary>
         <div class="rx-steps">
           <div class="rx-step"><span class="nm">1</span><div class="t"><b>Кнопка-закладка</b><small>Перетащи оранжевую кнопку на панель закладок браузера. Потом открой на сайте тайтл или свою коллекцию и нажми закладку — всё прилетит сюда вместе с обложками.</small></div><a class="rx-bm" id="rxBm" href="${esc(bmHref())}" title="Перетащи на панель закладок">+ в NEXUS</a></div>
           <div class="rx-step"><span class="nm">2</span><div class="t"><b>Файл выгрузки</b><small>com-x → «Моя коллекция» → «Выгрузить коллекцию».</small></div><label class="rx-btn" for="rxFile">${ICON.up}Выбрать файл</label><input type="file" id="rxFile" accept=".csv,.json,.txt,text/csv,application/json,text/plain" hidden></div>
           <div class="rx-step"><span class="nm">3</span><div class="t"><b>По ссылке</b><small>Откроется карточка со ссылкой — допишешь название и кинешь обложку.</small></div><div class="rx-in"><input id="rxUrl" inputmode="url" placeholder="https://com-x.life/…" autocomplete="off"><button class="rx-btn fill" id="rxGo">Открыть</button></div></div>
         </div></details>
+      ${shelf("fav", "Любимые", fav, "Поставь сюда любимые тайтлы — они же будут на витрине в профиле.")}
+      ${shelf("done", "Прочитано", done, "Дочитанное встанет сюда с зелёной галочкой.")}
+      ${shelf("reading", "Читаю", reading, "То, что читаешь сейчас. Прогресс по главам — полоской снизу.", true)}
+      ${crate}
     </div>`;
     $("rxGo").onclick = () => readerFromUrl($("rxUrl").value.trim());
     $("rxUrl").addEventListener("keydown", e => { if (e.key === "Enter") readerFromUrl($("rxUrl").value.trim()); });
@@ -6905,11 +6907,11 @@ body{overflow-x:clip}
     const cur = myProf(); let file = null, remove = false, dim = cur.bg_dim ?? 45;
     const src = () => file ? URL.createObjectURL(file) : !remove && cur.bg ? publicUrl(cur.bg) : "";
     const s = openSheet(`<h3>Фон профиля</h3><p class="sub">Его увидят все, кто откроет твой профиль. Подойдёт широкая картинка: скриншот, арт, обои. Перетащи файл сюда или нажми Ctrl+V.</p>
-      <div class="pfb-prev" id="pfbP" tabindex="0" role="button" aria-label="Выбрать картинку"><div class="im"></div><div class="sh"></div><div class="lb"><span class="fr-ava-w">${avaHTML(cur, "md")}</span><b>${esc(NICK)}</b></div><span class="hint">Нажми или перетащи картинку</span></div>
+      <div class="pfb-prev" id="pfbP" tabindex="0" role="button" aria-label="Выбрать картинку"><div class="im"></div><div class="pfb-dim"></div><div class="lb"><span class="fr-ava-w">${avaHTML(cur, "md")}</span><b>${esc(NICK)}</b></div><span class="hint">Нажми или перетащи картинку</span></div>
       <div class="av-lb">Затемнение</div><input type="range" id="pfbD" min="0" max="85" step="5" value="${dim}" class="pfb-rng">
       <div class="acts" style="margin-top:14px"><button class="ib blue" id="pfbOk">Сохранить</button><button class="ib" id="pfbPick">Выбрать файл</button>${cur.bg ? `<button class="ib red" id="pfbDel">Убрать фон</button>` : ""}<button class="ib" id="pfbNo">Отмена</button></div>`, {wide: true});
     const q = x => s.el.querySelector(x);
-    const draw = () => { const u = src(), im = q("#pfbP .im"); im.style.backgroundImage = u ? `url('${u}')` : ""; q("#pfbP").classList.toggle("blank", !u); q("#pfbP .sh").style.opacity = dim / 100; };
+    const draw = () => { const u = src(), im = q("#pfbP .im"); im.style.backgroundImage = u ? `url('${u}')` : ""; q("#pfbP").classList.toggle("blank", !u); q("#pfbP .pfb-dim").style.opacity = dim / 100; };
     const take = f => { if (!f || !f.type.startsWith("image/")) return; file = f; remove = false; draw(); };
     const pick = () => { const i = document.createElement("input"); i.type = "file"; i.accept = "image/*"; i.onchange = () => take(i.files[0]); i.click(); };
     q("#pfbP").onclick = pick; q("#pfbPick").onclick = pick; bindDrop(q("#pfbP"), take); pasteTarget = take;
