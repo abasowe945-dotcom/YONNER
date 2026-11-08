@@ -12,6 +12,13 @@
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <title>NEXUS</title>
+<meta name="description" content="Полка игр, кино и манги для своих: профили, витрины, мероприятия и совместные просмотры">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="NEXUS">
+<meta property="og:title" content="NEXUS — полка игр, кино и манги">
+<meta property="og:description" content="Профили, витрины, мероприятия и ГО ПОСМОТРИМ для своих">
+<meta property="og:image" content="https://abasowe945-dotcom.github.io/YONNER/icon-512.png">
+<meta name="twitter:card" content="summary">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap">
@@ -4981,7 +4988,7 @@ body{overflow-x:clip}
         "В рейтинге активности видно, когда человек последний раз что-то обновлял, и зелёная точка, если только что",
         "Звук печатной машинки при наборе текста, на Enter — звоночек каретки",
         "У друга игру можно взять как «Дропнул» — с причиной по желанию",
-        "<b>«Для Телеграма»</b> у мероприятий и сеансов ГО ПОСМОТРИМ: копирует дату, название, место, время, комментарий и ссылку — вставляй в чат. По ссылке зарегистрированный сразу попадает в мероприятие, новенький — на вход, а после регистрации тоже в мероприятие",
+        "<b>«Для Телеграма»</b> у мероприятий и сеансов ГО ПОСМОТРИМ: копирует компактное приглашение — название, когда, где, комментарий, кто зовёт и кто идёт, ссылка. В Телеграме на компе название вставляется жирным и ведёт на постер, поэтому постер встаёт превью. По ссылке зарегистрированный сразу попадает в мероприятие, новенький — на вход, а после регистрации тоже в мероприятие",
         "Крестик на полках «Смотрю» и «Сейчас читаю» в профиле убирает с полки. В Читалке крестик на «Читаю» возвращает тайтл в «В планах» — из библиотеки он не пропадает"],
       c: ["<b>Деньги</b> считают только игры, которые ты добавил как «Играю». Давно пройденные и брошенные в траты не идут",
         "Добавляешь давно пройденную игру или просмотренный фильм — дата сама ставится «Без даты», и в календарь он не попадает. Если было сегодня — сними галочку",
@@ -7869,33 +7876,42 @@ body{overflow-x:clip}
 
   // ================= 3.2: приглашение для Телеграма =================
   const SITE_URL = () => location.origin + location.pathname.replace(/index\.html$/, "");
+  // компактное приглашение: в Телеграм Desktop вставляется с жирным и ссылками, а название ведёт на постер — он встаёт превью
   function tgText(kind, e){
-    const s = evStart(e), wd = ["вс", "пн", "вт", "ср", "чт", "пт", "сб"];
-    const date = s ? `${pad(s.getDate())}.${pad(s.getMonth() + 1)}.${s.getFullYear()} (${wd[s.getDay()]})` : "дата пока не назначена";
-    const time = s ? s.toLocaleTimeString("ru-RU", {hour: "2-digit", minute: "2-digit"}) : "";
-    const who = ME && e.owner === ME.id ? NICK : (profOf(e.owner).nick || "");
-    const going = evMem(e.id).filter(m => m.status === "going").map(m => ME && m.user_id === ME.id ? NICK : profOf(m.user_id).nick).filter(Boolean);
-    const L = [];
-    if (kind === "watch"){ const f = filmItem(e);
-      L.push(date, `ГО ПОСМОТРИМ: ${f.title || e.title}${f.year ? ` (${f.year})` : ""}`);
-      L.push(e.mode === "cinema" ? `Киновечер${e.place ? ": " + e.place : ""}` : "Онлайн");
-      if (time) L.push(`Время: ${time}`);
-      if (e.mode !== "cinema" && e.link) L.push(`Где смотрим: ${/^https?:/.test(e.link) ? e.link : "https://" + e.link}`);
+    const s = evStart(e), when = s ? s.toLocaleDateString("ru-RU", {weekday: "short", day: "numeric", month: "long"}).replace(/^./, c => c.toUpperCase()) + ", " + s.toLocaleTimeString("ru-RU", {hour: "2-digit", minute: "2-digit"}) : "дата пока не назначена";
+    const nick = uid => ME && uid === ME.id ? NICK : (profOf(uid).nick || "");
+    const going = evMem(e.id).filter(m => m.status === "going").map(m => nick(m.user_id)).filter(Boolean);
+    const site = `${SITE_URL()}#${kind}:${e.id}`, H = x => esc(x);
+    const who = [`Зовёт ${nick(e.owner)}`, going.length ? `идут: ${going.join(", ")}` : ""].filter(Boolean).join(" · ");
+    const descr = e.descr ? String(e.descr).trim().replace(/\s*\n\s*/g, " ").slice(0, 280) : "";
+    let head, sub, img = e.photo ? publicUrl(e.photo) : null, extraP = "", extraH = "";
+    if (kind === "watch"){ const f = filmItem(e); if (f.cover) img = publicUrl(f.cover);
+      const title = (f.title || e.title) + (f.year ? ` (${f.year})` : "");
+      head = {p: `ГО ПОСМОТРИМ — ${title}`, h: `<b>ГО ПОСМОТРИМ — ${img ? `<a href="${H(img)}">${H(f.title || e.title)}</a>` : H(f.title || e.title)}</b>${f.year ? ` (${f.year})` : ""}`};
+      const link = e.mode !== "cinema" && e.link ? (/^https?:/.test(e.link) ? e.link : "https://" + e.link) : "";
+      const where = e.mode === "cinema" ? `киновечер${e.place ? ", " + e.place : ""}` : "онлайн";
+      const host = link ? (/discord/i.test(link) ? "Discord" : /youtu/i.test(link) ? "YouTube" : /t\.me|telegram/i.test(link) ? "Телеграм" : "по ссылке") : "";
+      sub = {p: `${when} · ${where}${host ? " в " + host : ""}`, h: `${H(when)} · ${H(where)}${link ? ` в <a href="${H(link)}">${H(host)}</a>` : ""}`};
+      if (link){ extraP = `\nСмотрим тут: ${link}`; }
     } else {
-      L.push(date, e.title);
-      if (e.place) L.push(`Место: ${e.place}`);
-      if (time) L.push(`Время: ${time}`);
+      head = {p: e.title, h: `<b>${img ? `<a href="${H(img)}">${H(e.title)}</a>` : H(e.title)}</b>`};
+      sub = {p: [when, e.place].filter(Boolean).join(" · "), h: [H(when), e.place ? H(e.place) : ""].filter(Boolean).join(" · ")};
     }
-    if (e.descr) L.push("", String(e.descr).trim());
-    L.push("", [who ? `Зовёт ${who}` : "", going.length ? `идут: ${going.join(", ")}` : ""].filter(Boolean).join(" · "));
-    L.push(`Иду / не иду — тут: ${SITE_URL()}#${kind}:${e.id}`);
-    return L.filter((x, i, a) => !(x === "" && (a[i - 1] === "" || i === a.length - 1))).join("\n");
+    const plain = [head.p, sub.p, descr, who, `Иду / не иду: ${site}`].filter(Boolean).join("\n") + extraP;
+    const html = [head.h, sub.h, descr ? `<i>${H(descr)}</i>` : "", H(who), `<a href="${H(site)}">Иду / не иду →</a>`].filter(Boolean).join("<br>") + extraH;
+    return {plain, html};
   }
   async function tgCopy(key){
     const [kind, id] = key.split(":"), e = evById(id); if (!e) return;
     const t = tgText(kind, e);
-    try { await navigator.clipboard.writeText(t); toast("Скопировано — вставь в чат Телеграма"); SND.click("soft"); }
-    catch(_){ const s = openSheet(`<h3>Для Телеграма</h3><p class="sub">Выдели и скопируй текст.</p><textarea class="in" readonly style="min-height:200px;font:400 14px/1.45 var(--ios)">${esc(t)}</textarea>`); const ta = s.el.querySelector("textarea"); ta.focus(); ta.select(); }
+    try {
+      if (window.ClipboardItem && navigator.clipboard.write) await navigator.clipboard.write([new ClipboardItem({"text/html": new Blob([t.html], {type: "text/html"}), "text/plain": new Blob([t.plain], {type: "text/plain"})})]);
+      else await navigator.clipboard.writeText(t.plain);
+      toast("Скопировано — вставь в чат Телеграма"); SND.click("soft");
+    } catch(_){
+      try { await navigator.clipboard.writeText(t.plain); toast("Скопировано — вставь в чат Телеграма"); }
+      catch(__){ const s = openSheet(`<h3>Для Телеграма</h3><p class="sub">Выдели и скопируй текст.</p><textarea class="in" readonly style="min-height:170px;font:400 14px/1.45 var(--ios)">${esc(t.plain)}</textarea>`); const ta = s.el.querySelector("textarea"); ta.focus(); ta.select(); }
+    }
   }
   document.addEventListener("click", e => { const el = e.target.closest && e.target.closest("[data-tgcopy]"); if (el && ME){ e.preventDefault(); tgCopy(el.dataset.tgcopy); } });
 
