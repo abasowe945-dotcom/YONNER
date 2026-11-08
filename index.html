@@ -2887,6 +2887,10 @@ body{overflow-x:clip}
 .fi-take[hidden]{display:none}
 .fi-drop{margin-top:4px}
 .fi-drop textarea{min-height:64px;resize:vertical;font:400 14px/1.4 var(--ios)}
+
+.ib.tg{display:inline-flex;align-items:center;justify-content:center;gap:7px;background:#229ed9!important;color:#fff!important}
+.ib.tg svg{flex:none}
+.au-inv{display:block;color:#64d2ff;margin-bottom:4px}
 </style>
 <style>img{max-width:100%}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 <script src="config.js"></script>
@@ -4958,6 +4962,7 @@ body{overflow-x:clip}
         "В рейтинге активности видно, когда человек последний раз что-то обновлял, и зелёная точка, если только что",
         "Звук печатной машинки при наборе текста, на Enter — звоночек каретки",
         "У друга игру можно взять как «Дропнул» — с причиной по желанию",
+        "<b>«Для Телеграма»</b> у мероприятий и сеансов ГО ПОСМОТРИМ: копирует дату, название, место, время, комментарий и ссылку — вставляй в чат. По ссылке зарегистрированный сразу попадает в мероприятие, новенький — на вход, а после регистрации тоже в мероприятие",
         "Крестик на полках «Смотрю» и «Сейчас читаю» в профиле убирает с полки. В Читалке крестик на «Читаю» возвращает тайтл в «В планах» — из библиотеки он не пропадает"],
       c: ["<b>Деньги</b> считают только игры, которые ты добавил как «Играю». Давно пройденные и брошенные в траты не идут",
         "Добавляешь давно пройденную игру или просмотренный фильм — дата сама ставится «Без даты», и в календарь он не попадает. Если было сегодня — сними галочку",
@@ -5622,7 +5627,8 @@ body{overflow-x:clip}
   // ================= вход =================
   function authScreen(msg){
     const el = $("auth"); el.hidden = false; document.body.classList.add("ov-open");
-    el.innerHTML = `<div class="au-box"><div class="au-logo">NEXUS</div><p class="au-sub">Твоя полка игр и кино. Войди или создай аккаунт.</p>
+    const invH = /^#(event|watch):/.test(location.hash) ? (location.hash.startsWith("#watch:") ? "Тебя зовут на совместный просмотр." : "Тебя зовут на мероприятие.") : "";
+    el.innerHTML = `<div class="au-box"><div class="au-logo">NEXUS</div><p class="au-sub">${invH ? `<b class="au-inv">${invH}</b> Войди или создай аккаунт — и оно сразу откроется.` : "Твоя полка игр и кино. Войди или создай аккаунт."}</p>
       <form id="auF"><label class="f">Почта<input class="in" id="auE" type="email" autocomplete="email" required></label>
         <label class="f">Пароль<span class="pw"><input class="in" id="auP" type="password" autocomplete="current-password" minlength="6" required><button type="button" class="eye" data-eye="auP" aria-label="Показать пароль"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></span></label>
         <label class="f" id="auP2w" hidden>Повтори пароль<span class="pw"><input class="in" id="auP2" type="password" autocomplete="new-password" minlength="6"><button type="button" class="eye" data-eye="auP2" aria-label="Показать пароль"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></span></label>
@@ -6360,7 +6366,7 @@ body{overflow-x:clip}
       </div><div><div class="ios-card">
         ${my && my.status === "invited" ? `<div class="rsvp-k">${esc(frNick(my.invited_by || e.owner))} зовёт тебя. Пойдёшь?</div>` : ""}
         <div class="rsvp"><button class="go" data-rsvp="${esc(e.id)}:going" aria-pressed="${!!my && my.status === "going"}">✓ Иду</button><button class="no" data-rsvp="${esc(e.id)}:not" aria-pressed="${!!my && my.status === "not"}">✕ Не иду</button></div>
-        <div class="evp-acts"><button class="ib" data-evinv="${esc(e.id)}">Пригласить</button>${own ? `<button class="ib" data-evedit="${esc(e.id)}">Изменить</button><button class="ib red" data-evdel="${esc(e.id)}">Удалить</button>` : ""}</div>
+        <div class="evp-acts"><button class="ib" data-evinv="${esc(e.id)}">Пригласить</button><button class="ib tg" data-tgcopy="event:${esc(e.id)}" title="Скопировать приглашение для Телеграма"><svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true"><path d="M21.6 4.3 18.4 19.5c-.2 1-.9 1.3-1.8.8l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.3-5 9.2-8.3c.4-.4-.1-.6-.6-.2L5.9 13.2 1 11.7c-1-.3-1.1-1 .2-1.5L20.2 2.9c.9-.3 1.7.2 1.4 1.4Z"/></svg>Для Телеграма</button>${own ? `<button class="ib" data-evedit="${esc(e.id)}">Изменить</button><button class="ib red" data-evdel="${esc(e.id)}">Удалить</button>` : ""}</div>
         <div class="mem">${pl(goL, "go", "Идут")}${pl(noL, "no", "Не идут")}${pl(invL, "", "Приглашены")}</div>
       </div></div></div></div>`;
     wireWall(e, wasF, sel);
@@ -7006,7 +7012,7 @@ body{overflow-x:clip}
           ${e.descr ? `<div class="wp-desc">${richText(e.descr)}</div>` : f.desc ? `<div class="wp-desc" style="opacity:.75">${esc(f.desc.slice(0, 380))}${f.desc.length > 380 ? "…" : ""}</div>` : ""}
           ${my && my.status === "invited" ? `<div class="rsvp-k" style="padding:0;color:#ffb4b8">${esc(frNick(my.invited_by || e.owner))} зовёт тебя. Пойдёшь?</div>` : ""}
           <div class="rsvp"><button class="go" data-rsvp="${esc(e.id)}:going" aria-pressed="${!!my && my.status === "going"}">✓ Иду</button><button class="no" data-rsvp="${esc(e.id)}:not" aria-pressed="${!!my && my.status === "not"}">✕ Не иду</button></div>
-          <div class="evp-acts"><button class="ib" data-evinv="${esc(e.id)}">Пригласить</button>${own ? `<button class="ib" data-wedit="${esc(e.id)}">Изменить</button><button class="ib red" data-evdel="${esc(e.id)}">Отменить</button>` : ""}</div>
+          <div class="evp-acts"><button class="ib" data-evinv="${esc(e.id)}">Пригласить</button><button class="ib tg" data-tgcopy="watch:${esc(e.id)}" title="Скопировать приглашение для Телеграма"><svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true"><path d="M21.6 4.3 18.4 19.5c-.2 1-.9 1.3-1.8.8l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.3-5 9.2-8.3c.4-.4-.1-.6-.6-.2L5.9 13.2 1 11.7c-1-.3-1.1-1 .2-1.5L20.2 2.9c.9-.3 1.7.2 1.4 1.4Z"/></svg>Для Телеграма</button>${own ? `<button class="ib" data-wedit="${esc(e.id)}">Изменить</button><button class="ib red" data-evdel="${esc(e.id)}">Отменить</button>` : ""}</div>
           <div class="wp-ppl">${ppl(grp("going"), "go", "Идут")}${ppl(grp("not"), "no", "Не идут")}${ppl(grp("invited"), "", "Позвали")}</div>
         </div></div>
       <section class="wc"><div class="wc-h">Обсуждение<small>${posts.length ? `${posts.length} ${plural(posts.length, "сообщение", "сообщения", "сообщений")}` : ""}</small></div>
@@ -7811,6 +7817,39 @@ body{overflow-x:clip}
       try { await write(it.id, patch); s.close(); toast(patch.status === "done" ? "Досмотрено — переехал в просмотренные" : "Сохранено"); if (patch.status === "done") confetti(); } catch(_){ toast("Не сохранилось"); } };
     draw();
   }
+
+
+  // ================= 3.2: приглашение для Телеграма =================
+  const SITE_URL = () => location.origin + location.pathname.replace(/index\.html$/, "");
+  function tgText(kind, e){
+    const s = evStart(e), wd = ["вс", "пн", "вт", "ср", "чт", "пт", "сб"];
+    const date = s ? `${pad(s.getDate())}.${pad(s.getMonth() + 1)}.${s.getFullYear()} (${wd[s.getDay()]})` : "дата пока не назначена";
+    const time = s ? s.toLocaleTimeString("ru-RU", {hour: "2-digit", minute: "2-digit"}) : "";
+    const who = ME && e.owner === ME.id ? NICK : (profOf(e.owner).nick || "");
+    const going = evMem(e.id).filter(m => m.status === "going").map(m => ME && m.user_id === ME.id ? NICK : profOf(m.user_id).nick).filter(Boolean);
+    const L = [];
+    if (kind === "watch"){ const f = filmItem(e);
+      L.push(date, `ГО ПОСМОТРИМ: ${f.title || e.title}${f.year ? ` (${f.year})` : ""}`);
+      L.push(e.mode === "cinema" ? `Киновечер${e.place ? ": " + e.place : ""}` : "Онлайн");
+      if (time) L.push(`Время: ${time}`);
+      if (e.mode !== "cinema" && e.link) L.push(`Где смотрим: ${/^https?:/.test(e.link) ? e.link : "https://" + e.link}`);
+    } else {
+      L.push(date, e.title);
+      if (e.place) L.push(`Место: ${e.place}`);
+      if (time) L.push(`Время: ${time}`);
+    }
+    if (e.descr) L.push("", String(e.descr).trim());
+    L.push("", [who ? `Зовёт ${who}` : "", going.length ? `идут: ${going.join(", ")}` : ""].filter(Boolean).join(" · "));
+    L.push(`Иду / не иду — тут: ${SITE_URL()}#${kind}:${e.id}`);
+    return L.filter((x, i, a) => !(x === "" && (a[i - 1] === "" || i === a.length - 1))).join("\n");
+  }
+  async function tgCopy(key){
+    const [kind, id] = key.split(":"), e = evById(id); if (!e) return;
+    const t = tgText(kind, e);
+    try { await navigator.clipboard.writeText(t); toast("Скопировано — вставь в чат Телеграма"); SND.click("soft"); }
+    catch(_){ const s = openSheet(`<h3>Для Телеграма</h3><p class="sub">Выдели и скопируй текст.</p><textarea class="in" readonly style="min-height:200px;font:400 14px/1.45 var(--ios)">${esc(t)}</textarea>`); const ta = s.el.querySelector("textarea"); ta.focus(); ta.select(); }
+  }
+  document.addEventListener("click", e => { const el = e.target.closest && e.target.closest("[data-tgcopy]"); if (el && ME){ e.preventDefault(); tgCopy(el.dataset.tgcopy); } });
 
   // ================= запуск =================
   readHash(); render();
