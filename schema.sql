@@ -157,3 +157,46 @@ revoke all on public.events, public.event_members, public.event_posts from anon;
 do $$ begin alter publication supabase_realtime add table public.events; exception when duplicate_object then null; end $$;
 do $$ begin alter publication supabase_realtime add table public.event_members; exception when duplicate_object then null; end $$;
 do $$ begin alter publication supabase_realtime add table public.event_posts; exception when duplicate_object then null; end $$;
+
+-- ===== 2.3: читалка, лайки на стене, «ГО ПОСМОТРИМ» =====
+create table if not exists public.reads (
+  id text not null,
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  data jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now(),
+  primary key (user_id, id)
+);
+alter table public.reads enable row level security;
+drop policy if exists reads_select on public.reads;
+drop policy if exists reads_insert on public.reads;
+drop policy if exists reads_update on public.reads;
+drop policy if exists reads_delete on public.reads;
+create policy reads_select on public.reads for select to authenticated using (true);
+create policy reads_insert on public.reads for insert to authenticated with check ((select auth.uid()) = user_id);
+create policy reads_update on public.reads for update to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy reads_delete on public.reads for delete to authenticated using ((select auth.uid()) = user_id);
+
+create table if not exists public.event_post_likes (
+  post_id uuid not null references public.event_posts (id) on delete cascade,
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (post_id, user_id)
+);
+create index if not exists epl_user_idx on public.event_post_likes (user_id);
+alter table public.event_post_likes enable row level security;
+drop policy if exists epl_select on public.event_post_likes;
+drop policy if exists epl_insert on public.event_post_likes;
+drop policy if exists epl_delete on public.event_post_likes;
+create policy epl_select on public.event_post_likes for select to authenticated using (true);
+create policy epl_insert on public.event_post_likes for insert to authenticated with check ((select auth.uid()) = user_id);
+create policy epl_delete on public.event_post_likes for delete to authenticated using ((select auth.uid()) = user_id);
+
+alter table public.events add column if not exists kind text not null default 'event';
+alter table public.events add column if not exists mode text;
+alter table public.events add column if not exists film jsonb;
+alter table public.events add column if not exists link text;
+do $$ begin alter table public.events add constraint events_kind_chk check (kind in ('event','watch')); exception when duplicate_object then null; end $$;
+
+revoke all on public.reads, public.event_post_likes from anon;
+do $$ begin alter publication supabase_realtime add table public.event_post_likes; exception when duplicate_object then null; end $$;
+do $$ begin alter publication supabase_realtime add table public.profiles; exception when duplicate_object then null; end $$;

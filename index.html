@@ -658,6 +658,7 @@ body:not([data-world="wGames"]) .gh .gw-g,body:not([data-world="wKino"]) .gh .gw
   .gh .seg button,.gh .seg a{padding:7px 11px;font-size:13px}
 }
 @media (max-width:820px){body[data-world="wApple"] .gh-mid{order:2;flex-basis:auto;margin:0;padding:0;overflow:visible}body[data-world="wApple"] .gh-right{order:3}}
+@media (max-width:480px){.gh-logo{flex:none!important;overflow:visible!important}.gh-crumb{display:none}.gh-right{gap:5px!important;margin-left:auto}.gh-right .gh-ic,.gh-search:not(:focus-within){width:32px!important;height:32px!important}}
 /* ---------- телефон: исправления ---------- */
 .s-bar .seg{max-width:100%;overflow-x:auto;scrollbar-width:none}
 .s-bar .seg::-webkit-scrollbar{display:none}
@@ -1419,6 +1420,320 @@ input[type="time"].in{color-scheme:dark}
 @media (max-width:820px){.evp-grid{grid-template-columns:1fr}.ev-two{grid-template-columns:1fr 1fr}}
 
 .fb-card h3 svg{width:18px;height:18px;flex:none}
+/* ===== 2.3: шапка — профиль крупнее, звук, фон ===== */
+.gh-me{position:relative;flex-direction:row;align-items:center;gap:0;height:44px;padding:0 14px 0 4px;border-radius:999px;background:var(--gh-field)}
+.gh .me-chip{height:40px;padding:0 0 12px 0;border:0;background:none;gap:9px;align-items:center;max-width:220px}
+.gh .me-chip .fr-ava{width:36px;height:36px;font-size:15px;margin-top:12px}
+.gh .me-chip .nm{display:inline!important;font:700 14.5px/1 var(--ios)}
+.gh-me .gh-clock{position:absolute;left:49px;bottom:8px;padding:0;font-size:10px}
+@media (max-width:1100px){.gh .me-chip .nm{display:none!important}.gh-me{padding:0 4px}.gh-me .gh-clock{display:none}.gh .me-chip{padding:0}.gh .me-chip .fr-ava{margin-top:0}}
+#sndBtn.off{opacity:.55}
+
+/* ===== 2.3: нижняя панель на 7 разделов ===== */
+@media (max-width:560px){.tabbar .tab{min-width:0;padding-inline:2px}.tabbar .tab span{font-size:9.5px;letter-spacing:-.01em}.tabbar .tab svg{width:21px;height:21px}}
+
+/* ===== 2.3: главная ===== */
+.hm{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:26px;margin-top:20px}
+.hm-hero{position:relative;overflow:hidden;border-radius:26px;min-height:300px;display:flex;align-items:flex-end;padding:26px;color:#fff;box-shadow:var(--c-shadow);background:#1c1c1e}
+.hm-hero .bg{position:absolute;inset:-20px;background:var(--bg) center/cover;filter:blur(18px) saturate(1.3);transform:scale(1.1);opacity:.9}
+.hm-hero .bg.blank{background:radial-gradient(70% 90% at 80% 10%,var(--ac,#5e5ce6),transparent 60%),radial-gradient(60% 80% at 0% 100%,#ff375f55,transparent 60%),#1c1c1e;filter:none}
+.hm-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.75),rgba(0,0,0,.05) 70%)}
+.hm-in{position:relative;z-index:2;display:flex;gap:20px;align-items:flex-end;width:100%}
+.hm-in .fr-ava{width:96px;height:96px;font-size:42px;border-radius:24px;box-shadow:0 12px 30px rgba(0,0,0,.45)}
+.hm-in .fr-ava img{border-radius:24px}
+.hm-in h1{margin:0;font:800 clamp(34px,5vw,54px)/1 var(--ios);letter-spacing:-.03em}
+.hm-in .sub{margin-top:8px;font:600 14px/1.4 var(--ios);opacity:.85}
+.hm-now{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.hm-now button{display:flex;align-items:center;gap:9px;padding:6px 12px 6px 6px;border-radius:14px;border:0;background:rgba(255,255,255,.14);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);color:#fff;cursor:pointer;font:600 13px/1.2 var(--ios);text-align:left}
+.hm-now button:hover{background:rgba(255,255,255,.24)}
+.hm-now .poster{width:30px;border-radius:5px;flex:none}
+.hm-now .poster .rb,.hm-now .poster .medal,.hm-now .poster .src-chip,.hm-now .poster .tgt,.hm-now .poster .blood{display:none}
+.hm-now small{display:block;opacity:.7;font-size:11px;font-weight:500}
+.hm-h{margin:30px 0 12px;font:800 22px/1 var(--ios);letter-spacing:-.01em}
+.hm-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.hm-tile{position:relative;overflow:hidden;min-height:150px;border-radius:22px;padding:18px;display:flex;flex-direction:column;justify-content:flex-end;color:#fff;text-decoration:none;box-shadow:var(--c-shadow);background:var(--g);isolation:isolate;transition:transform .35s cubic-bezier(.3,1.3,.4,1)}
+.hm-tile:hover{transform:translateY(-4px) scale(1.015)}
+.hm-tile .bg{position:absolute;inset:-10px;z-index:-2;background:var(--bg) center/cover;filter:blur(3px) saturate(1.2);transform:scale(1.05);transition:transform .8s}
+.hm-tile:hover .bg{transform:scale(1.15)}
+.hm-tile::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(0deg,rgba(0,0,0,.78),rgba(0,0,0,.15))}
+.hm-tile .ic{position:absolute;top:16px;left:16px;width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:rgba(255,255,255,.18);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.hm-tile .ic svg{width:21px;height:21px}
+.hm-tile b{font:800 22px/1.05 var(--ios);letter-spacing:-.01em}
+.hm-tile small{margin-top:5px;font:500 13px/1.3 var(--ios);opacity:.85}
+.hm-tile.big{grid-column:span 2;min-height:200px}
+.hm-row{display:grid;grid-auto-flow:column;grid-auto-columns:120px;gap:12px;overflow-x:auto;padding:4px 2px 10px;scrollbar-width:thin}
+.hm-c{border:0;background:none;padding:0;color:inherit;text-align:left;cursor:pointer;font:600 12.5px/1.25 var(--ios)}
+.hm-c .poster{border-radius:12px;box-shadow:var(--c-shadow);transition:transform .3s cubic-bezier(.3,1.3,.4,1)}
+.hm-c:hover .poster{transform:translateY(-4px)}
+.hm-c span{display:block;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hm-c small{display:block;color:var(--c-dim);font-weight:500;font-size:11.5px;margin-top:2px}
+.hm-c .pb{height:3px;border-radius:2px;background:rgba(128,128,128,.25);margin-top:5px;overflow:hidden}.hm-c .pb i{display:block;height:100%;background:#ff9f0a}
+.hm-side{display:grid;gap:16px;align-content:start;position:sticky;top:calc(var(--ghh,64px) + 14px)}
+.hm-side .fb-card{padding:14px}
+.top-r{display:flex;align-items:center;gap:10px;width:100%;padding:7px 4px;border:0;border-radius:12px;background:none;color:inherit;text-align:left;cursor:pointer;font:500 14px/1.2 var(--ios)}
+.top-r:hover{background:var(--c-cell-out)}
+.top-r .n{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font:800 12px/1 var(--ios);color:var(--c-dim)}
+.top-r .n.r1{background:linear-gradient(135deg,#ffd60a,#ff9f0a);color:#3a2600}
+.top-r .n.r2{background:linear-gradient(135deg,#e5e5ea,#a1a1a6);color:#2c2c2e}
+.top-r .n.r3{background:linear-gradient(135deg,#ffb380,#c86b2a);color:#3a1a00}
+.top-r .fr-ava{width:32px;height:32px;font-size:13px}
+.top-r .t{flex:1;min-width:0}.top-r .t b{display:block;font-weight:600}
+.top-r .t small{display:block;color:var(--c-dim);font-size:11.5px;margin-top:2px}
+.top-r .bar{width:56px;height:5px;border-radius:3px;background:var(--c-cell-out);overflow:hidden;flex:none}.top-r .bar i{display:block;height:100%;background:var(--c-ring)}
+.top-r.me{background:color-mix(in srgb,var(--c-ring) 10%,transparent)}
+.mini-f{display:grid;grid-template-columns:34px minmax(0,1fr) 20px;gap:9px;align-items:center;width:100%;padding:6px 2px;border:0;background:none;color:inherit;text-align:left;cursor:pointer;font:500 12.5px/1.3 var(--ios);border-radius:10px}
+.mini-f:hover{background:var(--c-cell-out)}
+.mini-f .poster{width:34px;border-radius:5px}
+.mini-f .poster .rb,.mini-f .poster .medal,.mini-f .poster .src-chip,.mini-f .poster .tgt,.mini-f .poster .blood{display:none}
+.mini-f .fr-ava{width:20px;height:20px;font-size:9px}
+.mini-f small{display:block;color:var(--c-dim);font-size:11px}
+@media (max-width:1000px){.hm{grid-template-columns:1fr}.hm-side{position:static}.hm-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.hm-tile.big{grid-column:span 2}}
+
+/* ===== 2.3: лента как у Steam ===== */
+.fb-feed.st{background:linear-gradient(180deg,#1b2838,#16202d);color:#c7d5e0;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.fb-feed.st h3{color:#fff}.fb-feed.st h3 small{color:#8f98a0}
+.fb-feed.st .fd-day{color:#66c0f4;letter-spacing:.06em}
+.sx{display:grid;grid-template-columns:88px minmax(0,1fr) auto;gap:14px;align-items:center;width:100%;padding:10px;margin:0 0 8px;border:0;border-radius:6px;background:rgba(0,0,0,.22);color:inherit;text-align:left;cursor:pointer;font:400 14px/1.35 var(--ios);transition:background .15s}
+.sx:hover{background:rgba(102,192,244,.12)}
+.sx .poster{width:88px;border-radius:3px;box-shadow:0 4px 12px rgba(0,0,0,.4)}
+.sx .poster .rb,.sx .poster .medal,.sx .poster .src-chip,.sx .poster .tgt,.sx .poster .blood{display:none}
+.sx .t b.ti{display:block;color:#fff;font-size:17px;font-weight:700;margin:2px 0 4px}
+.sx .t .vb{color:#8f98a0;font-size:13px}
+.sx .t .nk{color:#66c0f4;font-weight:600;font-size:13px}
+.sx .t small{display:block;color:#62707b;font-size:12px;margin-top:4px}
+.sx .r{font:700 12px/1 var(--ios);padding:4px 7px;border-radius:3px;margin-right:6px}
+.sx .r.green{background:#5c7e10;color:#d2efa9}.sx .r.yellow{background:#8a6d0b;color:#ffe9a6}.sx .r.red{background:#7a1f1b;color:#ffc4bf}
+.sx .side{display:flex;align-items:center;gap:6px}
+.sx .side .fr-ava{width:22px;height:22px;font-size:10px;opacity:.9}
+.sx.join{grid-template-columns:44px minmax(0,1fr)}
+.sx.join .fr-ava{width:44px;height:44px;font-size:18px}
+.fb-r .fb-card.plain{background:none;box-shadow:none;padding:4px 0}
+@media (max-width:640px){.sx{grid-template-columns:64px minmax(0,1fr)}.sx .poster{width:64px}.sx .side{grid-column:2}}
+
+/* ===== 2.3: лайки на стене ВК ===== */
+.vk-like{color:#2b587a;cursor:pointer}
+.vk-like.on{color:#c4302b;font-weight:700}
+.vk-lk{display:inline-flex;align-items:center;gap:2px;margin-left:6px;vertical-align:middle}
+.vk-lk .fr-ava{width:16px;height:16px;font-size:8px;border-radius:2px}
+.vk-lk .fr-ava img{border-radius:2px}
+/* фон страницы мероприятия под ВК */
+body[data-route="event"]{--c-bg:#e7ebf0;--c-fg:#000;--c-dim:#6b7c8f;--c-cell:#fff;--c-cell-out:#f0f2f5;--c-line:#dae2e8;--c-shadow:0 1px 0 #c5d0db;--c-ring:#45688e;background:#e7ebf0!important;color:#000}
+body[data-route="event"] .gh{--gh-bg:#45688e;--gh-fg:#fff;--gh-dim:#c8d6e6;--gh-line:#3b5a7d;--gh-field:rgba(255,255,255,.14);background:#5b7fa6}
+body[data-route="event"] .a-h1,body[data-route="event"] .evp-hero h1{font-family:Tahoma,Verdana,var(--ios)}
+body[data-route="event"] .ios-card{border-radius:4px;border:1px solid #c5d0db}
+body[data-route="event"] .evp-hero{border-radius:4px}
+body[data-route="event"] .rsvp button{border-radius:3px}
+body[data-route="event"] .site-ft{color:#7a8a9c}
+body[data-route="event"] .gh .a-link{color:#fff;opacity:.9}
+.pv-acts{display:flex;flex-wrap:wrap}.pv-btn{white-space:nowrap;padding:0 12px;flex:1 1 auto}
+
+/* ===== 2.3: на будущее у друга + обрезка карточек ===== */
+.nf-tabs{display:flex;gap:6px;margin:30px 0 4px;border-bottom:1px solid #2f2f2f}
+.nf-tabs button{border:0;background:none;color:#a3a3a3;font:700 15px/1 var(--ios);padding:12px 14px;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px}
+.nf-tabs button[aria-pressed="true"]{color:#fff;border-color:#e50914}
+.nf-tabs button small{color:#6b6b6b;margin-left:5px}
+.nf-row{padding:34px 26px 40px;margin:-34px -26px -26px}
+.nf-c:only-child{transform-origin:left center}
+
+/* ===== 2.3: кино в стиле Netflix ===== */
+body[data-theme="kino"] .view .bgimg{filter:saturate(1.1) brightness(.85);opacity:1;transform:scale(1.02)}
+body[data-theme="kino"] .view .shade{background:linear-gradient(90deg,var(--k-bg) 18%,color-mix(in srgb,var(--k-bg) 70%,transparent) 45%,transparent 80%),linear-gradient(0deg,var(--k-bg) 32%,color-mix(in srgb,var(--k-bg) 50%,transparent) 60%,transparent 85%)}
+.view .k-hero{grid-template-columns:minmax(0,250px) minmax(0,1fr);gap:40px;align-items:end;min-height:min(62vh,600px)}
+.view .k-hero > .k-glass{background:none!important;box-shadow:none!important;border:0!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;padding:0!important}
+.view .k-title{font-size:clamp(40px,6vw,84px);font-weight:900;letter-spacing:-.035em;text-shadow:0 4px 30px rgba(0,0,0,.45);margin-bottom:10px}
+.view .k-meta{font-weight:700}
+.view .k-meta span:first-child{color:#46d369}
+.view .k-lower{background:none!important;box-shadow:none!important;border:0!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;padding:10px 0 0!important;border-top:1px solid color-mix(in srgb,var(--k-fg) 12%,transparent)!important;border-radius:0!important}
+.view .k-lower h3{font-weight:800;letter-spacing:-.01em}
+.view .k-sts button[aria-pressed="true"]{box-shadow:0 6px 20px color-mix(in srgb,var(--c) 45%,transparent)}
+.view .k-hcol .poster{border-radius:8px;box-shadow:0 24px 60px rgba(0,0,0,.6)}
+@media (max-width:900px){.view .k-hero{grid-template-columns:1fr;min-height:0}}
+
+/* ===== 2.3: кровь без ударов ===== */
+.k-lower{z-index:auto!important}
+.k-hero .k-glass{z-index:auto!important}
+.gore{z-index:4}
+.pwrap > .poster{z-index:5}
+
+/* ===== 2.3: ГО ПОСМОТРИМ ===== */
+.gw-card{position:relative;overflow:hidden;margin-bottom:16px;border-radius:20px;padding:16px;color:#fff;background:radial-gradient(90% 120% at 100% 0,#e5091433,transparent 60%),linear-gradient(135deg,#1a0f12,#0f0f14);box-shadow:0 14px 34px rgba(0,0,0,.25)}
+.gw-card::before{content:"";position:absolute;inset:0;background:var(--cine) 0 0/240px 240px;opacity:.06;pointer-events:none}
+.gw-h{position:relative;display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.gw-h b{font:900 20px/1 var(--ios);letter-spacing:.02em}
+.gw-h b span{color:#e50914}
+.gw-h small{color:#9b9b9b;font:500 12.5px/1.3 var(--ios)}
+.gw-new{margin-left:auto;border:0;border-radius:999px;padding:9px 14px;background:#e50914;color:#fff;font:700 13px/1 var(--ios);cursor:pointer;box-shadow:0 6px 16px rgba(229,9,20,.4);transition:transform .2s cubic-bezier(.3,1.4,.4,1)}
+.gw-new:hover{transform:scale(1.05)}
+.gw-list{position:relative;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(250px,1fr);gap:10px;overflow-x:auto;scrollbar-width:none}
+.gw-t{position:relative;display:grid;grid-template-columns:56px minmax(0,1fr);gap:11px;align-items:center;padding:9px;border:0;border-radius:14px;background:rgba(255,255,255,.07);color:#fff;text-align:left;cursor:pointer;font:500 13px/1.3 var(--ios);overflow:hidden}
+.gw-t:hover{background:rgba(255,255,255,.12)}
+.gw-t .poster{width:56px;border-radius:7px}
+.gw-t .poster .rb,.gw-t .poster .medal,.gw-t .poster .src-chip,.gw-t .poster .tgt,.gw-t .poster .blood{display:none}
+.gw-t b{display:block;font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gw-t small{display:block;color:#b3b3b3;font-size:12px;margin-top:3px}
+.gw-t .md{display:inline-flex;align-items:center;gap:4px;font:800 10px/1 var(--ios);letter-spacing:.08em;text-transform:uppercase;color:#ffb4b8}
+.gw-t .md svg{width:14px;height:14px}
+.gw-t.inv{box-shadow:inset 0 0 0 1.5px #e50914}
+.gw-empty{position:relative;color:#9b9b9b;font:500 13.5px/1.45 var(--ios)}
+/* рычаг */
+.lever{position:relative;display:grid;grid-template-columns:1fr 1fr;padding:5px;border-radius:20px;background:#1c1c1e;box-shadow:inset 0 2px 8px rgba(0,0,0,.6),inset 0 0 0 1px rgba(255,255,255,.06);margin:4px 0 16px;isolation:isolate}
+.lever button{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;gap:10px;height:62px;border:0;background:none;color:#8e8e93;font:800 15px/1 var(--ios);cursor:pointer;transition:color .3s}
+.lever button svg{width:30px;height:30px;transition:transform .45s cubic-bezier(.3,1.5,.4,1)}
+.lever button[aria-pressed="true"]{color:#fff}
+.lever button[aria-pressed="true"] svg{transform:scale(1.15) rotate(-4deg)}
+.lever .knob{position:absolute;z-index:1;top:5px;bottom:5px;left:5px;width:calc(50% - 5px);border-radius:16px;background:linear-gradient(180deg,#3a3a3c,#2c2c2e);box-shadow:0 6px 16px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.18);transition:transform .55s cubic-bezier(.3,1.35,.4,1),background .4s}
+.lever[data-wm="cinema"] .knob{transform:translateX(100%);background:linear-gradient(180deg,#5a1a1d,#3a0f12)}
+.lever[data-wm="online"] .knob{background:linear-gradient(180deg,#3b3f8f,#2a2d6b)}
+.wsrc{display:flex;gap:4px;padding:3px;border-radius:11px;background:#2c2c2e;margin-bottom:10px;width:max-content;max-width:100%}
+.wsrc button{border:0;background:none;color:#aeaeb2;font:600 13px/1 var(--ios);padding:8px 12px;border-radius:8px;cursor:pointer}
+.wsrc button[aria-pressed="true"]{background:#48484a;color:#fff}
+.wpick{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:8px;max-height:236px;overflow-y:auto;padding:2px;margin-bottom:12px}
+.wpick button{border:0;background:none;padding:0;cursor:pointer;color:#e5e5ea;font:600 11px/1.2 var(--ios);text-align:left;border-radius:9px;position:relative}
+.wpick button .poster{border-radius:8px;transition:transform .2s,box-shadow .2s}
+.wpick button .poster .rb,.wpick button .poster .medal,.wpick button .poster .src-chip,.wpick button .poster .tgt,.wpick button .poster .blood{display:none}
+.wpick button span{display:block;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wpick button[aria-pressed="true"] .poster{box-shadow:0 0 0 3px #e50914;transform:scale(.95)}
+.wpick .none{grid-column:1/-1;color:#8e8e93;font-size:13px;padding:10px 0}
+.wnew{display:grid;gap:8px;margin-bottom:12px}
+.wnew .row{display:flex;gap:8px}.wnew .row .in{flex:1}
+/* страница просмотра */
+body[data-route="watch"]{--c-bg:#0d0d10;--c-fg:#fff;--c-dim:#a1a1a6;--c-cell:rgba(255,255,255,.07);--c-cell-out:rgba(255,255,255,.1);--c-line:rgba(255,255,255,.1);--c-shadow:none;background:#0d0d10!important;color:#fff}
+body[data-route="watch"] .a-main{max-width:none;padding:0}
+.wp{position:relative;min-height:100vh;margin-top:-26px;overflow:hidden}
+.wp-bg{position:absolute;inset:-60px;background:var(--bg,#1a1a1f) center/cover;filter:blur(40px) saturate(1.5) brightness(.6);transform:scale(1.15);animation:nfZoom 26s ease-in-out infinite alternate}
+.wp-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(13,13,16,.3),#0d0d10 75%)}
+.wp-in{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:40px max(4%,16px) 30px}
+.wp-hero{display:grid;grid-template-columns:270px minmax(0,1fr);gap:34px;align-items:end}
+.wp-glass{padding:26px 28px;border-radius:26px;background:rgba(255,255,255,.07);-webkit-backdrop-filter:blur(26px) saturate(1.6);backdrop-filter:blur(26px) saturate(1.6);border:1px solid rgba(255,255,255,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 30px 70px rgba(0,0,0,.4)}
+.wp-kick{display:inline-flex;align-items:center;gap:8px;padding:7px 12px 7px 9px;border-radius:999px;font:800 11.5px/1 var(--ios);letter-spacing:.12em;text-transform:uppercase}
+.wp-kick svg{width:22px;height:22px}
+.wp-kick.online{background:rgba(88,101,242,.22);color:#c3c8ff}
+.wp-kick.cinema{background:rgba(229,9,20,.2);color:#ffc2c5}
+.wp-glass h1{margin:12px 0 8px;font:900 clamp(34px,5vw,64px)/1 var(--ios);letter-spacing:-.03em}
+.wp-meta{color:#c7c7cc;font:600 14px/1.4 var(--ios)}
+.wp-meta .kp{color:#46d369}
+.wp-when{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+.wp-when span,.wp-when a{display:inline-flex;align-items:center;gap:7px;padding:8px 12px;border-radius:12px;background:rgba(255,255,255,.08);color:#fff;font:600 13.5px/1 var(--ios);text-decoration:none}
+.wp-when svg{width:16px;height:16px;opacity:.8}
+.wp-when a:hover{background:rgba(255,255,255,.16)}
+.wp-desc{color:#d1d1d6;font:400 15px/1.55 var(--ios);white-space:pre-wrap;margin:6px 0 14px}
+.wp .rsvp{padding:0;margin:14px 0 10px}
+.wp .rsvp button{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.12);color:#fff}
+.wp .evp-acts{padding:0}
+.wp .ib{background:rgba(255,255,255,.1);color:#fff}
+.wp-ppl{display:flex;flex-wrap:wrap;gap:16px 26px;margin-top:16px}
+.wp-ppl > div{min-width:0}
+.wp-ppl h4{margin:0 0 6px;font:800 11px/1 var(--ios);letter-spacing:.1em;text-transform:uppercase;color:#8e8e93}
+.wp-ppl h4.go{color:#30d158}.wp-ppl h4.no{color:#ff453a}
+.wp-ppl .av{display:flex;gap:5px;flex-wrap:wrap}
+.wp-ppl .av .fr-ava{width:34px;height:34px;font-size:14px;cursor:pointer;box-shadow:0 0 0 2px rgba(0,0,0,.4)}
+.wp-ppl .none{color:#6b6b6b;font-size:13px}
+.wp-pcol .poster{border-radius:14px;box-shadow:0 30px 70px rgba(0,0,0,.7)}
+/* чат */
+.wc{position:relative;margin-top:28px;border-radius:26px;overflow:hidden;background:rgba(20,20,24,.72);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.08)}
+.wc::before{content:"";position:absolute;inset:0;background:var(--cine) 0 0/200px 200px;opacity:.035;pointer-events:none}
+.wc-h{position:relative;display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.08);font:800 16px/1 var(--ios)}
+.wc-h small{color:#8e8e93;font-weight:500;font-size:13px}
+.wc-list{position:relative;display:flex;flex-direction:column;gap:10px;padding:18px;max-height:min(60vh,560px);overflow-y:auto}
+.wc-m{display:flex;gap:9px;align-items:flex-end;max-width:78%;animation:wcIn .35s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes wcIn{from{opacity:0;transform:translateY(8px) scale(.97)}}
+.wc-m .fr-ava{width:30px;height:30px;font-size:12px;flex:none}
+.wc-m.me{align-self:flex-end;flex-direction:row-reverse}
+.wc-b{position:relative;padding:9px 13px 8px;border-radius:18px 18px 18px 6px;background:rgba(255,255,255,.1);color:#f2f2f7;font:400 15px/1.4 var(--ios);min-width:0}
+.wc-m.me .wc-b{border-radius:18px 18px 6px 18px;background:linear-gradient(135deg,#e50914,#b20710);color:#fff}
+.wc-b .nk{display:block;font:700 12px/1.2 var(--ios);color:#ff9f9f;margin-bottom:3px}
+.wc-m.me .wc-b .nk{display:none}
+.wc-b .tx{white-space:pre-wrap;word-wrap:break-word}
+.wc-b .tx.big .emo{width:40px;height:40px}
+.wc-b img{display:block;max-width:min(280px,100%);max-height:240px;border-radius:12px;margin-top:6px;cursor:zoom-in}
+.wc-b .ft{display:flex;align-items:center;gap:8px;margin-top:4px;font:500 11px/1 var(--ios);opacity:.7}
+.wc-b .ft a{cursor:pointer;color:inherit}
+.wc-like{display:inline-flex;align-items:center;gap:3px;border:0;background:rgba(0,0,0,.2);color:inherit;border-radius:999px;padding:3px 7px;font:700 11px/1 var(--ios);cursor:pointer}
+.wc-like.on{background:#fff;color:#e50914}
+.wc-form{position:relative;padding:12px 14px;border-top:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.25)}
+.wc-form textarea{width:100%;min-height:46px;max-height:160px;padding:12px 14px;border-radius:16px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);color:#fff;font:400 15px/1.35 var(--ios);resize:vertical}
+.wc-form textarea:focus{outline:none;border-color:#e50914}
+.wc-form .vk-tools{margin-top:8px}
+.wc-form .vk-att{color:#ff9f9f}
+.wc-form .vk-prev{color:#aaa}.wc-form .vk-prev a{color:#ff9f9f}
+.wc-form .vk-btn{background:#e50914;border:0;border-radius:999px;padding:9px 18px;font:700 14px/1 var(--ios)}
+.wc-form .vk-btn:hover{background:#ff1f2b}
+.wc-form .vk-emo button:hover{background:rgba(255,255,255,.1);border-color:transparent}
+.wc-empty{color:#8e8e93;text-align:center;padding:30px 10px;font:500 14px/1.5 var(--ios)}
+@media (max-width:820px){.wp-hero{grid-template-columns:1fr}.wp-pcol .pwrap{width:min(220px,62%)}.wc-m{max-width:92%}}
+
+/* ===== 2.3: Читалка в стиле com-x ===== */
+body[data-route="read"]{--c-bg:#161616;--c-fg:#fff;--c-dim:#9a9a9a;--c-cell:#1f1f1f;--c-cell-out:#2a2a2a;--c-line:#2c2c2c;--c-shadow:none;--c-ring:#f5a623;background:#161616!important;color:#fff}
+:root[data-mode="light"] body[data-route="read"]{--c-bg:#f4f3f0;--c-fg:#1b1b1b;--c-dim:#6f6f6f;--c-cell:#fff;--c-cell-out:#ecebe8;--c-line:#e2e0dc;background:#f4f3f0!important;color:#1b1b1b}
+.rx{max-width:1280px;margin:0 auto;font-family:var(--ios)}
+.rx-h{display:flex;align-items:center;justify-content:center;gap:12px;margin:18px 0 22px;font:800 30px/1 var(--ios);letter-spacing:-.01em}
+.rx-h svg{width:32px;height:32px;color:#f5a623}
+.rx-sub{display:flex;justify-content:center;gap:4px;margin:-8px 0 18px}
+.rx-sub button{border:0;background:none;color:var(--c-dim);font:700 14px/1 var(--ios);padding:9px 16px;border-radius:999px;cursor:pointer}
+.rx-sub button[aria-pressed="true"]{background:#f5a623;color:#1b1206}
+.rx-sub button small{opacity:.7;margin-left:5px}
+.rx-p{display:flex;align-items:center;gap:16px;padding:14px 16px;border-radius:10px;background:var(--c-cell);margin-bottom:14px}
+.rx-p .t{flex:1;min-width:0}
+.rx-p .t b{display:block;font:700 15px/1.3 var(--ios)}
+.rx-p .t small{display:block;color:var(--c-dim);font-size:12.5px;line-height:1.45;margin-top:3px}
+.rx-in{display:flex;gap:8px;flex:1.4;min-width:0}
+.rx-in input{flex:1;min-width:0;height:40px;padding:0 14px;border-radius:9px;border:1px solid var(--c-line);background:var(--c-cell-out);color:var(--c-fg);font:500 14px/1 var(--ios)}
+.rx-in input:focus{outline:none;border-color:#f5a623}
+.rx-btn{flex:none;height:40px;padding:0 16px;border-radius:9px;border:1px solid #f5a623;background:none;color:#f5a623;font:700 13.5px/1 var(--ios);cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.rx-btn:hover{background:rgba(245,166,35,.12)}
+.rx-btn.fill{background:#f5a623;color:#1b1206}
+.rx-btn svg{width:16px;height:16px}
+.rx-fmt{display:flex;gap:2px;padding:4px;border-radius:9px;background:var(--c-cell-out)}
+.rx-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:4px 0 22px}
+.rx-st{padding:16px;border-radius:10px;background:var(--c-cell);text-align:center}
+.rx-st b{display:block;font:800 30px/1 var(--ios)}
+.rx-st small{display:block;margin-top:8px;color:var(--c-dim);font:600 11.5px/1 var(--ios);letter-spacing:.06em;text-transform:uppercase}
+.rx-st.hot{background:linear-gradient(180deg,rgba(245,166,35,.16),rgba(245,166,35,.08));box-shadow:inset 0 0 0 1.5px rgba(245,166,35,.55)}
+.rx-st.hot b{color:#f5a623}
+.rx-tabs{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 16px;border-bottom:1px solid var(--c-line);margin-bottom:18px}
+.rx-tabs button{border:0;background:none;color:var(--c-dim);font:700 13.5px/1 var(--ios);letter-spacing:.04em;text-transform:uppercase;padding:14px 10px;border-bottom:3px solid transparent;margin-bottom:-1px;cursor:pointer}
+.rx-tabs button[aria-pressed="true"]{color:#f5a623;border-color:#f5a623}
+.rx-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.rx-sort{appearance:none;-webkit-appearance:none;border:0;background:none;color:var(--c-fg);font:700 14px/1 var(--ios);cursor:pointer;padding:6px 18px 6px 0;background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);background-position:calc(100% - 7px) 55%,calc(100% - 2px) 55%;background-size:5px 5px;background-repeat:no-repeat}
+.rx-sort option{background:var(--c-cell);color:var(--c-fg)}
+.rx-vw{margin-left:auto;display:flex;gap:4px}
+.rx-vw button{width:38px;height:38px;border-radius:9px;border:0;background:none;color:var(--c-dim);cursor:pointer;display:grid;place-items:center}
+.rx-vw button svg{width:18px;height:18px}
+.rx-vw button[aria-pressed="true"]{background:#f5a623;color:#1b1206}
+.rx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:26px 16px}
+.rx-c{border:0;background:none;padding:0;color:inherit;text-align:left;cursor:pointer;font-family:var(--ios)}
+.rx-cv{position:relative;aspect-ratio:2/3;border-radius:6px;overflow:hidden;background:var(--c-cell-out);box-shadow:0 6px 18px rgba(0,0,0,.25);transition:transform .3s cubic-bezier(.3,1.3,.4,1)}
+.rx-c:hover .rx-cv{transform:translateY(-4px)}
+.rx-cv img{width:100%;height:100%;object-fit:cover;display:block}
+.rx-cv .ph{position:absolute;inset:0;display:grid;place-items:center;padding:10px;text-align:center;color:var(--c-dim);font:700 13px/1.3 var(--ios)}
+.rx-cv .new{position:absolute;right:8px;bottom:10px;min-width:30px;height:30px;padding:0 8px;border-radius:999px;background:#f5a623;color:#1b1206;font:800 12px/30px var(--ios);text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.35)}
+.rx-cv .tp{position:absolute;left:8px;top:8px;padding:4px 7px;border-radius:5px;background:rgba(0,0,0,.6);color:#fff;font:800 9.5px/1 var(--ios);letter-spacing:.08em;text-transform:uppercase}
+.rx-pg{height:3px;background:var(--c-line);border-radius:0 0 3px 3px;overflow:hidden}.rx-pg i{display:block;height:100%;background:#f5a623}
+.rx-c .ti{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:9px;font:600 15px/1.3 var(--ios)}
+.rx-c .mt{display:flex;align-items:center;gap:4px;margin-top:5px;color:var(--c-dim);font:500 12.5px/1.2 var(--ios);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rx-c .mt b{color:#f5a623;font-weight:700}
+.rx-c .mt svg{width:13px;height:13px;color:#f5a623;flex:none}
+.rx-list{display:grid;gap:8px}
+.rx-list .rx-c{display:grid;grid-template-columns:54px minmax(0,1fr) auto;gap:14px;align-items:center;padding:8px;border-radius:10px;background:var(--c-cell)}
+.rx-list .rx-cv{border-radius:5px}.rx-list .ti{margin-top:0}
+.rx-list .ch{font:700 13px/1 var(--ios);color:var(--c-dim);white-space:nowrap}
+.rx-empty{padding:50px 20px;text-align:center;color:var(--c-dim);font:500 15px/1.5 var(--ios)}
+.rx-empty b{display:block;color:var(--c-fg);font-size:20px;margin-bottom:6px}
+/* окно тайтла */
+.rs-top{display:grid;grid-template-columns:120px minmax(0,1fr);gap:16px}
+.rs-top .rx-cv{border-radius:10px}
+.rs-st{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
+.rs-st button{border:1px solid rgba(255,255,255,.14);background:#2c2c2e;color:#e5e5ea;border-radius:999px;padding:8px 13px;font:600 13px/1 var(--ios);cursor:pointer}
+.rs-st button[aria-pressed="true"]{background:#f5a623;border-color:#f5a623;color:#1b1206}
+.rs-ch{display:flex;align-items:center;gap:8px;margin:6px 0 12px;flex-wrap:wrap}
+.rs-ch button{width:40px;height:40px;border-radius:12px;border:0;background:#2c2c2e;color:#fff;font:700 20px/1 var(--ios);cursor:pointer}
+.rs-ch input{width:80px;height:40px;text-align:center;font:800 18px/1 var(--ios)}
+.rs-ch span{color:#8e8e93;font:600 14px/1 var(--ios)}
+.rs-seg{display:inline-flex;gap:2px;padding:3px;border-radius:11px;background:#2c2c2e;margin-bottom:12px}
+.rs-seg button{border:0;background:none;color:#aeaeb2;font:600 13px/1 var(--ios);padding:8px 14px;border-radius:8px;cursor:pointer}
+.rs-seg button[aria-pressed="true"]{background:#48484a;color:#fff}
+@media (max-width:760px){.rx-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.rx-p{flex-wrap:wrap}.rx-in{flex-basis:100%}.rx-grid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:18px 10px}}
+
 /* ===== подвал ===== */
 .world{padding-bottom:28px}
 .site-ft{padding:30px 16px calc(118px + env(safe-area-inset-bottom,0px));text-align:center;font:500 12.5px/1.6 var(--ios);color:var(--ft-fg);letter-spacing:.01em}
@@ -1795,7 +2110,7 @@ button.ios-row:hover{background:var(--c-cell-out)}
 <script>try{var m=localStorage.getItem("nexus_mode")||"dark";document.documentElement.dataset.mode=m;document.documentElement.dataset.theme=m}catch(e){document.documentElement.dataset.mode="dark"}</script>
 <div class="sec-bg" id="secBg" hidden><i></i></div>
 <header class="gh" id="gh"><div class="gh-in">
-  <a class="gh-logo" href="#games" title="На главную"><b>NEXUS</b><span class="gh-crumb" id="aCrumb"></span></a>
+  <a class="gh-logo" href="#home" title="На главную"><b>NEXUS</b><span class="gh-crumb" id="aCrumb"></span></a>
   <div class="gh-mid">
     <div class="seg gw gw-g" id="gSeg"></div><div class="seg gw gw-k" id="kSeg"></div>
     <div class="top-pills gw gw-g"><button class="pill-btn" id="tierS">Тир-лист</button><button class="pill-btn hot" data-roul="games" id="rlTopS">Колесо фортуны</button></div>
@@ -1805,6 +2120,8 @@ button.ios-row:hover{background:var(--c-cell-out)}
   <div class="gh-right">
     <div class="gh-search" id="ghSearch"><input id="q" type="search" placeholder="Поиск" autocomplete="off" spellcheck="false" aria-label="Поиск по полке" aria-controls="srPop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.6-4.6"/></svg><div class="sr-pop" id="srPop" role="listbox" hidden></div></div>
     <a class="gh-ic" href="#patch" id="pnBtn" title="Патчноуты" aria-label="Патчноуты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h11a2 2 0 0 1 2 2v2h-4"/><path d="M17 7v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2h9"/><path d="M8 3a2 2 0 0 0-2 2v12M10 8h4M10 12h4"/></svg><i class="dot" hidden></i></a>
+    <button class="gh-ic" id="bgBtn" type="button" title="Фон этой страницы" aria-label="Фон страницы"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg></button>
+    <button class="gh-ic" id="sndBtn" type="button" title="Звуки" aria-label="Звуки сайта"></button>
     <button class="gh-ic" id="modeBtn" type="button" title="Светлая тема" aria-label="Переключить тему"></button>
     <div class="gh-me"><span class="me-slot"></span><span class="gh-clock" id="clock"></span></div>
   </div>
@@ -1854,8 +2171,9 @@ button.ios-row:hover{background:var(--c-cell-out)}
   const KCOL = {playing:"#7cc4ff", done:"#9be15d", paused:"#f2d43a", dropped:"#ff8a86"};
   const kLab = it => { const n = kNorm(it); return {l: n === "done" ? (isSerT(it.type) ? "Досмотрено" : "Просмотрено") : n === "paused" ? "Отложено" : n === "dropped" ? "Брошено" : "Смотрю", c: KCOL[n]}; };
   const TIERS = [["S","#ff5f57"],["A","#ff9f0a"],["B","#ffd60a"],["C","#30d158"],["D","#64d2ff"]];
-  const TAB_ORDER = ["games","kino","calendar","people","more"];
+  const TAB_ORDER = ["home","games","kino","read","calendar","people","more"];
   const ROUTES = {
+    home:{w:"wApple",theme:"cal",tab:"home"}, read:{w:"wApple",theme:"cal",tab:"read"}, watch:{w:"wApple",theme:"cal",tab:"people"},
     games:{w:"wGames",theme:"games",tab:"games"}, "games-future":{w:"wGames",theme:"games",tab:"games"},
     kino:{w:"wKino",theme:"kino",tab:"kino"}, "kino-future":{w:"wKino",theme:"kino",tab:"kino"},
     calendar:{w:"wApple",theme:"cal",tab:"calendar"},
@@ -1988,7 +2306,7 @@ button.ios-row:hover{background:var(--c-cell-out)}
     const cur = FV ? "people" : (ROUTES[route] || ROUTES.games).tab, ac = activeContract();
     const invN = typeof myInvites === "function" && EV ? myInvites().length : 0;
     const tb = $("tabbar"), lens0 = tb.querySelector(".tb-lens"), x0 = lens0 ? lens0.style.transform : "";
-    tb.innerHTML = `<i class="tb-lens now" style="transform:${x0}"></i>` + [["games","Игры"],["kino","Кино"],["calendar","Календарь"],["people","Друзья"],["more","Ещё"]].map(([k,l]) =>
+    tb.innerHTML = `<i class="tb-lens now" style="transform:${x0}"></i>` + [["home","Главная"],["games","Игры"],["kino","Кино"],["read","Читалка"],["calendar","Календарь"],["people","Активность"],["more","Ещё"]].map(([k,l]) =>
       `<a class="tab" href="#${k}" data-tab="${k}" ${cur === k ? 'aria-current="page"' : ""}>${ICON[k]}<span>${l}</span>${k === "games" && ac ? '<i class="dot"></i>' : ""}${k === "people" && invN ? `<i class="dot n">${invN}</i>` : ""}</a>`).join("");
     placeLens();
   }
@@ -2266,7 +2584,7 @@ button.ios-row:hover{background:var(--c-cell-out)}
   }
   function renderGames(){
     const fut = route === "games-future";
-    const all = items.filter(isGame), lib = all.filter(inLib), futs = all.filter(isFuture);
+    const all = items.filter(isGame), lib = all.filter(inLib), futs = all.filter(i => isFuture(i) || isSoon(i));
     $("gSeg").innerHTML = `<a href="${rh("games")}" ${!fut ? 'aria-current="page"' : ""}>Библиотека<small>${lib.length}</small></a><a href="${rh("games-future")}" ${fut ? 'aria-current="page"' : ""}>На будущее<small>${futs.length}</small></a>`;
     const q = qv();
     const match = i => !q || [i.title,i.genre,i.desc,i.note].join(" ").toLowerCase().includes(q);
@@ -2307,7 +2625,7 @@ button.ios-row:hover{background:var(--c-cell-out)}
   // ================= КИНО =================
   function renderKino(){
     const fut = route === "kino-future";
-    const all = items.filter(i => !isGame(i)), lib = all.filter(inLib), futs = all.filter(isFuture);
+    const all = items.filter(i => !isGame(i)), lib = all.filter(inLib), futs = all.filter(i => isFuture(i) || isSoon(i));
     $("kSeg").innerHTML = `<a href="${rh("kino")}" ${!fut ? 'aria-current="page"' : ""}>Библиотека<small>${lib.length}</small></a><a href="${rh("kino-future")}" ${fut ? 'aria-current="page"' : ""}>На будущее<small>${futs.length}</small></a>`;
     const q = qv();
     const match = i => !q || [i.title,i.genre,i.note].join(" ").toLowerCase().includes(q);
@@ -2476,7 +2794,7 @@ button.ios-row:hover{background:var(--c-cell-out)}
     document.body.dataset.world = r.w; if (r.w !== "wApple"){ $("aCrumb").textContent = ""; $("aTopActs").innerHTML = ""; }
     if (r.w === "wGames") renderGames();
     else if (r.w === "wKino") renderKino();
-    else ({soon:renderSoon, calendar:renderCal, more:renderMore, recap:renderRecap, drops:renderDrops, money:renderMoney, ach:renderAch, patch:renderPatch, people:renderPeople, user:renderUser, event:renderEvent})[route]();
+    else ({soon:renderSoon, calendar:renderCal, more:renderMore, recap:renderRecap, drops:renderDrops, money:renderMoney, ach:renderAch, patch:renderPatch, people:renderPeople, user:renderUser, event:renderEvent, watch:renderWatch, home:renderHome, read:renderRead})[route]();
     document.body.dataset.route = route;
     fillMeSlots(); applySecBg(); wireCarousels(); syncHead(); renderFw();
     renderTabbar();
@@ -2488,7 +2806,8 @@ button.ios-row:hover{background:var(--c-cell-out)}
     setFV(null);
     if (h.startsWith("user:")){ route = "user"; viewUid = h.slice(5); return; }
     if (h.startsWith("event:")){ route = "event"; viewEv = h.slice(6); return; }
-    route = ROUTES[h] && h !== "user" && h !== "event" ? h : "games"; }
+    if (h.startsWith("watch:")){ route = "watch"; viewEv = h.slice(6); return; }
+    route = ROUTES[h] && !["user", "event", "watch"].includes(h) ? h : "home"; }
   function animateWorld(){
     const r = ROUTES[route], p = ROUTES[prevRoute] || r;
     const a = TAB_ORDER.indexOf(r.tab), b = TAB_ORDER.indexOf(p.tab);
@@ -3806,6 +4125,21 @@ button.ios-row:hover{background:var(--c-cell-out)}
   // ================= патчноуты =================
   // Новые версии добавляются В НАЧАЛО списка. n — новое, c — изменено, f — исправлено, r — удалено.
   const PATCHES = [
+    {v: "2.3", date: "2026-11-08", title: "Главная, Читалка и «ГО ПОСМОТРИМ»", kind: "major", sec: {
+      n: ["<b>Главная</b> — твой профиль: что сейчас играешь, смотришь и читаешь, плитки разделов, справа активность друзей и топ NEXUS по активности за месяц",
+          "<b>Читалка</b>: манга и комиксы в стиле com-x. Вкладки «Читаю», «Буду читать», «Прочитано», «Отложено», «Брошено», счётчик глав и новых. Ссылка на тайтл с com-x.life или readmanga заполняет карточку, файл выгрузки коллекции с com-x раскладывает всё по вкладкам",
+          "<b>ГО ПОСМОТРИМ</b> в «Активности»: выбери фильм со своей полки, из релизов или по ссылке Кинопоиска, переключи рычаг «Онлайн» или «Киновечер», позови друзей. У сеанса своя страница со стеклом, жанровой анимацией постера и чатом",
+          "<b>Лайки</b> на стене мероприятий: видно, сколько и кто поставил",
+          "Когда кто-то регистрируется, всем приходит уведомление, а в ленте появляется «присоединился к NEXUS»",
+          "В шапке кнопки звука и фона: фон можно поставить на любой странице в два клика"],
+      c: ["«Друзья» теперь называются <b>«Активность»</b>, лента сделана как в Steam: большой постер слева, маленькая аватарка справа",
+          "В профиле друга вкладка <b>«На будущее»</b> с его играми и кино",
+          "Релизы из календаря выходов сами попадают в «На будущее», кнопка у релиза друга называется «Жду»",
+          "Страница фильма в стиле Netflix: крупный задник, большое название, без стеклянных плашек",
+          "Кровь у ужастиков больше не упирается в невидимый пол: стекает вниз и тает",
+          "Мероприятия оформлены под стену ВКонтакте: светлый фон и синяя шапка",
+          "Плашка с ником в шапке крупнее, дата и время теперь внутри неё"],
+      f: ["В профиле друга постер в ряду «Хочет пройти» больше не обрезается при наведении"]}},
     {v: "2.2", date: "2026-11-08", title: "Мероприятия, профили как в Netflix и кровь в ужастиках", kind: "major", sec: {
       n: ["<b>Мероприятия</b> в «Друзьях»: фото, место, дата, время и описание. Можно позвать друзей, ответить «Иду» или «Не иду», приглашения горят красной цифрой на вкладке и всплывают уведомлением",
           "<b>Стена мероприятия</b> в духе ВКонтакте 2007: сообщения, картинки и пять эмодзи в стиле айфона — смех, злость, покерфейс, кринж и плач",
@@ -3969,7 +4303,7 @@ button.ios-row:hover{background:var(--c-cell-out)}
 
   // ================= чип профиля и фоны разделов =================
   let SECBG = null;
-  const SEC_NAMES = {games: "Игры", kino: "Кино", calendar: "Календарь", people: "Друзья", more: "Ещё"};
+  const SEC_NAMES = {home: "Главная", games: "Игры", kino: "Кино", read: "Читалка", calendar: "Календарь", people: "Активность", more: "Ещё"};
   function fillMeSlots(){
     const html = ME ? `<button class="me-chip" data-profile="1" title="Профиль и настройки">${avaHTML(myProf(), "sm")}<span class="nm">${esc(NICK)}</span></button>` : "";
     document.querySelectorAll(".me-slot").forEach(e => { if (e.innerHTML !== html) e.innerHTML = html; });
@@ -4101,7 +4435,7 @@ button.ios-row:hover{background:var(--c-cell-out)}
     if (frLoading) return frLoading;
     frLoading = (async () => {
       try {
-        const [pr, it] = await Promise.all([SB.from("profiles").select("user_id,nick,avatar,ava_animal,ava_color,birthday"), SB.rpc("public_items")]);
+        const [pr, it] = await Promise.all([SB.from("profiles").select("user_id,nick,avatar,ava_animal,ava_color,birthday,created_at"), SB.rpc("public_items")]);
         if (pr.error) throw pr.error; if (it.error) throw it.error;
         FR = {at: Date.now(), profiles: pr.data || [], items: (it.data || []).map(r => ({...(r.data || {}), id: r.id, uid: r.user_id, _upd: r.updated_at}))};
         if (FV) items = frItems(FV);
@@ -4169,9 +4503,9 @@ button.ios-row:hover{background:var(--c-cell-out)}
         ${dates ? `<p class="sub" style="margin-top:4px">${esc(dates)}</p>` : ""}
         ${mine && typeof mine.rating === "number" ? `<p class="sub" style="margin-top:4px">Твоя оценка: <b style="color:inherit">${num1(mine.rating)}</b></p>` : ""}</div></div>
       ${it.desc ? `<p class="sub" style="margin:14px 0 0;max-height:150px;overflow:auto;white-space:pre-line">${esc(it.desc.slice(0, 900))}</p>` : ""}
-      <div class="acts" style="margin-top:16px">${have ? `<button class="ib full" disabled>Уже есть у тебя</button>` : `<button class="ib blue full" id="fiTake">${isSoon(it) ? "Тоже жду" : "Взять к себе в «На будущее»"}</button>`}</div>`);
+      <div class="acts" style="margin-top:16px">${have ? `<button class="ib full" disabled>Уже есть у тебя</button>` : `<button class="ib blue full" id="fiTake">${isSoon(it) ? "Жду" : "Взять к себе в «На будущее»"}</button>`}</div>`);
     s.el.querySelector(".qa-top .poster").classList.add("qa-poster");
-    const b = s.el.querySelector("#fiTake"); if (b) b.onclick = async () => { b.disabled = true; b.textContent = "Добавляю…"; if (await takeFromFriend(it)) s.close(); else { b.disabled = false; b.textContent = isSoon(it) ? "Тоже жду" : "Взять к себе в «На будущее»"; } };
+    const b = s.el.querySelector("#fiTake"); if (b) b.onclick = async () => { b.disabled = true; b.textContent = "Добавляю…"; if (await takeFromFriend(it)) s.close(); else { b.disabled = false; b.textContent = isSoon(it) ? "Жду" : "Взять к себе в «На будущее»"; } };
   }
   async function takeFromFriend(it){
     if (!db) return false;
@@ -4441,7 +4775,7 @@ button.ios-row:hover{background:var(--c-cell-out)}
     db.doc("meta/bg").onSnapshot(d => { SECBG = d.exists ? d.data() : null; applySecBg(); });
     Promise.all(["backup", "autobackup"].map(x => db.doc("meta/" + x).get().then(d => d.exists ? d.data() : null).catch(() => null)))
       .then(([b, a]) => { lastBackup = b; autoBackup = a; if (route === "more") render(); });
-    loadFriends(); loadEvents(); subscribeEvents();
+    loadFriends(); loadEvents(); subscribeEvents(); loadReads();
     db.collection("items").onSnapshot(snap => {
       if (!snap.metadata.fromCache){ clearTimeout(timer); itemsLoaded = true; }
       MYITEMS = snap.docs.map(d => ({id: d.id, ...d.data()}));
@@ -4763,20 +5097,22 @@ button.ios-row:hover{background:var(--c-cell-out)}
     return it.status === "future" ? "хочет посмотреть" : it.status === "soon" ? "ждёт премьеру" : it.status === "done" || it.status === "played" ? "посмотрел" : it.status === "dropped" ? "бросил" : it.status === "paused" ? "отложил" : "смотрит";
   };
   function renderPeople(){
-    appleHead("Друзья", `<button class="a-link" data-frrefresh="1">Обновить</button>`);
+    appleHead("Активность", `<button class="a-link" data-frrefresh="1">Обновить</button>`);
     if (!ME){ $("aMain").innerHTML = `<div class="a-empty" style="margin-top:20px"><b>Нужно войти</b></div>`; return; }
-    if (!FR){ $("aMain").innerHTML = `<h1 class="a-h1">Друзья</h1><p class="a-sub">Загружаю…</p>`; loadFriends(); return; }
+    if (!FR){ $("aMain").innerHTML = `<h1 class="a-h1">Активность</h1><p class="a-sub">Загружаю…</p>`; loadFriends(); return; }
     const others = FR.profiles.filter(p => p.user_id !== ME.id).map(p => {
       const its = frItems(p.user_id), last = its.reduce((m, i) => (i._upd || "") > (m ? m._upd || "" : "") ? i : m, null);
       return {p, last, ts: last ? last._upd : "", c: compat(p.user_id), n: its.filter(inLib).length};
     }).sort((a, b) => (b.ts || "").localeCompare(a.ts || ""));
     // лента по дням
-    const feed = feedEvents(null).slice(0, 50), td = today(), yd = addDays(td, -1);
+    const joins = FR.profiles.filter(p => p.created_at && p.user_id !== ME.id && Date.now() - Date.parse(p.created_at) < 60 * 864e5).map(p => ({join: true, p, d: localDate(new Date(p.created_at))}));
+    const feed = [...feedEvents(null), ...joins].sort((a, b) => b.d.localeCompare(a.d)).slice(0, 50), td = today(), yd = addDays(td, -1);
     const dayLbl = d => d === td ? "Сегодня" : d === yd ? "Вчера" : parseD(d).toLocaleDateString("ru-RU", {day: "numeric", month: "long", ...(d.slice(0, 4) !== td.slice(0, 4) ? {year: "numeric"} : {})});
     let feedH = "", lastDay = "";
     feed.forEach(e => { if (e.d !== lastDay){ lastDay = e.d; feedH += `<div class="fd-day">${dayLbl(e.d)}</div>`; }
-      const r = typeof e.it.rating === "number" && /прошёл|дропнул|посмотрел|бросил/.test(e.verb) ? `<span class="r ${rateCls(e.it.rating)}">${num1(e.it.rating)}</span>` : "";
-      feedH += `<button class="fx" data-fi="${esc(e.it.uid + "/" + e.it.id)}">${avaHTML(profOf(e.it.uid), "sm")}<span class="t"><b>${esc(frNick(e.it.uid))}</b> <span class="vb">${e.verb}</span> <b>${esc(e.it.title)}</b><small>${isGame(e.it) ? "игра" : esc((KTYPES[e.it.type] || "кино").toLowerCase())}${genres(e.it)[0] ? " · " + esc(genres(e.it)[0].toLowerCase()) : ""}</small></span>${r}${posterHTML(e.it, {rate:false, tgt:false, badge:false})}</button>`; });
+      const r = !e.join && typeof e.it.rating === "number" && /прошёл|дропнул|посмотрел|бросил/.test(e.verb) ? `<span class="r ${rateCls(e.it.rating)}">${num1(e.it.rating)}</span>` : "";
+      if (e.join){ feedH += `<button class="sx join" data-user="${esc(e.p.user_id)}">${avaHTML(e.p)}<span class="t"><span class="nk">${esc(e.p.nick)}</span> <span class="vb">присоединился к NEXUS</span><small>новенький, загляни к нему на полку</small></span></button>`; return; }
+      feedH += `<button class="sx" data-fi="${esc(e.it.uid + "/" + e.it.id)}">${posterHTML(e.it, {rate:false, tgt:false, badge:false})}<span class="t"><span class="nk">${esc(frNick(e.it.uid))}</span> <span class="vb">${e.verb}</span><b class="ti">${esc(e.it.title)}</b><small>${isGame(e.it) ? "игра" : esc((KTYPES[e.it.type] || "кино").toLowerCase())}${genres(e.it)[0] ? " · " + esc(genres(e.it)[0].toLowerCase()) : ""}</small></span><span class="side">${r}${avaHTML(profOf(e.it.uid), "xs")}</span></button>`; });
     // друзья справа
     const friendsH = others.map(o => { const mins = o.ts ? (Date.now() - Date.parse(o.ts)) / 6e4 : 1e9, dot = mins < 20 ? "on" : mins < 1440 ? "rc" : "";
       return `<button class="fl-i" data-user="${esc(o.p.user_id)}"><span class="av">${avaHTML(o.p)}<i class="${dot}" title="${dot === "on" ? "только что был на сайте" : dot === "rc" ? "был сегодня" : ""}"></i></span>
@@ -4797,12 +5133,12 @@ button.ios-row:hover{background:var(--c-cell-out)}
       ${soon.length ? `<div class="bd-list">${soon.map(({p, n}) => `<button class="bd-row${n.days === 0 ? " now" : ""}" ${p.user_id !== ME.id ? `data-user="${esc(p.user_id)}"` : 'data-bdset="1"'}>${avaHTML(p)}<span class="t">${esc(p.user_id === ME.id ? "Ты" : p.nick)}<small>${bdLabel(p.birthday)}${n.age && p.user_id === ME.id ? ` · исполнится ${n.age}` : ""}</small></span><span class="w">${n.days === 0 ? "сегодня" : n.days === 1 ? "завтра" : `через ${n.days} ${plural(n.days, "день", "дня", "дней")}`}</span></button>`).join("")}</div>`
         : `<p class="a-sub" style="margin:10px 0 0;font-size:13px">Пока никто не указал день рождения.</p>`}
       ${myBd ? "" : `<button class="ib blue bd-set" data-bdset="1">Указать свой</button>`}</div>`;
-    $("aMain").innerHTML = `<h1 class="a-h1">Друзья</h1><p class="a-sub">${others.length ? `${others.length} ${plural(others.length, "человек", "человека", "человек")} на NEXUS кроме тебя. Видно всё, кроме заметок и причин дропа.` : "Пока здесь никого, кроме тебя. Скинь друзьям ссылку на сайт."}</p>
+    $("aMain").innerHTML = `<h1 class="a-h1">Активность</h1><p class="a-sub">${others.length ? `${others.length} ${plural(others.length, "человек", "человека", "человек")} на NEXUS кроме тебя. Видно всё, кроме заметок и причин дропа.` : "Пока здесь никого, кроме тебя. Скинь друзьям ссылку на сайт."}</p>
       <div class="fb">
         <aside class="fb-col fb-l">${eventsCard()}${bdH}</aside>
-        <section class="fb-card fb-feed"><h3>Лента<small>${feed.length ? `${feed.length} ${plural(feed.length, "событие", "события", "событий")}` : ""}</small></h3>
-          ${feed.length ? feedH : `<div class="a-empty"><b>Тихо</b>Когда друзья начнут что-то добавлять, это появится здесь.</div>`}</section>
-        <aside class="fb-col fb-r"><div class="fb-card"><h3>Друзья<small>${others.length}</small></h3>${others.length ? `<div class="fl">${friendsH}</div>` : `<p class="a-sub" style="margin:0;font-size:13px">Скинь ссылку на сайт — тут появятся друзья и что они делали.</p>`}</div></aside>
+        <section class="fb-feed-w">${watchCard()}<div class="fb-card fb-feed st"><h3>Лента<small>${feed.length ? `${feed.length} ${plural(feed.length, "событие", "события", "событий")}` : ""}</small></h3>
+          ${feed.length ? feedH : `<div class="a-empty"><b>Тихо</b>Когда друзья начнут что-то добавлять, это появится здесь.</div>`}</div></section>
+        <aside class="fb-col fb-r"><div class="fb-card plain"><h3>Друзья<small>${others.length}</small></h3>${others.length ? `<div class="fl">${friendsH}</div>` : `<p class="a-sub" style="margin:0;font-size:13px">Скинь ссылку на сайт — тут появятся друзья и что они делали.</p>`}</div></aside>
       </div>`;
   }
 
@@ -4892,7 +5228,7 @@ button.ios-row:hover{background:var(--c-cell-out)}
   function goreFx(wrap, instant){
     const P = wrap.querySelector(".poster"); if (!P || !P.offsetWidth) return;
     wrap.querySelectorAll(".gore").forEach(x => x.remove());
-    const W = P.offsetWidth, H = P.offsetHeight, padX = Math.round(W * .42), extra = Math.round(H * .62), VW = W + padX * 2, VH = H + extra;
+    const W = P.offsetWidth, H = P.offsetHeight, padX = Math.round(W * .42), extra = Math.round(H * 1.5), VW = W + padX * 2, VH = H + extra;
     const NS = "http://www.w3.org/2000/svg", fid = "goo" + Math.random().toString(36).slice(2, 8);
     const svg = document.createElementNS(NS, "svg"); svg.setAttribute("class", "gore"); svg.setAttribute("width", VW); svg.setAttribute("height", VH);
     svg.style.left = -padX + "px"; svg.style.top = "0px";
@@ -4904,8 +5240,8 @@ button.ios-row:hover{background:var(--c-cell-out)}
         <feSpecularLighting in="gb" surfaceScale="5" specularConstant="1.15" specularExponent="30" lighting-color="#ffd9cf" result="sp"><fePointLight x="${Math.round(VW * .3)}" y="${-H}" z="${Math.round(H * .9)}"/></feSpecularLighting>
         <feComposite in="sp" in2="goo" operator="in" result="spi"/>
         <feComposite in="goo" in2="spi" operator="arithmetic" k1="0" k2="1" k3=".75" k4="0"/>
-      </filter></defs><g filter="url(#${fid})" fill="url(#${fid}g)"></g>`;
-    const g = svg.querySelector("g"), x0 = padX, x1 = padX + W, poolY = H + extra * .5, streams = [];
+      </filter><linearGradient id="${fid}f" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="${(H / VH + .12).toFixed(2)}" stop-color="#fff"/><stop offset=".97" stop-color="#fff" stop-opacity="0"/></linearGradient><mask id="${fid}m"><rect width="${VW}" height="${VH}" fill="url(#${fid}f)"/></mask></defs><g mask="url(#${fid}m)"><g filter="url(#${fid})" fill="url(#${fid}g)"></g></g>`;
+    const g = svg.querySelector("g[filter]"), x0 = padX, x1 = padX + W, poolY = H + extra * .96, streams = [];
     const el = (tag, at) => { const n = document.createElementNS(NS, tag); for (const k in at) n.setAttribute(k, at[k]); g.appendChild(n); return n; };
     const pool = el("ellipse", {cx: padX + W / 2, cy: poolY, rx: 0, ry: 0});
     const lobes = Array.from({length: 9}, (_, i) => ({a: i / 9 * Math.PI * 2 + Math.random() * .5, k: .7 + Math.random() * .5, r: .25 + Math.random() * .3, n: el("circle", {cx: padX + W / 2, cy: poolY, r: 0})}));
@@ -4914,15 +5250,15 @@ button.ios-row:hover{background:var(--c-cell-out)}
       const beads = [.25 + Math.random() * .2, .55 + Math.random() * .25].map(t => ({t, r: w * (.55 + Math.random() * .35), n: el("circle", {r: 0, cx: x, cy: y})}));
       streams.push({x, y0: y, y, vy: 0, w, maxY, delay, head, body, beads, wob: Math.random() * 6, sp: .7 + Math.random() * .6}); };
     const nb = W > 250 ? 10 : 7;
-    for (let i = 0; i < nb; i++) add(x0 + W * (.06 + .88 * Math.random()), H - 16, 6 + Math.random() * 11, poolY - 6 + Math.random() * 14, .2 + Math.random() * 1.8);
-    [[x0 + 2, -1], [x1 - 2, 1]].forEach(([x, s]) => { for (let k = 0; k < 2; k++) add(x + s * (2 + Math.random() * 5), H * (.08 + Math.random() * .55), 5 + Math.random() * 6, poolY - 4 + Math.random() * 10, .6 + Math.random() * 2.2); });
+    for (let i = 0; i < nb; i++) add(x0 + W * (.06 + .88 * Math.random()), H - 16, 5 + Math.random() * 10, H + extra * (.35 + Math.random() * .62), .2 + Math.random() * 1.8);
+    [[x0 + 2, -1], [x1 - 2, 1]].forEach(([x, s]) => { for (let k = 0; k < 2; k++) add(x + s * (2 + Math.random() * 5), H * (.08 + Math.random() * .55), 4 + Math.random() * 6, H + extra * (.3 + Math.random() * .6), .6 + Math.random() * 2.2); });
     wrap.insertBefore(svg, wrap.firstChild);
     const draw = (T, pg) => {
       streams.forEach(s => { const xw = s.x + Math.sin(T * 1.2 + s.wob) * .7, len = Math.max(0, s.y - s.y0);
         s.body.setAttribute("x", (xw - s.w / 2).toFixed(1)); s.body.setAttribute("y", s.y0.toFixed(1)); s.body.setAttribute("height", len.toFixed(1));
         s.head.setAttribute("cx", xw.toFixed(1)); s.head.setAttribute("cy", s.y.toFixed(1)); s.head.setAttribute("r", (s.w * (.7 + Math.min(1, len / 60) * .25)).toFixed(1));
         s.beads.forEach(b => { const by = s.y0 + len * b.t, bx = s.x + Math.sin(T * 1.6 + s.wob + b.t * 5) * 1.1; b.n.setAttribute("cx", bx.toFixed(1)); b.n.setAttribute("cy", by.toFixed(1)); b.n.setAttribute("r", (len > 20 ? b.r : 0).toFixed(1)); }); });
-      const e = easeOut(pg), rx = W * .7 * e, ry = (10 + extra * .1) * e; pool.setAttribute("rx", rx.toFixed(1)); pool.setAttribute("ry", ry.toFixed(1));
+      const e = 0, rx = 0, ry = 0; pool.setAttribute("rx", rx.toFixed(1)); pool.setAttribute("ry", ry.toFixed(1));
       lobes.forEach(l => { l.n.setAttribute("cx", (padX + W / 2 + Math.cos(l.a) * rx * l.k).toFixed(1)); l.n.setAttribute("cy", (poolY + Math.sin(l.a) * ry * l.k * 1.1).toFixed(1)); l.n.setAttribute("r", (ry * l.r * 2.2 * e + (pg > .3 ? Math.sin(T * .8 + l.a) * .8 : 0)).toFixed(1)); });
       ledge.setAttribute("height", (Math.min(1, pg * 3 + .2) * 22).toFixed(1));
     };
@@ -4932,15 +5268,15 @@ button.ios-row:hover{background:var(--c-cell-out)}
       if (!svg.isConnected) return;
       const dt = Math.min(.05, (now - last) / 1000), T = (now - t0) / 1000; last = now; let alive = false;
       streams.forEach(s => { if (T < s.delay){ alive = true; return; } if (s.y < s.maxY){ alive = true;
-        s.vy = Math.min(s.vy + 160 * dt, (55 + s.w * 5) * s.sp); s.y = Math.min(s.maxY, s.y + s.vy * dt * (.55 + .45 * Math.abs(Math.sin(T * 2.2 + s.wob)))); } });
+        s.vy = Math.min(s.vy + 120 * dt, (42 + s.w * 5) * s.sp * Math.max(.35, 1 - (s.y - H) / extra)); s.y = Math.min(s.maxY, s.y + s.vy * dt * (.55 + .45 * Math.abs(Math.sin(T * 2.2 + s.wob)))); } });
       const pg = Math.min(1, Math.max(0, (T - 1.4) / 6));
       draw(T, pg);
-      if ((alive || pg < 1) && T < 14) requestAnimationFrame(step);
+      if ((alive || pg < 1) && T < 22) requestAnimationFrame(step);
     };
     requestAnimationFrame(step);
   }
   function dread(instant){
-    const v = $("view"); if (!v || v.querySelector(".dread")) return;
+    let v = $("view"); if (!v || v.hidden) v = document.querySelector(".wp"); if (!v || v.querySelector(".dread")) return;
     const d = document.createElement("div"); d.className = "dread"; if (instant) d.style.cssText = "animation:none;opacity:1";
     const sh = v.querySelector(".shade"); sh ? sh.after(d) : v.prepend(d);
   }
@@ -4986,9 +5322,9 @@ button.ios-row:hover{background:var(--c-cell-out)}
     if (evLoading){ if (force) evAgain = true; return evLoading; }
     evLoading = (async () => {
       try {
-        const [e, m, p] = await Promise.all([SB.from("events").select("*"), SB.from("event_members").select("*"), SB.from("event_posts").select("*")]);
+        const [e, m, p, l] = await Promise.all([SB.from("events").select("*"), SB.from("event_members").select("*"), SB.from("event_posts").select("*"), SB.from("event_post_likes").select("*")]);
         if (e.error) throw e.error; if (m.error) throw m.error; if (p.error) throw p.error;
-        EV = {at: Date.now(), events: e.data || [], members: m.data || [], posts: p.data || []};
+        EV = {at: Date.now(), events: e.data || [], members: m.data || [], posts: p.data || [], likes: l.error ? [] : (l.data || [])};
       } catch(err){ if (!EV) EV = {at: Date.now(), events: [], members: [], posts: [], failed: true}; }
       evLoading = null; checkInvites(); render();
       if (evAgain){ evAgain = false; loadEvents(true); }
@@ -5003,13 +5339,16 @@ button.ios-row:hover{background:var(--c-cell-out)}
       .on("postgres_changes", {event: "*", schema: "public", table: "event_members"}, p => { const n = p.new;
         loadEvents(true).then(() => { if (p.eventType === "INSERT" && n && n.user_id === ME.id && n.status === "invited" && n.invited_by !== ME.id) notifyInvite(n); }); })
       .on("postgres_changes", {event: "*", schema: "public", table: "event_posts"}, () => loadEvents(true))
+      .on("postgres_changes", {event: "*", schema: "public", table: "event_post_likes"}, () => loadEvents(true))
+      .on("postgres_changes", {event: "INSERT", schema: "public", table: "profiles"}, p => { const n = p.new; if (!n || n.user_id === ME.id) return;
+        toast(`${n.nick || "Кто-то новый"} присоединился к NEXUS`); SND.click(); sysNote("NEXUS · новенький", `${n.nick || "Кто-то"} теперь на сайте`, () => go("user:" + n.user_id)); loadFriends(true); })
       .subscribe();
   }
   const sysNote = (title, body, onClick) => { try { if ("Notification" in window && Notification.permission === "granted"){ const n = new Notification(title, {body, icon: "icon-192.png"}); n.onclick = () => { window.focus(); onClick && onClick(); n.close(); }; } } catch(_){} };
   function notifyInvite(m){
     const e = evById(m.event_id); if (!e || evNotified.has(e.id)) return; evNotified.add(e.id); lsSet("nexus_inv_" + e.id, "1");
     const t = `${frNick(m.invited_by || e.owner)} зовёт тебя: ${e.title}`;
-    toast(t); SND.click(); sysNote("NEXUS · приглашение", `${t}\n${evWhen(e)}`, () => go("event:" + e.id));
+    toast(e.kind === "watch" ? `${frNick(m.invited_by || e.owner)} зовёт смотреть: ${(e.film && e.film.title) || e.title}` : t); SND.click(); sysNote("NEXUS · приглашение", `${t}\n${evWhen(e)}`, () => go(evRoute(e)));
   }
   function checkInvites(){
     if (!EV || !ME) return;
@@ -5025,22 +5364,22 @@ button.ios-row:hover{background:var(--c-cell-out)}
   function eventsCard(){
     if (!EV){ loadEvents(); return `<div class="fb-card ev-card"><h3>${ICON.party} Мероприятия</h3><p class="a-sub" style="margin:0;font-size:13px">Загружаю…</p></div>`; }
     const inv = myInvites(), MON = ["янв","фев","мар","апр","мая","июн","июл","авг","сен","окт","ноя","дек"];
-    const up = EV.events.filter(e => !evPast(e)).sort((a, b) => (a.starts_at || "9").localeCompare(b.starts_at || "9"));
-    const past = EV.events.filter(evPast).sort((a, b) => b.starts_at.localeCompare(a.starts_at)).slice(0, 2);
+    const up = EV.events.filter(e => e.kind !== "watch" && !evPast(e)).sort((a, b) => (a.starts_at || "9").localeCompare(b.starts_at || "9"));
+    const past = EV.events.filter(e => e.kind !== "watch" && evPast(e)).sort((a, b) => b.starts_at.localeCompare(a.starts_at)).slice(0, 2);
     const th = e => { const s = evStart(e); return `<span class="ev-th" style="--g:${evBg(e)}">${e.photo ? "" : s ? `<small>${MON[s.getMonth()]}</small><b>${s.getDate()}</b>` : `<b>?</b>`}</span>`; };
     const row = e => { const go_ = evMem(e.id).filter(m => m.status === "going"); return `<button class="ev-row${evPast(e) ? " past" : ""}" data-ev="${esc(e.id)}">${th(e)}<span class="t"><b>${esc(e.title)}</b><small>${esc(evIn(e) || evWhen(e))}${go_.length ? ` · ${go_.length} ${plural(go_.length, "идёт", "идут", "идут")}` : ""}</small></span>${go_.length ? avaStack(go_.map(m => m.user_id), 3) : ""}</button>`; };
     const note = "Notification" in window && Notification.permission === "default" ? `<button class="ev-note" data-notif="1">Включить уведомления о приглашениях</button>` : "";
     return `<div class="fb-card ev-card"><h3>${ICON.party} Мероприятия<button class="ev-add" data-evnew="1" title="Создать мероприятие" aria-label="Создать мероприятие">+</button></h3>
-      ${inv.map(m => { const e = evById(m.event_id); return `<div class="ev-inv"><div class="k">${esc(frNick(m.invited_by || e.owner))} зовёт</div>${row(e)}<div class="acts"><button class="ib green" data-rsvp="${esc(e.id)}:going">Иду</button><button class="ib" data-rsvp="${esc(e.id)}:not">Не иду</button></div></div>`; }).join("")}
+      ${inv.filter(m => evById(m.event_id).kind !== "watch").map(m => { const e = evById(m.event_id); return `<div class="ev-inv"><div class="k">${esc(frNick(m.invited_by || e.owner))} зовёт</div>${row(e)}<div class="acts"><button class="ib green" data-rsvp="${esc(e.id)}:going">Иду</button><button class="ib" data-rsvp="${esc(e.id)}:not">Не иду</button></div></div>`; }).join("")}
       ${up.filter(e => !inv.some(m => m.event_id === e.id)).map(row).join("")}${past.map(row).join("")}
-      ${EV.events.length ? "" : `<p class="a-sub" style="margin:0 0 10px;font-size:13px">Пока ничего не запланировано. Кино, катка, шашлыки — позови всех.</p><button class="ib blue bd-set" data-evnew="1">Создать мероприятие</button>`}
+      ${EV.events.some(e => e.kind !== "watch") ? "" : `<p class="a-sub" style="margin:0 0 10px;font-size:13px">Пока ничего не запланировано. Кино, катка, шашлыки — позови всех.</p><button class="ib blue bd-set" data-evnew="1">Создать мероприятие</button>`}
       ${note}</div>`;
   }
   const vkDate = ts => { const d = new Date(ts), t = d.toLocaleTimeString("ru-RU", {hour: "2-digit", minute: "2-digit"}), k = localDate(d);
     return (k === today() ? "сегодня" : k === addDays(today(), -1) ? "вчера" : d.toLocaleDateString("ru-RU", {day: "numeric", month: "long"})) + " в " + t; };
   let wallDraft = {id: null, text: "", file: null};
   function renderEvent(){
-    appleHead("Мероприятие", `<button class="a-link" data-go="people">‹ Друзья</button>`);
+    appleHead("Мероприятие", `<button class="a-link" data-go="people">‹ Активность</button>`);
     if (!ME){ $("aMain").innerHTML = `<div class="a-empty" style="margin-top:20px"><b>Нужно войти</b></div>`; return; }
     if (!EV){ $("aMain").innerHTML = `<p class="a-sub">Загружаю…</p>`; loadEvents(); return; }
     const e = evById(viewEv);
@@ -5059,7 +5398,8 @@ button.ios-row:hover{background:var(--c-cell-out)}
           <button type="button" class="vk-btn" id="vkGo">Отправить</button></div></div>
       ${posts.length ? posts.map(p => `<div class="vk-post">${avaHTML(profOf(p.user_id))}<div><button class="vk-n" ${p.user_id !== ME.id ? `data-user="${esc(p.user_id)}"` : ""}>${esc(profOf(p.user_id).nick || "кто-то")}</button>
         ${p.body ? `<div class="vk-t${onlyEmo(p.body) ? " big" : ""}">${richText(p.body)}</div>` : ""}${p.image ? `<img class="vk-img" src="${publicUrl(p.image)}" alt="" data-vkimg="${esc(p.image)}" loading="lazy">` : ""}
-        <div class="vk-d">${vkDate(p.created_at)}${p.user_id === ME.id || own ? ` | <a data-vkdel="${esc(p.id)}">удалить</a>` : ""}</div></div></div>`).join("") : `<div class="vk-empty">На стене пока нет записей. Напиши первым.</div>`}</div>`;
+        <div class="vk-d">${vkDate(p.created_at)} | ${(() => { const lk = likesOf(p.id), on = lk.some(l => l.user_id === ME.id);
+          return `<a class="vk-like${on ? " on" : ""}" data-like="${esc(p.id)}" title="${esc(lk.length ? "Понравилось: " + lk.map(l => profOf(l.user_id).nick).join(", ") : "Мне нравится")}">Мне нравится${lk.length ? ` ♥ ${lk.length}` : ""}</a>${lk.length ? `<span class="vk-lk">${lk.slice(0, 6).map(l => avaHTML(profOf(l.user_id))).join("")}</span>` : ""}`; })()}${p.user_id === ME.id || own ? ` | <a data-vkdel="${esc(p.id)}">удалить</a>` : ""}</div></div></div>`).join("") : `<div class="vk-empty">На стене пока нет записей. Напиши первым.</div>`}</div>`;
     $("aMain").innerHTML = `<div class="evp">
       <div class="evp-hero" style="--g:${evBg(e)}">${evIn(e) ? `<span class="cd">${esc(evIn(e))}</span>` : ""}<div class="in"><div class="when">${esc(evWhen(e))}</div><h1>${esc(e.title)}</h1></div></div>
       <div class="evp-grid"><div>
@@ -5166,7 +5506,7 @@ button.ios-row:hover{background:var(--c-cell-out)}
     if (el.dataset.fwt){ fwHide = !fwHide; lsSet("nexus_fw", fwHide ? "0" : "1"); renderFw(); return; }
     if (el.dataset.snd){ SND.set(el.dataset.snd === "1"); if (route === "more") renderMore(); return; }
     if (!ME) return;
-    if (el.dataset.ev){ go("event:" + el.dataset.ev); return; }
+    if (el.dataset.ev){ const ev = evById(el.dataset.ev); go(ev ? evRoute(ev) : "event:" + el.dataset.ev); return; }
     if (el.dataset.evnew){ if (!FR) await loadFriends(); eventSheet(null); return; }
     if (el.dataset.rsvp){ const [id, st] = el.dataset.rsvp.split(":"); rsvp(id, st); return; }
     if (el.dataset.notif){ if ("Notification" in window) Notification.requestPermission().then(p => { toast(p === "granted" ? "Уведомления включены" : "Браузер не разрешил уведомления"); render(); }); return; }
@@ -5179,8 +5519,10 @@ button.ios-row:hover{background:var(--c-cell-out)}
   });
 
   // ================= 2.2: профиль друга в стиле Netflix =================
+  let uTab = "lib", uTabFor = null;
   function renderUser(){
-    appleHead("", `<button class="a-link" data-go="people">‹ Друзья</button>`);
+    if (uTabFor !== viewUid){ uTab = "lib"; uTabFor = viewUid; }
+    appleHead("", `<button class="a-link" data-go="people">‹ Активность</button>`);
     if (!FR){ $("aMain").innerHTML = `<p class="a-sub" style="padding:40px 16px">Загружаю…</p>`; loadFriends(); return; }
     const p = FR.profiles.find(x => x.user_id === viewUid);
     if (!p){ $("aMain").innerHTML = `<div class="a-empty" style="margin:40px 16px"><b>Такого человека нет</b>Может, он удалил аккаунт.</div>`; return; }
@@ -5224,9 +5566,9 @@ button.ios-row:hover{background:var(--c-cell-out)}
       </section>
       <div class="nf-body">
         ${gl.length || kl.length ? `<h2 class="nf-h">Колода ${esc(p.nick)}<small>лучшее по оценкам</small></h2><div class="nf-decks">${deck(top(gl), "Игры")}${deck(top(kl), "Фильмы и сериалы")}</div>` : `<div class="a-empty" style="margin-top:30px"><b>Полка пуста</b>Пока ничего не добавил.</div>`}
-        ${row("Вся библиотека: игры", [...gl].sort(recent), more("games"))}
-        ${row("Вся библиотека: фильмы и сериалы", [...kl].sort(recent), more("kino"))}
-        ${row("Хочет пройти и посмотреть", wants)}
+        <div class="nf-tabs"><button data-ftab="lib" aria-pressed="${uTab !== "fut"}">Библиотека<small>${lib.length}</small></button><button data-ftab="fut" aria-pressed="${uTab === "fut"}">На будущее<small>${wants.length}</small></button></div>
+        ${uTab === "fut" ? `${row("На будущее: игры", wants.filter(isGame))}${row("На будущее: фильмы и сериалы", wants.filter(i => !isGame(i)))}${wants.length ? "" : `<p style="color:#808080;margin:20px 0">Пока ничего не отложил на потом.</p>`}`
+          : `${row("Вся библиотека: игры", [...gl].sort(recent), more("games"))}${row("Вся библиотека: фильмы и сериалы", [...kl].sort(recent), more("kino"))}`}
         ${row(`${esc(p.nick)} советует`, recs)}
         <div class="nf-low">
           <div class="nf-act"><h2 class="nf-h">Активность</h2>${feed.length ? feed.map(ev => `<button class="fx" data-fi="${esc(ev.it.uid + "/" + ev.it.id)}"><span class="t"><span class="vb">${ev.verb}</span> <b>${esc(ev.it.title)}</b><small>${agoTxt(ev.d)} · ${isGame(ev.it) ? "игра" : esc((KTYPES[ev.it.type] || "кино").toLowerCase())}</small></span>${typeof ev.it.rating === "number" && /прошёл|дропнул|посмотрел|бросил/.test(ev.verb) ? `<span class="r ${rateCls(ev.it.rating)}">${num1(ev.it.rating)}</span>` : ""}${posterHTML(ev.it, {rate: false, tgt: false, badge: false})}</button>`).join("") : `<p style="color:#808080">Пока тихо.</p>`}</div>
@@ -5238,6 +5580,395 @@ button.ios-row:hover{background:var(--c-cell-out)}
         </div>
       </div></div>`;
   }
+
+  // ================= 2.3: значки =================
+  const MONITOR_I = '<svg viewBox="0 0 32 32" fill="none"><rect x="3" y="5" width="26" height="17" rx="3" fill="#2b2f6b" stroke="#9aa2ff" stroke-width="2"/><path d="M12 27h8M16 22v5" stroke="#9aa2ff" stroke-width="2" stroke-linecap="round"/><path d="M10.5 10.5c3.6-1.6 7.4-1.6 11 0 .9 2.6 1.1 5 .6 7.2-1.2.9-2.4 1.4-3.6 1.6l-.8-1.4c-1.6.4-3.2.4-4.8 0l-.8 1.4c-1.2-.2-2.4-.7-3.6-1.6-.5-2.2-.3-4.6 1-7.2Z" fill="#5865f2"/><circle cx="13.6" cy="14.6" r="1.3" fill="#fff"/><circle cx="18.4" cy="14.6" r="1.3" fill="#fff"/></svg>';
+  const POPCORN_I = '<svg viewBox="0 0 32 32"><circle cx="10" cy="9" r="4" fill="#fff4cf"/><circle cx="16" cy="6.5" r="4.3" fill="#fffbe8"/><circle cx="22" cy="9" r="4" fill="#ffe9a3"/><circle cx="13" cy="11.5" r="3.6" fill="#ffd95a"/><circle cx="19.5" cy="11.5" r="3.6" fill="#fff4cf"/><path d="M7 13h18l-2.4 15.5a1.8 1.8 0 0 1-1.8 1.5H11.2a1.8 1.8 0 0 1-1.8-1.5Z" fill="#fff"/><path d="M10.6 13l1.3 17M16 13v17M21.4 13l-1.3 17" stroke="#e50914" stroke-width="2.6"/><path d="M7 13h18" stroke="#c40812" stroke-width="2"/></svg>';
+  const HEART_I = '<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.1 0 3.6 1.2 5.3 3.2 1.7-2 3.2-3.2 5.3-3.2 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21Z"/></svg>';
+  const BOOK_I = I('<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5Z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5M9 7h7M9 10.5h5"/>');
+  const HOME_I = I('<path d="M3.5 11 12 4l8.5 7"/><path d="M5.5 9.5V20h5v-5.5h3V20h5V9.5"/>');
+  const MUTE_I = I('<path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5Z"/><path d="m16 9.5 5 5M21 9.5l-5 5"/>');
+  const WALLP_I = I('<rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/>');
+  const STAR_F = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2.8 2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4-4.7-4.4 6.4-.8Z"/></svg>';
+  const GRID_I = I('<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>');
+  const LIST_I = I('<path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/>');
+  Object.assign(ICON, {home: HOME_I, read: BOOK_I, mute: MUTE_I, wallp: WALLP_I});
+  // фон для чата и ГО ПОСМОТРИМ: пленка, хлопушка, микрофон, попкорн, камера
+  document.documentElement.style.setProperty("--cine", `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+    <g transform='translate(18 20) rotate(-12)'><rect width='70' height='34' rx='4'/><path d='M8 0v34M62 0v34M0 8h8M0 17h8M0 26h8M62 8h8M62 17h8M62 26h8'/><rect x='16' y='7' width='14' height='20' rx='2'/><rect x='38' y='7' width='14' height='20' rx='2'/></g>
+    <g transform='translate(160 28) rotate(10)'><rect y='14' width='62' height='40' rx='4'/><path d='M0 14 8 0h54l-8 14M14 0l-8 14M30 0l-8 14M46 0l-8 14'/></g>
+    <g transform='translate(40 140) rotate(-8)'><rect x='10' width='18' height='30' rx='9'/><path d='M4 22a15 15 0 0 0 30 0M19 37v12M10 49h18'/></g>
+    <g transform='translate(150 150) rotate(8)'><path d='M4 20h40l-6 44H10Z'/><path d='M16 20l2 44M28 20v44M40 20l-2 44'/><circle cx='12' cy='14' r='7'/><circle cx='24' cy='9' r='7'/><circle cx='36' cy='14' r='7'/></g>
+    <g transform='translate(96 92)'><rect y='10' width='44' height='30' rx='5'/><path d='m44 18 16-8v30l-16-8'/><circle cx='12' cy='5' r='5'/><circle cx='30' cy='5' r='5'/></g>
+    <g transform='translate(110 208) rotate(-6)'><path d='M0 0h50v10a6 6 0 0 0 0 12v10H0V22a6 6 0 0 0 0-12Z'/><path d='M16 0v32' stroke-dasharray='3 4'/></g>
+  </svg>`)}")`);
+
+  // ================= 2.3: шапка — звук и фон раздела =================
+  function syncSnd(){ const b = $("sndBtn"); if (!b) return; b.innerHTML = SND.on ? ICON.sound : ICON.mute; b.classList.toggle("off", !SND.on); b.title = SND.on ? "Выключить звуки" : "Включить звуки"; }
+  $("sndBtn").onclick = () => { SND.set(!SND.on); syncSnd(); toast(SND.on ? "Звуки включены" : "Звуки выключены"); if (route === "more") renderMore(); };
+  $("bgBtn").onclick = () => { if (!ME){ toast("Сначала войди"); return; } const tab = (ROUTES[route] || ROUTES.home).tab; bgSheet(tab); };
+  syncSnd();
+
+  // ================= 2.3: главная — твой профиль =================
+  const recentFirst = (a, b) => (b._upd || b.updatedAt || "").localeCompare(a._upd || a.updatedAt || "");
+  function topActive(){
+    if (!FR) return [];
+    const since = Date.now() - 30 * 864e5, by = new Map();
+    FR.profiles.forEach(p => by.set(p.user_id, {p, n: 0, lib: 0}));
+    FR.items.forEach(i => { const r = by.get(i.uid); if (!r) return; if (inLib(i)) r.lib++; const t = Date.parse(i._upd || i.updatedAt || i.createdAt || 0); if (t > since) r.n++; });
+    return [...by.values()].sort((a, b) => b.n - a.n || b.lib - a.lib);
+  }
+  function miniFeed(n){
+    if (!FR || !ME) return "";
+    const ev = FR.items.filter(i => i.uid !== ME.id && i._upd).sort((a, b) => b._upd.localeCompare(a._upd)).slice(0, n);
+    return ev.length ? ev.map(i => `<button class="mini-f" data-fi="${esc(i.uid + "/" + i.id)}">${posterHTML(i, {rate:false, tgt:false, badge:false})}<span><b>${esc(i.title)}</b><small>${esc(frNick(i.uid))} ${verbOf(i)} · ${agoTs(i._upd)}</small></span>${avaHTML(profOf(i.uid), "xs")}</button>`).join("")
+      : `<p class="a-sub" style="margin:0;font-size:13px">Пока тихо.</p>`;
+  }
+  function topHTML(n){
+    const t = topActive().slice(0, n), mx = Math.max(1, ...t.map(x => x.n));
+    return t.map(({p, n: k, lib}) => `<button class="top-r${ME && p.user_id === ME.id ? " me" : ""}" ${ME && p.user_id === ME.id ? 'data-go="home"' : `data-user="${esc(p.user_id)}"`}>${(i => `<span class="n r${i}">${i}</span>`)(t.findIndex(x => x.p === p) + 1)}${avaHTML(p)}<span class="t"><b>${esc(ME && p.user_id === ME.id ? p.nick + " (ты)" : p.nick)}</b><small>${k} ${plural(k, "действие", "действия", "действий")} за месяц · ${lib} на полке</small></span><span class="bar"><i style="width:${Math.round(k / mx * 100)}%"></i></span></button>`).join("");
+  }
+  function renderHome(){
+    appleHead("Главная");
+    if (!ME){ $("aMain").innerHTML = `<div class="a-empty" style="margin-top:20px"><b>Нужно войти</b></div>`; return; }
+    if (!FR) loadFriends();
+    if (!READS) loadReads();
+    const mine = MYITEMS, g = mine.filter(isGame), k = mine.filter(i => !isGame(i));
+    const nowG = g.filter(i => inLib(i) && ["playing", "endless"].includes(gStatus(i.status))).sort(recentFirst);
+    const nowK = k.filter(i => isSerT(i.type) && kNorm(i) === "playing" && inLib(i)).sort(recentFirst);
+    const nowR = (READS || []).filter(r => r.status === "reading").sort(recentFirst);
+    const hero = nowG[0] || nowK[0] || [...mine].sort(recentFirst)[0];
+    const bg = hero && hero.cover ? publicUrl(hero.cover) : null;
+    const relNext = mine.filter(isSoon).sort((a, b) => (a.releaseDate || "9").localeCompare(b.releaseDate || "9"))[0];
+    const cov = arr => { const x = arr.find(i => i.cover); return x ? `--bg:url('${publicUrl(x.cover)}')` : ""; };
+    const rCov = (READS || []).find(r => r.cover || r.coverUrl);
+    const tiles = [
+      ["games", "Игры", `${g.filter(inLib).length} в библиотеке · ${nowG.length} в процессе`, ICON.games, cov(nowG.length ? nowG : g), "linear-gradient(135deg,#2a2a30,#121214)", true],
+      ["kino", "Кино", `${k.filter(inLib).length} на полке · ${k.filter(isFuture).length} на будущее`, ICON.kino, cov(nowK.length ? nowK : k), "linear-gradient(135deg,#3d2fd6,#14112e)"],
+      ["read", "Читалка", `${(READS || []).length} тайтлов · ${nowR.length} читаю`, ICON.read, rCov ? `--bg:url('${rCov.cover ? publicUrl(rCov.cover) : rCov.coverUrl}')` : "", "linear-gradient(135deg,#f5a623,#5a3a06)"],
+      ["calendar", "Календарь", relNext ? `ближайший релиз: ${relNext.title}` : "дни, когда играл и смотрел", ICON.calendar, cov(relNext ? [relNext] : []), "linear-gradient(135deg,#ff375f,#5e0b1d)"],
+      ["people", "Активность", `${FR ? FR.profiles.length - 1 : 0} друзей · мероприятия · ГО ПОСМОТРИМ`, ICON.people, "", "linear-gradient(135deg,#1b2838,#2a475e)"],
+    ];
+    const cont = [...nowG, ...nowK].slice(0, 10);
+    const lib = mine.filter(inLib), done = g.filter(i => gStatus(i.status) === "done").length;
+    $("aMain").innerHTML = `<div class="hm"><div>
+      <section class="hm-hero" style="--ac:${(myProf().ava_color) || "#5e5ce6"}"><div class="bg${bg ? "" : " blank"}" style="${bg ? `--bg:url('${bg}')` : ""}"></div>
+        <div class="hm-in">${avaHTML(myProf(), "big")}<div style="min-width:0">
+          <h1>${esc(NICK)}</h1>
+          <div class="sub">${lib.length} на полке · ${done} ${plural(done, "игра пройдена", "игры пройдено", "игр пройдено")} · ${k.filter(i => kNorm(i) === "done").length} кино посмотрено${READS ? ` · ${READS.length} в читалке` : ""}</div>
+          ${nowG[0] || nowK[0] || nowR[0] ? `<div class="hm-now">${nowG[0] ? `<button data-id="${esc(nowG[0].id)}">${posterHTML(nowG[0], {tgt:false, rate:false})}<span><small>Играю</small>${esc(nowG[0].title)}</span></button>` : ""}${nowK[0] ? `<button data-id="${esc(nowK[0].id)}">${posterHTML(nowK[0], {tgt:false, rate:false})}<span><small>Смотрю</small>${esc(nowK[0].title)}</span></button>` : ""}${nowR[0] ? `<button data-rd="${esc(nowR[0].id)}"><span><small>Читаю</small>${esc(nowR[0].title)}</span></button>` : ""}</div>` : ""}
+        </div></div></section>
+      <h2 class="hm-h">Куда пойдём</h2>
+      <div class="hm-tiles">${tiles.map(([r, t, s, ic, b, gr, big]) => `<a class="hm-tile${big ? " big" : ""}" href="#${r}" style="--g:${gr};${b}">${b ? '<span class="bg"></span>' : ""}<span class="ic">${ic}</span><b>${t}</b><small>${esc(s)}</small></a>`).join("")}</div>
+      ${cont.length ? `<h2 class="hm-h">Продолжить</h2><div class="hm-row">${cont.map(i => `<button class="hm-c" data-id="${esc(i.id)}">${posterHTML(i, {tgt:false})}<span>${esc(i.title)}</span><small>${isGame(i) ? GSTATUS[gStatus(i.status)] : kLab(i).l}</small></button>`).join("")}</div>` : ""}
+      ${nowR.length ? `<h2 class="hm-h">Читаю</h2><div class="hm-row">${nowR.slice(0, 12).map(r => `<button class="hm-c" data-rd="${esc(r.id)}">${rCover(r)}<span>${esc(r.title)}</span><small>${r.chRead || 0}${r.chTotal ? " из " + r.chTotal : ""} глав</small>${r.chTotal ? `<div class="pb"><i style="width:${Math.min(100, (r.chRead || 0) / r.chTotal * 100)}%"></i></div>` : ""}</button>`).join("")}</div>` : ""}
+    </div>
+    <aside class="hm-side">
+      <div class="fb-card"><h3>${ICON.people} Активность<small><a href="#people" style="color:inherit">вся ›</a></small></h3>${miniFeed(7)}</div>
+      <div class="fb-card"><h3>${ICON.trophy} Топ NEXUS<small>за 30 дней</small></h3>${FR ? topHTML(10) : `<p class="a-sub" style="margin:0">Загружаю…</p>`}</div>
+    </aside></div>`;
+  }
+
+  // ================= 2.3: Читалка =================
+  let READS = null, rLoading = null, rType = "", rTab = "reading", rSort = lsGet("nexus_rsort") || "added", rView = lsGet("nexus_rview") || "grid";
+  const RSTAT = [["reading", "Читаю"], ["plan", "Буду читать"], ["done", "Прочитано"], ["paused", "Отложено"], ["dropped", "Брошено"]];
+  const RTYPE = {manga: "Манга", comic: "Комикс"};
+  async function loadReads(){
+    if (!SB || !ME) return [];
+    if (rLoading) return rLoading;
+    rLoading = (async () => { const {data, error} = await SB.from("reads").select("id,data,updated_at").eq("user_id", ME.id);
+      READS = error ? (READS || []) : (data || []).map(r => ({...r.data, id: r.id, _upd: r.updated_at})); rLoading = null;
+      if (route === "read" || route === "home") render(); return READS; })();
+    return rLoading;
+  }
+  async function saveRead(r){
+    const id = r.id || ("r" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6));
+    const data = {...r, id: undefined, _upd: undefined, updatedAt: now(), createdAt: r.createdAt || now()}; delete data.id; delete data._upd;
+    const {error} = await SB.from("reads").upsert({id, user_id: ME.id, data, updated_at: now()});
+    if (error){ toast("Не сохранилось: " + error.message); return null; }
+    const row = {...data, id, _upd: now()}; READS = [...(READS || []).filter(x => x.id !== id), row]; return row;
+  }
+  const rCover = r => { const src = r.cover ? publicUrl(r.cover) : r.coverUrl; return `<span class="rx-cv">${src ? `<img src="${esc(src)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : ""}<span class="ph"${src ? ' style="z-index:-1"' : ""}>${esc(r.title || "")}</span></span>`; };
+  function renderRead(){
+    appleHead("Читалка", `<button class="a-link" data-radd="1">+ Добавить</button>`);
+    if (!ME){ $("aMain").innerHTML = `<div class="a-empty" style="margin-top:20px"><b>Нужно войти</b></div>`; return; }
+    if (!READS){ $("aMain").innerHTML = `<p class="a-sub" style="text-align:center;margin-top:40px">Загружаю…</p>`; loadReads(); return; }
+    const pool = READS.filter(r => !rType || r.type === rType), cnt = s => pool.filter(r => r.status === s).length;
+    const chRead = pool.reduce((s, r) => s + (+r.chRead || 0), 0), waiting = pool.filter(r => r.status === "reading" && r.chTotal > (r.chRead || 0)).reduce((s, r) => s + (r.chTotal - (r.chRead || 0)), 0);
+    const doneAll = pool.filter(r => r.status === "done" || (r.chTotal && r.chRead >= r.chTotal)).length;
+    const SORTS = {added: ["Сначала недавно добавленные", (a, b) => (b.createdAt || "").localeCompare(a.createdAt || "")], upd: ["Сначала недавно читал", recentFirst],
+      title: ["По названию", (a, b) => (a.title || "").localeCompare(b.title || "", "ru")], left: ["Больше всего новых глав", (a, b) => ((b.chTotal || 0) - (b.chRead || 0)) - ((a.chTotal || 0) - (a.chRead || 0))], rate: ["По рейтингу", (a, b) => (b.myRating ?? b.rating ?? -1) - (a.myRating ?? a.rating ?? -1)]};
+    const list = pool.filter(r => r.status === rTab).sort(SORTS[rSort] ? SORTS[rSort][1] : SORTS.added[1]);
+    const card = r => { const left = r.chTotal ? Math.max(0, r.chTotal - (r.chRead || 0)) : 0, pct = r.chTotal ? Math.min(100, (r.chRead || 0) / r.chTotal * 100) : 0;
+      const meta = [r.publisher, r.year ? r.year + "г." : "", r.chTotal ? `${r.chRead || 0}/${r.chTotal} гл.` : ""].filter(Boolean).join(" / "), rt = r.myRating ?? r.rating;
+      return rView === "list" ? `<button class="rx-c" data-rd="${esc(r.id)}">${rCover(r)}<span><span class="ti">${esc(r.title)}</span><span class="mt">${rt != null ? `${STAR_F}<b>${num1(rt)}</b> / ` : ""}${esc(meta || RTYPE[r.type] || "")}</span></span><span class="ch">${left ? `+${left} новых` : ""}</span></button>`
+        : `<button class="rx-c" data-rd="${esc(r.id)}"><span style="display:block">${rCover(r).replace('<span class="rx-cv">', `<span class="rx-cv"><span class="tp">${RTYPE[r.type] || ""}</span>${left && r.status === "reading" ? `<span class="new">+${left}</span>` : ""}`)}<span class="rx-pg" style="display:block"><i style="width:${pct}%"></i></span></span><span class="ti">${esc(r.title)}</span><span class="mt">${rt != null ? `${STAR_F}<b>${num1(rt)}</b> /` : ""}${esc(meta || RTYPE[r.type] || "")}</span></button>`; };
+    $("aMain").innerHTML = `<div class="rx">
+      <h1 class="rx-h">${BOOK_I} Моя коллекция</h1>
+      <div class="rx-sub">${[["", "Всё", READS.length], ["manga", "Манга", READS.filter(r => r.type === "manga").length], ["comic", "Комиксы", READS.filter(r => r.type === "comic").length]].map(([v, l, n]) => `<button data-rt="${v}" aria-pressed="${rType === v}">${l}<small>${n}</small></button>`).join("")}</div>
+      <div class="rx-p"><div class="t"><b>Подтянуть с сайта</b><small>Ссылка на тайтл с com-x.life или readmanga — заполню карточку. Ссылка на свою коллекцию — попробую забрать весь список по вкладкам.</small></div>
+        <div class="rx-in"><input id="rxUrl" inputmode="url" placeholder="com-x.life/2789-berserk-read-online.html" autocomplete="off"><button class="rx-btn fill" id="rxGo">Подтянуть</button></div></div>
+      <div class="rx-p"><div class="t"><b>Загрузить выгрузку коллекции</b><small>На com-x.life в «Моя коллекция» есть «Выгрузить коллекцию»: скачай CSV, JSON или TXT и кинь файл сюда. Все вкладки разложатся сами.</small></div>
+        <label class="rx-btn" for="rxFile">${ICON.up}Выбрать файл</label><input type="file" id="rxFile" accept=".csv,.json,.txt,text/csv,application/json,text/plain" hidden></div>
+      <div class="rx-stats"><div class="rx-st"><b>${pool.length}</b><small>тайтлов</small></div><div class="rx-st"><b>${chRead}</b><small>глав прочитано</small></div><div class="rx-st hot"><b>${waiting}</b><small>новых ждут</small></div><div class="rx-st"><b>${doneAll}</b><small>дочитано до конца</small></div></div>
+      <div class="rx-tabs">${RSTAT.map(([s, l]) => `<button data-rtab="${s}" aria-pressed="${rTab === s}">${l} (${cnt(s)})</button>`).join("")}</div>
+      <div class="rx-bar"><select class="rx-sort" id="rxSort">${Object.entries(SORTS).map(([k, [l]]) => `<option value="${k}"${k === rSort ? " selected" : ""}>${l}</option>`).join("")}</select>
+        <div class="rx-vw"><button data-rv="grid" aria-pressed="${rView === "grid"}" title="Плитка">${GRID_I}</button><button data-rv="list" aria-pressed="${rView === "list"}" title="Список">${LIST_I}</button><button data-radd="1" title="Добавить вручную">${ICON.plus}</button></div></div>
+      ${list.length ? `<div class="${rView === "list" ? "rx-list" : "rx-grid"}">${list.map(card).join("")}</div>` : `<div class="rx-empty"><b>${pool.length ? "Тут пусто" : "Коллекция пустая"}</b>${pool.length ? "Перенеси что-нибудь в эту вкладку." : "Вставь ссылку на тайтл или загрузи выгрузку с com-x.life."}</div>`}
+    </div>`;
+    $("rxSort").onchange = e => { rSort = e.target.value; lsSet("nexus_rsort", rSort); renderRead(); };
+    $("rxGo").onclick = () => readerFromUrl($("rxUrl").value.trim());
+    $("rxUrl").addEventListener("keydown", e => { if (e.key === "Enter") readerFromUrl($("rxUrl").value.trim()); });
+    $("rxFile").onchange = e => { const f = e.target.files[0]; if (f) importReads(f); };
+    bindDrop(document.querySelector(".rx"), f => importReads(f));
+  }
+  async function readerFetch(url, action = "title"){
+    const {data: d, error} = await SB.functions.invoke("reader", {body: {url, action}});
+    let err = d && d.error;
+    if (!d && error){ try { const j = await error.context.json(); err = j.error; } catch(_){ err = error.message; } }
+    if (err || !d) throw new Error(err === "blocked" ? "сайт не пустил сервер (защита от ботов)" : err === "login" ? "страница видна только после входа на сайт" : err === "empty" ? "на странице не нашлось тайтлов" : err === "bad_host" ? "поддерживаются только com-x.life и readmanga" : err === "not_found" ? "не нашёл тайтл на странице" : (err || "нет ответа"));
+    return d;
+  }
+  async function readerFromUrl(url){
+    if (!url){ toast("Вставь ссылку"); return; }
+    const isTitle = /com-?x\.life\/\d+-[^/]+\.html/i.test(url) || (/readmanga|mintmanga|seimanga/i.test(url) && /^https?:\/\/[^/]+\/[a-z0-9_]{3,80}\/?$/i.test(url));
+    const btn = $("rxGo"); if (btn){ btn.disabled = true; btn.textContent = "Ищу…"; }
+    try {
+      if (isTitle){ const d = await readerFetch(url); readSheet(null, d); }
+      else {
+        const d = await readerFetch(url, "profile");
+        const have = new Set((READS || []).map(r => r.url)); let n = 0;
+        for (const x of d.items){ if (have.has(x.url)) continue; await saveRead({title: x.title, url: x.url, coverUrl: x.coverUrl, status: x.status || rTab, type: /com-?x/.test(url) ? "comic" : "manga", source: /com-?x/.test(url) ? "comx" : "readmanga"}); n++; }
+        toast(n ? `Добавил ${n} ${plural(n, "тайтл", "тайтла", "тайтлов")}` : "Новых тайтлов не нашлось"); renderRead();
+      }
+    } catch(e){
+      toast("Не вышло: " + e.message + (isTitle ? ". Заполни вручную" : ". Используй файл выгрузки"));
+      if (isTitle) readSheet(null, {url, source: /com-?x/.test(url) ? "comx" : "readmanga", type: /com-?x/.test(url) ? "comic" : "manga"});
+    }
+    if (btn){ btn.disabled = false; btn.textContent = "Подтянуть"; }
+  }
+  // выгрузка com-x: CSV / JSON / TXT, поля угадываем по названиям
+  const statusFrom = s => { s = String(s || "").toLowerCase(); return /не понрав|брош|drop/.test(s) ? "dropped" : /отлож|hold|pause/.test(s) ? "paused" : /буду|plan|will|later|хочу/.test(s) ? "plan" : /прочит|complet|done|finish|read(ed)?$/.test(s) && !/читаю|reading/.test(s) ? "done" : /читаю|reading|current/.test(s) ? "reading" : null; };
+  function parseExport(text, name){
+    const out = [];
+    const pick = (o, re) => { for (const k in o) if (re.test(k)) return o[k]; return null; };
+    const fromObj = (o, st0) => { if (!o || typeof o !== "object") return;
+      const title = pick(o, /^(title|name|название|rus|ru_?name|name_?ru)$/i) || pick(o, /title|name|назв/i); if (!title || typeof title !== "string") return;
+      const st = statusFrom(pick(o, /status|tab|list|category|катег|вкладк|статус|folder/i)) || st0 || "reading";
+      const num = re => { const v = pick(o, re); const n = parseInt(v, 10); return isNaN(n) ? null : n; };
+      const url = pick(o, /^(url|link|href|ссылка)$/i) || pick(o, /url|link|ссылк/i);
+      out.push({title: String(title).trim(), url: url ? String(url) : null, coverUrl: pick(o, /cover|poster|image|img|обложк|постер/i) || null, status: st,
+        chRead: num(/read_?ch|chapters?_?read|прочит|readed|progress|last/i), chTotal: num(/total|chapters?_?count|^chapters?$|всего|глав/i),
+        publisher: pick(o, /publisher|издат/i) || null, year: num(/^year|год/i), rating: parseFloat(pick(o, /rating|рейтинг|score/i)) || null}); };
+    const t = text.trim();
+    if (/\.json$/i.test(name) || /^[\[{]/.test(t)){
+      const j = JSON.parse(t);
+      const walk = (v, st) => { if (Array.isArray(v)) v.forEach(x => typeof x === "object" ? (pick(x, /title|name|назв/i) ? fromObj(x, st) : walk(x, st)) : null);
+        else if (v && typeof v === "object"){ if (pick(v, /^(title|name|название)$/i) && typeof pick(v, /^(title|name|название)$/i) === "string") fromObj(v, st); else for (const k in v) walk(v[k], statusFrom(k) || st); } };
+      walk(j, null); return out;
+    }
+    const lines = t.split(/\r?\n/).filter(l => l.trim());
+    const sep = [";", ",", "\t"].find(s => (lines[0] || "").split(s).length > 1 && /title|name|назв/i.test(lines[0]));
+    if (sep){
+      const split = l => { const r = []; let cur = "", q = false; for (const ch of l){ if (ch === '"'){ q = !q; continue; } if (ch === sep && !q){ r.push(cur); cur = ""; } else cur += ch; } r.push(cur); return r.map(x => x.trim()); };
+      const head = split(lines[0]); lines.slice(1).forEach(l => { const v = split(l), o = {}; head.forEach((h, i) => o[h] = v[i]); fromObj(o, null); }); return out;
+    }
+    let st = "reading";
+    lines.forEach(l => { const s = l.replace(/^[-*•\d.)\s]+/, "").trim(); const hs = s.match(/^([^:]{3,30}):?\s*(\(\d+\))?$/); const maybe = statusFrom(s);
+      if (maybe && (hs || s.length < 30)){ st = maybe; return; }
+      const um = s.match(/https?:\/\/\S+/), title = s.replace(/https?:\/\/\S+/, "").replace(/[—–|-]\s*$/, "").trim();
+      if (title) out.push({title, url: um ? um[0] : null, status: st}); });
+    return out;
+  }
+  async function importReads(f){
+    if (!/\.(csv|json|txt)$/i.test(f.name) && !/text|json|csv/.test(f.type)){ toast("Нужен файл выгрузки: CSV, JSON или TXT"); return; }
+    try {
+      const list = parseExport(await f.text(), f.name);
+      if (!list.length){ toast("Не нашёл тайтлов в файле"); return; }
+      const have = new Set((READS || []).map(r => (r.url || r.title || "").toLowerCase())); let n = 0;
+      toast(`Загружаю ${list.length}…`);
+      for (const r of list){ const key = (r.url || r.title).toLowerCase(); if (have.has(key)) continue; have.add(key);
+        const src = /readmanga|mintmanga/i.test(r.url || "") ? "readmanga" : "comx";
+        await saveRead({...r, type: src === "readmanga" ? "manga" : "comic", source: src}); n++; }
+      toast(`Готово: ${n} ${plural(n, "тайтл", "тайтла", "тайтлов")}${list.length - n ? `, ${list.length - n} уже были` : ""}`); renderRead();
+    } catch(e){ toast("Файл не прочитался: " + e.message); }
+  }
+  function readSheet(r, pre){
+    const isNew = !r; r = r ? {...r} : {status: rTab, type: rType || "comic", chRead: 0, ...(pre || {})};
+    if (pre && pre.genres && !r.genre) r.genre = pre.genres.join(", ");
+    let file = null;
+    if (pre && pre.cover){ try { const bin = Uint8Array.from(atob(pre.cover), c => c.charCodeAt(0)); file = new File([bin], "cover.jpg", {type: pre.coverType || "image/jpeg"}); r.cover = null; } catch(_){} }
+    const coverSrc = () => file ? URL.createObjectURL(file) : r.cover ? publicUrl(r.cover) : r.coverUrl;
+    const s = openSheet(`<div class="rs-top"><div id="rsCv" style="cursor:pointer" title="Сменить обложку: нажми, перетащи или Ctrl+V">${rCover({...r, cover: null, coverUrl: coverSrc()})}</div><div>
+        <h3 style="margin-bottom:4px">${isNew ? "Новый тайтл" : esc(r.title)}</h3>
+        <p class="sub">${esc([RTYPE[r.type], r.publisher, r.year, r.siteStatus].filter(Boolean).join(" · "))}</p>
+        ${r.url ? `<p class="sub" style="margin-top:6px"><a href="${esc(r.url)}" target="_blank" rel="noopener" style="color:#f5a623">Читать на сайте ↗</a></p>` : ""}</div></div>
+      <div class="rs-seg" id="rsT" style="margin-top:14px">${Object.entries(RTYPE).map(([k, l]) => `<button data-v="${k}" aria-pressed="${r.type === k}">${l}</button>`).join("")}</div>
+      <label class="f">Название<input class="in" id="rsTi" value="${esc(r.title || "")}" placeholder="Берсерк"></label>
+      <div class="rs-st" id="rsS">${RSTAT.map(([k, l]) => `<button data-v="${k}" aria-pressed="${r.status === k}">${l}</button>`).join("")}</div>
+      <div class="av-lb">Прочитано глав</div>
+      <div class="rs-ch"><button type="button" id="rsM">−</button><input class="in" id="rsR" inputmode="numeric" value="${r.chRead || 0}"><button type="button" id="rsP">+</button><span>из</span><input class="in" id="rsTot" inputmode="numeric" value="${r.chTotal || ""}" placeholder="?"></div>
+      <div class="ev-two"><label class="f">Издатель<input class="in" id="rsPub" value="${esc(r.publisher || "")}"></label><label class="f">Год<input class="in" id="rsY" inputmode="numeric" value="${r.year || ""}"></label></div>
+      <div class="ev-two"><label class="f">Моя оценка, из 5<input class="in" id="rsMy" inputmode="decimal" value="${r.myRating ?? ""}" placeholder="4.5"></label><label class="f">Ссылка<input class="in" id="rsU" value="${esc(r.url || "")}" placeholder="https://"></label></div>
+      ${r.desc ? `<p class="sub" style="max-height:110px;overflow:auto;white-space:pre-line">${esc(r.desc.slice(0, 900))}</p>` : ""}
+      <div class="acts"><button class="ib blue" id="rsOk" style="background:#f5a623;color:#1b1206">${isNew ? "Добавить" : "Сохранить"}</button>${isNew ? "" : `<button class="ib red" id="rsDel">Удалить</button>`}<button class="ib" id="rsNo">Отмена</button></div>`, {wide: true});
+    const q = x => s.el.querySelector(x);
+    const seg = (id, key) => q(id).onclick = e => { const b = e.target.closest("[data-v]"); if (!b) return; r[key] = b.dataset.v; q(id).querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); };
+    seg("#rsT", "type"); seg("#rsS", "status");
+    const ch = d => { const v = Math.max(0, (parseInt(q("#rsR").value, 10) || 0) + d), t = parseInt(q("#rsTot").value, 10); q("#rsR").value = t ? Math.min(t, v) : v; };
+    q("#rsM").onclick = () => ch(-1); q("#rsP").onclick = () => ch(1);
+    const take = f => { if (!f || !f.type.startsWith("image/")) return; file = f; q("#rsCv").innerHTML = rCover({title: r.title, coverUrl: URL.createObjectURL(f)}); };
+    q("#rsCv").onclick = () => { const i = document.createElement("input"); i.type = "file"; i.accept = "image/*"; i.onchange = () => take(i.files[0]); i.click(); };
+    bindDrop(q("#rsCv"), take); pasteTarget = take;
+    q("#rsNo").onclick = () => s.close();
+    if (q("#rsDel")) q("#rsDel").onclick = async () => { if (!confirm(`Удалить «${r.title}»?`)) return; const {error} = await SB.from("reads").delete().eq("user_id", ME.id).eq("id", r.id); if (error){ toast("Не удалилось"); return; } READS = READS.filter(x => x.id !== r.id); s.close(); render(); };
+    q("#rsOk").onclick = async () => {
+      r.title = q("#rsTi").value.trim(); if (!r.title){ q("#rsTi").focus(); toast("Нужно название"); return; }
+      const n = id => { const v = parseFloat(String(q(id).value).replace(",", ".")); return isNaN(v) ? null : v; };
+      r.chRead = n("#rsR") || 0; r.chTotal = n("#rsTot"); r.publisher = q("#rsPub").value.trim() || null; r.year = n("#rsY"); r.myRating = n("#rsMy"); r.url = q("#rsU").value.trim() || null;
+      if (r.chTotal && r.chRead >= r.chTotal && r.status === "reading") r.status = "done";
+      const b = q("#rsOk"); b.disabled = true;
+      try { if (file && assets) r.cover = await upload(file); } catch(_){}
+      delete r.genres; delete r.coverType;
+      if (await saveRead(r)){ s.close(); toast(isNew ? "Добавлено в Читалку" : "Сохранено"); rTab = r.status; if (route !== "read") go("read"); else renderRead(); } else b.disabled = false;
+    };
+  }
+
+  // ================= 2.3: лайки =================
+  const likesOf = id => EV && EV.likes ? EV.likes.filter(l => l.post_id === id) : [];
+  async function toggleLike(id){
+    const mine = likesOf(id).some(l => l.user_id === ME.id);
+    const r = mine ? await SB.from("event_post_likes").delete().eq("post_id", id).eq("user_id", ME.id) : await SB.from("event_post_likes").insert({post_id: id, user_id: ME.id, created_at: now()});
+    if (r.error){ toast("Не получилось"); return; }
+    if (!mine) SND.click("soft");
+    await loadEvents(true);
+  }
+
+  // ================= 2.3: ГО ПОСМОТРИМ =================
+  const evRoute = e => (e && e.kind === "watch" ? "watch:" : "event:") + e.id;
+  const modeBadge = m => m === "cinema" ? `<span class="wp-kick cinema">${POPCORN_I}Киновечер</span>` : `<span class="wp-kick online">${MONITOR_I}Онлайн</span>`;
+  const filmItem = e => ({...(e.film || {}), id: "w-" + e.id, type: (e.film && e.film.type) || "movie", status: "done"});
+  function watchCard(){
+    if (!EV) return "";
+    const inv = new Set(myInvites().map(m => m.event_id));
+    const list = EV.events.filter(e => e.kind === "watch" && !evPast(e)).sort((a, b) => (a.starts_at || "9").localeCompare(b.starts_at || "9"));
+    return `<section class="gw-card"><div class="gw-h"><b>ГО <span>ПОСМОТРИМ</span></b><small>${list.length ? `${list.length} ${plural(list.length, "сеанс", "сеанса", "сеансов")}` : "онлайн или киновечером"}</small><button class="gw-new" data-wnew="1">+ Позвать смотреть</button></div>
+      ${list.length ? `<div class="gw-list">${list.map(e => { const f = filmItem(e), goN = evMem(e.id).filter(m => m.status === "going");
+        return `<button class="gw-t${inv.has(e.id) ? " inv" : ""}" data-w="${esc(e.id)}">${posterHTML(f, {tgt:false, rate:false})}<span style="min-width:0"><span class="md">${e.mode === "cinema" ? POPCORN_I + "киновечер" : MONITOR_I + "онлайн"}</span><b>${esc(f.title || e.title)}</b><small>${esc(evIn(e) || evWhen(e))}${goN.length ? ` · ${goN.length} ${plural(goN.length, "идёт", "идут", "идут")}` : ""}${inv.has(e.id) ? " · тебя зовут" : ""}</small></span></button>`; }).join("")}</div>`
+        : `<p class="gw-empty">Выбери фильм из своей полки или из релизов, назначь время — друзья получат приглашение.</p>`}</section>`;
+  }
+  function watchSheet(e){
+    if (!ME || !assets) return;
+    const isNew = !e; let mode = e ? e.mode || "online" : "online", src = "lib", film = e ? {...e.film} : null, file = null;
+    const s0 = evStart(e), others = FR ? FR.profiles.filter(p => p.user_id !== ME.id) : [];
+    const libK = MYITEMS.filter(i => !isGame(i) && !isSoon(i)).sort(recentFirst);
+    const seen = new Set(), relK = [...MYITEMS, ...(FR ? FR.items : [])].filter(i => !isGame(i) && isSoon(i)).filter(i => { const k = frKey(i); if (seen.has(k)) return false; seen.add(k); return true; });
+    const s = openSheet(`<h3>${isNew ? "Го посмотрим" : "Изменить просмотр"}</h3><p class="sub">Как смотрим?</p>
+      <div class="lever" id="wLv" data-wm="${mode}"><i class="knob"></i><button type="button" data-wm="online" aria-pressed="${mode === "online"}">${MONITOR_I}Онлайн</button><button type="button" data-wm="cinema" aria-pressed="${mode === "cinema"}">${POPCORN_I}Киновечер</button></div>
+      <div class="av-lb">Что смотрим</div>
+      <div class="wsrc" id="wSrc"><button data-s="lib" aria-pressed="true">Моя полка</button><button data-s="rel" aria-pressed="false">Релизы</button><button data-s="new" aria-pressed="false">Новый фильм</button></div>
+      <div id="wBox"></div>
+      <div class="ev-two"><label class="f">Дата<input class="in" type="date" id="wD" placeholder="Выбрать дату" value="${s0 ? localDate(s0) : today()}"></label><label class="f">Время<input class="in" type="time" id="wTm" value="${s0 ? pad(s0.getHours()) + ":" + pad(s0.getMinutes()) : "21:00"}"></label></div>
+      <label class="f" id="wLinkL">Ссылка на созвон или комнату<input class="in" id="wLink" placeholder="discord.gg/… или ссылка на совместный просмотр" value="${esc(e ? e.link || "" : "")}"></label>
+      <label class="f" id="wPlL">Где собираемся<input class="in" id="wPl" placeholder="У меня дома, кинотеатр…" value="${esc(e ? e.place || "" : "")}"></label>
+      <label class="f">Пара слов<textarea class="in" id="wDs" placeholder="Берите пиво и пледы">${esc(e ? e.descr || "" : "")}</textarea></label>
+      ${isNew && others.length ? `<div class="av-lb">Позвать</div><div class="ev-pick" id="wPk">${others.map(p => `<button type="button" data-u="${esc(p.user_id)}" aria-pressed="false">${avaHTML(p)}${esc(p.nick)}</button>`).join("")}</div>` : ""}
+      <div class="acts"><button class="ib blue" id="wOk" style="background:#e50914">${isNew ? "Позвать" : "Сохранить"}</button><button class="ib" id="wNo">Отмена</button></div>`, {wide: true});
+    const q = x => s.el.querySelector(x);
+    const setMode = m => { mode = m; q("#wLv").dataset.wm = m; q("#wLv").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.wm === m)); q("#wLinkL").hidden = m !== "online"; q("#wPlL").hidden = m !== "cinema"; };
+    q("#wLv").onclick = ev => { const b = ev.target.closest("button[data-wm]"); if (b){ setMode(b.dataset.wm); SND.tick(.8); } };
+    setMode(mode);
+    const snap = it => ({title: it.title, originalTitle: it.originalTitle || null, cover: it.cover || null, genre: it.genre || null, year: it.year || null, type: it.type || "movie", desc: it.desc || it.short || null, kpRating: it.kpRating || null, from: it.uid || ME.id});
+    const grid = list => list.length ? `<div class="wpick">${list.map((it, i) => `<button type="button" data-i="${i}" aria-pressed="${!!film && film.title === it.title}">${posterHTML(it, {tgt:false, rate:false})}<span>${esc(it.title)}</span></button>`).join("")}</div>` : `<div class="wpick"><div class="none">Тут пусто.</div></div>`;
+    const draw = () => {
+      q("#wSrc").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.s === src));
+      const list = src === "lib" ? libK : relK;
+      if (src !== "new"){ q("#wBox").innerHTML = grid(list); q("#wBox").onclick = ev => { const b = ev.target.closest("[data-i]"); if (!b) return; film = snap(list[+b.dataset.i]); file = null; q("#wBox").querySelectorAll("[data-i]").forEach(x => x.setAttribute("aria-pressed", x === b)); }; return; }
+      q("#wBox").innerHTML = `<div class="wnew"><div class="row"><input class="in" id="wKp" placeholder="Ссылка на Кинопоиск" inputmode="url"><button type="button" class="ib" id="wKpGo">Заполнить</button></div><input class="in" id="wTi" placeholder="Название фильма" value="${esc(film && !film.from ? film.title : "")}"><p class="sub" id="wKpS" style="margin:0"></p></div>`;
+      q("#wTi").oninput = () => { film = {...(film && !film.from ? film : {}), title: q("#wTi").value.trim()}; };
+      q("#wKpGo").onclick = async () => { const b = q("#wKpGo"); b.disabled = true; b.textContent = "Ищу…";
+        try { const {data: d, error} = await SB.functions.invoke("kino", {body: {url: q("#wKp").value.trim()}}); if (error || !d || d.error) throw 0;
+          film = {title: d.title, originalTitle: d.originalTitle || null, genre: (d.genres || []).join(", "), year: d.year || null, type: d.type || "movie", desc: d.desc || d.short || null, kpRating: d.kpRating || null};
+          if (d.cover){ const bin = Uint8Array.from(atob(d.cover), c => c.charCodeAt(0)); file = new File([bin], "kp.jpg", {type: d.coverType || "image/jpeg"}); }
+          q("#wTi").value = d.title; q("#wKpS").textContent = [d.year, film.genre].filter(Boolean).join(" · ") + (file ? " · постер есть" : "");
+        } catch(_){ q("#wKpS").textContent = "Не вышло, впиши название вручную"; }
+        b.disabled = false; b.textContent = "Заполнить"; };
+    };
+    q("#wSrc").onclick = ev => { const b = ev.target.closest("[data-s]"); if (b){ src = b.dataset.s; draw(); } };
+    draw();
+    if (q("#wPk")) q("#wPk").onclick = ev => { const b = ev.target.closest("[data-u]"); if (b) b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") !== "true"); };
+    q("#wNo").onclick = () => s.close();
+    q("#wOk").onclick = async () => {
+      if (!film || !film.title){ toast("Выбери фильм"); return; }
+      const d = q("#wD").value, starts_at = d ? new Date(`${d}T${q("#wTm").value || "21:00"}`).toISOString() : null;
+      const btn = q("#wOk"); btn.disabled = true;
+      try {
+        if (file) film.cover = await upload(file);
+        const row = {title: film.title, kind: "watch", mode, film, starts_at, descr: q("#wDs").value.trim() || null, link: mode === "online" ? q("#wLink").value.trim() || null : null, place: mode === "cinema" ? q("#wPl").value.trim() || null : null};
+        let id = e && e.id;
+        if (isNew){
+          id = crypto.randomUUID();
+          let r = await SB.from("events").insert({id, owner: ME.id, created_at: now(), photo: null, ...row}); if (r.error) throw r.error;
+          r = await SB.from("event_members").insert({event_id: id, user_id: ME.id, status: "going", updated_at: now()}); if (r.error) throw r.error;
+          const inv = q("#wPk") ? [...q("#wPk").querySelectorAll('[aria-pressed="true"]')].map(b => ({event_id: id, user_id: b.dataset.u, status: "invited", invited_by: ME.id, updated_at: now()})) : [];
+          if (inv.length){ r = await SB.from("event_members").insert(inv); if (r.error) toast("Приглашения не ушли: " + r.error.message); }
+          evNotified.add(id);
+        } else { const r = await SB.from("events").update(row).eq("id", id); if (r.error) throw r.error; }
+        s.close(); toast(isNew ? "Сеанс создан" : "Сохранено"); await loadEvents(true); go("watch:" + id);
+      } catch(err){ toast("Не сохранилось: " + ((err && err.message) || err)); btn.disabled = false; }
+    };
+  }
+  function renderWatch(){
+    appleHead("ГО ПОСМОТРИМ", `<button class="a-link" data-go="people">‹ Активность</button>`);
+    if (!ME){ $("aMain").innerHTML = `<div class="a-empty"><b>Нужно войти</b></div>`; return; }
+    if (!EV){ $("aMain").innerHTML = `<p class="a-sub" style="padding:40px">Загружаю…</p>`; loadEvents(); return; }
+    const e = evById(viewEv);
+    if (!e){ $("aMain").innerHTML = `<div class="a-empty" style="margin:40px 16px"><b>Сеанс не найден</b>Возможно, его отменили.</div>`; return; }
+    if (!FR) loadFriends();
+    const act = document.activeElement, wasF = act && act.id === "vkT", sel = wasF ? act.selectionStart : null;
+    const f = filmItem(e), mem = evMem(e.id), my = evMy(e.id), own = e.owner === ME.id, gs = genres(f);
+    const grp = st => mem.filter(m => m.status === st);
+    const ppl = (arr, cls, t) => `<div><h4 class="${cls}">${t} · ${arr.length}</h4><div class="av">${arr.length ? arr.map(m => `<span ${m.user_id !== ME.id ? `data-user="${esc(m.user_id)}"` : ""} title="${esc(m.user_id === ME.id ? "Ты" : profOf(m.user_id).nick)}">${avaHTML(profOf(m.user_id))}</span>`).join("") : `<span class="none">никого</span>`}</div></div>`;
+    const posts = EV.posts.filter(p => p.event_id === e.id).sort((a, b) => a.created_at.localeCompare(b.created_at));
+    const bg = f.cover ? publicUrl(f.cover) : null;
+    $("aMain").innerHTML = `<div class="wp"><div class="wp-bg" style="${bg ? `--bg:url('${bg}')` : ""}"></div><div class="wp-in">
+      <div class="wp-hero"><div class="wp-pcol"><div class="pwrap">${posterHTML(f, {id: "heroPoster", tgt:false, rate:false})}<div class="gfx" id="gfx"></div></div></div>
+        <div class="wp-glass">${modeBadge(e.mode)}
+          <h1>${esc(f.title || e.title)}</h1>
+          <div class="wp-meta">${[f.year, KTYPES[f.type], gs.slice(0, 3).join(", ")].filter(Boolean).map(esc).join(" · ")}${f.kpRating ? ` · <span class="kp">КП ${num1(f.kpRating)}</span>` : ""}</div>
+          <div class="wp-when"><span>${ICON.calendar}${esc(evWhen(e))}${evIn(e) ? " · " + esc(evIn(e)) : ""}</span>${e.mode === "online" && e.link ? `<a href="${esc(/^https?:/.test(e.link) ? e.link : "https://" + e.link)}" target="_blank" rel="noopener">${ICON.link || "↗"}Подключиться</a>` : ""}${e.mode === "cinema" && e.place ? `<a href="https://yandex.ru/maps/?text=${encodeURIComponent(e.place)}" target="_blank" rel="noopener">${ICON.pin}${esc(e.place)}</a>` : ""}<span>${avaHTML(profOf(e.owner), "xs")}${esc(own ? "зовёшь ты" : "зовёт " + (profOf(e.owner).nick || ""))}</span></div>
+          ${e.descr ? `<div class="wp-desc">${richText(e.descr)}</div>` : f.desc ? `<div class="wp-desc" style="opacity:.75">${esc(f.desc.slice(0, 380))}${f.desc.length > 380 ? "…" : ""}</div>` : ""}
+          ${my && my.status === "invited" ? `<div class="rsvp-k" style="padding:0;color:#ffb4b8">${esc(frNick(my.invited_by || e.owner))} зовёт тебя. Пойдёшь?</div>` : ""}
+          <div class="rsvp"><button class="go" data-rsvp="${esc(e.id)}:going" aria-pressed="${!!my && my.status === "going"}">✓ Иду</button><button class="no" data-rsvp="${esc(e.id)}:not" aria-pressed="${!!my && my.status === "not"}">✕ Не иду</button></div>
+          <div class="evp-acts"><button class="ib" data-evinv="${esc(e.id)}">Пригласить</button>${own ? `<button class="ib" data-wedit="${esc(e.id)}">Изменить</button><button class="ib red" data-evdel="${esc(e.id)}">Отменить</button>` : ""}</div>
+          <div class="wp-ppl">${ppl(grp("going"), "go", "Идут")}${ppl(grp("not"), "no", "Не идут")}${ppl(grp("invited"), "", "Позвали")}</div>
+        </div></div>
+      <section class="wc"><div class="wc-h">Обсуждение<small>${posts.length ? `${posts.length} ${plural(posts.length, "сообщение", "сообщения", "сообщений")}` : ""}</small></div>
+        <div class="wc-list" id="wcL">${posts.length ? posts.map(p => { const lk = likesOf(p.id), mine = p.user_id === ME.id, liked = lk.some(l => l.user_id === ME.id);
+          return `<div class="wc-m${mine ? " me" : ""}">${avaHTML(profOf(p.user_id))}<div class="wc-b"><span class="nk">${esc(profOf(p.user_id).nick || "")}</span>${p.body ? `<div class="tx${onlyEmo(p.body) ? " big" : ""}">${richText(p.body)}</div>` : ""}${p.image ? `<img src="${publicUrl(p.image)}" alt="" data-vkimg="${esc(p.image)}" loading="lazy">` : ""}
+            <div class="ft"><span>${vkDate(p.created_at)}</span><button class="wc-like${liked ? " on" : ""}" data-like="${esc(p.id)}" title="${esc(lk.map(l => profOf(l.user_id).nick).join(", "))}">${HEART_I}${lk.length || ""}</button>${mine || own ? `<a data-vkdel="${esc(p.id)}">удалить</a>` : ""}</div></div></div>`; }).join("") : `<div class="wc-empty">Тут пусто. Напиши, кто что берёт к фильму.</div>`}</div>
+        <div class="vk-form wc-form"><textarea id="vkT" maxlength="2000" placeholder="Сообщение… Ctrl+Enter — отправить"></textarea>
+          <div class="vk-tools"><span class="vk-emo">${EMO.map(([k, ch, l]) => `<button type="button" data-emo="${ch}" title="${l}">${emoSpan(k)}</button>`).join("")}</span>
+            <label class="vk-att" for="vkF">картинка</label><input type="file" id="vkF" accept="image/*" hidden><span class="vk-prev" id="vkP"></span>
+            <button type="button" class="vk-btn" id="vkGo">Отправить</button></div></div></section>
+    </div></div>`;
+    wireWall(e, wasF, sel);
+    const L = $("wcL"); if (L) L.scrollTop = L.scrollHeight;
+    playFx(f);
+  }
+  document.addEventListener("click", async e => {
+    const el = e.target.closest && e.target.closest("[data-like],[data-wnew],[data-w],[data-wedit],[data-rd],[data-radd],[data-rt],[data-rtab],[data-rv],[data-ftab]"); if (!el || !ME) return;
+    if (el.dataset.like){ toggleLike(el.dataset.like); return; }
+    if (el.dataset.wnew){ if (!FR) await loadFriends(); watchSheet(null); return; }
+    if (el.dataset.w){ go("watch:" + el.dataset.w); return; }
+    if (el.dataset.wedit){ watchSheet(evById(el.dataset.wedit)); return; }
+    if (el.dataset.rd){ const r = (READS || []).find(x => x.id === el.dataset.rd); if (r) readSheet(r); return; }
+    if (el.dataset.radd){ readSheet(null); return; }
+    if (el.dataset.rt != null){ rType = el.dataset.rt; renderRead(); return; }
+    if (el.dataset.rtab){ rTab = el.dataset.rtab; renderRead(); return; }
+    if (el.dataset.rv){ rView = el.dataset.rv; lsSet("nexus_rview", rView); renderRead(); return; }
+    if (el.dataset.ftab){ uTab = el.dataset.ftab; renderUser(); return; }
+  });
 
   // ================= запуск =================
   readHash(); render();
