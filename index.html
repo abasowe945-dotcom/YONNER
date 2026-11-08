@@ -2923,6 +2923,18 @@ body{overflow-x:clip}
 .evp-a{grid-area:a;min-width:0}.evp-w{grid-area:w;min-width:0}.evp-side{grid-area:side;min-width:0;position:sticky;top:calc(var(--ghh,64px) + 14px)}
 .evp-w .vk{margin-top:0}
 @media (max-width:820px){.evp-grid{grid-template-areas:"a" "side" "w"}.evp-side{position:static}}
+
+/* 3.2: окно дня в календаре */
+.c-day.has{cursor:pointer}
+.cds{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:16px 12px;max-height:min(64vh,620px);overflow:auto;padding:4px 2px;margin-top:6px}
+.cds-c{border:0;padding:0;background:none;color:#e5e5ea;text-align:left;cursor:pointer;font:600 13px/1.25 var(--ios)}
+.cds-c .poster{border-radius:10px;box-shadow:0 8px 18px rgba(0,0,0,.35);transition:transform .25s cubic-bezier(.3,1.4,.4,1)}
+.cds-c:hover .poster{transform:translateY(-4px)}
+.cds-c .ti{display:block;margin-top:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cds-c small{display:flex;align-items:center;gap:5px;margin-top:3px;color:#8e8e93;font:500 11.5px/1.2 var(--ios)}
+.cds-c .kd{display:inline-grid;place-items:center;width:16px;height:16px;border-radius:4px;color:#fff}.cds-c .kd svg{width:11px;height:11px}
+.cds-c .kd.g{background:var(--c-game,#0a84ff)}.cds-c .kd.k{background:var(--c-kino,#bf5af2)}
+@media (max-width:560px){.cds{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 8px}}
 </style>
 <style>img{max-width:100%}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 <script src="config.js"></script>
@@ -3625,6 +3637,19 @@ body{overflow-x:clip}
     $("cNext").onclick = () => { calM++; if (calM > 11){ calM = 0; calY++; } renderCal(); };
     $("cToday").onclick = () => { const n = new Date(); calY = n.getFullYear(); calM = n.getMonth(); renderCal(); };
   }
+
+  // 3.2: день с несколькими играми и фильмами — окно со всеми карточками
+  function calDaySheet(day){
+    const list = items.filter(i => itemDate(i) === day).sort((x, y) => (relOn(x) - relOn(y)) || (isGame(y) - isGame(x)) || (y.rating ?? -1) - (x.rating ?? -1));
+    if (!list.length) return;
+    const lbl = it => relOn(it) ? "релиз" : isGame(it) ? (GSTATUS[gStatus(it.status)] || "игра").toLowerCase() : kLab(it).l.toLowerCase();
+    const s = openSheet(`<h3>${parseD(day).toLocaleDateString("ru-RU", {weekday: "long", day: "numeric", month: "long"}).replace(/^./, c => c.toUpperCase())}</h3>
+      <p class="sub">${list.length} ${plural(list.length, "запись", "записи", "записей")} · выбери, что открыть</p>
+      <div class="cds">${list.map(it => `<button class="cds-c" data-id="${esc(it.id)}">${posterHTML(it, {tgt: false})}<span class="ti">${esc(it.title)}</span><small><span class="kd ${isGame(it) ? "g" : "k"}">${isGame(it) ? ICON.pad : ICON.film}</span>${esc(lbl(it))}</small></button>`).join("")}</div>`, {wide: true});
+    s.el.addEventListener("click", e => { if (e.target.closest("[data-id]")) s.close(); }, true);
+  }
+  document.addEventListener("click", e => { if (route !== "calendar" || $("aMain").contains(e.target) === false) return; const d = e.target.closest && e.target.closest(".c-day.has"); if (!d || e.target.closest("[data-drag]")) return;
+    const n = items.filter(i => itemDate(i) === d.dataset.day).length; if (n > 1) calDaySheet(d.dataset.day); else { const it = items.find(i => itemDate(i) === d.dataset.day); if (it) openItem(it.id); } });
 
   // ================= общий рендер и навигация =================
   function render(){
@@ -4620,7 +4645,7 @@ body{overflow-x:clip}
     root.addEventListener("pointerup", end);
     root.addEventListener("pointercancel", end);
   }
-  dragger($("aMain"), {zoneSel: "[data-day]", canStart: () => canWrite && route === "calendar", onClick: id => route === "calendar" && openItem(id),
+  dragger($("aMain"), {zoneSel: "[data-day]", canStart: () => canWrite && route === "calendar", onClick: id => { if (route !== "calendar") return; const it = items.find(i => i.id === id), d = it && itemDate(it); if (d && items.filter(i => itemDate(i) === d).length > 1) calDaySheet(d); else openItem(id); },
     onDrop: async (id, z) => {
       const it = items.find(i => i.id === id); if (!it) return;
       const day = z.dataset.day, field = relOn(it) ? "releaseDate" : "date";
@@ -4986,6 +5011,7 @@ body{overflow-x:clip}
         "Звук клика стал глуше, как в старых RPG",
         "Досмотрел все серии — сериал сам уходит из «Смотрю» в просмотренные",
         "В мероприятии на телефоне «Иду / не иду» и участники теперь сразу под описанием, выше стены. На компе они, как и раньше, справа",
+        "В календаре нажми на день, где несколько игр и фильмов, — всплывёт окно со всеми карточками этого дня, выбирай нужную",
         "На телефоне разделы больше не перелистываются свайпом — только кнопками внизу. Полки, «Скоро выйдут» и другие окошки теперь спокойно листаются пальцем",
         "Фон профиля теперь кадрируется прямо в окне: тянешь картинку, крутишь масштаб колесом, ползунком или щипком. Рядом видно, как фон будет выглядеть на телефоне"],
       f: ["Записи, добавленные пачкой 8 ноября как давно пройденные, убраны из календаря и трат"]}},
