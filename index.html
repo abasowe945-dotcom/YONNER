@@ -3713,23 +3713,7 @@ body{overflow-x:clip}
   $("rlTopS").innerHTML = ICON.dice + "<span>Колесо фортуны</span>"; $("rlTopK").innerHTML = ICON.dice + "<span>Колесо фортуны</span>";
   ["tierS", "tierK"].forEach(x => $(x).title = "Тир-лист"); ["rlTopS", "rlTopK"].forEach(x => $(x).title = "Колесо фортуны");
 
-  // свайп между разделами
-  (() => {
-    let sx = 0, sy = 0, ok = false;
-    document.addEventListener("touchstart", e => {
-      const t = e.target;
-      ok = !(document.body.classList.contains("view-open") || document.body.classList.contains("ov-open") || document.body.classList.contains("sheet-open"))
-        && !t.closest(".s-row,.k-row,.c-grid,.seg,input,textarea,select,.k-filters,.s-bar,.hs-in,.crate,.gw-stack,.rw-track");
-      sx = e.touches[0].clientX; sy = e.touches[0].clientY;
-    }, {passive:true});
-    document.addEventListener("touchend", e => {
-      if (!ok) return; ok = false;
-      const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
-      if (Math.abs(dx) < 70 || Math.abs(dy) > 50) return;
-      const i = TAB_ORDER.indexOf((ROUTES[route] || ROUTES.games).tab), n = i + (dx < 0 ? 1 : -1);
-      if (n >= 0 && n < TAB_ORDER.length) go(TAB_ORDER[n]);
-    }, {passive:true});
-  })();
+  // 3.2: свайпа между разделами больше нет — разделы переключаются только нижней панелью
 
   // ================= листы =================
   const sheets = [];
@@ -5002,6 +4986,7 @@ body{overflow-x:clip}
         "Звук клика стал глуше, как в старых RPG",
         "Досмотрел все серии — сериал сам уходит из «Смотрю» в просмотренные",
         "В мероприятии на телефоне «Иду / не иду» и участники теперь сразу под описанием, выше стены. На компе они, как и раньше, справа",
+        "На телефоне разделы больше не перелистываются свайпом — только кнопками внизу. Полки, «Скоро выйдут» и другие окошки теперь спокойно листаются пальцем",
         "Фон профиля теперь кадрируется прямо в окне: тянешь картинку, крутишь масштаб колесом, ползунком или щипком. Рядом видно, как фон будет выглядеть на телефоне"],
       f: ["Записи, добавленные пачкой 8 ноября как давно пройденные, убраны из календаря и трат"]}},
     {v: "3.1", date: "2026-11-08", title: "Стена с реакциями, свои витрины и лента по людям", kind: "major", sec: {
