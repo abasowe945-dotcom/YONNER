@@ -1487,7 +1487,22 @@ input[type="time"].in{color-scheme:dark}
 .mini-f .poster .rb,.mini-f .poster .medal,.mini-f .poster .src-chip,.mini-f .poster .tgt,.mini-f .poster .blood{display:none}
 .mini-f .fr-ava{width:20px;height:20px;font-size:9px}
 .mini-f small{display:block;color:var(--c-dim);font-size:11px}
-@media (max-width:1000px){.hm{grid-template-columns:1fr}.hm-side{position:static}.hm-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.hm-tile.big{grid-column:span 2}}
+@media (max-width:1000px){.hm{grid-template-columns:minmax(0,1fr)}.hm-side{position:static}.hm-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.hm-tile.big{grid-column:span 2}}
+.hm > div{min-width:0}
+html,body{overflow-x:clip}
+@media (max-width:600px){
+  .hm-hero{min-height:0;padding:20px 18px;border-radius:22px}
+  .hm-in{flex-direction:column;align-items:flex-start;gap:14px}
+  .hm-in .fr-ava{width:68px;height:68px;font-size:30px;border-radius:20px}.hm-in .fr-ava img{border-radius:20px}
+  .hm-in h1{font-size:36px}.hm-in .sub{font-size:13px}
+  .hm-now{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:12px -18px 0;padding:0 18px}.hm-now::-webkit-scrollbar{display:none}.hm-now button{flex:none;max-width:220px}
+  .hm-h{font-size:20px;margin:24px 0 10px}
+  .hm-tiles{gap:10px}.hm-tile{min-height:118px;padding:14px;border-radius:18px}.hm-tile.big{min-height:150px}
+  .hm-tile b{font-size:18px}.hm-tile small{font-size:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .hm-tile .ic{top:12px;left:12px;width:32px;height:32px;border-radius:10px}.hm-tile .ic svg{width:18px;height:18px}
+  .hm-row{grid-auto-columns:100px;gap:10px;margin-right:-16px;padding-right:16px;scrollbar-width:none}
+  .hm-side{gap:12px}
+}
 
 /* ===== 2.3: лента как у Steam ===== */
 .fb-feed.st{background:linear-gradient(180deg,#1b2838,#16202d);color:#c7d5e0;box-shadow:0 10px 30px rgba(0,0,0,.25)}
@@ -1543,17 +1558,23 @@ body[data-theme="kino"] .view .shade{background:linear-gradient(90deg,var(--k-bg
 .view .k-title{font-size:clamp(40px,6vw,84px);font-weight:900;letter-spacing:-.035em;text-shadow:0 4px 30px rgba(0,0,0,.45);margin-bottom:10px}
 .view .k-meta{font-weight:700}
 .view .k-meta span:first-child{color:#46d369}
-.view .k-lower{background:none!important;box-shadow:none!important;border:0!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;padding:10px 0 0!important;border-top:1px solid color-mix(in srgb,var(--k-fg) 12%,transparent)!important;border-radius:0!important}
+.view .k-lower{padding:28px 30px!important;border-radius:26px!important;background:linear-gradient(160deg,rgba(255,255,255,.10),rgba(255,255,255,.035) 45%,rgba(255,255,255,.06))!important;border:1px solid rgba(255,255,255,.14)!important;-webkit-backdrop-filter:blur(28px) saturate(1.7)!important;backdrop-filter:blur(28px) saturate(1.7)!important;box-shadow:0 24px 60px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.22),inset 0 -1px 0 rgba(255,255,255,.05)!important}
+:root[data-mode="light"] .view .k-lower{background:linear-gradient(160deg,rgba(255,255,255,.78),rgba(255,255,255,.55))!important;border-color:rgba(255,255,255,.9)!important;box-shadow:0 20px 50px rgba(40,30,110,.14),inset 0 1px 0 #fff!important}
+.view .pv-btn{border-radius:14px;background:linear-gradient(160deg,rgba(255,255,255,.16),rgba(255,255,255,.05));border:1px solid rgba(255,255,255,.2);-webkit-backdrop-filter:blur(20px) saturate(1.8);backdrop-filter:blur(20px) saturate(1.8);box-shadow:0 8px 22px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.28)}
+.view .pv-btn:hover{background:linear-gradient(160deg,rgba(255,255,255,.24),rgba(255,255,255,.08))}
+:root[data-mode="light"] .view .pv-btn{background:rgba(255,255,255,.7);border-color:rgba(255,255,255,.95);color:#1c1c1e;box-shadow:0 8px 20px rgba(40,30,110,.12),inset 0 1px 0 #fff}
+@media (max-width:600px){.view .k-lower{padding:20px 18px!important;border-radius:22px!important}}
 .view .k-lower h3{font-weight:800;letter-spacing:-.01em}
 .view .k-sts button[aria-pressed="true"]{box-shadow:0 6px 20px color-mix(in srgb,var(--c) 45%,transparent)}
 .view .k-hcol .poster{border-radius:8px;box-shadow:0 24px 60px rgba(0,0,0,.6)}
 @media (max-width:900px){.view .k-hero{grid-template-columns:1fr;min-height:0}}
 
 /* ===== 2.3: кровь без ударов ===== */
-.k-lower{z-index:auto!important}
-.k-hero .k-glass{z-index:auto!important}
-.gore{z-index:4}
+.gore{z-index:1}
 .pwrap > .poster{z-index:5}
+.k-hcol .pv-acts{position:relative;z-index:6}
+.k-lower{position:relative;z-index:3!important}
+.k-hero > .k-glass{position:relative;z-index:3!important}
 
 /* ===== 2.3: ГО ПОСМОТРИМ ===== */
 .gw-card{position:relative;overflow:hidden;margin-bottom:16px;border-radius:20px;padding:16px;color:#fff;background:radial-gradient(90% 120% at 100% 0,#e5091433,transparent 60%),linear-gradient(135deg,#1a0f12,#0f0f14);box-shadow:0 14px 34px rgba(0,0,0,.25)}
@@ -1710,9 +1731,9 @@ body[data-route="read"]{--c-bg:#161616;--c-fg:#fff;--c-dim:#9a9a9a;--c-cell:#1f1
 .rx-cv .tp{position:absolute;left:8px;top:8px;padding:4px 7px;border-radius:5px;background:rgba(0,0,0,.6);color:#fff;font:800 9.5px/1 var(--ios);letter-spacing:.08em;text-transform:uppercase}
 .rx-pg{height:3px;background:var(--c-line);border-radius:0 0 3px 3px;overflow:hidden}.rx-pg i{display:block;height:100%;background:#f5a623}
 .rx-c .ti{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:9px;font:600 15px/1.3 var(--ios)}
-.rx-c .mt{display:flex;align-items:center;gap:4px;margin-top:5px;color:var(--c-dim);font:500 12.5px/1.2 var(--ios);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rx-c .mt b{color:#f5a623;font-weight:700}
-.rx-c .mt svg{width:13px;height:13px;color:#f5a623;flex:none}
+.rx-c .rmt{display:flex;align-items:center;gap:4px;margin-top:5px;color:var(--c-dim);font:500 12.5px/1.2 var(--ios);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rx-c .rmt b{color:#f5a623;font-weight:700}
+.rx-c .rmt svg{width:13px;height:13px;color:#f5a623;flex:none}
 .rx-list{display:grid;gap:8px}
 .rx-list .rx-c{display:grid;grid-template-columns:54px minmax(0,1fr) auto;gap:14px;align-items:center;padding:8px;border-radius:10px;background:var(--c-cell)}
 .rx-list .rx-cv{border-radius:5px}.rx-list .ti{margin-top:0}
@@ -1733,6 +1754,60 @@ body[data-route="read"]{--c-bg:#161616;--c-fg:#fff;--c-dim:#9a9a9a;--c-cell:#1f1
 .rs-seg button{border:0;background:none;color:#aeaeb2;font:600 13px/1 var(--ios);padding:8px 14px;border-radius:8px;cursor:pointer}
 .rs-seg button[aria-pressed="true"]{background:#48484a;color:#fff}
 @media (max-width:760px){.rx-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.rx-p{flex-wrap:wrap}.rx-in{flex-basis:100%}.rx-grid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:18px 10px}}
+/* 2.4: читалка — обложки, импорт, мобилка */
+.rx-cv{display:block}
+.rx-cv .ph{z-index:0;display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;gap:4px;padding:12px;text-align:left;color:#fff;background:radial-gradient(120% 80% at 100% 0,hsl(calc(var(--h) + 40) 70% 45% / .55),transparent 60%),linear-gradient(165deg,hsl(var(--h) 45% 30%),hsl(calc(var(--h) + 25) 55% 12%))}
+.rx-cv .ph::before{content:"";position:absolute;inset:10px 10px auto auto;width:34%;aspect-ratio:1;border-radius:50%;border:2px solid rgba(255,255,255,.18)}
+.rx-cv .ph b{font:800 14px/1.2 var(--ios);display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;text-shadow:0 2px 10px rgba(0,0,0,.4)}
+.rx-cv .ph small{font:600 11px/1 var(--ios);opacity:.7}
+.rx-cv img{position:relative;z-index:1}
+.rx-cv .tp,.rx-cv .new{z-index:2}
+.rx-list .rx-cv .ph{padding:5px}.rx-list .rx-cv .ph b,.rx-list .rx-cv .ph small,.rx-list .rx-cv .ph::before{display:none}
+.rx-imp{margin:0 0 18px;border-radius:14px;background:var(--c-cell);overflow:hidden}
+.rx-imp summary{list-style:none;display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;user-select:none}
+.rx-imp summary::-webkit-details-marker{display:none}
+.rx-imp summary > span{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:rgba(245,166,35,.15);color:#f5a623;flex:none}
+.rx-imp summary > span svg{width:16px;height:16px}
+.rx-imp summary b{font:700 15px/1.2 var(--ios)}
+.rx-imp summary small{margin-left:auto;color:var(--c-dim);font:500 12.5px/1 var(--ios)}
+.rx-imp summary::after{content:"";width:8px;height:8px;border-right:2px solid var(--c-dim);border-bottom:2px solid var(--c-dim);transform:rotate(45deg);margin:0 4px 4px 6px;transition:transform .2s}
+.rx-imp[open] summary::after{transform:rotate(-135deg);margin-bottom:-2px}
+.rx-steps{display:grid;gap:1px;background:var(--c-line);border-top:1px solid var(--c-line)}
+.rx-step{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--c-cell)}
+.rx-step .nm{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--c-cell-out);color:var(--c-dim);font:800 12px/1 var(--ios)}
+.rx-step:first-child .nm{background:#f5a623;color:#1b1206}
+.rx-step .t{flex:1;min-width:0}
+.rx-step .t b{display:block;font:700 14.5px/1.3 var(--ios)}
+.rx-step .t small{display:block;margin-top:3px;color:var(--c-dim);font:500 12.5px/1.45 var(--ios);max-width:68ch}
+.rx-step .rx-in{flex:0 1 380px}
+.rx-bm{flex:none;display:inline-flex;align-items:center;height:42px;padding:0 18px;border-radius:999px;background:#f5a623;color:#1b1206;font:800 14px/1 var(--ios);text-decoration:none;cursor:grab;box-shadow:0 6px 18px rgba(245,166,35,.35);border:2px dashed rgba(27,18,6,.35)}
+.rx-bm:active{cursor:grabbing}
+.rs-top{align-items:start}
+.rs-cvb{display:flex;gap:6px;margin-top:8px}
+.rs-cvb button{flex:1;height:30px;border-radius:9px;border:1px solid rgba(255,255,255,.14);background:#2c2c2e;color:#e5e5ea;font:600 12px/1 var(--ios);cursor:pointer}
+.rs-cvb button[data-cv="del"]{color:#ff6b6b}
+#rsCv{cursor:pointer}#rsCv.drop .rx-cv{outline:2px dashed #f5a623;outline-offset:3px}
+.rs-empty .ph{align-items:center;justify-content:center;text-align:center}.rs-empty .ph small{line-height:1.35}
+.rs-hint{margin:14px 0 0;padding:12px 14px;border-radius:12px;background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.35);color:#f2d6a6;font:500 13px/1.45 var(--ios)}
+.rs-hint b{display:block;color:#f5a623;margin-bottom:2px}
+.ip-list{max-height:min(46vh,420px);overflow:auto;margin:10px -4px 0;padding:0 4px;display:grid;gap:6px}
+.ip-r{display:flex;align-items:center;gap:12px;padding:6px 8px;border-radius:10px;background:#2c2c2e;cursor:pointer}
+.ip-r input{accent-color:#f5a623;width:18px;height:18px;flex:none}
+.ip-r .cv{width:34px;height:50px;border-radius:4px;background:#3a3a3c;overflow:hidden;flex:none}.ip-r .cv img{width:100%;height:100%;object-fit:cover}
+.ip-r .t{min-width:0}.ip-r b{display:block;font:600 14px/1.25 var(--ios);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ip-r small{color:#8e8e93;font:500 12px/1 var(--ios)}
+@media (max-width:760px){
+  .rx-h{font-size:24px;margin:8px 0 16px}.rx-h svg{width:26px;height:26px}
+  .rx-sub{margin:-4px 0 14px}
+  .rx-step{flex-wrap:wrap;gap:10px 12px}.rx-step .t{flex-basis:calc(100% - 40px)}.rx-step .rx-in,.rx-step .rx-btn,.rx-bm{margin-left:38px}.rx-step .rx-in{flex:1 1 calc(100% - 38px);max-width:calc(100% - 38px)}.rx-steps > *{min-width:0}
+  .rx-imp summary small{display:none}
+  .rx-stats{gap:8px;margin-bottom:14px}.rx-st{padding:12px 8px}.rx-st b{font-size:24px}.rx-st small{font-size:10px;letter-spacing:.04em}
+  .rx-tabs{flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;scrollbar-width:none;gap:0 4px;margin:0 -16px 14px;padding:0 16px}.rx-tabs::-webkit-scrollbar{display:none}
+  .rx-tabs button{white-space:nowrap;font-size:12.5px;padding:12px 8px}
+  .rx-sort{font-size:13px;max-width:62vw;overflow:hidden;text-overflow:ellipsis}
+  .rx-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 10px}
+  .rx-c .ti{font-size:13px;margin-top:7px}.rx-c .rmt{font-size:11.5px}
+  .rs-top{grid-template-columns:96px minmax(0,1fr);gap:12px}
+}
 
 /* ===== подвал ===== */
 .world{padding-bottom:28px}
@@ -1985,6 +2060,8 @@ body[data-theme="kino"] .af-sum .tx b{color:var(--k-fg)}
 .fl-i .fr-pct{padding:4px 7px;font-size:11.5px}
 @media (max-width:1080px){.fb{grid-template-columns:250px minmax(0,1fr)}.fb-r{grid-column:1/-1;grid-row:1;position:static}.fb-r .fl{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}}
 @media (max-width:720px){.fb{grid-template-columns:1fr}.fb-l,.fb-r{position:static}.fb-r{grid-row:auto}.fb-r .fl{grid-template-columns:1fr}}
+@media (max-width:720px){.fb{display:flex;flex-direction:column}.fb > *{width:100%;min-width:0}.fb-feed-w{order:1}.fb-l{order:2}.fb-r{order:3}.sx{grid-template-columns:64px minmax(0,1fr) auto;gap:10px}.sx .poster{width:64px}.sx .t b.ti{font-size:15px}}
+@media (max-width:600px){.wp-pcol .pwrap{width:min(170px,48%);margin:0 auto}.wp-hero{gap:18px}}
 
 /* ===== «Ещё» в стиле iOS ===== */
 .ios-top{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:14px;margin-top:22px}
@@ -2923,12 +3000,17 @@ button.ios-row:hover{background:var(--c-cell-out)}
     if (e.target.closest && e.target.closest("input,textarea")) return;
     toast("В буфере нет картинки: ПКМ по картинке → «Копировать изображение»");
   });
-  function bindDrop(el, fn){
+  function bindDrop(el, fn, onUrl){
     el.addEventListener("dragover", e => { e.preventDefault(); el.classList.add("drop"); });
     el.addEventListener("dragleave", () => el.classList.remove("drop"));
     el.addEventListener("drop", e => { e.preventDefault(); el.classList.remove("drop");
-      const f = [...(e.dataTransfer?.files||[])].find(f => f.type.startsWith("image/")); f ? fn(f) : toast("Перетащи файл картинки"); });
+      const f = [...(e.dataTransfer?.files||[])].find(f => f.type.startsWith("image/")); if (f){ fn(f); return; }
+      const dt = e.dataTransfer, html = dt ? dt.getData("text/html") : "", m = html && html.match(/<img[^>]+src=["']([^"']+)/i);
+      const u = (m && m[1]) || (dt && (dt.getData("text/uri-list") || dt.getData("text/plain")) || "").split(/\s+/)[0];
+      if (onUrl && /^https?:\/\//i.test(u || "")){ urlToFile(u).then(file => file ? fn(file) : onUrl(u)); return; }
+      toast("Перетащи файл картинки"); });
   }
+  async function urlToFile(u){ try { const r = await fetch(u, {mode: "cors"}); if (!r.ok) return null; const b = await r.blob(); return b.type.startsWith("image/") ? new File([b], "cover", {type: b.type}) : null; } catch(_){ return null; } }
   async function upload(blob){
     const type = ["image/png","image/jpeg","image/webp","image/gif"].includes(blob.type) ? blob.type : "image/png";
     return (await assets.upload(blob, {type})).id;
@@ -4125,6 +4207,16 @@ button.ios-row:hover{background:var(--c-cell-out)}
   // ================= патчноуты =================
   // Новые версии добавляются В НАЧАЛО списка. n — новое, c — изменено, f — исправлено, r — удалено.
   const PATCHES = [
+    {v: "2.4", date: "2026-11-08", title: "Телефон, Читалка и кровь", kind: "minor", sec: {
+      n: ["<b>Кнопка-закладка «+ в NEXUS»</b> для com-x и readmanga: перетащи её на панель закладок, открой тайтл или свою коллекцию на сайте и нажми — тайтлы прилетят в Читалку вместе с обложками. Перед переносом видно список, можно снять галочки и выбрать вкладку",
+        "Закладка на странице коллекции подтягивает обложки к тайтлам, которые уже загружены из файла выгрузки",
+        "В карточке тайтла обложку можно <b>убрать</b> или сменить, перетащить картинку прямо с другого сайта"],
+      c: ["Главная и остальные страницы удобнее на телефоне: ничего не уезжает вбок, плитки и профиль компактнее, в «Активности» лента теперь сверху",
+        "Читалка: импорт собран в один сворачиваемый блок, у тайтлов без обложки красивая заглушка с названием, вкладки на телефоне листаются",
+        "Описание фильма и кнопки «Редактировать» и «Фон страницы» — в стиле жидкого стекла"],
+      f: ["Кровь у ужасов стекает за кнопками и описанием, а не поверх них",
+        "Карточки в Читалке больше не разваливаются, если у тайтла нет обложки",
+        "Ссылка на com-x больше не делает вид, что что-то подтягивает: сразу открывается карточка с подсказкой"]}},
     {v: "2.3", date: "2026-11-08", title: "Главная, Читалка и «ГО ПОСМОТРИМ»", kind: "major", sec: {
       n: ["<b>Главная</b> — твой профиль: что сейчас играешь, смотришь и читаешь, плитки разделов, справа активность друзей и топ NEXUS по активности за месяц",
           "<b>Читалка</b>: манга и комиксы в стиле com-x. Вкладки «Читаю», «Буду читать», «Прочитано», «Отложено», «Брошено», счётчик глав и новых. Ссылка на тайтл с com-x.life или readmanga заполняет карточку, файл выгрузки коллекции с com-x раскладывает всё по вкладкам",
@@ -4775,7 +4867,7 @@ button.ios-row:hover{background:var(--c-cell-out)}
     db.doc("meta/bg").onSnapshot(d => { SECBG = d.exists ? d.data() : null; applySecBg(); });
     Promise.all(["backup", "autobackup"].map(x => db.doc("meta/" + x).get().then(d => d.exists ? d.data() : null).catch(() => null)))
       .then(([b, a]) => { lastBackup = b; autoBackup = a; if (route === "more") render(); });
-    loadFriends(); loadEvents(); subscribeEvents(); loadReads();
+    loadFriends(); loadEvents(); subscribeEvents(); loadReads().then(() => handleInbox());
     db.collection("items").onSnapshot(snap => {
       if (!snap.metadata.fromCache){ clearTimeout(timer); itemsLoaded = true; }
       MYITEMS = snap.docs.map(d => ({id: d.id, ...d.data()}));
@@ -5688,7 +5780,9 @@ button.ios-row:hover{background:var(--c-cell-out)}
     if (error){ toast("Не сохранилось: " + error.message); return null; }
     const row = {...data, id, _upd: now()}; READS = [...(READS || []).filter(x => x.id !== id), row]; return row;
   }
-  const rCover = r => { const src = r.cover ? publicUrl(r.cover) : r.coverUrl; return `<span class="rx-cv">${src ? `<img src="${esc(src)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : ""}<span class="ph"${src ? ' style="z-index:-1"' : ""}>${esc(r.title || "")}</span></span>`; };
+  const rHue = t => { let h = 0; for (const c of String(t || "")) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
+  const rCover = r => { const src = r.cover ? publicUrl(r.cover) : r.coverUrl, h = rHue(r.title);
+    return `<span class="rx-cv">${src ? `<img src="${esc(src)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : ""}<span class="ph" style="--h:${h}"><b>${esc(r.title || "Без обложки")}</b>${r.year ? `<small>${esc(r.year)}</small>` : ""}</span></span>`; };
   function renderRead(){
     appleHead("Читалка", `<button class="a-link" data-radd="1">+ Добавить</button>`);
     if (!ME){ $("aMain").innerHTML = `<div class="a-empty" style="margin-top:20px"><b>Нужно войти</b></div>`; return; }
@@ -5701,15 +5795,17 @@ button.ios-row:hover{background:var(--c-cell-out)}
     const list = pool.filter(r => r.status === rTab).sort(SORTS[rSort] ? SORTS[rSort][1] : SORTS.added[1]);
     const card = r => { const left = r.chTotal ? Math.max(0, r.chTotal - (r.chRead || 0)) : 0, pct = r.chTotal ? Math.min(100, (r.chRead || 0) / r.chTotal * 100) : 0;
       const meta = [r.publisher, r.year ? r.year + "г." : "", r.chTotal ? `${r.chRead || 0}/${r.chTotal} гл.` : ""].filter(Boolean).join(" / "), rt = r.myRating ?? r.rating;
-      return rView === "list" ? `<button class="rx-c" data-rd="${esc(r.id)}">${rCover(r)}<span><span class="ti">${esc(r.title)}</span><span class="mt">${rt != null ? `${STAR_F}<b>${num1(rt)}</b> / ` : ""}${esc(meta || RTYPE[r.type] || "")}</span></span><span class="ch">${left ? `+${left} новых` : ""}</span></button>`
-        : `<button class="rx-c" data-rd="${esc(r.id)}"><span style="display:block">${rCover(r).replace('<span class="rx-cv">', `<span class="rx-cv"><span class="tp">${RTYPE[r.type] || ""}</span>${left && r.status === "reading" ? `<span class="new">+${left}</span>` : ""}`)}<span class="rx-pg" style="display:block"><i style="width:${pct}%"></i></span></span><span class="ti">${esc(r.title)}</span><span class="mt">${rt != null ? `${STAR_F}<b>${num1(rt)}</b> /` : ""}${esc(meta || RTYPE[r.type] || "")}</span></button>`; };
+      return rView === "list" ? `<button class="rx-c" data-rd="${esc(r.id)}">${rCover(r)}<span><span class="ti">${esc(r.title)}</span><span class="rmt">${rt != null ? `${STAR_F}<b>${num1(rt)}</b> / ` : ""}${esc(meta || RTYPE[r.type] || "")}</span></span><span class="ch">${left ? `+${left} новых` : ""}</span></button>`
+        : `<button class="rx-c" data-rd="${esc(r.id)}"><span style="display:block">${rCover(r).replace('<span class="rx-cv">', `<span class="rx-cv"><span class="tp">${RTYPE[r.type] || ""}</span>${left && r.status === "reading" ? `<span class="new">+${left}</span>` : ""}`)}<span class="rx-pg" style="display:block"><i style="width:${pct}%"></i></span></span><span class="ti">${esc(r.title)}</span><span class="rmt">${rt != null ? `${STAR_F}<b>${num1(rt)}</b> /` : ""}${esc(meta || RTYPE[r.type] || "")}</span></button>`; };
     $("aMain").innerHTML = `<div class="rx">
       <h1 class="rx-h">${BOOK_I} Моя коллекция</h1>
       <div class="rx-sub">${[["", "Всё", READS.length], ["manga", "Манга", READS.filter(r => r.type === "manga").length], ["comic", "Комиксы", READS.filter(r => r.type === "comic").length]].map(([v, l, n]) => `<button data-rt="${v}" aria-pressed="${rType === v}">${l}<small>${n}</small></button>`).join("")}</div>
-      <div class="rx-p"><div class="t"><b>Подтянуть с сайта</b><small>Ссылка на тайтл с com-x.life или readmanga — заполню карточку. Ссылка на свою коллекцию — попробую забрать весь список по вкладкам.</small></div>
-        <div class="rx-in"><input id="rxUrl" inputmode="url" placeholder="com-x.life/2789-berserk-read-online.html" autocomplete="off"><button class="rx-btn fill" id="rxGo">Подтянуть</button></div></div>
-      <div class="rx-p"><div class="t"><b>Загрузить выгрузку коллекции</b><small>На com-x.life в «Моя коллекция» есть «Выгрузить коллекцию»: скачай CSV, JSON или TXT и кинь файл сюда. Все вкладки разложатся сами.</small></div>
-        <label class="rx-btn" for="rxFile">${ICON.up}Выбрать файл</label><input type="file" id="rxFile" accept=".csv,.json,.txt,text/csv,application/json,text/plain" hidden></div>
+      <details class="rx-imp" id="rxImp"${!READS.length || lsGet("nexus_rimp") === "1" ? " open" : ""}><summary><span>${ICON.up}</span><b>Перенести с com-x или readmanga</b><small>закладка · файл · ссылка</small></summary>
+        <div class="rx-steps">
+          <div class="rx-step"><span class="nm">1</span><div class="t"><b>Кнопка-закладка — лучший способ</b><small>Перетащи оранжевую кнопку на панель закладок браузера. Потом открой на сайте тайтл или свою коллекцию (любую вкладку) и нажми закладку — всё прилетит сюда вместе с обложками. Для коллекции повтори на каждой вкладке.</small></div><a class="rx-bm" id="rxBm" href="${esc(bmHref())}" title="Перетащи на панель закладок">+ в NEXUS</a></div>
+          <div class="rx-step"><span class="nm">2</span><div class="t"><b>Файл выгрузки</b><small>com-x → «Моя коллекция» → «Выгрузить коллекцию». В файле нет обложек: после загрузки нажми закладку на странице коллекции — обложки подтянутся к уже добавленным.</small></div><label class="rx-btn" for="rxFile">${ICON.up}Выбрать файл</label><input type="file" id="rxFile" accept=".csv,.json,.txt,text/csv,application/json,text/plain" hidden></div>
+          <div class="rx-step"><span class="nm">3</span><div class="t"><b>Вручную по ссылке</b><small>Откроется карточка со ссылкой — допишешь название и кинешь обложку.</small></div><div class="rx-in"><input id="rxUrl" inputmode="url" placeholder="https://com-x.life/…" autocomplete="off"><button class="rx-btn fill" id="rxGo">Открыть</button></div></div>
+        </div></details>
       <div class="rx-stats"><div class="rx-st"><b>${pool.length}</b><small>тайтлов</small></div><div class="rx-st"><b>${chRead}</b><small>глав прочитано</small></div><div class="rx-st hot"><b>${waiting}</b><small>новых ждут</small></div><div class="rx-st"><b>${doneAll}</b><small>дочитано до конца</small></div></div>
       <div class="rx-tabs">${RSTAT.map(([s, l]) => `<button data-rtab="${s}" aria-pressed="${rTab === s}">${l} (${cnt(s)})</button>`).join("")}</div>
       <div class="rx-bar"><select class="rx-sort" id="rxSort">${Object.entries(SORTS).map(([k, [l]]) => `<option value="${k}"${k === rSort ? " selected" : ""}>${l}</option>`).join("")}</select>
@@ -5720,6 +5816,8 @@ button.ios-row:hover{background:var(--c-cell-out)}
     $("rxGo").onclick = () => readerFromUrl($("rxUrl").value.trim());
     $("rxUrl").addEventListener("keydown", e => { if (e.key === "Enter") readerFromUrl($("rxUrl").value.trim()); });
     $("rxFile").onchange = e => { const f = e.target.files[0]; if (f) importReads(f); };
+    $("rxImp").addEventListener("toggle", e => lsSet("nexus_rimp", e.target.open ? "1" : "0"));
+    $("rxBm").onclick = e => { e.preventDefault(); toast("Эту кнопку не нажимают здесь — перетащи её на панель закладок"); };
     bindDrop(document.querySelector(".rx"), f => importReads(f));
   }
   async function readerFetch(url, action = "title"){
@@ -5732,6 +5830,11 @@ button.ios-row:hover{background:var(--c-cell-out)}
   async function readerFromUrl(url){
     if (!url){ toast("Вставь ссылку"); return; }
     const isTitle = /com-?x\.life\/\d+-[^/]+\.html/i.test(url) || (/readmanga|mintmanga|seimanga/i.test(url) && /^https?:\/\/[^/]+\/[a-z0-9_]{3,80}\/?$/i.test(url));
+    if (/com-?x\.life/i.test(url)){
+      if (isTitle) readSheet(null, {url, source: "comx", type: "comic", _hint: 1});
+      else { const d = $("rxImp"); if (d){ d.open = true; d.scrollIntoView({behavior: "smooth", block: "center"}); } toast("Коллекцию com-x забирает кнопка-закладка — она в шаге 1"); }
+      return;
+    }
     const btn = $("rxGo"); if (btn){ btn.disabled = true; btn.textContent = "Ищу…"; }
     try {
       if (isTitle){ const d = await readerFetch(url); readSheet(null, d); }
@@ -5745,7 +5848,7 @@ button.ios-row:hover{background:var(--c-cell-out)}
       toast("Не вышло: " + e.message + (isTitle ? ". Заполни вручную" : ". Используй файл выгрузки"));
       if (isTitle) readSheet(null, {url, source: /com-?x/.test(url) ? "comx" : "readmanga", type: /com-?x/.test(url) ? "comic" : "manga"});
     }
-    if (btn){ btn.disabled = false; btn.textContent = "Подтянуть"; }
+    if (btn){ btn.disabled = false; btn.textContent = "Открыть"; }
   }
   // выгрузка com-x: CSV / JSON / TXT, поля угадываем по названиям
   const statusFrom = s => { s = String(s || "").toLowerCase(); return /не понрав|брош|drop/.test(s) ? "dropped" : /отлож|hold|pause/.test(s) ? "paused" : /буду|plan|will|later|хочу/.test(s) ? "plan" : /прочит|complet|done|finish|read(ed)?$/.test(s) && !/читаю|reading/.test(s) ? "done" : /читаю|reading|current/.test(s) ? "reading" : null; };
@@ -5798,11 +5901,16 @@ button.ios-row:hover{background:var(--c-cell-out)}
     if (pre && pre.genres && !r.genre) r.genre = pre.genres.join(", ");
     let file = null;
     if (pre && pre.cover){ try { const bin = Uint8Array.from(atob(pre.cover), c => c.charCodeAt(0)); file = new File([bin], "cover.jpg", {type: pre.coverType || "image/jpeg"}); r.cover = null; } catch(_){} }
+    if (pre && pre.coverData){ file = dataToFile(pre.coverData) || null; if (file) r.cover = null; }
+    const hint = r._hint; delete r._hint; delete r.coverData;
     const coverSrc = () => file ? URL.createObjectURL(file) : r.cover ? publicUrl(r.cover) : r.coverUrl;
-    const s = openSheet(`<div class="rs-top"><div id="rsCv" style="cursor:pointer" title="Сменить обложку: нажми, перетащи или Ctrl+V">${rCover({...r, cover: null, coverUrl: coverSrc()})}</div><div>
+    const cvHTML = () => { const src = coverSrc(); return `${src ? rCover({...r, cover: null, coverUrl: src}) : `<span class="rx-cv rs-empty"><span class="ph" style="--h:${rHue(r.title)}"><b>Обложка</b><small>нажми, перетащи<br>или Ctrl+V</small></span></span>`}
+      <div class="rs-cvb"><button type="button" data-cv="up">${src ? "Сменить" : "Загрузить"}</button>${src ? `<button type="button" data-cv="del">Убрать</button>` : ""}</div>`; };
+    const s = openSheet(`<div class="rs-top"><div id="rsCv" title="Обложка: нажми, перетащи картинку или Ctrl+V">${cvHTML()}</div><div>
         <h3 style="margin-bottom:4px">${isNew ? "Новый тайтл" : esc(r.title)}</h3>
         <p class="sub">${esc([RTYPE[r.type], r.publisher, r.year, r.siteStatus].filter(Boolean).join(" · "))}</p>
         ${r.url ? `<p class="sub" style="margin-top:6px"><a href="${esc(r.url)}" target="_blank" rel="noopener" style="color:#f5a623">Читать на сайте ↗</a></p>` : ""}</div></div>
+      ${hint ? `<div class="rs-hint"><b>com-x не пускает роботов</b>Поэтому сайт сам не подтянет карточку. Нажми закладку «+ в NEXUS» на странице тайтла — прилетит всё с обложкой. Или заполни тут сам.</div>` : ""}
       <div class="rs-seg" id="rsT" style="margin-top:14px">${Object.entries(RTYPE).map(([k, l]) => `<button data-v="${k}" aria-pressed="${r.type === k}">${l}</button>`).join("")}</div>
       <label class="f">Название<input class="in" id="rsTi" value="${esc(r.title || "")}" placeholder="Берсерк"></label>
       <div class="rs-st" id="rsS">${RSTAT.map(([k, l]) => `<button data-v="${k}" aria-pressed="${r.status === k}">${l}</button>`).join("")}</div>
@@ -5817,9 +5925,13 @@ button.ios-row:hover{background:var(--c-cell-out)}
     seg("#rsT", "type"); seg("#rsS", "status");
     const ch = d => { const v = Math.max(0, (parseInt(q("#rsR").value, 10) || 0) + d), t = parseInt(q("#rsTot").value, 10); q("#rsR").value = t ? Math.min(t, v) : v; };
     q("#rsM").onclick = () => ch(-1); q("#rsP").onclick = () => ch(1);
-    const take = f => { if (!f || !f.type.startsWith("image/")) return; file = f; q("#rsCv").innerHTML = rCover({title: r.title, coverUrl: URL.createObjectURL(f)}); };
-    q("#rsCv").onclick = () => { const i = document.createElement("input"); i.type = "file"; i.accept = "image/*"; i.onchange = () => take(i.files[0]); i.click(); };
-    bindDrop(q("#rsCv"), take); pasteTarget = take;
+    const redraw = () => { q("#rsCv").innerHTML = cvHTML(); };
+    const take = f => { if (!f || !f.type.startsWith("image/")) return; file = f; redraw(); };
+    const pick = () => { const i = document.createElement("input"); i.type = "file"; i.accept = "image/*"; i.onchange = () => take(i.files[0]); i.click(); };
+    q("#rsCv").onclick = e => { const b = e.target.closest("[data-cv]");
+      if (b && b.dataset.cv === "del"){ file = null; r.cover = null; r.coverUrl = null; redraw(); return; }
+      pick(); };
+    bindDrop(q("#rsCv"), take, u => { file = null; r.cover = null; r.coverUrl = u; redraw(); }); pasteTarget = take;
     q("#rsNo").onclick = () => s.close();
     if (q("#rsDel")) q("#rsDel").onclick = async () => { if (!confirm(`Удалить «${r.title}»?`)) return; const {error} = await SB.from("reads").delete().eq("user_id", ME.id).eq("id", r.id); if (error){ toast("Не удалилось"); return; } READS = READS.filter(x => x.id !== r.id); s.close(); render(); };
     q("#rsOk").onclick = async () => {
@@ -5829,8 +5941,127 @@ button.ios-row:hover{background:var(--c-cell-out)}
       if (r.chTotal && r.chRead >= r.chTotal && r.status === "reading") r.status = "done";
       const b = q("#rsOk"); b.disabled = true;
       try { if (file && assets) r.cover = await upload(file); } catch(_){}
-      delete r.genres; delete r.coverType;
+      delete r.genres; delete r.coverType; delete r.coverData;
       if (await saveRead(r)){ s.close(); toast(isNew ? "Добавлено в Читалку" : "Сохранено"); rTab = r.status; if (route !== "read") go("read"); else renderRead(); } else b.disabled = false;
+    };
+  }
+
+  // ================= 2.4: кнопка-закладка для com-x / readmanga =================
+  // Работает в браузере игрока на странице сайта (он уже прошёл их проверку), собирает тайтлы и отдаёт их вкладке NEXUS.
+  const BM_FN = function(N){
+    var H = location.hostname, w = window.open(N + "#read", "nexus_reader");
+    if (!w){ alert("NEXUS: разреши всплывающие окна для этого сайта и нажми ещё раз"); return; }
+    var box = document.createElement("div");
+    box.style.cssText = "position:fixed;z-index:2147483647;right:16px;bottom:16px;padding:12px 16px;border-radius:12px;background:#111;color:#fff;font:600 14px/1.3 system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.5);border:1px solid #f5a623";
+    box.textContent = "NEXUS: собираю…"; document.body.appendChild(box);
+    var txt = function(e){ return e ? (e.innerText || e.textContent || "").replace(/\s+/g, " ").trim() : ""; };
+    var abs = function(u){ try { return u ? new URL(u, location.href).href : null; } catch(e){ return null; } };
+    var body = document.body.innerText || "";
+    var fld = function(re){ var m = body.match(re); return m ? m[1].trim() : null; };
+    var comx = /com-?x/i.test(H), items = [];
+    var isTitle = comx ? /^\/\d+-[^\/]+\.html$/.test(location.pathname) : (!!document.querySelector("h1") && /^\/[a-z0-9_]{3,80}\/?$/i.test(location.pathname) && /Читать/i.test(body));
+    var src = function(i){ return i ? abs(i.getAttribute("data-src") || i.getAttribute("data-original") || i.currentSrc || i.src) : null; };
+    if (isTitle){
+      var h1 = document.querySelector("h1"), title = txt(h1), orig = null, n = h1 && h1.nextElementSibling;
+      for (var k = 0; n && k < 3; k++, n = n.nextElementSibling){ var t = txt(n); if (t && t.length < 150 && /[A-Za-z]/.test(t) && !/[а-яё]/i.test(t)){ orig = t; break; } }
+      var og = document.querySelector('meta[property="og:image"]'), cover = og && og.content ? abs(og.content) : null;
+      if (!cover){ var best = null, ba = 0; [].forEach.call(document.images, function(i){ var r = i.getBoundingClientRect(), a = r.width * r.height, q = r.height / (r.width || 1); if (a > ba && q > 1.2 && q < 1.8 && r.width > 120){ ba = a; best = i; } }); cover = src(best); }
+      var genres = [].map.call(document.querySelectorAll('a[href*="/tags/"],a[href*="genre"],a[href*="xfsearch"],a[href*="/tag/"]'), txt).filter(function(x){ return x && x.length < 30; }).slice(0, 10);
+      var dm = document.querySelector('meta[property="og:description"]') || document.querySelector('meta[name="description"]');
+      var crumbs = txt(document.querySelector('.breadcrumbs,.breadcrumb,[itemtype*="BreadcrumbList"],.speedbar'));
+      var pub = fld(/Издатель(?:ство)?:?\s*\n?\s*([^\n]{2,60})/i);
+      var ch = body.match(/Главы\s*\((\d{1,5})\)/i) || body.match(/Глав[ыа]?:?\s*(\d{1,5})/i), yr = fld(/Год(?: выпуска)?:?\s*\n?\s*((?:19|20)\d\d)/i);
+      var manga = !comx || /манг|манхв|маньхуа/i.test(crumbs + " " + genres.join(" ")) || /shueisha|kodansha|shogakukan|kadokawa|square enix|hakusensha/i.test(pub || "");
+      items.push({url: location.origin + location.pathname, title: title, origTitle: orig, coverUrl: cover, publisher: pub, year: yr ? +yr : null, chTotal: ch ? +ch[1] : null,
+        siteStatus: fld(/Статус:?\s*\n?\s*([^\n]{2,40})/i), release: fld(/Тип выпуска:?\s*\n?\s*([^\n]{2,40})/i), genres: genres, desc: dm ? dm.content : null, type: manga ? "manga" : "comic", source: comx ? "comx" : "readmanga"});
+    } else {
+      var seen = {};
+      [].forEach.call(document.querySelectorAll("a[href]"), function(a){
+        var u; try { u = new URL(a.href); } catch(e){ return; }
+        if (u.hostname !== H) return;
+        var ok = comx ? /^\/\d+-[^\/]+\.html$/.test(u.pathname) : /^\/[a-z0-9_]{3,80}$/i.test(u.pathname) && !/^\/(list|news|forum|user|users|login|register|search|private|genre|tag|about|help|rules|top|catalog|internal)/i.test(u.pathname);
+        if (!ok) return;
+        var key = u.origin + u.pathname, it = seen[key] || (seen[key] = {url: key, title: "", coverUrl: null, source: comx ? "comx" : "readmanga", type: comx ? "comic" : "manga"});
+        var card = a.closest("li,article,[class*=item],[class*=card],[class*=tile]") || a, im = a.querySelector("img"), t = txt(a) || (im && im.alt) || a.title || "";
+        if (t && t.length < 160 && t.length > it.title.length) it.title = t.replace(/^Постер к\s*/i, "");
+        if (!it.coverUrl){ var c = src(im || card.querySelector("img")); if (c && !/^data:|blank|noimage|avatar|logo/i.test(c)) it.coverUrl = c; }
+        if (!it.title){ var h = card.querySelector("h3,h4,[class*=title]"); if (h) it.title = txt(h); }
+      });
+      items = Object.keys(seen).map(function(k){ return seen[k]; }).filter(function(x){ return x.title; });
+    }
+    var hint = txt(document.querySelector('.active,[aria-selected="true"],.is-active,.current')) + " " + document.title + " " + location.href;
+    var shrink = function(u){ return fetch(u, {credentials: "include"}).then(function(r){ if (!r.ok) throw 0; return r.blob(); }).then(function(b){ return createImageBitmap(b); }).then(function(bm){
+      var W = Math.min(360, bm.width), c = document.createElement("canvas"); c.width = W; c.height = Math.round(bm.height * W / bm.width); c.getContext("2d").drawImage(bm, 0, 0, c.width, c.height); return c.toDataURL("image/jpeg", .84); }).catch(function(){ return null; }); };
+    var i = 0, done = 0;
+    var next = function(){ if (i >= items.length) return Promise.resolve(); var it = items[i++];
+      return (it.coverUrl ? shrink(it.coverUrl) : Promise.resolve(null)).then(function(d){ it.coverData = d; done++; box.textContent = "NEXUS: обложки " + done + "/" + items.length; }).then(next); };
+    Promise.all([next(), next(), next(), next()]).then(function(){
+      box.textContent = items.length ? "NEXUS: отправляю " + items.length + "…" : "NEXUS: тайтлов на странице не нашёл";
+      var msg = {nexusReader: 1, mode: isTitle ? "title" : "list", hint: hint, items: items}, got = false, tries = 0;
+      window.addEventListener("message", function(e){ if (e.source === w && e.data && e.data.nexusAck){ got = true; box.textContent = "NEXUS: готово, смотри вкладку NEXUS"; setTimeout(function(){ box.remove(); }, 3000); } });
+      var t = setInterval(function(){ if (got || ++tries > 90 || w.closed){ clearInterval(t); if (!got) box.textContent = "NEXUS: вкладка не ответила. Войди в NEXUS и нажми закладку ещё раз"; return; }
+        try { w.postMessage(msg, new URL(N).origin); } catch(e){} }, 400);
+    });
+  };
+  const bmHref = () => "javascript:" + encodeURIComponent("(" + BM_FN.toString() + ")(" + JSON.stringify(location.origin + location.pathname) + ")");
+  const RD_HOST = /(^|\.)(com-x\.life|comx\.life|readmanga\.[a-z]+|mintmanga\.[a-z]+|seimanga\.[a-z]+|selfmanga\.[a-z]+)$/i;
+  const dataToFile = d => { const m = /^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=]+)$/.exec(d || ""); if (!m || d.length > 2e6) return null;
+    try { const bin = Uint8Array.from(atob(m[2]), c => c.charCodeAt(0)); return new File([bin], "cover.jpg", {type: m[1]}); } catch(_){ return null; } };
+  let rdInbox = null, rdLastSig = "";
+  const clip = (v, n) => typeof v === "string" ? v.trim().slice(0, n) || null : null;
+  const httpsUrl = v => { try { const u = new URL(String(v)); return /^https?:$/.test(u.protocol) ? u.href : null; } catch(_){ return null; } };
+  window.addEventListener("message", e => {
+    let host; try { host = new URL(e.origin).hostname; } catch(_){ return; }
+    const d = e.data; if (!d || d.nexusReader !== 1 || !RD_HOST.test(host) || !Array.isArray(d.items)) return;
+    try { e.source.postMessage({nexusAck: 1}, e.origin); } catch(_){}
+    const items = d.items.slice(0, 800).map(x => x && typeof x === "object" ? {
+      url: httpsUrl(x.url), title: clip(x.title, 200), origTitle: clip(x.origTitle, 200), coverUrl: httpsUrl(x.coverUrl), coverData: typeof x.coverData === "string" && x.coverData.length < 2e6 ? x.coverData : null,
+      publisher: clip(x.publisher, 80), year: +x.year > 1900 && +x.year < 2100 ? +x.year : null, chTotal: +x.chTotal > 0 && +x.chTotal < 100000 ? Math.round(+x.chTotal) : null,
+      siteStatus: clip(x.siteStatus, 40), release: clip(x.release, 40), genres: Array.isArray(x.genres) ? x.genres.map(g => clip(g, 30)).filter(Boolean).slice(0, 10) : [],
+      desc: clip(x.desc, 2000), type: x.type === "manga" ? "manga" : "comic", source: /com-?x/i.test(host) ? "comx" : "readmanga"} : null).filter(x => x && x.title && x.url);
+    const sig = d.mode + items.map(x => x.url).join("|"); if (sig === rdLastSig && rdInbox) return; rdLastSig = sig;
+    rdInbox = {mode: d.mode === "title" ? "title" : "list", hint: clip(d.hint, 400) || "", items};
+    handleInbox();
+  });
+  async function handleInbox(){
+    if (!rdInbox) return;
+    if (!ME){ toast("Войди в NEXUS — и тайтлы сразу добавятся"); return; }
+    if (!READS) await loadReads();
+    const box = rdInbox; rdInbox = null;
+    if (route !== "read") go("read");
+    if (!box.items.length){ toast("На той странице не нашлось тайтлов"); return; }
+    if (box.mode === "title"){ const x = box.items[0], ex = (READS || []).find(r => r.url === x.url);
+      const pre = {...x, genre: x.genres.join(", ")}; delete pre.genres;
+      setTimeout(() => ex ? readSheet(ex, {coverData: x.coverData}) : readSheet(null, pre), 80); return; }
+    setTimeout(() => importPreview(box), 80);
+  }
+  function importPreview(box){
+    const byUrl = new Map((READS || []).map(r => [r.url, r]));
+    let st = statusFrom(box.hint) || rTab, tp = box.items.some(x => x.type === "manga") && !box.items.some(x => x.type === "comic") ? "manga" : box.items[0].type;
+    const withCv = box.items.filter(x => x.coverData || x.coverUrl).length, strict = withCv > box.items.length / 2;
+    const rows = box.items.map((x, i) => ({...x, i, ex: byUrl.get(x.url) || null, on: !strict || !!(x.coverData || x.coverUrl)}));
+    const s = openSheet(`<h3>Перенос с сайта</h3><p class="sub">Нашёл ${rows.length} ${plural(rows.length, "тайтл", "тайтла", "тайтлов")}. Уже добавленным подтяну обложки, новые положу во вкладку ниже.</p>
+      <div class="av-lb" style="margin-top:12px">Во вкладку</div><div class="rs-st" id="ipS">${RSTAT.map(([k, l]) => `<button data-v="${k}" aria-pressed="${st === k}">${l}</button>`).join("")}</div>
+      <div class="rs-seg" id="ipT" style="margin:10px 0 4px">${Object.entries(RTYPE).map(([k, l]) => `<button data-v="${k}" aria-pressed="${tp === k}">${l}</button>`).join("")}</div>
+      <div class="ip-list">${rows.map(x => `<label class="ip-r"><input type="checkbox" data-i="${x.i}"${x.on ? " checked" : ""}><span class="cv">${x.coverData || x.coverUrl ? `<img src="${esc(x.coverData || x.coverUrl)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">` : ""}</span><span class="t"><b>${esc(x.title)}</b><small>${x.ex ? (x.ex.cover || x.ex.coverUrl ? "уже есть" : "уже есть · добавлю обложку") : "новый"}</small></span></label>`).join("")}</div>
+      <div class="acts"><button class="ib blue" id="ipOk" style="background:#f5a623;color:#1b1206">Перенести</button><button class="ib" id="ipNo">Отмена</button></div>`, {wide: true});
+    const q = x => s.el.querySelector(x);
+    const seg = (id, set) => q(id).onclick = e => { const b = e.target.closest("[data-v]"); if (!b) return; set(b.dataset.v); q(id).querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); };
+    seg("#ipS", v => st = v); seg("#ipT", v => tp = v);
+    s.el.querySelectorAll("[data-i]").forEach(c => c.onchange = () => { rows[+c.dataset.i].on = c.checked; });
+    q("#ipNo").onclick = () => s.close();
+    q("#ipOk").onclick = async () => {
+      const b = q("#ipOk"); b.disabled = true; let add = 0, cov = 0, k = 0; const todo = rows.filter(x => x.on);
+      for (const x of todo){ k++; b.textContent = `${k} / ${todo.length}…`;
+        const f = dataToFile(x.coverData); let cover = null;
+        if (x.ex){ if (x.ex.cover || (x.ex.coverUrl && !f)) continue;
+          if (f && assets){ try { cover = await upload(f); } catch(_){} }
+          if (cover || x.coverUrl){ await saveRead({...x.ex, cover: cover || x.ex.cover || null, coverUrl: cover ? x.ex.coverUrl || null : x.coverUrl}); cov++; } continue; }
+        if (f && assets){ try { cover = await upload(f); } catch(_){} }
+        const row = {title: x.title, url: x.url, origTitle: x.origTitle, coverUrl: x.coverUrl, cover, status: st, type: tp, source: x.source, chRead: 0, chTotal: x.chTotal, year: x.year, publisher: x.publisher};
+        if (await saveRead(row)) add++; }
+      s.close(); rTab = st; renderRead();
+      toast([add ? `добавил ${add}` : "", cov ? `обложки: ${cov}` : ""].filter(Boolean).join(", ") || "Ничего нового");
     };
   }
 
