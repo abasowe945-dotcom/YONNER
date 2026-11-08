@@ -2266,7 +2266,7 @@ button.ios-row:hover{background:var(--c-cell-out)}
 body[data-route="home"],body[data-route="user"]{--c-bg:#0b0c10;--c-top:rgba(11,12,16,.84);--c-fg:#f2f3f5;--c-dim:#8f95a3;--c-cell:rgba(20,22,28,.82);--c-cell-out:rgba(255,255,255,.06);--c-line:rgba(255,255,255,.08);--c-ring:#66c0f4;--c-shadow:none;background:#0b0c10!important;color:#f2f3f5;--hs-fade:rgba(17,19,24,.95)}
 body[data-route="home"] .a-main,body[data-route="user"] .a-main{max-width:1240px;padding-top:18px}
 .sec-bg.pf-sb::after{background:linear-gradient(180deg,rgba(11,12,16,var(--sb-dim)) 0,rgba(11,12,16,calc(var(--sb-dim) + .15)) 55%,#0b0c10 100%);opacity:1}
-.sec-bg.pf-sb i{inset:0;background-position:center top;filter:none!important}
+.sec-bg.pf-sb i{inset:0;background-position:center;filter:none!important}
 .pf{position:relative;--ac:#5e5ce6;--pane:rgba(17,19,24,.8);--pane-line:rgba(255,255,255,.07)}
 .pf::before{content:"";position:absolute;left:0;right:0;top:-120px;height:520px;z-index:-1;pointer-events:none;background:radial-gradient(50% 60% at 18% 20%,color-mix(in srgb,var(--ac) 38%,transparent),transparent 70%),radial-gradient(40% 50% at 85% 0,color-mix(in srgb,var(--ac) 18%,transparent),transparent 70%);opacity:.9}
 .pf.has-bg::before{opacity:.35}
@@ -2891,6 +2891,25 @@ body{overflow-x:clip}
 .ib.tg{display:inline-flex;align-items:center;justify-content:center;gap:7px;background:#229ed9!important;color:#fff!important}
 .ib.tg svg{flex:none}
 .au-inv{display:block;color:#64d2ff;margin-bottom:4px}
+
+/* 3.2: кадрирование фона профиля */
+.pfb-wrap{display:grid;grid-template-columns:minmax(0,1fr) 92px;gap:12px;align-items:end;margin:6px 0 4px}
+.pfb-fr{position:relative;aspect-ratio:2/1;border-radius:12px;overflow:hidden;background:#151519;cursor:grab;touch-action:none;outline:none;user-select:none;-webkit-user-select:none}
+.pfb-fr:active{cursor:grabbing}
+.pfb-fr.blank{cursor:pointer;background:radial-gradient(60% 80% at 20% 20%,#5e5ce655,transparent),#151519}
+.pfb-fr.drop{outline:2px dashed #66c0f4;outline-offset:3px}
+.pfb-fr img{position:absolute;max-width:none;pointer-events:none}
+.pfb-fr .pfb-dim{position:absolute;inset:0;pointer-events:none}
+.pfb-ui{position:absolute;left:14px;top:14px;display:flex;align-items:center;gap:10px;color:#fff;font:800 18px/1 var(--ios);pointer-events:none}
+.pfb-ui span .fr-ava{border-radius:6px}
+.pfb-hint{position:absolute;inset:0;display:grid;place-items:center;color:#c7c7cc;font:600 14px/1 var(--ios);pointer-events:none}
+.pfb-ph{display:grid;gap:6px;justify-items:center}
+.pfb-ph small{color:#8e8e93;font:600 11px/1 var(--ios)}
+.pfb-phs{position:relative;width:92px;aspect-ratio:9/19.5;border-radius:14px;overflow:hidden;background:#151519 center/cover;box-shadow:0 0 0 2px #3a3a3c}
+.pfb-phs .pfb-dim{position:absolute;inset:0}
+.pfb-ctl{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px}
+.pfb-ctl label{display:grid;gap:6px;color:#8e8e93;font:700 11px/1 var(--ios);letter-spacing:.06em;text-transform:uppercase}
+@media (max-width:560px){.pfb-wrap{grid-template-columns:minmax(0,1fr) 64px}.pfb-phs{width:64px;border-radius:10px}.pfb-ctl{grid-template-columns:1fr}}
 </style>
 <style>img{max-width:100%}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 <script src="config.js"></script>
@@ -4968,7 +4987,8 @@ body{overflow-x:clip}
         "Добавляешь давно пройденную игру или просмотренный фильм — дата сама ставится «Без даты», и в календарь он не попадает. Если было сегодня — сними галочку",
         "Одинаковые игры и фильмы у друзей теперь узнаются, даже если названия чуть отличаются («Disco Elysium» и «Disco Elysium — The Final Cut») или добавлены по одной ссылке Steam/Кинопоиска. Совпадение вкусов считается точнее",
         "Звук клика стал глуше, как в старых RPG",
-        "Досмотрел все серии — сериал сам уходит из «Смотрю» в просмотренные"],
+        "Досмотрел все серии — сериал сам уходит из «Смотрю» в просмотренные",
+        "Фон профиля теперь кадрируется прямо в окне: тянешь картинку, крутишь масштаб колесом, ползунком или щипком. Рядом видно, как фон будет выглядеть на телефоне"],
       f: ["Записи, добавленные пачкой 8 ноября как давно пройденные, убраны из календаря и трат"]}},
     {v: "3.1", date: "2026-11-08", title: "Стена с реакциями, свои витрины и лента по людям", kind: "major", sec: {
       n: ["<b>Стена</b> в «Активности»: пиши посты, вставляй картинки и эмодзи. Картинку можно перетащить или вставить через Ctrl+V",
@@ -7261,28 +7281,56 @@ body{overflow-x:clip}
       if (isR) readSheet(null, {status: "done", fav: true}); else openForm(null, kind === "games" ? "games" : "kino"); };
   }
 
-  // фон профиля: видят все, кто заходит в профиль
+  // фон профиля: видят все, кто заходит в профиль. Кадрируем здесь же — что видно в рамке, то и будет на странице
   function pfBgSheet(){
     if (!assets){ toast("Сначала войди"); return; }
-    const cur = myProf(); let file = null, remove = false, dim = cur.bg_dim ?? 45;
-    const src = () => file ? URL.createObjectURL(file) : !remove && cur.bg ? publicUrl(cur.bg) : "";
-    const s = openSheet(`<h3>Фон профиля</h3><p class="sub">Его увидят все, кто откроет твой профиль. Подойдёт широкая картинка: скриншот, арт, обои. Перетащи файл сюда или нажми Ctrl+V.</p>
-      <div class="pfb-prev" id="pfbP" tabindex="0" role="button" aria-label="Выбрать картинку"><div class="im"></div><div class="pfb-dim"></div><div class="lb"><span class="fr-ava-w">${avaHTML(cur, "md")}</span><b>${esc(NICK)}</b></div><span class="hint">Нажми или перетащи картинку</span></div>
-      <div class="av-lb">Затемнение</div><input type="range" id="pfbD" min="0" max="85" step="5" value="${dim}" class="pfb-rng">
+    const cur = myProf(), FA = 2; // рамка 2:1 — как окно браузера на компе
+    let img = null, isNew = false, dirty = false, remove = false, dim = cur.bg_dim ?? 45, v = {s: 1, x: 0, y: 0};
+    const s = openSheet(`<h3>Фон профиля</h3><p class="sub">Его увидят все, кто откроет твой профиль. Перетащи картинку в рамку, нажми Ctrl+V или выбери файл. Тяни мышкой, чтобы сдвинуть, колёсиком или ползунком — масштаб.</p>
+      <div class="pfb-wrap"><div class="pfb-fr" id="pfbF" tabindex="0" aria-label="Кадр фона"><img id="pfbI" alt="" draggable="false"><div class="pfb-dim" id="pfbD1"></div><div class="pfb-ui"><span>${avaHTML(cur, "md")}</span><b>${esc(NICK)}</b></div><span class="pfb-hint" id="pfbH">Нажми или перетащи картинку</span></div>
+        <div class="pfb-ph"><div class="pfb-phs" id="pfbP"><div class="pfb-dim" id="pfbD2"></div></div><small>на телефоне</small></div></div>
+      <div class="pfb-ctl"><label>Масштаб<input type="range" id="pfbZ" min="1" max="3" step="0.01" value="1" class="pfb-rng"></label><label>Затемнение<input type="range" id="pfbDm" min="0" max="85" step="5" value="${dim}" class="pfb-rng"></label></div>
       <div class="acts" style="margin-top:14px"><button class="ib blue" id="pfbOk">Сохранить</button><button class="ib" id="pfbPick">Выбрать файл</button>${cur.bg ? `<button class="ib red" id="pfbDel">Убрать фон</button>` : ""}<button class="ib" id="pfbNo">Отмена</button></div>`, {wide: true});
-    const q = x => s.el.querySelector(x);
-    const draw = () => { const u = src(), im = q("#pfbP .im"); im.style.backgroundImage = u ? `url('${u}')` : ""; q("#pfbP").classList.toggle("blank", !u); q("#pfbP .pfb-dim").style.opacity = dim / 100; };
-    const take = f => { if (!f || !f.type.startsWith("image/")) return; file = f; remove = false; draw(); };
+    const q = x => s.el.querySelector(x), F = q("#pfbF"), IM = q("#pfbI");
+    const geo = () => { const W = F.clientWidth, H = F.clientHeight, iw = img.naturalWidth, ih = img.naturalHeight, base = Math.max(W / iw, H / ih), k = base * v.s, w = iw * k, h = ih * k;
+      const mx = (w - W) / 2, my = (h - H) / 2; v.x = Math.max(-mx, Math.min(mx, v.x)); v.y = Math.max(-my, Math.min(my, v.y)); return {W, H, w, h, l: (W - w) / 2 + v.x, t: (H - h) / 2 + v.y, k}; };
+    let phT = 0;
+    const phone = () => { clearTimeout(phT); phT = setTimeout(() => { if (!img) return; try { q("#pfbP").style.backgroundImage = `url('${crop(640).toDataURL("image/jpeg", .7)}')`; } catch(_){ q("#pfbP").style.backgroundImage = `url('${IM.src}')`; } }, 60); };
+    const draw = () => {
+      const has = !!img && !remove; F.classList.toggle("blank", !has); IM.hidden = !has; q("#pfbH").hidden = has; q("#pfbZ").disabled = !has;
+      const g = has ? geo() : null; if (g) Object.assign(IM.style, {width: g.w + "px", height: g.h + "px", left: g.l + "px", top: g.t + "px"});
+      const ov = `linear-gradient(180deg,rgba(11,12,16,${dim / 100}) 0,rgba(11,12,16,${Math.min(1, dim / 100 + .15)}) 55%,#0b0c10 100%)`;
+      q("#pfbD1").style.background = ov; q("#pfbD2").style.background = ov; q("#pfbZ").value = v.s;
+      if (has) phone(); else q("#pfbP").style.backgroundImage = "";
+    };
+    const crop = (OW = 1920) => { const g = geo(), c = document.createElement("canvas"), OH = Math.round(OW / FA), r = OW / g.W; c.width = OW; c.height = OH;
+      const x = c.getContext("2d"); x.imageSmoothingQuality = "high"; x.drawImage(img, g.l * r, g.t * r, g.w * r, g.h * r); return c; };
+    const load = (src, fresh) => { const i = new Image(); if (!fresh) i.crossOrigin = "anonymous"; i.onload = () => { img = i; IM.src = src; isNew = fresh; dirty = fresh; remove = false; v = {s: 1, x: 0, y: 0}; requestAnimationFrame(draw); }; i.onerror = () => { if (!fresh) toast("Старый фон не открылся — выбери картинку заново"); }; i.src = src; };
+    const take = f => { if (!f || !f.type.startsWith("image/")) return; load(URL.createObjectURL(f), true); };
     const pick = () => { const i = document.createElement("input"); i.type = "file"; i.accept = "image/*"; i.onchange = () => take(i.files[0]); i.click(); };
-    q("#pfbP").onclick = pick; q("#pfbPick").onclick = pick; bindDrop(q("#pfbP"), take); pasteTarget = take;
-    q("#pfbD").oninput = e => { dim = +e.target.value; draw(); };
-    if (q("#pfbDel")) q("#pfbDel").onclick = () => { remove = true; file = null; draw(); };
+    if (cur.bg) load(publicUrl(cur.bg), false);
+    // сдвиг мышкой и пальцем, щипок и колесо — масштаб
+    const pts = new Map(); let d0 = null;
+    F.addEventListener("pointerdown", e => { if (!img || remove){ pick(); return; } F.setPointerCapture(e.pointerId); pts.set(e.pointerId, {x: e.clientX, y: e.clientY}); d0 = null; });
+    F.addEventListener("pointermove", e => { if (!pts.has(e.pointerId)) return; const p0 = pts.get(e.pointerId);
+      if (pts.size === 1){ v.x += e.clientX - p0.x; v.y += e.clientY - p0.y; }
+      else { const [a, b] = [...pts.values()], d = Math.hypot(a.x - b.x, a.y - b.y); if (d0) v.s = Math.max(1, Math.min(3, v.s * d / d0)); d0 = d; }
+      pts.set(e.pointerId, {x: e.clientX, y: e.clientY}); dirty = true; draw(); });
+    const up = e => { pts.delete(e.pointerId); d0 = null; }; F.addEventListener("pointerup", up); F.addEventListener("pointercancel", up);
+    F.addEventListener("wheel", e => { if (!img) return; e.preventDefault(); v.s = Math.max(1, Math.min(3, v.s * (e.deltaY < 0 ? 1.08 : 1 / 1.08))); dirty = true; draw(); }, {passive: false});
+    q("#pfbZ").oninput = e => { v.s = +e.target.value; dirty = true; draw(); };
+    q("#pfbDm").oninput = e => { dim = +e.target.value; draw(); };
+    q("#pfbPick").onclick = pick; bindDrop(F, take); pasteTarget = take;
+    if (q("#pfbDel")) q("#pfbDel").onclick = () => { remove = true; img = null; draw(); };
     q("#pfbNo").onclick = () => s.close();
+    addEventListener("resize", draw);
     q("#pfbOk").onclick = async () => { const b = q("#pfbOk"); b.disabled = true; b.textContent = "Сохраняю…";
-      try { const patch = {bg_dim: dim}; if (remove) patch.bg = null; else if (file) patch.bg = await upload(file);
+      try { const patch = {bg_dim: dim};
+        if (remove) patch.bg = null;
+        else if (img && dirty){ const blob = await new Promise((ok, no) => { try { crop(1920).toBlob(x => x ? ok(x) : no(new Error("canvas")), "image/jpeg", .86); } catch(err){ no(err); } }); patch.bg = (await assets.upload(blob, {type: "image/jpeg"})).id; }
         if (await saveProf(patch)){ s.close(); toast(remove ? "Фон убран" : "Фон профиля сохранён"); }
         else { b.disabled = false; b.textContent = "Сохранить"; }
-      } catch(err){ toast(err && err.code ? upErr(err) : "Не загрузилось"); b.disabled = false; b.textContent = "Сохранить"; } };
+      } catch(err){ toast(err && err.code ? upErr(err) : "Не получилось обрезать картинку — выбери файл заново"); b.disabled = false; b.textContent = "Сохранить"; } };
     draw();
   }
   // тайтл друга — только посмотреть
