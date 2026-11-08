@@ -320,3 +320,30 @@ create policy sc_update on public.showcases for update to authenticated using ((
 create policy sc_delete on public.showcases for delete to authenticated using ((select auth.uid()) = user_id);
 revoke all on public.showcases from anon;
 do $$ begin alter publication supabase_realtime add table public.showcases; exception when duplicate_object then null; end $$;
+
+-- ===== 3.3: уведомления (упоминания, ответы) и отдельный фон профиля для телефона =====
+alter table public.profiles add column if not exists bg_m text;
+create table if not exists public.notifications (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users (id) on delete cascade,
+  actor uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  kind text not null check (kind in ('mention_post','mention_comment','comment','invite')),
+  ref text,
+  body text check (char_length(body) <= 300),
+  read boolean not null default false,
+  created_at timestamptz not null default now()
+);
+create index if not exists notifications_user_idx on public.notifications (user_id, created_at desc);
+create index if not exists notifications_actor_idx on public.notifications (actor);
+alter table public.notifications enable row level security;
+drop policy if exists nt_select on public.notifications;
+drop policy if exists nt_insert on public.notifications;
+drop policy if exists nt_update on public.notifications;
+drop policy if exists nt_delete on public.notifications;
+create policy nt_select on public.notifications for select to authenticated using ((select auth.uid()) = user_id);
+create policy nt_insert on public.notifications for insert to authenticated with check ((select auth.uid()) = actor and user_id <> actor);
+create policy nt_update on public.notifications for update to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy nt_delete on public.notifications for delete to authenticated using ((select auth.uid()) = user_id);
+revoke all on public.notifications from anon;
+alter table public.notifications replica identity full;
+do $$ begin alter publication supabase_realtime add table public.notifications; exception when duplicate_object then null; end $$;

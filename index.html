@@ -2341,7 +2341,8 @@ body[data-route="home"] .a-main,body[data-route="user"] .a-main{max-width:1240px
 /* сейчас играю — широкие плашки как «недавняя активность» в Steam */
 .pf-now{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px}
 .pf-nw{position:relative;overflow:hidden;display:grid;grid-template-columns:74px minmax(0,1fr);gap:14px;align-items:center;padding:10px;border-radius:6px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:#fff;text-align:left;cursor:pointer;isolation:isolate;transition:border-color .2s,transform .2s}
-.pf-nw{contain:paint}
+.pf-nw{contain:paint;clip-path:inset(0 round 6px)}
+.pf-nw .bgx{inset:0!important;transform:scale(1.25)!important}
 .pf-nw .bgx{position:absolute;inset:-20px;z-index:-1;background:var(--bg) center/cover;filter:blur(22px) saturate(1.5) brightness(.45);transform:scale(1.1);transition:filter .3s}
 .pf-nw:hover{border-color:color-mix(in srgb,var(--fc) 60%,transparent);transform:translateY(-2px)}
 .pf-nw:hover .bgx{filter:blur(18px) saturate(1.7) brightness(.6)}
@@ -2938,6 +2939,173 @@ body{overflow-x:clip}
 
 .pf-more{display:block;margin-top:7px;padding:6px 0;border-radius:7px;background:rgba(165,148,255,.14);color:#c9bfff;text-align:center;font:700 12px/1 var(--ios);transition:background .15s}
 .pf-more:hover{background:rgba(165,148,255,.28);color:#fff}
+
+/* =====================================================================
+   3.3 — колода игр, видеокассеты, «ОЦЕНИТЬ», колокольчик, металл, светлый профиль
+   ===================================================================== */
+/* шапка: только NEXUS, логотип крупнее */
+body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-route="calendar"] .gh-crumb,body[data-route="people"] .gh-crumb{display:none}
+.gh .gh-logo{font-size:24px;letter-spacing:.01em}
+.gh .gh-logo b{font-weight:900;letter-spacing:.04em}
+@media (max-width:820px){.gh .gh-logo{font-size:21px}}
+/* колокольчик */
+#bellBtn{position:relative}
+#bellBtn.on svg{animation:bellRing 2.4s ease-in-out infinite;transform-origin:50% 10%}
+@keyframes bellRing{0%,82%,100%{transform:rotate(0)}86%{transform:rotate(14deg)}90%{transform:rotate(-12deg)}94%{transform:rotate(7deg)}97%{transform:rotate(-4deg)}}
+.bell-n{position:absolute;top:-4px;right:-4px;min-width:17px;height:17px;padding:0 4px;border-radius:999px;background:#ff3b30;color:#fff;font:800 10px/17px var(--ios);font-style:normal;text-align:center;box-shadow:0 0 0 2px var(--gh-bg,#000)}
+.ntf-pop{position:fixed;z-index:9600;width:min(380px,calc(100vw - 16px));max-height:min(72vh,560px);display:flex;flex-direction:column;border-radius:18px;background:#1c1c1e;border:1px solid rgba(255,255,255,.1);box-shadow:0 24px 60px rgba(0,0,0,.5);color:#f2f2f7;animation:wcIn .25s cubic-bezier(.2,.9,.3,1.2);overflow:hidden}
+.ntf-h{display:flex;align-items:center;gap:10px;padding:14px 16px 10px;border-bottom:1px solid rgba(255,255,255,.08)}
+.ntf-h b{font:800 16px/1 var(--ios)}
+.ntf-h button{margin-left:auto;border:0;background:none;color:#64d2ff;font:600 13px/1 var(--ios);cursor:pointer}
+.ntf-l{overflow:auto;padding:6px}
+.ntf-r{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:start;width:100%;padding:9px 10px;border:0;border-radius:12px;background:none;color:inherit;text-align:left;cursor:pointer;font:400 14px/1.35 var(--ios)}
+.ntf-r:hover{background:#2c2c2e}
+.ntf-r.unread{background:rgba(10,132,255,.1)}
+.ntf-r .fr-ava{width:32px;height:32px;font-size:14px}
+.ntf-r .t{min-width:0}
+.ntf-r em{display:block;margin-top:3px;color:#c7c7cc;font-style:normal;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ntf-r small{display:block;margin-top:3px;color:#8e8e93;font-size:12px}
+.ntf-k{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:#0a84ff;color:#fff;font:800 13px/1 var(--ios);font-style:normal}
+.ntf-k svg{width:13px;height:13px}.ntf-k.inv{background:#30d158}
+.ntf-e{margin:0;padding:26px 16px;color:#8e8e93;text-align:center;font:500 14px/1.45 var(--ios)}
+/* упоминания */
+.mention{display:inline;padding:0 3px;border:0;border-radius:5px;background:rgba(10,132,255,.16);color:#64d2ff;font:inherit;font-weight:700;cursor:pointer}
+.mention.me{background:rgba(255,214,10,.2);color:#ffd60a}
+.mn-pop{position:fixed;z-index:9600;min-width:200px;padding:6px;border-radius:14px;background:#1c1c1e;border:1px solid rgba(255,255,255,.12);box-shadow:0 16px 40px rgba(0,0,0,.45)}
+.mn-pop .h{padding:4px 8px 6px;color:#8e8e93;font:700 11px/1 var(--ios);text-transform:uppercase;letter-spacing:.06em}
+.mn-pop button{display:flex;align-items:center;gap:9px;width:100%;padding:7px 8px;border:0;border-radius:9px;background:none;color:#fff;font:600 14px/1 var(--ios);cursor:pointer}
+.mn-pop button.on,.mn-pop button:hover{background:#0a84ff}
+.mn-pop .fr-ava{width:24px;height:24px;font-size:11px}
+.wpost.flash{animation:wpFlash 1.6s ease}
+@keyframes wpFlash{0%,40%{box-shadow:0 0 0 3px var(--c-ring);border-radius:12px}100%{box-shadow:0 0 0 0 transparent}}
+/* шапка этажа: «Обновления» */
+.pf-fh-r{margin-left:auto;display:flex;align-items:center;gap:12px}
+.pf-fh-r .pf-fh-b{margin-left:0}
+.pf-fh-b svg{width:15px;height:15px}
+.upd-d{margin:10px 2px 4px;color:#8e8e93;font:700 11px/1 var(--ios);text-transform:uppercase;letter-spacing:.06em}
+.upd-d:first-child{margin-top:0}
+.pf-mini svg{width:13px;height:13px}
+.pf-box header .pf-mini + .pf-mini{margin-left:6px}
+/* колода игр */
+.pf-pile .hs-in{gap:0;padding:18px 8px 10px 2px;perspective:1200px}
+.pf-pile .pf-c{--r:0deg;margin-left:-64px;transform:rotate(var(--r));transform-origin:50% 100%;transition:transform .45s cubic-bezier(.2,1.3,.3,1),margin .45s cubic-bezier(.2,1,.3,1),filter .3s;position:relative;z-index:1}
+.pf-pile .pf-c:first-child{margin-left:0}
+.pf-pile .pf-c .poster{box-shadow:-10px 6px 18px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.06)}
+.pf-pile .pf-c .ti,.pf-pile .pf-c small{opacity:0;transition:opacity .2s;width:170px;position:relative;z-index:2;text-shadow:0 2px 6px rgba(0,0,0,.8)}
+.pf-pile .pf-c:last-of-type .ti,.pf-pile .pf-c:last-of-type small{opacity:1}
+.pf-pile .pf-c:hover{z-index:60;transform:translateY(-18px) rotate(0) scale(1.07)}
+.pf-pile .pf-c:hover .ti,.pf-pile .pf-c:hover small{opacity:1}
+.pf-pile .pf-c:hover ~ .pf-c{transform:translateX(66px) rotate(var(--r))}
+.pf-pile .pf-add{margin-left:14px;align-self:flex-start}
+.pf-pile .pf-c.pend{opacity:0;transform:rotate(var(--r)) scale(.92)}
+.pf-pile .pf-c.dealt{animation:dealOut .62s cubic-bezier(.18,.9,.25,1.15) both}
+@keyframes dealOut{0%{opacity:0;transform:translate(-110px,30px) rotate(-20deg) scale(.72);filter:brightness(.4) blur(2px)}55%{opacity:1;transform:translate(10px,-16px) rotate(5deg) scale(1.05);filter:brightness(1.2) blur(0)}100%{opacity:1;transform:rotate(var(--r)) scale(1);filter:none}}
+.pf-pile .pf-c.dealt::after{content:"";position:absolute;left:0;top:0;width:128px;aspect-ratio:2/3;border-radius:5px;pointer-events:none;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.45) 48%,transparent 62%);background-size:260% 100%;animation:dealShine .9s ease .15s both}
+@keyframes dealShine{0%{background-position:130% 0;opacity:1}100%{background-position:-60% 0;opacity:0}}
+/* дроп: серый постер и красный штамп */
+.pf-c.gdrop .poster img{filter:grayscale(1) brightness(.62) contrast(1.05);transition:filter .45s}
+.pf-c.gdrop:hover .poster img{filter:none}
+.pf-c .stamp{position:absolute;left:50%;top:34%;z-index:5;transform:translate(-50%,-50%) rotate(-14deg);padding:4px 12px 3px;border:3px solid #ff2d2d;border-radius:6px;color:#ff2d2d;font:900 22px/1 var(--ios);letter-spacing:.14em;text-shadow:0 0 1px #ff2d2d;background:rgba(40,0,0,.25);mix-blend-mode:screen;opacity:.92;pointer-events:none;transition:opacity .3s,transform .4s cubic-bezier(.2,1.4,.3,1);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='40'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 -1.6 1.25'/%3E%3C/filter%3E%3Crect width='120' height='40' filter='url(%23n)'/%3E%3C/svg%3E") center/cover;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='40'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 -1.6 1.25'/%3E%3C/filter%3E%3Crect width='120' height='40' filter='url(%23n)'/%3E%3C/svg%3E") center/cover}
+.pf-c.gdrop:hover .stamp{opacity:.55;transform:translate(-50%,-50%) rotate(-14deg) scale(.88)}
+.pf-pile .pf-c.gdrop .stamp{left:64px}
+/* видеокассеты */
+.pf-vhs .hs-in{gap:4px;align-items:flex-end;padding:20px 4px 8px;min-height:236px}
+.vhs{--h:220;position:relative;flex:none;width:44px;height:200px;padding:0;border:0;border-radius:3px;background:none;cursor:pointer;transition:width .5s cubic-bezier(.2,1,.25,1),transform .45s cubic-bezier(.2,1.3,.3,1),margin .5s;transform-origin:50% 100%}
+.vhs .sp{position:absolute;inset:0;border-radius:3px;overflow:hidden;background:linear-gradient(90deg,#0b0b0e,#1c1c22 18%,#141418 50%,#1c1c22 82%,#0b0b0e);box-shadow:inset 0 0 0 1px rgba(255,255,255,.06),0 10px 18px -6px rgba(0,0,0,.8);transition:opacity .3s}
+.vhs .sp::before{content:"";position:absolute;left:5px;right:5px;top:44px;bottom:30px;border-radius:2px;background:linear-gradient(180deg,hsl(var(--h) 70% 52%),hsl(calc(var(--h) + 30) 60% 30%));box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
+.vhs .cv{position:absolute;left:5px;right:5px;top:6px;height:34px;border-radius:2px;background:#222 center 25%/cover;filter:saturate(1.2)}
+.vhs .lab{position:absolute;left:5px;right:5px;top:48px;bottom:48px;writing-mode:vertical-rl;transform:rotate(180deg);display:block;overflow:hidden;color:#fff;font:800 12.5px/34px var(--ios);font-style:normal;letter-spacing:.02em;white-space:nowrap;text-overflow:ellipsis;text-align:left;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.vhs .rt{position:absolute;left:50%;bottom:30px;transform:translateX(-50%);z-index:2;min-width:24px;padding:2px 4px;border-radius:4px;font:800 10px/1.2 var(--ios);font-style:normal;color:#fff;background:#3a3a3c;text-align:center}
+.vhs .rt.green{background:#30d158;color:#04210e}.vhs .rt.yellow{background:#ffd60a;color:#2b2200}.vhs .rt.red{background:#ff453a}
+.vhs .br{position:absolute;left:0;right:0;bottom:9px;color:rgba(255,255,255,.45);font:900 8px/1 var(--ios);letter-spacing:.2em;text-align:center}
+.vhs .fr{position:absolute;left:0;top:0;width:133px;opacity:0;transition:opacity .3s .05s;pointer-events:none}
+.vhs .fr .poster{border-radius:4px;box-shadow:0 18px 30px -8px rgba(0,0,0,.8)}
+.vhs .cap{display:block;margin-top:6px;color:var(--c-dim);font:600 11.5px/1.2 var(--ios);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left}
+.vhs:hover,.vhs.out{width:133px;transform:translateY(-14px);z-index:5;margin:0 6px}
+.vhs:hover .sp,.vhs.out .sp{opacity:0}
+.vhs:hover .fr,.vhs.out .fr{opacity:1;pointer-events:auto}
+.vhs:not(:hover):not(.out):nth-child(3n+1){transform:rotate(-.6deg)}
+.vhs:not(:hover):not(.out):nth-child(5n+2){transform:translateY(2px)}
+.pf-vhs .pf-add{width:96px;height:200px;aspect-ratio:auto;align-self:flex-end;margin-left:8px}
+.pf-box.vhs-b{background:linear-gradient(180deg,var(--pane),var(--pane)),repeating-linear-gradient(90deg,rgba(255,255,255,.015) 0 2px,transparent 2px 6px)}
+.pf-vhs{position:relative}
+.pf-vhs::before{content:"";position:absolute;left:-16px;right:-16px;bottom:0;height:12px;border-radius:2px;background:linear-gradient(180deg,#3a2c22,#211812);box-shadow:0 10px 18px -8px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.12);z-index:0}
+.pf-vhs .hs-in{position:relative;z-index:1}
+/* «ОЦЕНИТЬ» */
+.rate-cta{position:relative;display:flex;align-items:center;gap:14px;width:100%;margin:22px 0 0;padding:14px 18px;border:0;border-radius:16px;cursor:pointer;color:#1b1200;text-align:left;background:linear-gradient(110deg,#ffd60a,#ff9f0a 55%,#ff6b00);box-shadow:0 14px 34px rgba(255,159,10,.32),inset 0 1px 0 rgba(255,255,255,.5);overflow:hidden;transition:transform .25s cubic-bezier(.3,1.5,.4,1)}
+.rate-cta::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.55) 50%,transparent 65%);background-size:250% 100%;animation:ctaShine 3.2s ease-in-out infinite}
+@keyframes ctaShine{0%,55%{background-position:140% 0}100%{background-position:-60% 0}}
+.rate-cta:hover{transform:translateY(-2px) scale(1.005)}
+.rc-ic{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:rgba(0,0,0,.14);flex:none}
+.rc-ic svg{width:24px;height:24px}
+.rc-t{min-width:0;flex:1}
+.rc-t b{display:block;font:900 20px/1 var(--ios);letter-spacing:.12em}
+.rc-t small{display:block;margin-top:5px;font:600 13px/1.3 var(--ios);opacity:.8}
+.rc-go{font:300 34px/1 var(--ios);opacity:.7}
+.rate-cta.kino{background:linear-gradient(110deg,#bf5af2,#7c6cff 55%,#5e5ce6);color:#fff;box-shadow:0 14px 34px rgba(124,108,255,.35),inset 0 1px 0 rgba(255,255,255,.35)}
+.rq-top{display:flex;align-items:center;gap:12px;color:#8e8e93;font:700 12px/1 var(--ios)}
+.rq-pb{flex:1;height:5px;border-radius:3px;background:#3a3a3c;overflow:hidden}.rq-pb i{display:block;height:100%;background:linear-gradient(90deg,#ffd60a,#ff9f0a);transition:width .4s}
+.rq-card{display:grid;grid-template-columns:110px minmax(0,1fr);gap:16px;align-items:center;margin:16px 0 12px;animation:wcIn .35s cubic-bezier(.2,.9,.3,1.2)}
+.rq-card .poster{width:110px;border-radius:10px;box-shadow:0 14px 30px rgba(0,0,0,.45)}
+.rq-card h3{margin:0}
+.rq-end{text-align:center;padding:20px 0 4px}.rq-end b{font:800 26px/1.2 var(--ios)}.rq-end .acts{justify-content:center}
+/* «Подробнее» в календаре выходов */
+.rel-more{display:inline-flex;align-items:center;margin-top:8px;padding:5px 10px;border-radius:8px;background:rgba(255,255,255,.1);color:inherit;font:700 12px/1 var(--ios);cursor:pointer;transition:background .15s}
+.rel-more:hover{background:rgba(255,255,255,.22)}
+/* Читалка: темнее и металлические полки */
+:root:not([data-mode="light"]) body[data-route="read"]{--c-bg:#060607;--c-cell:#121214;background:#060607!important}
+:root:not([data-mode="light"]) .rx-plank{height:18px;border-radius:2px 2px 6px 6px;background:linear-gradient(180deg,#f0f3f6 0,#c3c9d1 10%,#8d95a0 28%,#5f6670 60%,#3d4249 88%,#2a2d32 100%),repeating-linear-gradient(90deg,rgba(255,255,255,.07) 0 1px,transparent 1px 3px);background-blend-mode:overlay;box-shadow:0 20px 34px -12px rgba(0,0,0,.95),inset 0 1px 0 rgba(255,255,255,.9),inset 0 -2px 0 rgba(0,0,0,.4)}
+:root:not([data-mode="light"]) .rx-plank::before{left:10px;right:10px;top:5px;height:6px;background:radial-gradient(circle,#e9edf2 0 1.6px,#5a6068 2.4px,transparent 3px) 0 0/80px 6px repeat-x;filter:none;opacity:.9}
+:root:not([data-mode="light"]) .rx-plank::after{left:4%;right:4%;top:16px;height:30px;background:radial-gradient(50% 100% at 50% 0,rgba(200,215,235,.13),transparent)}
+:root:not([data-mode="light"]) .rx-rack{background:linear-gradient(180deg,transparent 60%,rgba(140,150,165,.05))}
+/* кадр фона для телефона */
+.pfb-col{display:grid;gap:6px;justify-items:center;min-width:0}
+.pfb-col .pfb-fr{width:100%}
+.pfb-fr.ph{aspect-ratio:9/19.5;border-radius:16px;box-shadow:0 0 0 3px #3a3a3c}
+.pfb-l{color:#8e8e93;font:600 11px/1 var(--ios)}
+.pfb-wrap{grid-template-columns:minmax(0,1fr) 128px;align-items:start}
+.pfb-ctl{grid-template-columns:1fr 1fr 1fr}
+@media (max-width:560px){.pfb-wrap{grid-template-columns:minmax(0,1fr) 92px}.pfb-ctl{grid-template-columns:1fr}.pfb-fr.ph{border-radius:12px}}
+/* светлый режим на главной и в профилях */
+:root[data-mode="light"] body[data-route="home"],:root[data-mode="light"] body[data-route="user"]{--c-bg:#eef0f4;--c-top:rgba(238,240,244,.86);--c-fg:#14161b;--c-dim:#5f6672;--c-cell:#fff;--c-cell-out:#f1f3f6;--c-line:#e1e4ea;--c-ring:#0a84ff;--c-shadow:0 1px 2px rgba(0,0,0,.05);--hs-fade:rgba(255,255,255,.96);background:#eef0f4!important;color:#14161b}
+:root[data-mode="light"] .pf{--pane:rgba(255,255,255,.9);--pane-line:rgba(15,20,30,.08)}
+:root[data-mode="light"] .sec-bg.pf-sb::after{background:linear-gradient(180deg,rgba(238,240,244,var(--sb-dim)) 0,rgba(238,240,244,calc(var(--sb-dim) + .2)) 55%,#eef0f4 100%)}
+:root[data-mode="light"] .pf-head{background:linear-gradient(180deg,rgba(255,255,255,.88),rgba(255,255,255,.95));box-shadow:0 20px 50px rgba(20,30,60,.1)}
+:root[data-mode="light"] .pf-id h1,:root[data-mode="light"] .pf-lvl,:root[data-mode="light"] .pf-stats b,:root[data-mode="light"] .pf-pid b,:root[data-mode="light"] .pf-tr .lv,:root[data-mode="light"] .pf-fd .t b,:root[data-mode="light"] .pf-nw-add{color:#14161b}
+:root[data-mode="light"] .pf-lvl b{background:radial-gradient(closest-side,#fff 78%,transparent 80% 100%),conic-gradient(var(--ac) calc(var(--p) * 1%),rgba(0,0,0,.1) 0)}
+:root[data-mode="light"] .pf-stats span{background:#f7f8fa}
+:root[data-mode="light"] .pf-btn{background:rgba(15,20,30,.05);border-color:rgba(15,20,30,.1);color:#14161b}
+:root[data-mode="light"] .pf-btn:hover{background:rgba(15,20,30,.1)}
+:root[data-mode="light"] .pf-pid{background:rgba(15,20,30,.04);border-color:rgba(15,20,30,.12)}
+:root[data-mode="light"] .pf-box h3,:root[data-mode="light"] .pf-card h3{color:#262a33}
+:root[data-mode="light"] .pf-mini{background:rgba(15,20,30,.05);color:#5f6672}
+:root[data-mode="light"] .pf-mini:hover{background:rgba(15,20,30,.1);color:#14161b}
+:root[data-mode="light"] .pf-empty{border-color:rgba(15,20,30,.14)}
+:root[data-mode="light"] .pf-tr:hover,:root[data-mode="light"] .pf-fd:hover{background:rgba(15,20,30,.05)}
+:root[data-mode="light"] .pf-tr.me{background:rgba(10,132,255,.08)}
+:root[data-mode="light"] .pf-tr .bar{background:rgba(15,20,30,.08)}
+:root[data-mode="light"] .pf-fd{color:#3a3f48}
+:root[data-mode="light"] .pf-fd .t .vb,:root[data-mode="light"] .pf-fd .t small{color:#6b717c}
+:root[data-mode="light"] .pf-cmp .r{color:#3a3f48}
+:root[data-mode="light"] .pf-c .poster .ph{background:linear-gradient(160deg,#e6e9ef,#d3d8e0);color:#5f6672}
+:root[data-mode="light"] .pf-pile .pf-c .ti,:root[data-mode="light"] .pf-pile .pf-c small{text-shadow:none}
+:root[data-mode="light"] .pf-av i{border-color:#fff}
+:root[data-mode="light"] .pf-vhs::before{background:linear-gradient(180deg,#c9b39b,#a88d72)}
+:root[data-mode="light"] .pf-on{color:#5f6672}
+:root[data-mode="light"] .pf-fh-b.upd{color:var(--fc)}
+@media (max-width:760px){
+  .pf-pile .pf-c{margin-left:-52px}
+  .pf-pile .pf-c:hover ~ .pf-c{transform:translateX(54px) rotate(var(--r))}
+  .vhs{width:38px;height:172px}.vhs:hover,.vhs.out{width:114px}.vhs .fr{width:114px}.pf-vhs .hs-in{min-height:206px}.pf-vhs .pf-add{height:172px;width:84px}
+  .rate-cta{padding:12px 14px;gap:12px}.rc-t b{font-size:17px}.rc-ic{width:36px;height:36px}
+  .rq-card{grid-template-columns:84px minmax(0,1fr)}.rq-card .poster{width:84px}
+  .pf-fh-r{gap:8px}.pf-fh-r a{display:none}
+}
+.pf-box header{flex-wrap:wrap;row-gap:8px}
+.pf-box header h3{min-width:0}
+.pf-box header .pf-mini:first-of-type{margin-left:auto}
+@media (max-width:760px){.pf-shelf .rx-hs .rx-rack{margin:0 -12px;padding-left:12px;padding-right:12px}}
+.rx-sh{flex-wrap:wrap;row-gap:6px}.rx-sh .pf-mini{margin-left:auto;align-self:center;font-size:12px}
 </style>
 <style>img{max-width:100%}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 <script src="config.js"></script>
@@ -2957,6 +3125,7 @@ body{overflow-x:clip}
     <div class="gh-acts gw gw-a" id="aTopActs"></div>
   </div>
   <div class="gh-right">
+    <button class="gh-ic" id="bellBtn" type="button" title="Уведомления" aria-label="Уведомления"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9a6 6 0 0 1 12 0c0 4.5 1.6 6.4 2.4 7.2.4.4.1 1-.4 1H4c-.5 0-.8-.6-.4-1C4.4 15.4 6 13.5 6 9Z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></svg><i class="bell-n" hidden></i></button>
     <div class="gh-search" id="ghSearch"><input id="q" type="search" placeholder="Поиск" autocomplete="off" spellcheck="false" aria-label="Поиск по полке" aria-controls="srPop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.6-4.6"/></svg><div class="sr-pop" id="srPop" role="listbox" hidden></div></div>
     <a class="gh-ic" href="#patch" id="pnBtn" title="Патчноуты" aria-label="Патчноуты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h11a2 2 0 0 1 2 2v2h-4"/><path d="M17 7v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2h9"/><path d="M8 3a2 2 0 0 0-2 2v12M10 8h4M10 12h4"/></svg><i class="dot" hidden></i></a>
     <button class="gh-ic" id="bgBtn" type="button" title="Фон этой страницы" aria-label="Фон страницы"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg></button>
@@ -3107,9 +3276,10 @@ body{overflow-x:clip}
     rating:(a,b)=>(b.rating??-1)-(a.rating??-1),
     year:(a,b)=>(b.year||0)-(a.year||0),
     title:(a,b)=>(a.title||"").localeCompare(b.title||"","ru"),
-    watched:(a,b)=>String(b.date||"").localeCompare(String(a.date||"")) || String(b.createdAt||"").localeCompare(String(a.createdAt||""))
+    watched:(a,b)=>String(b.date||"").localeCompare(String(a.date||"")) || String(b.createdAt||"").localeCompare(String(a.createdAt||"")),
+    mine:(a,b)=>byOrd(a,b)
   })[key];
-  const sortOpts = cur => [["recent","Недавние"],["rating","По оценке"],["year","По дате выхода"],["title","По названию"]].map(([v,l]) => `<option value="${v}"${v===cur?" selected":""}>${l}</option>`).join("");
+  const sortOpts = cur => [["mine","Мой порядок"],["recent","Недавние"],["rating","По оценке"],["year","По дате выхода"],["title","По названию"]].map(([v,l]) => `<option value="${v}"${v===cur?" selected":""}>${l}</option>`).join("");
   const write = (id, patch) => db.doc("items/" + id).update({...patch, updatedAt: now()});
 
   // ================= постер =================
@@ -3236,7 +3406,7 @@ body{overflow-x:clip}
       const hot = pp === "day" && d >= 0 && d <= 3;
       return `<button class="rel${mine ? "" : " fr-rel"}${hot ? " hot" : ""}" ${mine ? `data-soon="${esc(it.id)}"` : `data-fi="${esc(it.uid + "/" + it.id)}"`}><span class="dd${canWrite && mine ? " editable" : ""}" ${canWrite && mine ? `data-reldate="${esc(it.id)}" title="Поменять дату"` : ""}>${ddIn}</span>${posterHTML(it, {rate:false, tgt:false, badge:false})}
         <span style="min-width:0">${hot ? `<span class="hot-b">${d === 0 ? "ВЫХОДИТ СЕГОДНЯ" : d === 1 ? "ВЫХОДИТ ЗАВТРА" : `ОСТАЛОСЬ ${d} ДНЯ`}</span>` : ""}<h4>${esc(it.title)}</h4><div class="g">${esc([kind === "kino" ? KTYPES[it.type] : null, it.genre, dt.getFullYear() !== new Date().getFullYear() ? dt.getFullYear() : null].filter(Boolean).join(" · ") || "дата выхода " + fmtDate(it.releaseDate))}</div>
-        <span class="cd${rc.now ? " now" : ""}">${rc.t}</span>${wait}</span></button>`; };
+        <span class="cd${rc.now ? " now" : ""}">${rc.t}</span>${wait}<span class="rel-more" role="button" data-relmore="${esc(mine ? it.id : it.uid + "/" + it.id)}">Подробнее</span></span></button>`; };
     return `<div class="rel-box"><div class="rel-h"><h3>Календарь выходов</h3><small>${list.length ? `${list.length} в ожидании${FR && FR.profiles.length > 1 ? " · твои и друзей" : ""}` : ""}</small>${list.length > 1 ? `<span class="rel-hint">· зажми и крути</span>` : ""}<span style="flex:1"></span>
       ${canWrite ? `<button class="${kind === "games" ? "s-btn dark" : "k-btn sm"}" data-addsoon="${kind}" style="padding:7px 12px;font-size:13px">${ICON.plus}Ждать релиз</button>` : ""}</div>
       ${list.length ? `<div class="rel-list carou" data-carou="1">${list.map(card).join("")}</div>` : `<div class="rel-empty">Добавь ${kind === "games" ? "игру" : "фильм или сериал"} с датой выхода, и тут пойдёт обратный отсчёт.</div>`}</div>`;
@@ -3451,7 +3621,7 @@ body{overflow-x:clip}
     const now = pool.filter(i => gStatus(i.status) === "playing" || gStatus(i.status) === "endless");
     let list = pool.filter(i => (!gF || gStatus(i.status) === gF) && match(i));
     list.sort((a,b) => sorter(gSort)(a,b) || (a.title||"").localeCompare(b.title||"","ru"));
-    $("sMain").innerHTML = `${FV ? fvBanner("games") : contractBanner() + releasesPanel("games")}
+    $("sMain").innerHTML = `${FV ? fvBanner("games") : contractBanner() + releasesPanel("games") + rateCta("games")}
       <div class="s-head" style="margin-top:26px"><div><div class="t-row"><h1 class="s-h1">Библиотека</h1>${futPill("games", futs.length)}</div>
         <div class="src-pills">${[["","Все",lib.length,""],["steam","Steam",srcCount("steam"),SRC_ICON.steam],["pirate","Пиратка",srcCount("pirate"),SRC_ICON.pirate]]
           .map(([v,l,n,ic]) => `<button class="src-p ${v}" data-src="${v}" aria-pressed="${gSrc===v}">${ic ? `<span class="i">${ic}</span>` : ""}${l}<small>${n}</small></button>`).join("")}</div></div>
@@ -3460,7 +3630,7 @@ body{overflow-x:clip}
       ${now.length ? `<div class="s-shelf-h">В процессе</div><div class="s-row">${now.map(gCard).join("")}</div>` : ""}
       <div class="s-bar"><div class="seg">${[["","Все",pool.length],["playing","В процессе",cnt("playing")],["endless","Онлайн-игры",cnt("endless")],["done","Пройдено",cnt("done")],["dropped","Дроп",cnt("dropped")]]
         .map(([v,l,n]) => `<button data-gf="${v}" aria-pressed="${gF===v}">${l}<small>${n}</small></button>`).join("")}</div>
-        <span style="display:flex;gap:10px;align-items:center"><select class="s-sel" id="gSort" aria-label="Сортировка">${sortOpts(gSort)}</select>${canWrite ? `<button class="s-btn" data-addk="games">${ICON.plus}Добавить</button>` : ""}</span></div>
+        <span style="display:flex;gap:10px;align-items:center"><select class="s-sel" id="gSort" aria-label="Сортировка">${sortOpts(gSort)}</select>${canWrite ? `<button class="s-btn dark" data-reord="lib:games" title="Расставить вручную">${ICON.drag}</button>` : ""}${canWrite ? `<button class="s-btn" data-addk="games">${ICON.plus}Добавить</button>` : ""}</span></div>
       <section class="s-grid">${list.length ? list.map(gCard).join("") :
         `<div class="s-empty"><b>${pool.length ? "Ничего не найдено" : lib.length ? "В этом разделе пусто" : "Библиотека пуста"}</b>${pool.length ? "Сбрось фильтр или поиск." : lib.length ? "Укажи источник игры через «Изменить»." : "Жми «+ Добавить» и вставь данные со страницы игры в Steam."}</div>`}</section>`;
     $("gSort").onchange = e => { gSort = e.target.value; renderGames(); };
@@ -3491,11 +3661,11 @@ body{overflow-x:clip}
     list.sort((a,b) => sorter(kSort)(a,b) || (a.title||"").localeCompare(b.title||"","ru"));
     $("kMain").innerHTML = `${fvBanner("kino")}<div class="t-row"><h1 class="k-h1">Кино и сериалы</h1>${futPill("kino", futs.length)}</div>
       <div class="k-stats">${[[lib.length,"всего"],[lib.filter(i=>kNorm(i)==="done").length,"просмотрено"],[nowW.length,"смотрю"],[avg,"средняя оценка"]].map(([v,l]) => `<span><b>${esc(v)}</b>${l}</span>`).join("")}</div>
-      ${FV ? "" : releasesPanel("kino")}
+      ${FV ? "" : releasesPanel("kino") + rateCta("kino")}
       ${nowW.length ? `<div class="k-label">Смотрю сейчас</div><div class="k-row">${nowW.map(kCard).join("")}</div>` : ""}
       <div class="k-filters"><button class="k-chipb" data-kf="" aria-pressed="${kF===""}">Все</button>${[["done","Просмотрено"],["paused","Отложено"],["playing","Смотрю"],["dropped","Брошено"]].filter(([s]) => lib.some(i => kNorm(i) === s)).map(([s,l]) => `<button class="k-chipb" data-kf="${s}" aria-pressed="${kF===s}">${l}</button>`).join("")}
         <span class="k-sepv"></span><button class="k-chipb" data-kt="" aria-pressed="${kT===""}">Всё кино</button>${[["movie","Фильмы"],["series","Сериалы"],["anime","Аниме"]].map(([k,l]) => `<button class="k-chipb" data-kt="${k}" aria-pressed="${kT===k}">${l}</button>`).join("")}
-        <span class="k-sepv"></span><select class="k-sel" id="kSort" aria-label="Сортировка">${[["watched","По дате просмотра"],["recent","Недавние"],["rating","По оценке"],["year","По дате выхода"],["title","По названию"]].map(([v,l]) => `<option value="${v}"${v===kSort?" selected":""}>${l}</option>`).join("")}</select><span class="k-count">${lib.length ? `${list.length} из ${lib.length}` : ""}</span>${canWrite ? `<button class="k-btn white sm" data-addk="kino" style="margin-left:10px">${ICON.plus}Добавить</button>` : ""}</div>
+        <span class="k-sepv"></span><select class="k-sel" id="kSort" aria-label="Сортировка">${[["watched","По дате просмотра"],["mine","Мой порядок"],["recent","Недавние"],["rating","По оценке"],["year","По дате выхода"],["title","По названию"]].map(([v,l]) => `<option value="${v}"${v===kSort?" selected":""}>${l}</option>`).join("")}</select>${canWrite ? `<button class="k-btn sm" data-reord="lib:kino" title="Расставить вручную" style="margin-left:8px">${ICON.drag}</button>` : ""}<span class="k-count">${lib.length ? `${list.length} из ${lib.length}` : ""}</span>${canWrite ? `<button class="k-btn white sm" data-addk="kino" style="margin-left:10px">${ICON.plus}Добавить</button>` : ""}</div>
       ${list.length ? (kSort === "watched" ? kTimeline(list) : [["movie","Фильмы"],["series","Сериалы"],["anime","Аниме"]].map(([t,l]) => { const part = list.filter(i => (i.type || "movie") === t); return part.length ? `<div class="k-sec"><h2>${l}</h2><span>${part.length}</span><i></i></div><section class="k-grid dvd-grid">${part.map((x, i) => kCard(x, {i})).join("")}</section>` : ""; }).join(""))
         : `<section class="k-grid"><div class="k-empty"><b>${lib.length ? "Ничего не нашлось" : "Здесь пока пусто"}</b>${lib.length ? "Сбрось фильтры или поиск." : "Жми «+ Добавить»."}</div></section>`}`;
     $("kSort").onchange = e => { kSort = e.target.value; renderKino(); };
@@ -3664,7 +3834,7 @@ body{overflow-x:clip}
     else if (r.w === "wKino") renderKino();
     else ({soon:renderSoon, calendar:renderCal, more:renderMore, recap:renderRecap, drops:renderDrops, money:renderMoney, ach:renderAch, patch:renderPatch, people:renderPeople, user:() => renderProfile(viewUid), event:renderEvent, watch:renderWatch, home:() => renderProfile(null), read:renderRead, watchcal:() => renderWatchCal()})[route]();
     document.body.dataset.route = route;
-    fillMeSlots(); applySecBg(); wireCarousels(); wireHScrolls(); document.querySelectorAll('[data-stack="1"]').forEach(wireStack); syncHead(); renderFw();
+    fillMeSlots(); applySecBg(); wireCarousels(); wireHScrolls(); document.querySelectorAll('[data-pile="1"]').forEach(wirePile); document.querySelectorAll('[data-stack="1"]').forEach(wireStack); syncHead(); renderFw(); syncBell();
     renderTabbar();
     if (tierKind) renderTiers();
   }
@@ -3987,6 +4157,7 @@ body{overflow-x:clip}
 
   // ================= карточка =================
   function closeView(){
+    FULL_ID = null;
     fxSeen = null;
     $("view").hidden = true; $("view").innerHTML = ""; openId = null; pasteTarget = null;
     document.body.classList.remove("view-open");
@@ -4012,8 +4183,7 @@ body{overflow-x:clip}
   }
   function openItem(id){
     const it = items.find(i => i.id === id); if (!it) return;
-    if (relOn(it)) return soonSheet(it);
-    if (isFuture(it)) return futureSheet(it);
+    if (FULL_ID !== id){ if (relOn(it)) return soonSheet(it); if (isFuture(it)) return futureSheet(it); }
     const keep = openId === id ? $("view").scrollTop : 0;
     openId = id; useWorld(it);
     isGame(it) ? openGame(it) : openKino(it);
@@ -4642,13 +4812,13 @@ body{overflow-x:clip}
       if (!st) return; const s = st; st = null;
       s.el.classList.remove("lift"); if (ghost){ ghost.remove(); ghost = null; }
       const z = over; over && over.classList.remove("over"); over = null;
-      if (!s.moved){ if (e.type === "pointerup" && onClick) onClick(s.id); return; }
+      if (!s.moved){ if (e.type === "pointerup" && onClick) onClick(s.id, s.el); return; }
       if (z) onDrop(s.id, z, e);
     };
     root.addEventListener("pointerup", end);
     root.addEventListener("pointercancel", end);
   }
-  dragger($("aMain"), {zoneSel: "[data-day]", canStart: () => canWrite && route === "calendar", onClick: id => { if (route !== "calendar") return; const it = items.find(i => i.id === id), d = it && itemDate(it); if (d && items.filter(i => itemDate(i) === d).length > 1) calDaySheet(d); else openItem(id); },
+  dragger($("aMain"), {zoneSel: "[data-day]", canStart: () => canWrite && route === "calendar", onClick: (id, el) => { if (route !== "calendar") return; const it = items.find(i => i.id === id), d = it && itemDate(it); if (d && el && el.querySelector(".c-more")) calDaySheet(d); else openItem(id); },
     onDrop: async (id, z) => {
       const it = items.find(i => i.id === id); if (!it) return;
       const day = z.dataset.day, field = relOn(it) ? "releaseDate" : "date";
@@ -4997,6 +5167,22 @@ body{overflow-x:clip}
   // ================= патчноуты =================
   // Новые версии добавляются В НАЧАЛО списка. n — новое, c — изменено, f — исправлено, r — удалено.
   const PATCHES = [
+    {v: "3.3", date: "2026-11-08", title: "Колокольчик, отметки друзей, колода игр и видеосалон", kind: "major", sec: {
+      n: ["<b>Колокольчик</b> слева от поиска: сюда приходят отметки, ответы на твои посты и приглашения на мероприятия и просмотры. Красная цифра — сколько нового",
+        "<b>Отметки на стене</b>: напиши @ и начни ник — выпадет список друзей. Отмеченному придёт уведомление, а ник в посте станет ссылкой на профиль",
+        "<b>Колода игр</b> в профиле: игры лежат стопкой и при пролистывании по одной вылетают из колоды со звуком. Наведи на карту — она поднимется",
+        "Новая полка <b>«Дроп»</b>: серые постеры с красным штампом, при наведении оживают",
+        "<b>Видеосалон</b>: фильмы и сериалы в профиле стоят видеокассетами, при наведении кассета выезжает и показывает обложку. На телефоне — по тапу",
+        "Кнопка <b>«Обновления»</b> у игр и кино в профиле — всё, что недавно добавлено, по дням",
+        "<b>Свой порядок на любой полке</b>: кнопка «Расставить» — и перетаскиваешь обложки. Работает в профиле, в Читалке, на витринах и в библиотеках игр и кино («Мой порядок»). Друзья видят твой порядок",
+        "<b>«ОЦЕНИТЬ»</b> над библиотекой игр и кино: всё без оценки по очереди, колесом",
+        "В календаре выходов под постером кнопка «Подробнее» — открывает полную карточку, где можно поменять оценку и статус",
+        "Фон профиля для телефона настраивается отдельно: свой кадр, сдвиг и масштаб"],
+      c: ["Главная (профиль) теперь работает и в светлой теме",
+        "В профиле у игр остались «Сейчас играю», «Любимые», «Пройденные» и «Дроп». «Недавно добавленные» переехали в «Обновления»",
+        "Полки в Читалке стали металлическими, фон темнее",
+        "В календаре нажатие на обложку открывает именно её. Список всех карточек дня — по нажатию на «+N» или на пустое место в дне",
+        "На главной, в Читалке, Календаре и Активности в шапке только NEXUS, логотип крупнее"]}},
     {v: "3.2", date: "2026-11-08", title: "Календарь просмотров, честные траты и звуки старой школы", kind: "minor", silent: true, sec: {
       n: ["<b>Календарь ГО ПОСМОТРИМ</b>: нажми на шапку окна — откроется месяц, где в каждый день видно, что смотрим и кто предложил. Несколько сеансов в день — нажми на день, всплывёт список",
         "<b>Архив просмотров</b> — прошедшие сеансы под календарём",
@@ -5259,7 +5445,7 @@ body{overflow-x:clip}
   }
   function applySecBg(){
     const el = $("secBg"); if (!el) return;
-    const tab = (ROUTES[route] || ROUTES.games).tab, pfR = route === "home" || route === "user", c = pfR ? (PF_BG && PF_BG.img ? {img: PF_BG.img, dim: PF_BG.dim, blur: 0} : null) : SECBG && SECBG[tab];
+    const tab = (ROUTES[route] || ROUTES.games).tab, pfR = route === "home" || route === "user", c = pfR ? (PF_BG && PF_BG.img ? {img: innerWidth < 760 && PF_BG.m ? PF_BG.m : PF_BG.img, dim: PF_BG.dim, blur: 0} : null) : SECBG && SECBG[tab];
     if (!c || !c.img){ el.hidden = true; document.body.classList.remove("has-secbg"); return; }
     const url = publicUrl(c.img), i = el.querySelector("i");
     if (i.dataset.u !== url){ i.style.backgroundImage = `url('${url}')`; i.dataset.u = url; }
@@ -5734,7 +5920,7 @@ body{overflow-x:clip}
 
   async function start(user){
     ME = user;
-    let {data: prof, error: pe} = await SB.from("profiles").select("nick,avatar,ava_animal,ava_color,birthday,pid,bg,bg_dim").eq("user_id", user.id).maybeSingle();
+    let {data: prof, error: pe} = await SB.from("profiles").select("nick,avatar,ava_animal,ava_color,birthday,pid,bg,bg_m,bg_dim").eq("user_id", user.id).maybeSingle();
     if (pe) ({data: prof} = await SB.from("profiles").select("nick,avatar,ava_animal,ava_color,birthday").eq("user_id", user.id).maybeSingle());
     if (prof && prof.nick){ setNick(prof.nick); MEP = prof; setTimeout(patchPopup, 1500); setTimeout(askBday, 50); } else { lsSet("nexus_patch_seen", PATCHES[0].v); lsSet("nexus_patch_pop", PATCHES[0].v); await nickSheet(true); MEP = {nick: NICK, ...(nickSheet.bday ? {birthday: nickSheet.bday} : {})}; assets = makeBackend(SB, user.id).assets; await avaSheet(true); }
     const be = makeBackend(SB, user.id); db = be.db; assets = be.assets; canWrite = !FV;
@@ -5743,7 +5929,7 @@ body{overflow-x:clip}
     db.doc("meta/bg").onSnapshot(d => { SECBG = d.exists ? d.data() : null; applySecBg(); });
     Promise.all(["backup", "autobackup"].map(x => db.doc("meta/" + x).get().then(d => d.exists ? d.data() : null).catch(() => null)))
       .then(([b, a]) => { lastBackup = b; autoBackup = a; if (route === "more") render(); });
-    loadFriends(); loadEvents(); subscribeEvents(); loadWall(); subscribeWall(); loadReads().then(() => handleInbox());
+    loadFriends(); loadEvents(); subscribeEvents(); loadWall(); subscribeWall(); loadNtf(); subscribeNtf(); loadReads().then(() => handleInbox());
     db.collection("items").onSnapshot(snap => {
       if (!snap.metadata.fromCache){ clearTimeout(timer); itemsLoaded = true; }
       MYITEMS = snap.docs.map(d => ({id: d.id, ...d.data()}));
@@ -6161,7 +6347,14 @@ body{overflow-x:clip}
       if (kind === "flip"){ const o = c.createOscillator(), og = c.createGain(); o.type = "sine"; o.frequency.setValueAtTime(180, t + dur * .7); o.frequency.exponentialRampToValueAtTime(90, t + dur);
         og.gain.setValueAtTime(.0001, t + dur * .7); og.gain.exponentialRampToValueAtTime(.05, t + dur * .74); og.gain.exponentialRampToValueAtTime(.0001, t + dur + .05); o.connect(og).connect(c.destination); o.start(t + dur * .7); o.stop(t + dur + .06); }
     }
-    return {click, tick, paper, type, get on(){ return on; }, set(v){ on = v; lsSet("nexus_snd", v ? "1" : "0"); if (v) click(); }};
+    let lastDeal = 0;
+    function deal(){ if (!on) return; const c = ac(); if (!c) return; const tn = performance.now(); if (tn - lastDeal < 45) return; lastDeal = tn; const t = c.currentTime;
+      const n = c.createBufferSource(), bp = c.createBiquadFilter(), g = c.createGain(); n.buffer = noise(c, .09); bp.type = "bandpass"; bp.Q.value = 1.1;
+      bp.frequency.setValueAtTime(1300, t); bp.frequency.exponentialRampToValueAtTime(4400, t + .08); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.18, t + .012); g.gain.exponentialRampToValueAtTime(.0001, t + .1);
+      n.connect(bp).connect(g).connect(c.destination); n.start(t);
+      const o = c.createOscillator(), og = c.createGain(); o.type = "triangle"; o.frequency.setValueAtTime(230, t + .07); o.frequency.exponentialRampToValueAtTime(110, t + .13);
+      og.gain.setValueAtTime(.0001, t + .07); og.gain.exponentialRampToValueAtTime(.08, t + .075); og.gain.exponentialRampToValueAtTime(.0001, t + .15); o.connect(og).connect(c.destination); o.start(t + .07); o.stop(t + .16); }
+    return {click, tick, paper, type, deal, get on(){ return on; }, set(v){ on = v; lsSet("nexus_snd", v ? "1" : "0"); if (v) click(); }};
   })();
   document.addEventListener("pointerdown", e => {
     if (e.button) return; const t = e.target.closest && e.target.closest("button,a,[role=button],summary,select,label.nd-tog,.fx,.k-card,.s-card");
@@ -6302,7 +6495,7 @@ body{overflow-x:clip}
     <linearGradient id="emP" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a5683a"/><stop offset="1" stop-color="#5d3416"/></linearGradient></defs></svg>`);
   const emoSpan = k => `<span class="emo" title="${(EMO.find(x => x[0] === k) || [])[2] || ""}"><svg viewBox="0 0 64 64">${EMO_SVG[k]}</svg></span>`;
   const EMO_RE = new RegExp(EMO.map(x => x[1]).join("|"), "g");
-  const richText = s => esc(s).replace(EMO_RE, ch => emoSpan(EMO.find(x => x[1] === ch)[0]));
+  const richText = s => linkMentions(esc(s).replace(EMO_RE, ch => emoSpan(EMO.find(x => x[1] === ch)[0])));
   const onlyEmo = s => { const t = String(s || "").replace(EMO_RE, "").trim(); return !t && String(s || "").trim().length > 0; };
 
   // ================= 2.2: мероприятия =================
@@ -6531,7 +6724,7 @@ body{overflow-x:clip}
   const STAR_F = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2.8 2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4-4.7-4.4 6.4-.8Z"/></svg>';
   const GRID_I = I('<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>');
   const LIST_I = I('<path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/>');
-  Object.assign(ICON, {home: HOME_I, read: BOOK_I, mute: MUTE_I, wallp: WALLP_I});
+  Object.assign(ICON, {home: HOME_I, read: BOOK_I, mute: MUTE_I, wallp: WALLP_I, drag: I('<path d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01" stroke-width="3.2"/>')});
   // фон для чата и ГО ПОСМОТРИМ: пленка, хлопушка, микрофон, попкорн, камера
   document.documentElement.style.setProperty("--cine", `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
     <g transform='translate(18 20) rotate(-12)'><rect width='70' height='34' rx='4'/><path d='M8 0v34M62 0v34M0 8h8M0 17h8M0 26h8M62 8h8M62 17h8M62 26h8'/><rect x='16' y='7' width='14' height='20' rx='2'/><rect x='38' y='7' width='14' height='20' rx='2'/></g>
@@ -6594,11 +6787,11 @@ body{overflow-x:clip}
     if (!ME){ $("aMain").innerHTML = `<div class="a-empty" style="margin-top:20px"><b>Нужно войти</b></div>`; return; }
     if (!READS){ $("aMain").innerHTML = `<p class="a-sub" style="text-align:center;margin-top:40px">Загружаю…</p>`; loadReads(); return; }
     const pool = READS.filter(r => !rType || r.type === rType), by = st => pool.filter(r => rNorm(r.status) === st);
-    const fav = pool.filter(r => r.fav).sort(byAt("favAt")), done = by("done").sort(byAt("updatedAt")), reading = by("reading").sort(recentFirst), plan = by("plan").sort(byAt("createdAt"));
+    const fav = shelfOf("rfav", pool), done = shelfOf("rdone", pool), reading = shelfOf("rread", pool), plan = by("plan").sort(byAt("createdAt"));
     const chRead = pool.reduce((s, r) => s + (+r.chRead || 0), 0), waiting = reading.filter(r => r.chTotal > (r.chRead || 0)).reduce((s, r) => s + (r.chTotal - (r.chRead || 0)), 0);
     const mag = (r, i, pg) => `<button class="rx-mag" data-rd="${esc(r.id)}" style="--i:${i};--tilt:${(((i * 7) % 5) - 2) * 1.1}deg">${rCover(r)}${pg ? `<span class="sc-x" role="button" data-unread="${esc(r.id)}" title="Убрать из «Читаю» — останется в библиотеке">${ICON.x}</span>` : ""}${pg && r.chTotal ? `<span class="pg"><i style="width:${Math.min(100, (r.chRead || 0) / r.chTotal * 100)}%"></i></span>` : ""}</button>`;
     const addMag = (n, st, fv) => `<button class="rx-mag rx-addm" type="button" data-radd2="${st}${fv ? ":fav" : ""}" style="--i:${n}"><span class="rx-cv"><span class="ph"><b>+</b><small>${fv ? "Любимое" : "Добавить"}</small></span></span></button>`;
-    const shelf = (key, label, list, hint, pg) => `<section class="rx-shelf rx3-s s-${key}"><h2 class="rx-sh">${label}<small>${list.length}</small></h2>
+    const shelf = (key, label, list, hint, pg) => `<section class="rx-shelf rx3-s s-${key}"><h2 class="rx-sh">${label}<small>${list.length}</small>${reordBtn({fav: "rfav", done: "rdone", reading: "rread"}[key], list.length)}</h2>
       ${railHTML("rx-hs", list.map((r, i) => mag(r, i, pg)).join("") + addMag(list.length, key === "fav" ? "done" : key, key === "fav")).replace('class="hs-in"', 'class="hs-in rx-rack"')}
       ${list.length ? "" : `<p class="rx-hint">${hint}</p>`}<div class="rx-plank"></div></section>`;
     const fanN = Math.min(plan.length, 9);
@@ -7078,10 +7271,10 @@ body{overflow-x:clip}
     playFx(f);
   }
   // ================= 2.5: ручной порядок игр =================
-  function orderSheet(){
-    const list = MYITEMS.filter(i => isGame(i) && inLib(i)).sort(byOrd);
-    if (!list.length){ toast("Пока нет игр на полке"); return; }
-    const s = openSheet(`<h3>Порядок игр</h3><p class="sub">Перетаскивай обложки. В таком порядке игры стоят у тебя на главной и в твоём профиле у друзей.</p>
+  function orderSheet(kind = "games"){
+    const gk = kind === "games", list = MYITEMS.filter(i => (gk ? isGame(i) : !isGame(i)) && inLib(i)).sort(byOrd);
+    if (!list.length){ toast("Пока пусто"); return; }
+    const s = openSheet(`<h3>${gk ? "Порядок игр" : "Порядок кино"}</h3><p class="sub">Перетаскивай обложки. В таком порядке игры стоят у тебя на главной и в твоём профиле у друзей.</p>
       <div class="og" id="og">${list.map(i => `<div class="og-c" data-oid="${esc(i.id)}">${posterHTML(i, {tgt:false, rate:false})}<span>${esc(i.title)}</span></div>`).join("")}</div>
       <div class="acts"><button class="ib blue" id="ogOk">Сохранить</button><button class="ib" id="ogRate">По оценке</button><button class="ib" id="ogNo">Отмена</button></div>`, {wide: true});
     const box = s.el.querySelector("#og"); let drag = null;
@@ -7104,7 +7297,7 @@ body{overflow-x:clip}
       const ids = [...box.children].map(c => c.dataset.oid); let bad = 0;
       for (let i = 0; i < ids.length; i++){ const it = items.find(x => x.id === ids[i]); if (!it || it.ord === i) continue;
         try { await db.doc("items/" + it.id).update({ord: i}); it.ord = i; } catch(_){ bad++; } }
-      s.close(); toast(bad ? "Часть не сохранилась" : "Порядок сохранён"); render(); };
+      if (gk) gSort = "mine"; else kSort = "mine"; s.close(); toast(bad ? "Часть не сохранилась" : "Порядок сохранён"); render(); };
   }
   document.addEventListener("click", async e => {
     const el = e.target.closest && e.target.closest("[data-ordg],[data-like],[data-wnew],[data-w],[data-wedit],[data-rd],[data-radd],[data-rt],[data-rtab],[data-rv],[data-radd2],[data-rplan]"); if (!el || !ME) return;
@@ -7149,7 +7342,7 @@ body{overflow-x:clip}
   const isoDay = v => v ? String(v).slice(0, 10) : "";
 
   // ================= 3.0: профиль в стиле Steam — главная и профиль друга =================
-  const PF_COLS = "user_id,nick,avatar,ava_animal,ava_color,birthday,created_at,pid,bg,bg_dim";
+  const PF_COLS = "user_id,nick,avatar,ava_animal,ava_color,birthday,created_at,pid,bg,bg_m,bg_dim";
   let pfPend = null, PF_BG = null; // «добавить новую и сразу в любимые / сейчас играю»; фон открытого профиля
   const frReads = uid => FR && FR.reads ? FR.reads.filter(r => r.uid === uid) : [];
   const rNorm = s => s === "reading" ? "reading" : s === "done" ? "done" : "plan";
@@ -7218,18 +7411,16 @@ body{overflow-x:clip}
     const rail = (list, fn, addKey) => list.length || addKey ? railHTML("pf-rail", list.map(fn).join("") + (addKey ? add(addKey) : "")) : "";
     const stTxt = it => isFuture(it) ? "на будущее" : isSoon(it) ? (isGame(it) ? "ждёт релиз" : "ждёт премьеру") : isGame(it) ? GSTATUS[gStatus(it.status)].toLowerCase() : kLab(it).l.toLowerCase();
     // ---- игры
-    const nowG = g.filter(i => i.now).sort(byAt("nowAt"));
-    const favG = g.filter(i => i.fav).sort(byAt("favAt"));
-    const recG = [...g].sort(byAt("createdAt")).slice(0, 18);
-    const doneG = g.filter(i => inLib(i) && gStatus(i.status) === "done").sort((a, b) => String(b.finishedAt || b.date || "").localeCompare(String(a.finishedAt || a.date || "")));
+    const nowG = shelfOf("gnow", g), favG = shelfOf("gfav", g), doneG = shelfOf("gdone", g), dropG = shelfOf("gdrop", g);
+    const R = (k, list) => mine ? reordBtn(k, list.length) : "";
+    const pile = (list, fn, addKey) => list.length || addKey ? railHTML("pf-rail pf-pile", list.map(fn).join("") + (addKey ? add(addKey) : "")).replace('data-hscroll="1"', 'data-hscroll="1" data-pile="1"') : "";
+    const vrail = (list, sub, addKey) => list.length || addKey ? railHTML("pf-rail pf-vhs", list.map(i => vhsHTML(i, mine ? `data-id="${esc(i.id)}"` : `data-fi="${esc(uid + "/" + i.id)}"`, sub(i))).join("") + (addKey ? add(addKey) : "")) : "";
+    const dropCard = it => `<button class="pf-c gdrop" ${mine ? `data-id="${esc(it.id)}"` : `data-fi="${esc(uid + "/" + it.id)}"`}>${posterHTML(it, {tgt: false, badge: false})}<span class="stamp">ДРОП</span><span class="ti">${esc(it.title)}</span><small>${it.finishedAt || it.date ? `брошена ${fmtShort(it.finishedAt || it.date)}` : "брошена"}</small></button>`;
+    const fh = (ic, title, href, kind) => `<div class="pf-fh"><span class="ic">${ic}</span><h2>${title}</h2><span class="pf-fh-r"><button class="pf-fh-b upd" type="button" data-upd="${kind}${mine ? "" : ":" + esc(uid)}">${ICON.clock}Обновления</button><a href="${href}">вся полка ›</a></span></div>`;
     // ---- кино
-    const favK = k.filter(i => i.fav).sort(byAt("favAt")), nowK = k.filter(i => i.now && kNorm(i) !== "done").sort(byAt("nowAt"));
-    const recK = [...k].sort(byAt("createdAt")).slice(0, 18);
-    const seenK = k.filter(i => inLib(i) && kNorm(i) === "done").sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")) || byAt("createdAt")(a, b));
-    const planK = k.filter(i => isFuture(i) || isSoon(i)).sort(byAt("createdAt"));
+    const favK = shelfOf("kfav", k), nowK = shelfOf("know", k), seenK = shelfOf("kseen", k), planK = shelfOf("kplan", k);
     // ---- книги
-    const favR = rds.filter(r => r.fav).sort(byAt("favAt")), nowR = rds.filter(r => r.now).sort(byAt("nowAt"));
-    const doneR = rds.filter(r => rNorm(r.status) === "done").sort(byAt("updatedAt"));
+    const favR = shelfOf("rfav", rds), nowR = shelfOf("rnow", rds), doneR = shelfOf("rdone", rds);
     const magAttr = r => mine ? `data-rd="${esc(r.id)}"` : `data-frd="${esc(uid + "/" + r.id)}"`;
     const mag = (r, i, pg) => `<button class="rx-mag${pg ? " pg-on" : ""}" ${magAttr(r)} style="--i:${i};--tilt:${(((i * 7) % 5) - 2) * 1.1}deg">${rCover(r)}${pg && mine ? `<span class="sc-x" role="button" data-unnow="read:${esc(r.id)}" title="Убрать с полки">${ICON.x}</span>` : ""}${pg ? (r.chTotal ? `<span class="pg" title="${r.chRead || 0} из ${r.chTotal} глав"><i style="width:${Math.min(100, (r.chRead || 0) / r.chTotal * 100)}%"></i></span><span class="pg-t">${r.chRead || 0} / ${r.chTotal} гл.</span>` : `<span class="pg-t">${r.chRead ? `${r.chRead} гл.` : "читает"}</span>`) : ""}</button>`;
     const rack = (list, addKey, emptyTxt, pg) => `<div class="pf-shelf${pg ? " pg-sh" : ""}">${list.length || addKey ? railHTML("rx-hs", `${list.map((r, i) => mag(r, i, pg)).join("")}${addKey && mine ? `<button class="rx-mag rx-addm" type="button" data-pfpick="${addKey}" style="--i:${list.length}"><span class="rx-cv"><span class="ph"><b>+</b><small>Добавить</small></span></span></button>` : ""}`).replace('class="hs-in"', 'class="hs-in rx-rack"') : ""}${!list.length && !mine ? `<p class="pf-mute pf-ish">${emptyTxt}</p>` : ""}<div class="rx-plank"></div></div>`;
@@ -7239,7 +7430,7 @@ body{overflow-x:clip}
     const lastEv = !mine ? pfEvents(uid, true)[0] : null;
     const since = p.created_at ? new Date(p.created_at).toLocaleDateString("ru-RU", {day: "numeric", month: "long", year: "numeric"}).replace(/\s+г\.$/, "") : "";
     const stats = [[g.filter(inLib).length, plural(g.filter(inLib).length, "игра", "игры", "игр")], [doneG.length, "пройдено"], [k.filter(inLib).length, "кино"], [seenK.length, "просмотрено"], [rds.length, rds.length === 1 ? "книга" : "книг"], [doneR.length, "прочитано"]];
-    const bg = p.bg ? publicUrl(p.bg) : null, dim = p.bg_dim ?? 45; PF_BG = p.bg ? {img: p.bg, dim} : null;
+    const bg = p.bg ? publicUrl(p.bg) : null, dim = p.bg_dim ?? 45; PF_BG = p.bg ? {img: p.bg, m: p.bg_m || null, dim} : null;
     const feed = mine ? pfEvents(null, false).slice(0, 14) : pfEvents(uid, true).slice(0, 14);
     const head = `<section class="pf-head">
         <div class="pf-ava">${avaHTML(p, "big")}</div>
@@ -7253,24 +7444,23 @@ body{overflow-x:clip}
           : `<a class="pf-btn" href="#fv:${esc(uid)}:games">${ICON.games}Полка игр</a><a class="pf-btn" href="#fv:${esc(uid)}:kino">${ICON.kino}Полка кино</a>`}</div>
         <div class="pf-stats">${stats.map(([v, l]) => `<span><b>${v}</b>${l}</span>`).join("")}</div>
       </section>`;
-    const games = `<section class="pf-floor fl-g"><div class="pf-fh"><span class="ic">${ICON.games}</span><h2>Игры</h2><a href="${mine ? "#games" : `#fv:${esc(uid)}:games`}">вся полка ›</a></div>
-        ${show("Сейчас играю", nowG.length || null, nowG.length ? `<div class="pf-now">${nowG.map(i => `<button class="pf-nw" ${mine ? `data-id="${esc(i.id)}"` : `data-fi="${esc(uid + "/" + i.id)}"`}>${i.cover ? `<span class="bgx" style="--bg:url('${publicUrl(i.cover)}')"></span>` : ""}${posterHTML(i, {tgt: false, rate: false})}<span class="t"><small>${esc(stTxt(i))}${i.date ? ` · с ${fmtShort(i.date)}` : ""}</small><b>${esc(i.title)}</b><span>${esc(genres(i).slice(0, 3).join(", "))}</span></span></button>`).join("")}${mine ? `<button class="pf-nw-add" type="button" data-pfpick="games:now">${ICON.plus}</button>` : ""}</div>` : empty(mine ? "Выбери, во что играешь сейчас — это увидят друзья" : "Ничего не отметил", "games:now"), {cls: "now", act: mine && nowG.length ? `<button class="pf-mini" data-pfpick="games:now">${ICON.edit}Изменить</button>` : ""})}
-        ${show("Любимые игры", favG.length || null, favG.length || mine ? rail(favG, i => card(i, typeof i.rating === "number" ? "" : esc(stTxt(i))), "games:fav") : empty("Пока не выбрал любимые"), {cls: "fav"})}
-        ${recG.length ? show("Недавно добавленные", null, rail(recG, i => card(i, `${esc(stTxt(i))}${i.createdAt ? ` · ${fmtShort(i.createdAt)}` : ""}`))) : ""}
-        ${show("Пройденные", doneG.length || null, doneG.length ? rail(doneG, i => card(i, (i.finishedAt || i.date) ? `пройдена ${fmtShort(i.finishedAt || i.date)}` : "пройдена", " done")) : empty(mine ? "Пройденные игры появятся здесь с медалью" : "Пока ничего не прошёл"))}
+    const games = `<section class="pf-floor fl-g">${fh(ICON.games, "Игры", mine ? "#games" : `#fv:${esc(uid)}:games`, "games")}
+        ${show("Сейчас играю", nowG.length || null, nowG.length ? `<div class="pf-now">${nowG.map(i => `<button class="pf-nw" ${mine ? `data-id="${esc(i.id)}"` : `data-fi="${esc(uid + "/" + i.id)}"`}>${i.cover ? `<span class="bgx" style="--bg:url('${publicUrl(i.cover)}')"></span>` : ""}${posterHTML(i, {tgt: false, rate: false})}<span class="t"><small>${esc(stTxt(i))}${i.date ? ` · с ${fmtShort(i.date)}` : ""}</small><b>${esc(i.title)}</b><span>${esc(genres(i).slice(0, 3).join(", "))}</span></span></button>`).join("")}${mine ? `<button class="pf-nw-add" type="button" data-pfpick="games:now">${ICON.plus}</button>` : ""}</div>` : empty(mine ? "Выбери, во что играешь сейчас — это увидят друзья" : "Ничего не отметил", "games:now"), {cls: "now", act: (mine && nowG.length ? `<button class="pf-mini" data-pfpick="games:now">${ICON.edit}Изменить</button>` : "") + R("gnow", nowG)})}
+        ${show("Любимые игры", favG.length || null, favG.length || mine ? pile(favG, i => card(i, esc(stTxt(i))), "games:fav") : empty("Пока не выбрал любимые"), {cls: "fav", act: R("gfav", favG)})}
+        ${show("Пройденные", doneG.length || null, doneG.length ? pile(doneG, i => card(i, (i.finishedAt || i.date) ? `пройдена ${fmtShort(i.finishedAt || i.date)}` : "пройдена", " done")) : empty(mine ? "Пройденные игры появятся здесь с медалью" : "Пока ничего не прошёл"), {act: R("gdone", doneG)})}
+        ${show("Дроп", dropG.length || null, dropG.length ? pile(dropG, dropCard) : empty(mine ? "Брошенные игры встанут сюда — серые, с красным штампом" : "Ничего не бросал"), {cls: "drop-b", act: R("gdrop", dropG)})}
       </section>`;
-    const kino = `<section class="pf-floor fl-k"><div class="pf-fh"><span class="ic">${ICON.kino}</span><h2>Кино и сериалы</h2><a href="${mine ? "#kino" : `#fv:${esc(uid)}:kino`}">вся полка ›</a></div>
-        ${show("Любимые фильмы и сериалы", favK.length || null, favK.length || mine ? rail(favK, i => card(i, esc([KTYPES[i.type], i.year].filter(Boolean).join(" · "))), "kino:fav") : empty("Пока не выбрал любимые"), {cls: "fav"})}
+    const kino = `<section class="pf-floor fl-k">${fh(ICON.kino, "Кино и сериалы", mine ? "#kino" : `#fv:${esc(uid)}:kino`, "kino")}
+        ${show("Любимые фильмы и сериалы", favK.length || null, favK.length || mine ? vrail(favK, i => esc([KTYPES[i.type], i.year].filter(Boolean).join(" · ")), "kino:fav") : empty("Пока не выбрал любимые"), {cls: "fav vhs-b", act: R("kfav", favK)})}
         ${show("Смотрю", nowK.length || null, nowK.length || mine ? rail(nowK, i => { const et = +i.epTotal || 0, ew = +i.epWatched || 0;
-          return `<button class="pf-c" ${mine ? (isSerT(i.type) ? `data-epsh="${esc(i.id)}"` : `data-id="${esc(i.id)}"`) : `data-fi="${esc(uid + "/" + i.id)}"`}>${posterHTML(i, {tgt: false, rate: false})}${mine ? `<span class="sc-x" role="button" data-unnow="kino:${esc(i.id)}" title="Убрать с полки">${ICON.x}</span>` : ""}${et ? `<span class="pf-pb" title="${ew} из ${et} серий"><i style="width:${Math.min(100, ew / et * 100)}%"></i></span>` : ""}<span class="ti">${esc(i.title)}</span><small>${et ? `${ew} из ${et} серий` : isSerT(i.type) ? (ew ? `${ew} ${plural(ew, "серия", "серии", "серий")}` : "смотрит") : "смотрит"}</small>${mine && isSerT(i.type) ? `<span class="pf-more" role="button" data-kmore="${esc(i.id)}">Подробнее ›</span>` : ""}</button>`; }, "kino:now") : empty("Ничего не отметил"), {cls: "now-k"})}
-        ${recK.length ? show("Недавно добавленные", null, rail(recK, i => card(i, `${esc(stTxt(i))}${i.createdAt ? ` · ${fmtShort(i.createdAt)}` : ""}`))) : ""}
-        ${show("Просмотренные", seenK.length || null, seenK.length ? rail(seenK, i => card(i, i.date ? `<span class="dt">${ICON.calendar}${fmtShort(i.date)}</span>` : "дата не указана")) : empty(mine ? "Просмотренное появится здесь с датой просмотра" : "Пока ничего не посмотрел"))}
-        ${show("Буду смотреть", planK.length || null, planK.length ? rail(planK, i => card(i, esc(KTYPES[i.type] || "кино"))) : empty(mine ? "Отложи что-нибудь на потом — появится здесь" : "Список пуст", mine ? "kino:future" : null))}
+          return `<button class="pf-c" ${mine ? (isSerT(i.type) ? `data-epsh="${esc(i.id)}"` : `data-id="${esc(i.id)}"`) : `data-fi="${esc(uid + "/" + i.id)}"`}>${posterHTML(i, {tgt: false, rate: false})}${mine ? `<span class="sc-x" role="button" data-unnow="kino:${esc(i.id)}" title="Убрать с полки">${ICON.x}</span>` : ""}${et ? `<span class="pf-pb" title="${ew} из ${et} серий"><i style="width:${Math.min(100, ew / et * 100)}%"></i></span>` : ""}<span class="ti">${esc(i.title)}</span><small>${et ? `${ew} из ${et} серий` : isSerT(i.type) ? (ew ? `${ew} ${plural(ew, "серия", "серии", "серий")}` : "смотрит") : "смотрит"}</small>${mine && isSerT(i.type) ? `<span class="pf-more" role="button" data-kmore="${esc(i.id)}">Подробнее ›</span>` : ""}</button>`; }, "kino:now") : empty("Ничего не отметил"), {cls: "now-k", act: R("know", nowK)})}
+        ${show("Просмотренные", seenK.length || null, seenK.length ? vrail(seenK, i => i.date ? "смотрел " + fmtShort(i.date) : "без даты") : empty(mine ? "Просмотренное появится здесь с датой просмотра" : "Пока ничего не посмотрел"), {cls: "vhs-b", act: R("kseen", seenK)})}
+        ${show("Буду смотреть", planK.length || null, planK.length ? vrail(planK, i => esc(KTYPES[i.type] || "кино")) : empty(mine ? "Отложи что-нибудь на потом — появится здесь" : "Список пуст", mine ? "kino:future" : null), {cls: "vhs-b", act: R("kplan", planK)})}
       </section>`;
     const books = `<section class="pf-floor fl-r"><div class="pf-fh"><span class="ic">${BOOK_I}</span><h2>Книги, манга, комиксы</h2>${mine ? `<a href="#read">Читалка ›</a>` : ""}</div>
-        ${show("Любимые тайтлы", favR.length || null, rack(favR, "read:fav", "Пока не выбрал любимые"), {cls: "shelf"})}
-        ${show("Сейчас читаю", nowR.length || null, rack(nowR, "read:now", "Ничего не отметил", true), {cls: "shelf"})}
-        ${show("Прочитанные", doneR.length || null, rack(doneR, null, "Пока ничего не дочитал"), {cls: "shelf"})}
+        ${show("Любимые тайтлы", favR.length || null, rack(favR, "read:fav", "Пока не выбрал любимые"), {cls: "shelf", act: R("rfav", favR)})}
+        ${show("Сейчас читаю", nowR.length || null, rack(nowR, "read:now", "Ничего не отметил", true), {cls: "shelf", act: R("rnow", nowR)})}
+        ${show("Прочитанные", doneR.length || null, rack(doneR, null, "Пока ничего не дочитал"), {cls: "shelf", act: R("rdone", doneR)})}
       </section>`;
     const side = `<aside class="pf-side">
         <div class="pf-card"><h3>${ICON.trophy}Рейтинг активности<small>30 дней</small></h3>${topHTML3(10)}</div>
@@ -7310,53 +7500,57 @@ body{overflow-x:clip}
       if (isR) readSheet(null, {status: "done", fav: true}); else openForm(null, kind === "games" ? "games" : "kino"); };
   }
 
-  // фон профиля: видят все, кто заходит в профиль. Кадрируем здесь же — что видно в рамке, то и будет на странице
+  // фон профиля: видят все, кто заходит в профиль. Два кадра из одной картинки — для компа и для телефона, каждый двигается и масштабируется отдельно
   function pfBgSheet(){
     if (!assets){ toast("Сначала войди"); return; }
-    const cur = myProf(), FA = 2; // рамка 2:1 — как окно браузера на компе
-    let img = null, isNew = false, dirty = false, remove = false, dim = cur.bg_dim ?? 45, v = {s: 1, x: 0, y: 0};
-    const s = openSheet(`<h3>Фон профиля</h3><p class="sub">Его увидят все, кто откроет твой профиль. Перетащи картинку в рамку, нажми Ctrl+V или выбери файл. Тяни мышкой, чтобы сдвинуть, колёсиком или ползунком — масштаб.</p>
-      <div class="pfb-wrap"><div class="pfb-fr" id="pfbF" tabindex="0" aria-label="Кадр фона"><img id="pfbI" alt="" draggable="false"><div class="pfb-dim" id="pfbD1"></div><div class="pfb-ui"><span>${avaHTML(cur, "md")}</span><b>${esc(NICK)}</b></div><span class="pfb-hint" id="pfbH">Нажми или перетащи картинку</span></div>
-        <div class="pfb-ph"><div class="pfb-phs" id="pfbP"><div class="pfb-dim" id="pfbD2"></div></div><small>на телефоне</small></div></div>
-      <div class="pfb-ctl"><label>Масштаб<input type="range" id="pfbZ" min="1" max="3" step="0.01" value="1" class="pfb-rng"></label><label>Затемнение<input type="range" id="pfbDm" min="0" max="85" step="5" value="${dim}" class="pfb-rng"></label></div>
+    const cur = myProf();
+    let img = null, remove = false, dim = cur.bg_dim ?? 45, dirtyD = false, dirtyM = false;
+    const V = {d: {s: 1, x: 0, y: 0}, m: {s: 1, x: 0, y: 0}};
+    const s = openSheet(`<h3>Фон профиля</h3><p class="sub">Его увидят все, кто откроет твой профиль. Перетащи картинку в рамку, нажми Ctrl+V или выбери файл. Кадр для компа и для телефона настраиваются отдельно: тяни мышкой или пальцем, колёсиком или щипком — масштаб.</p>
+      <div class="pfb-wrap"><div class="pfb-col"><div class="pfb-fr" id="pfbF" data-k="d" tabindex="0" aria-label="Кадр для компа"><img alt="" draggable="false"><div class="pfb-dim"></div><div class="pfb-ui"><span>${avaHTML(cur, "md")}</span><b>${esc(NICK)}</b></div><span class="pfb-hint">Нажми или перетащи картинку</span></div><small class="pfb-l">На компе</small></div>
+        <div class="pfb-col"><div class="pfb-fr ph" id="pfbM" data-k="m" tabindex="0" aria-label="Кадр для телефона"><img alt="" draggable="false"><div class="pfb-dim"></div></div><small class="pfb-l">На телефоне</small></div></div>
+      <div class="pfb-ctl"><label>Масштаб · комп<input type="range" data-z="d" min="1" max="3" step="0.01" value="1" class="pfb-rng"></label><label>Масштаб · телефон<input type="range" data-z="m" min="1" max="4" step="0.01" value="1" class="pfb-rng"></label><label>Затемнение<input type="range" id="pfbDm" min="0" max="85" step="5" value="${dim}" class="pfb-rng"></label></div>
       <div class="acts" style="margin-top:14px"><button class="ib blue" id="pfbOk">Сохранить</button><button class="ib" id="pfbPick">Выбрать файл</button>${cur.bg ? `<button class="ib red" id="pfbDel">Убрать фон</button>` : ""}<button class="ib" id="pfbNo">Отмена</button></div>`, {wide: true});
-    const q = x => s.el.querySelector(x), F = q("#pfbF"), IM = q("#pfbI");
-    const geo = () => { const W = F.clientWidth, H = F.clientHeight, iw = img.naturalWidth, ih = img.naturalHeight, base = Math.max(W / iw, H / ih), k = base * v.s, w = iw * k, h = ih * k;
-      const mx = (w - W) / 2, my = (h - H) / 2; v.x = Math.max(-mx, Math.min(mx, v.x)); v.y = Math.max(-my, Math.min(my, v.y)); return {W, H, w, h, l: (W - w) / 2 + v.x, t: (H - h) / 2 + v.y, k}; };
-    let phT = 0;
-    const phone = () => { clearTimeout(phT); phT = setTimeout(() => { if (!img) return; try { q("#pfbP").style.backgroundImage = `url('${crop(640).toDataURL("image/jpeg", .7)}')`; } catch(_){ q("#pfbP").style.backgroundImage = `url('${IM.src}')`; } }, 60); };
-    const draw = () => {
-      const has = !!img && !remove; F.classList.toggle("blank", !has); IM.hidden = !has; q("#pfbH").hidden = has; q("#pfbZ").disabled = !has;
-      const g = has ? geo() : null; if (g) Object.assign(IM.style, {width: g.w + "px", height: g.h + "px", left: g.l + "px", top: g.t + "px"});
-      const ov = `linear-gradient(180deg,rgba(11,12,16,${dim / 100}) 0,rgba(11,12,16,${Math.min(1, dim / 100 + .15)}) 55%,#0b0c10 100%)`;
-      q("#pfbD1").style.background = ov; q("#pfbD2").style.background = ov; q("#pfbZ").value = v.s;
-      if (has) phone(); else q("#pfbP").style.backgroundImage = "";
-    };
-    const crop = (OW = 1920) => { const g = geo(), c = document.createElement("canvas"), OH = Math.round(OW / FA), r = OW / g.W; c.width = OW; c.height = OH;
+    const q = x => s.el.querySelector(x), FR_ = {d: q("#pfbF"), m: q("#pfbM")}, MAX = {d: 3, m: 4};
+    const geo = k => { const F = FR_[k], v = V[k], W = F.clientWidth, H = F.clientHeight, iw = img.naturalWidth, ih = img.naturalHeight, base = Math.max(W / iw, H / ih), w = iw * base * v.s, h = ih * base * v.s;
+      const mx = (w - W) / 2, my = (h - H) / 2; v.x = Math.max(-mx, Math.min(mx, v.x)); v.y = Math.max(-my, Math.min(my, v.y)); return {W, H, w, h, l: (W - w) / 2 + v.x, t: (H - h) / 2 + v.y}; };
+    const ov = () => `linear-gradient(180deg,rgba(11,12,16,${dim / 100}) 0,rgba(11,12,16,${Math.min(1, dim / 100 + .15)}) 55%,#0b0c10 100%)`;
+    const draw = () => { const has = !!img && !remove;
+      ["d", "m"].forEach(k => { const F = FR_[k], I = F.querySelector("img"); F.classList.toggle("blank", !has); I.hidden = !has; F.querySelector(".pfb-dim").style.background = ov();
+        if (has){ const g = geo(k); Object.assign(I.style, {width: g.w + "px", height: g.h + "px", left: g.l + "px", top: g.t + "px"}); } q(`[data-z="${k}"]`).value = V[k].s; q(`[data-z="${k}"]`).disabled = !has; });
+      q("#pfbF .pfb-hint").hidden = has; };
+    const crop = (k, OW) => { const F = FR_[k], g = geo(k), r = OW / F.clientWidth, c = document.createElement("canvas"); c.width = OW; c.height = Math.round(F.clientHeight * r);
       const x = c.getContext("2d"); x.imageSmoothingQuality = "high"; x.drawImage(img, g.l * r, g.t * r, g.w * r, g.h * r); return c; };
-    const load = (src, fresh) => { const i = new Image(); if (!fresh) i.crossOrigin = "anonymous"; i.onload = () => { img = i; IM.src = src; isNew = fresh; dirty = fresh; remove = false; v = {s: 1, x: 0, y: 0}; requestAnimationFrame(draw); }; i.onerror = () => { if (!fresh) toast("Старый фон не открылся — выбери картинку заново"); }; i.src = src; };
+    const load = (src, fresh) => { const i = new Image(); if (!fresh) i.crossOrigin = "anonymous";
+      i.onload = () => { img = i; FR_.d.querySelector("img").src = src; FR_.m.querySelector("img").src = src; remove = false; V.d = {s: 1, x: 0, y: 0}; V.m = {s: 1, x: 0, y: 0}; dirtyD = dirtyM = !!fresh; requestAnimationFrame(draw); };
+      i.onerror = () => { if (!fresh) toast("Старый фон не открылся — выбери картинку заново"); }; i.src = src; };
     const take = f => { if (!f || !f.type.startsWith("image/")) return; load(URL.createObjectURL(f), true); };
     const pick = () => { const i = document.createElement("input"); i.type = "file"; i.accept = "image/*"; i.onchange = () => take(i.files[0]); i.click(); };
     if (cur.bg) load(publicUrl(cur.bg), false);
-    // сдвиг мышкой и пальцем, щипок и колесо — масштаб
-    const pts = new Map(); let d0 = null;
-    F.addEventListener("pointerdown", e => { if (!img || remove){ pick(); return; } F.setPointerCapture(e.pointerId); pts.set(e.pointerId, {x: e.clientX, y: e.clientY}); d0 = null; });
-    F.addEventListener("pointermove", e => { if (!pts.has(e.pointerId)) return; const p0 = pts.get(e.pointerId);
-      if (pts.size === 1){ v.x += e.clientX - p0.x; v.y += e.clientY - p0.y; }
-      else { const [a, b] = [...pts.values()], d = Math.hypot(a.x - b.x, a.y - b.y); if (d0) v.s = Math.max(1, Math.min(3, v.s * d / d0)); d0 = d; }
-      pts.set(e.pointerId, {x: e.clientX, y: e.clientY}); dirty = true; draw(); });
-    const up = e => { pts.delete(e.pointerId); d0 = null; }; F.addEventListener("pointerup", up); F.addEventListener("pointercancel", up);
-    F.addEventListener("wheel", e => { if (!img) return; e.preventDefault(); v.s = Math.max(1, Math.min(3, v.s * (e.deltaY < 0 ? 1.08 : 1 / 1.08))); dirty = true; draw(); }, {passive: false});
-    q("#pfbZ").oninput = e => { v.s = +e.target.value; dirty = true; draw(); };
+    const mark = k => { if (k === "d") dirtyD = true; else dirtyM = true; };
+    ["d", "m"].forEach(k => { const F = FR_[k], pts = new Map(); let d0 = null;
+      F.addEventListener("pointerdown", e => { if (!img || remove){ pick(); return; } F.setPointerCapture(e.pointerId); pts.set(e.pointerId, {x: e.clientX, y: e.clientY}); d0 = null; });
+      F.addEventListener("pointermove", e => { if (!pts.has(e.pointerId)) return; const p0 = pts.get(e.pointerId), v = V[k];
+        if (pts.size === 1){ v.x += e.clientX - p0.x; v.y += e.clientY - p0.y; }
+        else { const [a, b] = [...pts.values()], d = Math.hypot(a.x - b.x, a.y - b.y); if (d0) v.s = Math.max(1, Math.min(MAX[k], v.s * d / d0)); d0 = d; }
+        pts.set(e.pointerId, {x: e.clientX, y: e.clientY}); mark(k); draw(); });
+      const up = e => { pts.delete(e.pointerId); d0 = null; }; F.addEventListener("pointerup", up); F.addEventListener("pointercancel", up);
+      F.addEventListener("wheel", e => { if (!img) return; e.preventDefault(); V[k].s = Math.max(1, Math.min(MAX[k], V[k].s * (e.deltaY < 0 ? 1.08 : 1 / 1.08))); mark(k); draw(); }, {passive: false});
+      q(`[data-z="${k}"]`).oninput = e => { V[k].s = +e.target.value; mark(k); draw(); };
+      bindDrop(F, take); });
     q("#pfbDm").oninput = e => { dim = +e.target.value; draw(); };
-    q("#pfbPick").onclick = pick; bindDrop(F, take); pasteTarget = take;
+    q("#pfbPick").onclick = pick; pasteTarget = take;
     if (q("#pfbDel")) q("#pfbDel").onclick = () => { remove = true; img = null; draw(); };
     q("#pfbNo").onclick = () => s.close();
     addEventListener("resize", draw);
+    const toBlob = c => new Promise((ok, no) => { try { c.toBlob(x => x ? ok(x) : no(new Error("canvas")), "image/jpeg", .86); } catch(err){ no(err); } });
     q("#pfbOk").onclick = async () => { const b = q("#pfbOk"); b.disabled = true; b.textContent = "Сохраняю…";
       try { const patch = {bg_dim: dim};
-        if (remove) patch.bg = null;
-        else if (img && dirty){ const blob = await new Promise((ok, no) => { try { crop(1920).toBlob(x => x ? ok(x) : no(new Error("canvas")), "image/jpeg", .86); } catch(err){ no(err); } }); patch.bg = (await assets.upload(blob, {type: "image/jpeg"})).id; }
+        if (remove){ patch.bg = null; patch.bg_m = null; }
+        else if (img){
+          if (dirtyD) patch.bg = (await assets.upload(await toBlob(crop("d", 1920)), {type: "image/jpeg"})).id;
+          if (dirtyM || (dirtyD && !cur.bg_m)) patch.bg_m = (await assets.upload(await toBlob(crop("m", 780)), {type: "image/jpeg"})).id;
+        }
         if (await saveProf(patch)){ s.close(); toast(remove ? "Фон убран" : "Фон профиля сохранён"); }
         else { b.disabled = false; b.textContent = "Сохранить"; }
       } catch(err){ toast(err && err.code ? upErr(err) : "Не получилось обрезать картинку — выбери файл заново"); b.disabled = false; b.textContent = "Сохранить"; } };
@@ -7499,7 +7693,7 @@ body{overflow-x:clip}
     const kick = () => { clearTimeout(wSubT); wSubT = setTimeout(() => loadWall(true), 250); };
     SB.channel("nexus-wall")
       .on("postgres_changes", {event: "*", schema: "public", table: "wall_posts"}, p => { kick(); const n = p.new; if (p.eventType === "INSERT" && n && n.user_id !== ME.id && route !== "people") toast(`${frNick(n.user_id)} написал на стене`); })
-      .on("postgres_changes", {event: "*", schema: "public", table: "wall_comments"}, p => { kick(); const n = p.new; if (p.eventType === "INSERT" && n && n.user_id !== ME.id && WALL && WALL.posts.some(x => x.id === n.post_id && x.user_id === ME.id)) toast(`${frNick(n.user_id)} ответил на твой пост`); })
+      .on("postgres_changes", {event: "*", schema: "public", table: "wall_comments"}, kick)
       .on("postgres_changes", {event: "*", schema: "public", table: "wall_reactions"}, kick)
       .on("postgres_changes", {event: "*", schema: "public", table: "wall_comment_likes"}, kick)
       .on("postgres_changes", {event: "*", schema: "public", table: "showcases"}, () => { clearTimeout(subscribeWall.t); subscribeWall.t = setTimeout(() => loadFriends(true), 400); })
@@ -7536,7 +7730,7 @@ body{overflow-x:clip}
     if (!WALL){ loadWall(); return `<div class="fb-card"><p class="a-sub" style="margin:0">Загружаю стену…</p></div>`; }
     const posts = WALL.posts;
     return `<div class="fb-card wl">
-      <div class="wl-form">${avaHTML(myProf())}<div class="in-w"><textarea id="wlT" maxlength="4000" rows="2" placeholder="Что нового? Скриншот, мем, мнение о сериале…">${esc(wDraft.text)}</textarea>
+      <div class="wl-form">${avaHTML(myProf())}<div class="in-w"><textarea id="wlT" maxlength="4000" rows="2" placeholder="Что нового? Скриншот, мем, мнение о сериале… Отметить друга — @ник">${esc(wDraft.text)}</textarea>
         <div class="tools">${emoBar("p")}<label class="att" title="Прикрепить картинку">${ICON.img}<span>Фото</span><input type="file" id="wlF" accept="image/*" hidden></label><span class="pv" id="wlP">${wDraft.file ? `<img src="${URL.createObjectURL(wDraft.file)}" alt=""><button type="button" data-wfrm="1">✕</button>` : ""}</span><button class="send" type="button" id="wlGo">Опубликовать</button></div></div></div>
       ${WALL.failed ? `<p class="a-sub" style="margin:14px 0 0">Стена пока не загрузилась. Нажми «Обновить» наверху.</p>` : ""}
       ${posts.length ? posts.map(postHTML).join("") : `<div class="a-empty" style="margin-top:12px"><b>Стена пустая</b>Напиши первым — мем, скрин или что сейчас смотришь.</div>`}</div>`;
@@ -7560,7 +7754,8 @@ body{overflow-x:clip}
     const t = $("wlT"), body = t.value.trim(); if (!body && !wDraft.file){ t.focus(); return; }
     const b = $("wlGo"); b.disabled = true; b.textContent = "Публикую…";
     try { const image = wDraft.file ? await upload(wDraft.file) : null;
-      const {error} = await SB.from("wall_posts").insert({id: crypto.randomUUID(), user_id: ME.id, body: body || null, image, created_at: now()}); if (error) throw error;
+      const pid = crypto.randomUUID(); const {error} = await SB.from("wall_posts").insert({id: pid, user_id: ME.id, body: body || null, image, created_at: now()}); if (error) throw error;
+      notify(mentionedUids(body), "mention_post", "post:" + pid, body);
       wDraft = {text: "", file: null}; SND.click("soft"); await loadWall(true);
     } catch(err){ toast("Не опубликовалось: " + ((err && err.message) || err)); b.disabled = false; b.textContent = "Опубликовать"; }
   }
@@ -7569,6 +7764,8 @@ body{overflow-x:clip}
     const b = document.querySelector(`[data-csend="${CSS.escape(id)}"]`); if (b){ b.disabled = true; b.textContent = "…"; }
     try { const image = d.file ? await upload(d.file) : null;
       const {error} = await SB.from("wall_comments").insert({id: crypto.randomUUID(), post_id: id, user_id: ME.id, body: body || null, image, created_at: now()}); if (error) throw error;
+      const post = WALL && WALL.posts.find(x => x.id === id), men = mentionedUids(body); notify(men, "mention_comment", "comment:" + id, body);
+      if (post && post.user_id !== ME.id && !men.includes(post.user_id)) notify([post.user_id], "comment", "comment:" + id, body || "картинка");
       cDraft[id] = {text: "", file: null}; wAll.add(id); SND.click("soft"); await loadWall(true);
       setTimeout(() => { const c = $("wlC-" + id); if (c) c.focus(); }, 30);
     } catch(err){ toast("Не отправилось: " + ((err && err.message) || err)); if (b){ b.disabled = false; b.textContent = "Отправить"; } }
@@ -7651,7 +7848,7 @@ body{overflow-x:clip}
   function scBox(sc, mine){
     const add = mine ? `<button class="pf-add" type="button" data-scadd="${esc(sc.id)}"><i>${ICON.plus}</i><span>Добавить</span></button>` : "";
     const body = sc.entries.length || mine ? railHTML("pf-rail", sc.entries.map((e, i) => scCard(e, i, sc, mine)).join("") + add) : `<div class="pf-empty"><span>Пока пусто</span></div>`;
-    return `<section class="pf-box sc-box"><header><h3>${esc(sc.title)}<small>${sc.entries.length}</small></h3><span class="sc-k">${SC_KIND[sc.kind][0]}</span>${mine ? `<button class="pf-mini" data-scedit="${esc(sc.id)}">${ICON.edit}Настроить</button>` : ""}</header>${body}</section>`;
+    return `<section class="pf-box sc-box"><header><h3>${esc(sc.title)}<small>${sc.entries.length}</small></h3><span class="sc-k">${SC_KIND[sc.kind][0]}</span>${mine ? reordBtn("sc:" + sc.id, sc.entries.length) + `<button class="pf-mini" data-scedit="${esc(sc.id)}">${ICON.edit}Настроить</button>` : ""}</header>${body}</section>`;
   }
   function scFloor(uid, mine){
     const list = scList(uid);
@@ -7945,6 +8142,239 @@ body{overflow-x:clip}
       toast((ev.kind === "watch" ? "Постер" : "Картинка") + " скопирована — вставь в чат, а текст приглашения в подпись");
     } catch(_){ window.open(publicUrl(f.cover), "_blank"); toast("Браузер не дал скопировать — открыл картинку, сохрани её"); }
     el.disabled = false; });
+
+  // ================= 3.3: свой порядок на любой полке =================
+  const posOf = (x, k) => x && x.pos && typeof x.pos[k] === "number" ? x.pos[k] : null;
+  const byPos = (k, fb) => (a, b) => { const pa = posOf(a, k), pb = posOf(b, k); if (pa != null || pb != null) return (pa ?? 1e6) - (pb ?? 1e6) || (fb ? fb(a, b) : 0); return fb ? fb(a, b) : 0; };
+  const byFin = (a, b) => String(b.finishedAt || b.date || b.createdAt || "").localeCompare(String(a.finishedAt || a.date || a.createdAt || ""));
+  const SHELF = {
+    gnow: {t: "Сейчас играю", f: i => isGame(i) && i.now, fb: (a, b) => byAt("nowAt")(a, b)},
+    gfav: {t: "Любимые игры", f: i => isGame(i) && i.fav, fb: (a, b) => byAt("favAt")(a, b)},
+    gdone: {t: "Пройденные", f: i => isGame(i) && inLib(i) && gStatus(i.status) === "done", fb: byFin},
+    gdrop: {t: "Дроп", f: i => isGame(i) && inLib(i) && gStatus(i.status) === "dropped", fb: byFin},
+    kfav: {t: "Любимые фильмы и сериалы", f: i => !isGame(i) && i.fav, fb: (a, b) => byAt("favAt")(a, b)},
+    know: {t: "Смотрю", f: i => !isGame(i) && i.now && kNorm(i) !== "done", fb: (a, b) => byAt("nowAt")(a, b)},
+    kseen: {t: "Просмотренные", f: i => !isGame(i) && inLib(i) && kNorm(i) === "done", fb: (a, b) => String(b.date || "").localeCompare(String(a.date || "")) || byAt("createdAt")(a, b)},
+    kplan: {t: "Буду смотреть", f: i => !isGame(i) && (isFuture(i) || isSoon(i)), fb: (a, b) => byAt("createdAt")(a, b)},
+    rfav: {t: "Любимые тайтлы", rd: 1, f: r => r.fav, fb: (a, b) => byAt("favAt")(a, b)},
+    rnow: {t: "Сейчас читаю", rd: 1, f: r => r.now, fb: (a, b) => byAt("nowAt")(a, b)},
+    rdone: {t: "Прочитанные", rd: 1, f: r => rNorm(r.status) === "done", fb: (a, b) => byAt("updatedAt")(a, b)},
+    rread: {t: "Читаю", rd: 1, f: r => rNorm(r.status) === "reading", fb: (a, b) => recentFirst(a, b)},
+  };
+  const shelfOf = (k, pool) => pool.filter(SHELF[k].f).sort(byPos(k, SHELF[k].fb));
+  const reordBtn = (k, n) => n > 1 ? `<button class="pf-mini" type="button" data-reord="${k}" title="Расставить перетаскиванием">${ICON.drag}Расставить</button>` : "";
+  function reorderSheet(title, list, cellHTML, onSave){
+    const s = openSheet(`<h3>${esc(title)}</h3><p class="sub">Перетаскивай обложки мышкой или пальцем. В таком порядке они будут стоять у тебя и у друзей.</p>
+      <div class="og" id="og">${list.map(x => `<div class="og-c" data-oid="${esc(x.id)}">${cellHTML(x)}<span>${esc(x.title || x.t || "")}</span></div>`).join("")}</div>
+      <div class="acts"><button class="ib blue" id="ogOk">Сохранить</button><button class="ib" id="ogNo">Отмена</button></div>`, {wide: true});
+    const box = s.el.querySelector("#og"); let drag = null;
+    const flip = mv => { const cs = [...box.children], r0 = new Map(cs.map(c => [c, c.getBoundingClientRect()])); mv();
+      cs.forEach(c => { if (c === (drag && drag.c)) return; const a = r0.get(c), b = c.getBoundingClientRect(), dx = a.left - b.left, dy = a.top - b.top; if (!dx && !dy) return;
+        c.style.transition = "none"; c.style.transform = `translate(${dx}px,${dy}px)`; requestAnimationFrame(() => { c.style.transition = "transform .28s cubic-bezier(.2,.9,.3,1.1)"; c.style.transform = ""; }); }); };
+    box.addEventListener("pointerdown", e => { const c = e.target.closest(".og-c"); if (!c || e.button) return; e.preventDefault(); drag = {c, x: e.clientX, y: e.clientY, on: false}; try { box.setPointerCapture(e.pointerId); } catch(_){} });
+    box.addEventListener("pointermove", e => { if (!drag) return;
+      if (!drag.on){ if (Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 5) return; drag.on = true; drag.c.classList.add("lift"); }
+      const t = document.elementFromPoint(e.clientX, e.clientY), o = t && t.closest(".og-c");
+      if (!o || o === drag.c || o.parentNode !== box) return;
+      const cs = [...box.children], from = cs.indexOf(drag.c), to = cs.indexOf(o);
+      flip(() => box.insertBefore(drag.c, from < to ? o.nextSibling : o)); SND.tick(.5); });
+    const end = () => { if (!drag) return; drag.c.classList.remove("lift"); drag = null; };
+    box.addEventListener("pointerup", end); box.addEventListener("pointercancel", end);
+    s.el.querySelector("#ogNo").onclick = () => s.close();
+    s.el.querySelector("#ogOk").onclick = async () => { const b = s.el.querySelector("#ogOk"); b.disabled = true; b.textContent = "Сохраняю…";
+      const bad = await onSave([...box.children].map(c => c.dataset.oid)); s.close(); toast(bad ? "Часть не сохранилась" : "Порядок сохранён"); render(); };
+  }
+  async function savePos(k, ids){
+    let bad = 0;
+    for (let i = 0; i < ids.length; i++){
+      if (SHELF[k].rd){ const r = (READS || []).find(x => x.id === ids[i]); if (!r || posOf(r, k) === i) continue; const row = await saveRead({...r, pos: {...(r.pos || {}), [k]: i}}); if (!row) bad++; }
+      else { const it = MYITEMS.find(x => x.id === ids[i]); if (!it || posOf(it, k) === i) continue; try { await db.doc("items/" + it.id).update({pos: {...(it.pos || {}), [k]: i}}); } catch(_){ bad++; } }
+    }
+    return bad;
+  }
+  function reord(key){
+    if (key.startsWith("sc:")){ const sc = scList(ME.id).find(x => x.id === key.slice(3)); if (!sc) return;
+      const list = sc.entries.map((e, i) => { const r = scResolve(e, sc); return {id: String(i), title: r.read ? r.read.title : r.it ? r.it.title : e.t, r, e}; });
+      reorderSheet(sc.title, list, x => x.r.read ? rCover(x.r.read) : posterHTML(x.r.it || scFreeItem(x.e, sc), {tgt: false, rate: false, badge: false}), async ids => { const c = JSON.parse(JSON.stringify(sc)); c.entries = ids.map(i => sc.entries[+i]); return (await scSave(c)) ? 0 : 1; });
+      return; }
+    if (key.startsWith("lib:")){ orderSheet(key.slice(4)); return; }
+    const S = SHELF[key]; if (!S) return;
+    const list = shelfOf(key, S.rd ? (READS || []) : MYITEMS);
+    if (list.length < 2){ toast("Тут пока нечего расставлять"); return; }
+    reorderSheet(S.t, list, x => S.rd ? rCover(x) : posterHTML(x, {tgt: false, rate: false}), ids => savePos(key, ids));
+  }
+  document.addEventListener("click", e => { const el = e.target.closest && e.target.closest("[data-reord]"); if (!el || !ME) return; e.preventDefault(); e.stopPropagation(); reord(el.dataset.reord); }, true);
+
+  // ================= 3.3: стопка игр — карты вылетают из колоды =================
+  function wirePile(el){
+    if (el.dataset.pile === "2") return; el.dataset.pile = "2";
+    const cards = [...el.querySelectorAll(".pf-c")]; if (!cards.length || !("IntersectionObserver" in window) || calmMotion) return;
+    cards.forEach((c, i) => { c.style.setProperty("--r", `${(((i * 37) % 7) - 3) * .9}deg`); c.classList.add("pend"); });
+    let q = [], busy = false;
+    const pump = () => { if (busy) return; const c = q.shift(); if (!c) return; busy = true; c.classList.remove("pend"); c.classList.add("dealt"); SND.deal(); setTimeout(() => { busy = false; pump(); }, 85); };
+    const io = new IntersectionObserver(es => { es.filter(x => x.isIntersecting && x.target.classList.contains("pend")).sort((a, b) => a.boundingClientRect.left - b.boundingClientRect.left).forEach(x => { if (!q.includes(x.target)) q.push(x.target); io.unobserve(x.target); }); pump(); }, {root: el, threshold: .35});
+    cards.forEach(c => io.observe(c));
+    // на всякий случай: через 4 секунды показываем всё, что так и не вылетело
+    setTimeout(() => cards.forEach(c => c.classList.remove("pend")), 4000);
+  }
+
+  // ================= 3.3: «Обновления» — что недавно добавлено =================
+  function updSheet(kind, uid){
+    const mine = !uid || (ME && uid === ME.id), pool = (mine ? MYITEMS : frItems(uid)).filter(i => kind === "games" ? isGame(i) : !isGame(i)).filter(i => i.createdAt).sort(byAt("createdAt")).slice(0, 40);
+    const st = it => isFuture(it) ? "на будущее" : isSoon(it) ? "ждёт релиз" : isGame(it) ? GSTATUS[gStatus(it.status)].toLowerCase() : kLab(it).l.toLowerCase();
+    let last = "", h = "";
+    pool.forEach(it => { const d = localDate(new Date(it.createdAt)); if (d !== last){ last = d; h += `<div class="upd-d">${d === today() ? "Сегодня" : d === addDays(today(), -1) ? "Вчера" : fmtDate(d)}</div>`; }
+      h += `<button class="fgs-r" ${mine ? `data-id="${esc(it.id)}"` : `data-fi="${esc(uid + "/" + it.id)}"`}>${posterHTML(it, {rate: false, tgt: false})}<span class="t"><b>${esc(it.title)}</b><small>${esc(st(it))}${genres(it)[0] ? " · " + esc(genres(it)[0].toLowerCase()) : ""}</small></span>${typeof it.rating === "number" ? `<span class="r ${rateCls(it.rating)}">${num1(it.rating)}</span>` : ""}</button>`; });
+    const s = openSheet(`<h3>Обновления · ${kind === "games" ? "игры" : "кино"}</h3><p class="sub">${mine ? "Что ты добавлял последним" : `Что ${esc(profOf(uid).nick || "")} добавлял последним`}</p><div class="fgs upd">${h || `<p class="sub">Пока ничего.</p>`}</div>`, {wide: true});
+    s.el.addEventListener("click", e => { if (e.target.closest("[data-id],[data-fi]")) s.close(); }, true);
+  }
+
+  // ================= 3.3: видеокассеты в кино =================
+  const vhsHTML = (it, attr, sub) => { const h = rHue(it.title), cv = it.cover ? publicUrl(it.cover) : "";
+    return `<button class="vhs" ${attr} style="--h:${h}" title="${esc(it.title)}"><span class="sp">${cv ? `<span class="cv" style="background-image:url('${cv}')"></span>` : ""}<i class="lab">${esc(it.title)}</i>${typeof it.rating === "number" ? `<em class="rt ${rateCls(it.rating)}">${num1(it.rating)}</em>` : ""}<b class="br">VHS</b></span><span class="fr">${posterHTML(it, {tgt: false})}${sub ? `<small class="cap">${sub}</small>` : ""}</span></button>`; };
+  let lastPT = "mouse";
+  document.addEventListener("pointerdown", e => { lastPT = e.pointerType || "mouse"; }, true);
+  document.addEventListener("click", e => { const v = e.target.closest && e.target.closest(".vhs"); if (!v || lastPT === "mouse") return;
+    if (!v.classList.contains("out")){ e.preventDefault(); e.stopPropagation(); document.querySelectorAll(".vhs.out").forEach(x => x.classList.remove("out")); v.classList.add("out"); SND.deal(); } }, true);
+
+  // ================= 3.3: «ОЦЕНИТЬ» — по очереди всё без оценки =================
+  const rateQueue = kind => MYITEMS.filter(i => kind === "games" ? isGame(i) && inLib(i) && gStatus(i.status) !== "playing" : !isGame(i) && inLib(i) && kNorm(i) !== "playing").filter(i => typeof i.rating !== "number").sort(byAt("createdAt"));
+  const rateCta = kind => { if (!canWrite || FV) return ""; const n = rateQueue(kind).length; if (!n) return "";
+    return `<button class="rate-cta ${kind}" data-rateq="${kind}"><span class="rc-ic">${ICON.star}</span><span class="rc-t"><b>ОЦЕНИТЬ</b><small>${n} ${plural(n, kind === "games" ? "игра ждёт" : "запись ждёт", kind === "games" ? "игры ждут" : "записи ждут", kind === "games" ? "игр ждут" : "записей ждут")} оценки — по очереди, колесом</small></span><span class="rc-go">›</span></button>`; };
+  function rateSheet(kind){
+    const q = rateQueue(kind); if (!q.length){ toast("Всё уже оценено"); return; }
+    let i = 0, done = 0;
+    const s = openSheet(`<div class="rq" id="rq"></div>`, {wide: true, onClose: () => render()});
+    const box = s.el.querySelector("#rq");
+    const step = () => {
+      if (i >= q.length){ box.innerHTML = `<div class="rq-end"><b>${done ? "Готово!" : "Пропущено всё"}</b><p class="sub">${done ? `Оценено ${done} из ${q.length}.` : "Можно вернуться позже."}</p><div class="acts"><button class="ib blue" id="rqX">Закрыть</button></div></div>`; box.querySelector("#rqX").onclick = () => s.close(); if (done) confetti(); return; }
+      const it = q[i];
+      box.innerHTML = `<div class="rq-top"><span>${i + 1} из ${q.length}</span><div class="rq-pb"><i style="width:${i / q.length * 100}%"></i></div></div>
+        <div class="rq-card">${posterHTML(it, {tgt: false, rate: false})}<div><h3>${esc(it.title)}</h3><p class="sub">${esc([isGame(it) ? GSTATUS[gStatus(it.status)] : kLab(it).l, it.year, genres(it).slice(0, 2).join(", ")].filter(Boolean).join(" · "))}</p></div></div>
+        ${wheelHTML("rqW", null)}
+        <div class="acts" style="margin-top:14px"><button class="ib blue" id="rqOk" disabled>Оценить и дальше</button><button class="ib" id="rqSkip">Пропустить</button><button class="ib" id="rqStop">Хватит</button></div>`;
+      wireWheel("rqW", v => { box.querySelector("#rqOk").disabled = v == null; });
+      const sync = () => { const b = box.querySelector("#rqOk"); if (b) b.disabled = wheelVal("rqW") == null; };
+      box.querySelector("#rqW").addEventListener("scroll", () => setTimeout(sync, 160), {passive: true, capture: true});
+      box.querySelector("#rqW").addEventListener("click", () => setTimeout(sync, 400));
+      box.querySelector("#rqOk").onclick = async () => { const v = wheelVal("rqW"); if (v == null) return; const b = box.querySelector("#rqOk"); b.disabled = true;
+        try { await write(it.id, {rating: v}); done++; SND.click("soft"); } catch(_){ toast("Не сохранилось"); } i++; step(); };
+      box.querySelector("#rqSkip").onclick = () => { i++; step(); };
+      box.querySelector("#rqStop").onclick = () => s.close();
+    };
+    step();
+  }
+  document.addEventListener("click", e => { const el = e.target.closest && e.target.closest("[data-rateq],[data-upd]"); if (!el || !ME) return;
+    if (el.dataset.rateq){ rateSheet(el.dataset.rateq); return; }
+    const [k, u] = el.dataset.upd.split(":"); updSheet(k, u || null); });
+
+  // ================= 3.3: «Подробнее» в календаре выходов =================
+  let FULL_ID = null, pdX = 0, pdY = 0;
+  document.addEventListener("pointerdown", e => { pdX = e.clientX; pdY = e.clientY; }, true);
+  function openFull(id){ const it = items.find(i => i.id === id); if (!it) return; FULL_ID = id; openId = id; useWorld(it); isGame(it) ? openGame(it) : openKino(it); pfViewExtras(it); }
+  document.addEventListener("click", e => { const el = e.target.closest && e.target.closest("[data-relmore]"); if (!el) return; e.preventDefault(); e.stopPropagation();
+    if (Math.hypot(e.clientX - pdX, e.clientY - pdY) > 8) return;
+    const k = el.dataset.relmore; if (k.includes("/")) friendItemSheet(k); else openFull(k); }, true);
+
+  // ================= 3.3: уведомления, колокольчик, упоминания =================
+  let NTF = [], ntfOpen = false;
+  async function loadNtf(){
+    if (!SB || !ME) return;
+    const {data, error} = await SB.from("notifications").select("*").order("created_at", {ascending: false}).limit(60);
+    if (!error) NTF = data || []; syncBell();
+  }
+  function subscribeNtf(){
+    if (!SB || !ME) return;
+    SB.channel("nexus-ntf-" + ME.id).on("postgres_changes", {event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${ME.id}`}, p => {
+      const n = p.new; if (!n || NTF.some(x => x.id === n.id)) return; NTF.unshift(n); syncBell(); const t = ntfText(n);
+      toast(t.replace(/<[^>]+>/g, "")); SND.click(); sysNote("NEXUS", t.replace(/<[^>]+>/g, ""), () => ntfGo(n));
+      if (ntfOpen) bellPop(true);
+    }).subscribe();
+  }
+  const ntfText = n => { const who = `<b>${esc(profOf(n.actor).nick || "кто-то")}</b>`;
+    return n.kind === "mention_post" ? `${who} отметил тебя в посте` : n.kind === "mention_comment" ? `${who} отметил тебя в комментарии` : n.kind === "comment" ? `${who} ответил на твой пост` : `${who} зовёт тебя`; };
+  const bellInv = () => (EV && ME ? myInvites() : []).map(m => ({inv: true, m, e: evById(m.event_id), ts: m.updated_at || (evById(m.event_id) || {}).created_at || ""})).filter(x => x.e);
+  const ntfUnread = () => NTF.filter(n => !n.read).length + bellInv().length;
+  function syncBell(){ const b = $("bellBtn"); if (!b) return; const n = ntfUnread(), d = b.querySelector(".bell-n"); d.hidden = !n; d.textContent = n > 9 ? "9+" : n; b.classList.toggle("on", !!n); }
+  function ntfGo(n){
+    const [k, id] = String(n.ref || "").split(":"); if (!id) return;
+    actTab = "wall"; lsSet("nexus_acttab", "wall"); if (k === "comment") wOpen.add(id);
+    const jump = () => { const el = document.querySelector(`[data-wp="${CSS.escape(id)}"]`); if (el){ el.scrollIntoView({behavior: "smooth", block: "center"}); el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); } };
+    if (route === "people") renderPeople(); else go("people");
+    setTimeout(jump, 350); setTimeout(jump, 1200);
+  }
+  function bellPop(keep){
+    document.querySelectorAll(".ntf-pop").forEach(x => x.remove()); if (!keep && ntfOpen){ ntfOpen = false; return; }
+    ntfOpen = true; const b = $("bellBtn"), r = b.getBoundingClientRect(), pop = document.createElement("div"); pop.className = "ntf-pop";
+    const inv = bellInv(), all = [...inv, ...NTF.map(n => ({n, ts: n.created_at}))].sort((a, x) => String(x.ts).localeCompare(String(a.ts)));
+    pop.innerHTML = `<div class="ntf-h"><b>Уведомления</b>${NTF.some(n => !n.read) ? `<button type="button" data-ntfall="1">Прочитать всё</button>` : ""}</div><div class="ntf-l">${all.length ? all.map(x => {
+      if (x.inv){ const e = x.e, f = e.kind === "watch" ? filmItem(e) : null;
+        return `<button class="ntf-r unread" data-ntfev="${esc(evRoute(e))}">${avaHTML(profOf(x.m.invited_by || e.owner), "sm")}<span class="t"><span><b>${esc(frNick(x.m.invited_by || e.owner))}</b> зовёт ${e.kind === "watch" ? "смотреть" : "на"} «${esc(f ? f.title || e.title : e.title)}»</span><small>${esc(evIn(e) || evWhen(e))} · ждёт ответа</small></span><i class="ntf-k inv">${ICON.calendar}</i></button>`; }
+      const n = x.n; return `<button class="ntf-r${n.read ? "" : " unread"}" data-ntf="${esc(n.id)}">${avaHTML(profOf(n.actor), "sm")}<span class="t"><span>${ntfText(n)}</span>${n.body ? `<em>«${esc(n.body)}»</em>` : ""}<small>${esc(agoTs(n.created_at))}</small></span><i class="ntf-k">${n.kind === "comment" ? ICON.chat : "@"}</i></button>`; }).join("")
+      : `<p class="ntf-e">Пока тихо. Сюда придут упоминания, ответы на посты и приглашения.</p>`}</div>`;
+    document.body.appendChild(pop);
+    const w = pop.offsetWidth; pop.style.left = Math.max(8, Math.min(innerWidth - w - 8, r.right - w)) + "px"; pop.style.top = (r.bottom + 8) + "px";
+    const unread = NTF.filter(n => !n.read).map(n => n.id);
+    if (unread.length) setTimeout(async () => { if (!ntfOpen) return; const {error} = await SB.from("notifications").update({read: true}).in("id", unread); if (!error){ NTF.forEach(n => { if (unread.includes(n.id)) n.read = true; }); syncBell(); } }, 1500);
+  }
+  document.addEventListener("click", async e => {
+    const t = e.target; if (!t.closest) return;
+    if (t.closest("#bellBtn")){ if (!ME){ toast("Сначала войди"); return; } bellPop(false); return; }
+    const pop = t.closest(".ntf-pop");
+    if (!pop && ntfOpen){ ntfOpen = false; document.querySelectorAll(".ntf-pop").forEach(x => x.remove()); return; }
+    if (!pop) return;
+    const r = t.closest("[data-ntf]"), ev = t.closest("[data-ntfev]"), all = t.closest("[data-ntfall]");
+    if (all){ const ids = NTF.filter(n => !n.read).map(n => n.id); if (ids.length){ await SB.from("notifications").update({read: true}).in("id", ids); NTF.forEach(n => n.read = true); syncBell(); bellPop(true); } return; }
+    if (ev){ ntfOpen = false; pop.remove(); go(ev.dataset.ntfev); return; }
+    if (r){ const n = NTF.find(x => x.id === r.dataset.ntf); ntfOpen = false; pop.remove(); if (n) ntfGo(n); }
+  });
+  addEventListener("resize", () => { if (ntfOpen){ ntfOpen = false; document.querySelectorAll(".ntf-pop").forEach(x => x.remove()); } });
+  // кого отметили: @ник в тексте
+  const reEsc = s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  function mentionedUids(text){
+    if (!FR || !text) return [];
+    const t = String(text).toLowerCase();
+    return FR.profiles.filter(p => p.nick && (!ME || p.user_id !== ME.id) && new RegExp("@" + reEsc(p.nick.toLowerCase()) + "(?![\\p{L}\\p{N}_])", "u").test(t)).map(p => p.user_id);
+  }
+  async function notify(uids, kind, ref, body){
+    const rows = [...new Set(uids)].filter(u => u && ME && u !== ME.id).map(u => ({user_id: u, actor: ME.id, kind, ref, body: body ? String(body).replace(/\s+/g, " ").slice(0, 140) : null}));
+    if (!rows.length) return; const {error} = await SB.from("notifications").insert(rows); if (error) console.warn("notify", error.message);
+  }
+  function linkMentions(html){
+    if (!FR || !html || html.indexOf("@") < 0) return html;
+    const ps = FR.profiles.filter(p => p.nick).sort((a, b) => b.nick.length - a.nick.length); if (!ps.length) return html;
+    const re = new RegExp("@(" + ps.map(p => reEsc(esc(p.nick))).join("|") + ")(?![\\p{L}\\p{N}_])", "giu");
+    return html.replace(re, (m, nk) => { const p = ps.find(x => esc(x.nick).toLowerCase() === nk.toLowerCase()); if (!p) return m; const me = ME && p.user_id === ME.id;
+      return `<button class="mention${me ? " me" : ""}" ${me ? 'data-go="home"' : `data-user="${esc(p.user_id)}"`}>@${esc(p.nick)}</button>`; });
+  }
+  // подсказка ников при наборе «@»
+  let mnBox = null, mnTa = null, mnSel = 0, mnList = [];
+  const mnClose = () => { if (mnBox){ mnBox.remove(); mnBox = null; } mnTa = null; };
+  function mnShow(ta){
+    const pos = ta.selectionStart ?? ta.value.length, m = ta.value.slice(0, pos).match(/(?:^|[\s(])@([\p{L}\p{N}_.-]{0,16})$/u);
+    if (!m || !FR){ mnClose(); return; }
+    const qq = m[1].toLowerCase(); mnList = FR.profiles.filter(p => p.nick && (!ME || p.user_id !== ME.id) && p.nick.toLowerCase().startsWith(qq)).slice(0, 6);
+    if (!mnList.length){ mnClose(); return; }
+    mnTa = ta; mnSel = Math.min(mnSel, mnList.length - 1);
+    if (!mnBox){ mnBox = document.createElement("div"); mnBox.className = "mn-pop"; document.body.appendChild(mnBox);
+      mnBox.addEventListener("pointerdown", e => { e.preventDefault(); const b = e.target.closest("[data-mn]"); if (b) mnPick(+b.dataset.mn); }); }
+    mnBox.innerHTML = `<div class="h">Отметить</div>` + mnList.map((p, i) => `<button type="button" data-mn="${i}" class="${i === mnSel ? "on" : ""}">${avaHTML(p, "sm")}<span>${esc(p.nick)}</span></button>`).join("");
+    const r = ta.getBoundingClientRect(), h = mnBox.offsetHeight; mnBox.style.left = Math.max(8, Math.min(innerWidth - mnBox.offsetWidth - 8, r.left)) + "px";
+    mnBox.style.top = (r.bottom + h + 8 > innerHeight && r.top - h - 6 > 0 ? r.top - h - 6 : r.bottom + 6) + "px";
+  }
+  function mnPick(i){
+    const ta = mnTa, p = mnList[i]; if (!ta || !p) return;
+    const pos = ta.selectionStart ?? ta.value.length, before = ta.value.slice(0, pos).replace(/@([\p{L}\p{N}_.-]{0,16})$/u, "@" + p.nick + " ");
+    ta.value = before + ta.value.slice(pos); ta.setSelectionRange(before.length, before.length); ta.dispatchEvent(new Event("input", {bubbles: true})); mnClose(); ta.focus();
+  }
+  const isWallTa = t => t && t.tagName === "TEXTAREA" && (t.id === "wlT" || /^wlC-/.test(t.id));
+  document.addEventListener("input", e => { if (isWallTa(e.target)){ mnSel = 0; mnShow(e.target); } });
+  document.addEventListener("keydown", e => { if (!mnBox || e.target !== mnTa) return;
+    if (e.key === "ArrowDown" || e.key === "ArrowUp"){ e.preventDefault(); e.stopPropagation(); mnSel = (mnSel + (e.key === "ArrowDown" ? 1 : -1) + mnList.length) % mnList.length; mnShow(mnTa); }
+    else if (e.key === "Enter" || e.key === "Tab"){ e.preventDefault(); e.stopImmediatePropagation(); mnPick(mnSel); }
+    else if (e.key === "Escape"){ e.stopPropagation(); mnClose(); } }, true);
+  document.addEventListener("focusout", e => { if (e.target === mnTa) setTimeout(mnClose, 120); });
+  addEventListener("resize", () => { clearTimeout(applySecBg.t); applySecBg.t = setTimeout(applySecBg, 200); });
 
   // ================= запуск =================
   readHash(); render();
