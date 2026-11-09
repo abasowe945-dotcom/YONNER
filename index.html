@@ -3279,6 +3279,57 @@ html:has(body.view-open),body.view-open{overflow:hidden}
   .sh-back:active{background:rgba(255,255,255,.16)}
   .sh > .sh-top + h3{padding-right:0}
 }
+
+/* ===== 3.7: перенос списков ===== */
+.imp-seg{display:inline-flex;justify-self:start;align-self:start;width:max-content;gap:2px;padding:3px;margin:10px 0 4px;border-radius:12px;background:rgba(127,127,140,.16);max-width:100%}
+.imp-seg small{font:500 11.5px/1 var(--ios);opacity:.7;margin-left:2px}
+.imp-seg button{display:inline-flex;align-items:center;gap:5px;height:32px;padding:0 14px;border:0;border-radius:9px;background:none;color:inherit;opacity:.75;font:600 13.5px/1 var(--ios);cursor:pointer;white-space:nowrap}
+.imp-seg button[aria-pressed="true"]{background:var(--imp-on,#fff);color:#111;opacity:1;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.imp-seg button:not([aria-pressed="true"]):hover{opacity:1}
+.imp-seg button i{font-style:normal;font-size:16px;opacity:.6}
+.sh .imp-seg{margin:6px 0 10px}
+.imp-src{display:flex;gap:6px;margin:0 0 14px;flex-wrap:wrap}
+.imp-src button{height:36px;padding:0 16px;border-radius:18px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:#fff;font:700 13.5px/1 var(--ios);cursor:pointer}
+.imp-src button[aria-pressed="true"]{background:var(--c);border-color:var(--c);color:#fff}
+.imp-steps{margin:0 0 12px;padding-left:20px;color:#c7c7cc;font:500 13.5px/1.55 var(--ios)}
+.imp-steps a{color:#64d2ff}
+.imp-ta{min-height:90px;font-size:13px!important}
+.imp-kps{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:10px 0 2px;color:#8e8e93;font:500 13px/1 var(--ios)}
+.imp-kps span{margin-right:2px}
+.imp-kps button{height:30px;padding:0 12px;border-radius:15px;border:1px solid rgba(255,255,255,.14);background:none;color:#fff;font:600 12.5px/1 var(--ios);cursor:pointer}
+.imp-kps button[aria-pressed="true"]{background:#fff;color:#111;border-color:#fff}
+.imp-note{margin:10px 0 0;color:#8e8e93;font:500 12.5px/1.45 var(--ios)}
+.imp-wait{display:flex;align-items:center;gap:10px;margin:16px 0 0;color:#c7c7cc;font:500 14px/1 var(--ios)}
+.imp-spin{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;animation:impSpin .8s linear infinite}
+@keyframes impSpin{to{transform:rotate(360deg)}}
+.imp-err{margin:14px 0 0;padding:10px 12px;border-radius:12px;background:rgba(255,69,58,.12);color:#ff8a80;font:500 13.5px/1.4 var(--ios)}
+.imp-sum{margin:18px 0 10px;padding-top:14px;border-top:1px solid rgba(255,255,255,.08);color:#c7c7cc;font:500 14px/1.3 var(--ios)}
+.imp-sum b{color:#fff}
+.imp-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.imp-chips button{display:inline-flex;align-items:center;gap:5px;height:32px;padding:0 12px;border-radius:16px;border:1px solid rgba(255,255,255,.14);background:none;color:#8e8e93;font:600 13px/1 var(--ios);cursor:pointer;text-decoration:line-through}
+.imp-chips button[aria-pressed="true"]{background:rgba(48,209,88,.14);border-color:rgba(48,209,88,.45);color:#fff;text-decoration:none}
+.imp-chips button svg{width:13px;height:13px;color:#30d158}
+.imp-chips small{opacity:.6;font-weight:500}
+.imp-l{display:grid;gap:2px;max-height:min(46vh,420px);overflow:auto;margin:0 -6px;padding:0 6px;border-radius:12px}
+.imp-r{display:flex;align-items:center;gap:10px;padding:6px;border-radius:10px;cursor:pointer}
+.imp-r:hover{background:rgba(255,255,255,.05)}
+.imp-r input{flex:none;width:18px;height:18px;margin:0;accent-color:#0a84ff}
+.imp-r .cv{flex:none;width:32px;height:46px;border-radius:5px;overflow:hidden;background:#2c2c2e;display:grid;place-items:center}
+.imp-r .cv img{width:100%;height:100%;object-fit:cover}.imp-r .cv i{font:700 14px/1 var(--ios);font-style:normal;color:#8e8e93}
+.imp-r .t{min-width:0;flex:1;display:grid;gap:3px}
+.imp-r .t b{font:600 14px/1.2 var(--ios);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.imp-r .t small{color:#8e8e93;font:500 12px/1.2 var(--ios);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.imp-r .st{flex:none;display:flex;align-items:center;gap:6px;color:#8e8e93;font:500 12px/1 var(--ios)}
+.imp-r .st em{font-style:normal;font-weight:800;padding:3px 6px;border-radius:6px;background:rgba(255,255,255,.08)}
+.imp-r .st em.green{color:#30d158}.imp-r .st em.yellow{color:#ffd60a}.imp-r .st em.red{color:#ff6961}
+.imp-r.have{opacity:.45;cursor:default}
+.imp-go{display:flex;gap:8px;margin-top:12px}
+.imp-bar{position:relative;margin-top:12px;height:30px;border-radius:10px;background:rgba(255,255,255,.07);overflow:hidden}
+.imp-bar i{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,#0a84ff,#30d158);transition:width .3s}
+.imp-bar.ok i{background:rgba(48,209,88,.35)}
+.imp-bar span{position:relative;display:block;padding:0 12px;line-height:30px;font:600 12.5px/30px var(--ios);color:#fff}
+.imp-l2{display:none}
+@media (max-width:640px){.imp-l1,.imp-seg small{display:none}.imp-l2{display:inline}.imp-seg{width:auto}.imp-r .st{flex-direction:column;align-items:flex-end;gap:4px;font-size:11px}.imp-seg button{padding:0 11px;font-size:13px}}
 /* «ОЦЕНИТЬ» */
 .rate-cta{position:relative;display:flex;align-items:center;gap:14px;width:100%;margin:22px 0 0;padding:14px 18px;border:0;border-radius:16px;cursor:pointer;color:#1b1200;text-align:left;background:linear-gradient(110deg,#ffd60a,#ff9f0a 55%,#ff6b00);box-shadow:0 14px 34px rgba(255,159,10,.32),inset 0 1px 0 rgba(255,255,255,.5);overflow:hidden;transition:transform .25s cubic-bezier(.3,1.5,.4,1)}
 .rate-cta::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.55) 50%,transparent 65%);background-size:250% 100%;animation:ctaShine 3.2s ease-in-out infinite}
@@ -4903,6 +4954,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
           <div>${posterBox()}</div>
           <form class="k-fields" id="editForm" novalidate>
             <h2 class="k-title" style="font-size:40px;margin:0">${lock === "future" ? (isNew ? "На будущее" : "Изменить: на будущее") : lock === "soon" ? (isNew ? "Ждать релиз" : "Изменить релиз") : isNew ? "Новое кино" : "Правка"}</h2>
+            ${isNew && !lock ? impSeg("kino", "Один фильм") : ""}
             ${lock ? `<p style="margin:0;color:var(--k-dim);text-transform:none;letter-spacing:0">${lock === "future" ? "Попадёт в «На будущее» и в пул рулетки." : "Попадёт в календарь выходов. Дата премьеры подтянется из Кинопоиска."}</p>` : ""}
             <div class="af-row"><p class="af-cap">Ссылка на Кинопоиск</p>
               <div class="af-link"><span class="lk">${LINK_I}<input class="k-in" id="f_url" inputmode="url" autocomplete="off" placeholder="kinopoisk.ru/film/301"></span><button type="button" class="k-btn white sm" id="f_urlGo">Заполнить</button></div>
@@ -5466,6 +5518,12 @@ html:has(body.view-open),body.view-open{overflow:hidden}
   // ================= патчноуты =================
   // Новые версии добавляются В НАЧАЛО списка. n — новое, c — изменено, f — исправлено, r — удалено.
   const PATCHES = [
+    {v: "3.7", date: "2026-11-09", title: "Перенос списков с Кинопоиска, MyShows и MangaLib", kind: "major", sec: {
+      n: ["<b>Перенос списков</b>: при добавлении фильма или тайтла переключи «Один фильм» → «Весь список» — и все твои фильмы и сериалы переедут разом. То же есть в профиле → «Перенести списки»",
+        "<b>MyShows</b>: впиши ник — подтянутся все сериалы и аниме со статусами (смотрю, досмотрел, буду смотреть, бросил), оценками, сериями и постерами",
+        "<b>MangaLib</b>: вставь ссылку на профиль — закладки встанут на полки Читалки: читаю, прочитано, в планах, любимые, с главами и обложками",
+        "<b>Кинопоиск</b>: открой свои оценки, скопируй страницу целиком и вставь — фильмы, годы, оценки и даты разберутся сами",
+        "Перед переносом видно весь список: можно снять лишнее или целые группы, а то, что уже есть на полке, пропускается"]}},
     {v: "3.6", date: "2026-11-09", title: "Таймер до конца работы и «Назад» в окнах", kind: "minor", sec: {
       n: ["<b>Таймер в шапке</b> рядом с часами: красным «ОСТАЛОСЬ РАБОТАТЬ» до конца смены с секундами, после — «смена окончена»",
         "<b>Свой рабочий день</b>: нажми на таймер или зайди в профиль → «Рабочий день» — начало и конец смены, рабочие дни, можно совсем скрыть таймер. У каждого свои настройки"],
@@ -6101,6 +6159,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     const s = openSheet(`<h3>Профиль</h3><p class="sub">${esc(ME.email || "")}</p>
       <div class="acts" style="align-items:center">${avaHTML(myProf(), "md")}<button class="ib" id="pfAva">Аватар</button><button class="ib" id="pfNick" style="flex:1">Ник: <b style="margin-left:6px">${esc(NICK)}</b></button></div>
       <div class="acts" style="margin-top:10px"><button class="ib" id="pfBd" style="flex:1">День рождения: <b style="margin-left:6px">${MEP && MEP.birthday ? bdLabel(MEP.birthday) : "не указан"}</b></button></div>
+      <div class="acts" style="margin-top:10px"><button class="ib" data-impopen="all" style="flex:1">Перенести списки: <b style="margin-left:6px">Кинопоиск · MyShows · MangaLib</b></button></div>
       <div class="acts" style="margin-top:10px"><button class="ib" data-worksheet="1" style="flex:1">Рабочий день: <b style="margin-left:6px">${(() => { const W = workCfg(); return W.on ? `${W.start}–${W.end}` : "таймер скрыт"; })()}</b></button></div>
       <div class="av-lb">Фоны разделов</div>
       <div class="sb-grid">${Object.entries(SEC_NAMES).map(([k, l]) => { const c = SECBG && SECBG[k]; return `<button data-secbg="${k}" class="${c && c.img ? "on" : ""}" style="${c && c.img ? `background-image:linear-gradient(rgba(0,0,0,.15),rgba(0,0,0,.55)),url('${publicUrl(c.img)}')` : ""}">${l}</button>`; }).join("")}</div>
@@ -6113,7 +6172,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     s.el.querySelector("#pfAva").onclick = () => { s.close(); avaSheet(false); };
     s.el.querySelector("#pfPw").onclick = () => { s.close(); passwordSheet(false); };
     s.el.querySelector("#pfBd").onclick = () => { s.close(); bdaySheet(); };
-    s.el.querySelectorAll("[data-secbg],[data-theme-open],[data-worksheet]").forEach(b => b.addEventListener("click", () => s.close()));
+    s.el.querySelectorAll("[data-secbg],[data-theme-open],[data-worksheet],[data-impopen]").forEach(b => b.addEventListener("click", () => s.close()));
     s.el.querySelectorAll("[data-secbg]").forEach(b => bindDrop(b, f => { s.close(); bgSheet(b.dataset.secbg, f); }));
     s.el.querySelector("#pfExp").onclick = e => runBackup(e.currentTarget);
     s.el.querySelector("#pfImpF").onchange = async e => {
@@ -7291,7 +7350,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     const s = openSheet(`<div class="rs3">
       <div class="rs3-cv" id="rsCv" title="Постер: перетащи картинку, нажми или Ctrl+V">${cvHTML()}</div>
       <div class="rs3-f">
-        <h3>${isNew ? "Новый тайтл" : esc(r.title)}</h3>
+        <h3>${isNew ? "Новый тайтл" : esc(r.title)}</h3>${isNew ? impSeg("read", "Один тайтл") : ""}
         ${hint ? `<div class="rs-hint"><b>com-x не пускает роботов</b>Заполни вручную или нажми лупу — поищу по каталогам.</div>` : ""}
         <label class="f">Название<span class="rs-q"><input class="in" id="rsTi" value="${esc(r.title || "")}" placeholder="Как называется" autocomplete="off"><button type="button" class="rs-find" id="rsFind" title="Поискать обложку и данные по названию">${ICON.search}</button></span></label>
         <div class="rs-sug" id="rsSug" hidden></div>
@@ -8829,6 +8888,141 @@ html:has(body.view-open),body.view-open{overflow:hidden}
   });
   document.addEventListener("input", e => { const t = e.target; if (t && t.id && t.id.startsWith("bkC-")){ bkCDraft[t.id.slice(4)] = t.value; t.style.height = "auto"; t.style.height = Math.min(140, t.scrollHeight) + "px"; } });
   document.addEventListener("keydown", e => { const t = e.target; if (t && t.id && t.id.startsWith("bkC-") && e.key === "Enter" && !e.shiftKey && !document.querySelector(".mn-pop:not([hidden])")){ e.preventDefault(); bkSend(t.id.slice(4)); } });
+
+
+  // ================= 3.7: перенос списков из Кинопоиска, MyShows и MangaLib =================
+  const IMP = {
+    kp: {n: "Кинопоиск", kind: "kino", c: "#ff6200"},
+    ms: {n: "MyShows", kind: "kino", c: "#1e88e5"},
+    ml: {n: "MangaLib", kind: "read", c: "#f5a623"}};
+  const IMP_ST = {kino: [["playing", "Смотрю"], ["done", "Просмотрено"], ["future", "Буду смотреть"], ["dropped", "Бросил"]],
+    read: [["reading", "Читаю"], ["done", "Прочитано"], ["plan", "В планах"], ["dropped", "Брошено"]]};
+  const impSeg = (kind, one) => `<div class="imp-seg" role="tablist"><button type="button" aria-pressed="true">${one}</button><button type="button" data-impopen="${kind}"><span class="imp-l1">Перенести весь список</span><span class="imp-l2">Весь список</span><small>${kind === "read" ? "MangaLib" : "Кинопоиск · MyShows"}</small><i>›</i></button></div>`;
+  document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-impopen]"); if (!b) return; e.preventDefault(); importSheet(b.dataset.impopen); });
+  // разбор текста со страницы оценок Кинопоиска (Ctrl+A → Ctrl+C)
+  function parseKpList(txt){
+    const L = String(txt || "").split(/\r?\n/).map(s => s.replace(/ /g, " ").trim()).filter(Boolean);
+    const isNum = s => /^(10|[1-9])([.,]\d)?$/.test(s), isIdx = s => /^\d{1,5}\.?$/.test(s), isDate = s => /^\d{1,2}\.\d{1,2}\.\d{4}/.test(s);
+    const junk = s => /^(оценк|мои оценки|фильмы|сериалы|сортир|показать|все|страниц|следующ|предыдущ|буду смотреть|избранное|рецензи|друзья|подписк|кинопоиск|войти|меню|\d+\s+(оценк|фильм))/i.test(s);
+    const yrParen = /^(.+?)\s*\(([^()]*?)((?:19|20)\d{2})(?:\s*[–—-]\s*(?:(?:19|20)\d{2}|\.\.\.)?)?\)\s*$/;
+    const yrLine = /^(?:(.+?),\s*)?((?:19|20)\d{2})(?:\s*[–—-]\s*(?:(?:19|20)\d{2}|\.\.\.)?)?(?:\s*[,•·].*)?$/;
+    const titleOk = s => s.length > 0 && s.length < 140 && /\p{L}/u.test(s) && !isDate(s) && !junk(s) && !/^\d+\s*мин/.test(s);
+    const heads = [];
+    for (let i = 0; i < L.length; i++){
+      const s = L[i]; let m = s.match(yrParen);
+      if (m && titleOk(m[1])){ heads.push({i, end: i, title: m[1].trim(), year: +m[3], series: /сериал|мини/i.test(m[2]) || /[–—-]/.test(s.slice(s.lastIndexOf("(")))}); continue; }
+      const n = L[i + 1];
+      if (n && titleOk(s) && !yrParen.test(s) && !isNum(s) && !isIdx(s)){ const k = n.match(yrLine); if (k && (!k[1] || titleOk(k[1]))){ heads.push({i, end: i + 1, title: s, orig: k[1] && k[1] !== s ? k[1].trim() : null, year: +k[2], series: /[–—-]/.test(n) || /сериал/i.test(n)}); i++; } }
+    }
+    const pre = heads.map(h => h.i > 0 && isIdx(L[h.i - 1]) ? parseInt(L[h.i - 1]) : null);
+    const idxMode = heads.length > 1 && pre.filter((v, j) => v != null && j && pre[j - 1] != null && v === pre[j - 1] + 1).length >= (heads.length - 1) * .6;
+    const out = heads.map((h, j) => { const stop = j + 1 < heads.length ? heads[j + 1].i - (idxMode ? 1 : 0) : L.length;
+      const r = {ext: "kp:" + normT(h.title) + h.year, title: h.title, orig: h.orig || null, year: h.year, type: h.series ? "series" : "movie", rating: null, date: null};
+      for (let x = h.end + 1; x < stop && x <= h.end + 6; x++){ const s = L[x];
+        if (!r.orig && /^(.+?),\s*\d+\s*мин/.test(s)){ r.orig = s.match(/^(.+?),\s*\d+\s*мин/)[1]; continue; }
+        if (r.rating == null && isNum(s)){ r.rating = Math.min(10, parseFloat(s.replace(",", "."))); continue; }
+        const d = s.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})/); if (d && !r.date){ r.date = `${d[3]}-${d[2].padStart(2, "0")}-${d[1].padStart(2, "0")}`; } }
+      return r; });
+    if (out.length) return out;
+    // запасной вариант: по названию в строке, «Название (2014) 8»
+    return L.filter(titleOk).slice(0, 2000).map(s => { const m = s.match(/^(.+?)(?:\s*\(((?:19|20)\d{2})\))?(?:\s*[—–-]?\s*(10|[1-9])(?:\s*\/\s*10)?)?$/) || [s, s];
+      return {ext: "kp:" + normT(m[1]) + (m[2] || ""), title: m[1].trim(), year: m[2] ? +m[2] : null, type: "movie", rating: m[3] ? +m[3] : null}; });
+  }
+  async function impCoverId(url){
+    if (!url || !assets) return null;
+    try { const r = await fetch(`${String(CFG.SUPABASE_URL).replace(/\/$/, "")}/functions/v1/import?img=${encodeURIComponent(url)}`); if (!r.ok) return null;
+      const b = await r.blob(); if (!b.type.startsWith("image/") || b.size < 800) return null; return (await assets.upload(b, {type: b.type})).id; } catch(_){ return null; }
+  }
+  const rKey = t => normT(t).replace(/\s+/g, "");
+  function importSheet(mode){
+    if (!ME){ toast("Сначала войди"); return; }
+    const srcs = Object.entries(IMP).filter(([, v]) => mode === "all" || v.kind === mode);
+    let src = srcs[0][0], kind = IMP[src].kind, list = null, who = "", kpSt = "done", busy = false, off = new Set(["dropped"]), pick = new Set();
+    const s = openSheet(`<h3>${mode === "read" ? "Перенос закладок" : "Перенос списка"}</h3><p class="sub" id="impSub">Всё переедет на твои полки разом — со статусами, ${mode === "read" ? "главами" : mode === "kino" ? "сериями" : "сериями и главами"} и оценками. Что уже есть, пропущу.</p>
+      ${srcs.length > 1 ? `<div class="imp-src" id="impSrc">${srcs.map(([k, v]) => `<button type="button" data-src="${k}" style="--c:${v.c}" aria-pressed="${k === src}">${esc(v.n)}</button>`).join("")}</div>` : ""}
+      <div id="impIn"></div><div id="impRes"></div>`, {wide: true});
+    s.el.classList.add("imp-sheet");
+    const q = x => s.el.querySelector(x);
+    const have = it => kind === "read" ? (READS || []).some(r => [r.title, r.origTitle].filter(Boolean).some(t => rKey(t) === rKey(it.title) || (it.orig && rKey(t) === rKey(it.orig))))
+      : myKeys().hasIt({type: it.type, title: it.title, originalTitle: it.orig});
+    const stOf = it => src === "kp" ? kpSt : it.status;
+    const drawIn = () => {
+      q("#impRes").innerHTML = ""; list = null;
+      q("#impIn").innerHTML = src === "kp" ? `<ol class="imp-steps"><li>Открой <a href="https://www.kinopoisk.ru/" target="_blank" rel="noopener">Кинопоиск</a> → свой профиль → <b>Оценки</b> (или «Буду смотреть»)</li><li>Нажми <b>Ctrl+A</b>, затем <b>Ctrl+C</b> — на телефоне «Выбрать всё» → «Копировать»</li><li>Вставь сюда — разберу сам</li></ol>
+          <textarea class="in imp-ta" id="impQ" rows="4" placeholder="Вставь сюда всё со страницы оценок"></textarea>
+          <div class="imp-kps"><span>Положить как</span><button type="button" data-kps="done" aria-pressed="true">Просмотрено</button><button type="button" data-kps="future" aria-pressed="false">Буду смотреть</button></div>
+          <div class="acts"><button class="ib blue" id="impGo">Разобрать</button></div><p class="imp-note">Кинопоиск не даёт забрать список по ссылке, поэтому так. Постеров в тексте нет — карточки будут с названием, постер можно поставить потом.</p>`
+        : `<label class="f">${src === "ms" ? "Ник или ссылка на профиль MyShows" : "Ссылка на профиль MangaLib"}<input class="in" id="impQ" autocomplete="off" placeholder="${src === "ms" ? "myshows.me/твой_ник" : "mangalib.me/ru/user/1234567"}"></label>
+          <div class="acts"><button class="ib blue" id="impGo">Найти</button></div><p class="imp-note">${src === "ms" ? "Профиль должен быть открытым. Ник — то, что после myshows.me/ в адресе профиля." : "Открой свой профиль на MangaLib и скопируй адрес из браузера. Закладки должны быть открыты в настройках приватности."}</p>`;
+      const inp = q("#impQ"); setTimeout(() => inp.focus(), 60);
+      inp.addEventListener("keydown", e => { if (e.key === "Enter" && src !== "kp"){ e.preventDefault(); load(); } });
+      if (src === "kp") inp.addEventListener("paste", () => setTimeout(load, 30));
+      q("#impGo").onclick = load;
+      s.el.querySelectorAll("[data-kps]").forEach(b => b.onclick = () => { kpSt = b.dataset.kps; s.el.querySelectorAll("[data-kps]").forEach(x => x.setAttribute("aria-pressed", x === b)); if (list) drawRes(); });
+    };
+    const load = async () => {
+      const v = q("#impQ").value.trim(); if (!v){ q("#impQ").focus(); return; }
+      const res = q("#impRes"); res.innerHTML = `<p class="imp-wait"><i class="imp-spin"></i>Собираю список…</p>`;
+      try {
+        if (src === "kp"){ list = parseKpList(v); who = "Кинопоиск"; if (!list.length) throw new Error("Не нашёл в тексте ни одного фильма. Скопируй страницу целиком — вместе с названиями и годами"); }
+        else { const {data, error} = await SB.functions.invoke("import", {body: {src: src === "ms" ? "myshows" : "mangalib", q: v}});
+          if (error || !data) throw new Error("Сервис не ответил, попробуй ещё раз"); if (data.error) throw new Error(data.error);
+          list = data.items || []; who = data.who || ""; if (!list.length) throw new Error("Список пустой"); }
+        const seen = new Set(); list = list.filter(x => x.title && !seen.has(x.ext) && seen.add(x.ext));
+        list.forEach(x => x.have = have(x)); pick = new Set(list.filter(x => !x.have).map(x => x.ext)); drawRes();
+      } catch(err){ res.innerHTML = `<p class="imp-err">${esc((err && err.message) || "Не получилось")}</p>`; }
+    };
+    const drawRes = () => {
+      const sts = IMP_ST[kind], cnt = st => list.filter(x => stOf(x) === st).length;
+      const vis = list.filter(x => !off.has(stOf(x)));
+      const n = vis.filter(x => pick.has(x.ext) && !x.have).length, haveN = list.filter(x => x.have).length;
+      const lab = x => { const st = stOf(x), l = (sts.find(z => z[0] === st) || [, st])[1]; return kind === "read" && st === "dropped" ? "брошено → в планы" : l.toLowerCase(); };
+      const meta = x => [x.year, kind === "read" ? x.kind : KTYPES[x.type], kind === "read" ? (x.chRead ? `${x.chRead}${x.chTotal ? "/" + x.chTotal : ""} гл.` : "") : (x.epT ? `${x.epW || 0}/${x.epT} сер.` : ""), x.date ? fmtShort(x.date) : ""].filter(Boolean).join(" · ");
+      q("#impRes").innerHTML = `<div class="imp-sum"><b>${list.length}</b> ${plural(list.length, "тайтл", "тайтла", "тайтлов")}${who && src !== "kp" ? ` у <b>${esc(who)}</b>` : ""}${haveN ? ` · ${haveN} уже на полке` : ""}</div>
+        ${src === "kp" ? "" : `<div class="imp-chips">${sts.filter(([k]) => cnt(k)).map(([k, l]) => `<button type="button" data-ist="${k}" aria-pressed="${!off.has(k)}">${off.has(k) ? "" : CHECK_I}${l}<small>${cnt(k)}</small></button>`).join("")}</div>`}
+        <div class="imp-l">${vis.map(x => `<label class="imp-r${x.have ? " have" : ""}"><input type="checkbox" data-iext="${esc(x.ext)}" ${x.have ? "disabled" : pick.has(x.ext) ? "checked" : ""}><span class="cv">${x.cover ? `<img src="${esc(String(CFG.SUPABASE_URL).replace(/\/$/, "") + "/functions/v1/import?img=" + encodeURIComponent(x.cover))}" alt="" loading="lazy" onerror="this.remove()">` : `<i>${esc((x.title || "?").slice(0, 1))}</i>`}</span><span class="t"><b>${esc(x.title)}</b><small>${esc(meta(x))}</small></span><span class="st">${x.have ? "уже есть" : esc(lab(x))}${x.rating ? `<em class="${rateCls(x.rating)}">${num1(x.rating)}</em>` : ""}</span></label>`).join("")}</div>
+        <div class="imp-go"><button class="ib blue" id="impDo" ${n ? "" : "disabled"}>Перенести ${n}</button><button class="ib" id="impAll">${vis.every(x => x.have || pick.has(x.ext)) ? "Снять все" : "Выбрать все"}</button></div>
+        <div class="imp-bar" id="impBar" hidden><i></i><span></span></div>`;
+      q("#impRes").querySelectorAll("[data-ist]").forEach(b => b.onclick = () => { const k = b.dataset.ist; off.has(k) ? off.delete(k) : off.add(k); drawRes(); });
+      q("#impRes").querySelectorAll("[data-iext]").forEach(c => c.onchange = () => { c.checked ? pick.add(c.dataset.iext) : pick.delete(c.dataset.iext); const n2 = list.filter(x => !off.has(stOf(x)) && pick.has(x.ext) && !x.have).length; q("#impDo").textContent = `Перенести ${n2}`; q("#impDo").disabled = !n2; });
+      q("#impAll").onclick = () => { const all = vis.every(x => x.have || pick.has(x.ext)); vis.forEach(x => { if (!x.have) all ? pick.delete(x.ext) : pick.add(x.ext); }); drawRes(); };
+      q("#impDo").onclick = run;
+    };
+    const run = async () => {
+      if (busy) return; busy = true;
+      const todo = list.filter(x => !off.has(stOf(x)) && pick.has(x.ext) && !x.have);
+      const bar = q("#impBar"); bar.hidden = false; q("#impDo").disabled = true; q("#impAll").disabled = true;
+      let done = 0, fail = 0;
+      const tick = () => { bar.querySelector("i").style.width = (done / todo.length * 100) + "%"; bar.querySelector("span").textContent = `Переношу ${done} из ${todo.length}…`; };
+      tick();
+      const one = async x => {
+        const cover = x.cover ? await impCoverId(x.cover) : null, via = "import:" + IMP[src].n;
+        if (kind === "read"){
+          const r = {title: x.title, origTitle: x.orig || null, type: x.type || "manga", status: x.status === "dropped" ? "plan" : rNorm(x.status), fav: x.fav || null, favAt: x.fav ? now() : null,
+            myRating: x.rating ?? null, chRead: x.chRead || 0, chTotal: x.chTotal || null, url: x.url || null, cover: cover || null, coverUrl: null, via};
+          if (!(await saveRead(r))) throw 0;
+        } else {
+          const st = stOf(x), ser = isSerT(x.type);
+          const body = {type: x.type || "movie", title: x.title, originalTitle: x.orig || null, year: x.year || null, status: st, rating: st === "future" ? null : (x.rating ?? null),
+            createdAt: now(), updatedAt: now(), via};
+          if (cover) body.cover = cover;
+          if (ser){ body.epTotal = x.epT || null; body.epWatched = st === "done" && x.epT ? x.epT : (x.epW ?? null); }
+          if (st === "done"){ if (x.date){ body.date = x.date; } else body.noDate = true; }
+          if (st === "dropped") body.noDate = true;
+          await db.collection("items").add(body);
+        }
+      };
+      const q2 = [...todo]; const worker = async () => { while (q2.length){ const x = q2.shift(); try { await one(x); x.have = true; } catch(_){ fail++; } done++; tick(); } };
+      await Promise.all([worker(), worker(), worker()]);
+      busy = false; SND.paper && SND.paper("flip");
+      const msg = fail ? `Готово: ${done - fail}, не получилось ${fail}` : `Готово! Перенесено ${done} — уже на полках`; bar.querySelector("span").textContent = msg;
+      toast(`Перенесено ${done - fail} ${plural(done - fail, "тайтл", "тайтла", "тайтлов")} из ${IMP[src].n}`);
+      if (kind === "read" && route === "read") renderRead(); else render();
+      setTimeout(() => { if (s.closed) return; drawRes(); const b2 = q("#impBar"); b2.hidden = false; b2.classList.add("ok"); b2.querySelector("i").style.width = "100%"; b2.querySelector("span").textContent = msg; }, 900);
+    };
+    if (q("#impSrc")) q("#impSrc").onclick = e => { const b = e.target.closest("[data-src]"); if (!b || busy) return; src = b.dataset.src; kind = IMP[src].kind; q("#impSrc").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); drawIn(); };
+    drawIn();
+  }
 
   // ================= 3.4: «+» на полке Читалки — выбрать из своих тайтлов =================
   function readShelfPick(st, fav){
