@@ -3210,7 +3210,9 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
 @media (max-width:640px){.ff-r .w small{display:none}}
 
 /* ===== 3.5: комментарии в книге ===== */
-.bk-v .cm.on{background:#22252b;border-color:#22252b;color:#fbfaf6}
+.bk-v .bk-cmb span{font:700 12px/1 var(--ios)}
+.bk-v .bk-cmb.on{background:#22252b;border-color:#22252b;color:#fbfaf6}
+.bk-rep{margin-top:3px;padding:0;border:0;background:none;color:#7a7f89;font:600 11.5px/1 var(--ios);cursor:pointer}.bk-rep:hover{color:#22252b;text-decoration:underline}
 .bk-cl{display:grid;gap:8px;margin:10px 0 0 14px;padding-left:12px;border-left:2px solid #e4e0d5}
 .bk-cm{display:flex;gap:8px;align-items:flex-start}
 .bk-cm .fr-ava{flex:none;width:22px;height:22px;font-size:10px;margin-top:1px}
@@ -5390,7 +5392,8 @@ html:has(body.view-open),body.view-open{overflow:hidden}
   // Новые версии добавляются В НАЧАЛО списка. n — новое, c — изменено, f — исправлено, r — удалено.
   const PATCHES = [
     {v: "3.5.1", date: "2026-11-09", title: "Дата просмотра и прокрутка карточки", kind: "minor", sec: {
-      f: ["Дату просмотра снова можно вписать, даже если стояло «Без даты»: нажми на поле — галочка снимется сама. На телефоне кнопка «Без даты» больше не уезжает за край экрана",
+      f: ["<b>Книга жалоб</b>: кнопка «Ответить» теперь стоит под каждой записью (раньше она улетала наверх блокнота), а на любой комментарий можно ответить отдельно — подставится ник",
+        "Дату просмотра снова можно вписать, даже если стояло «Без даты»: нажми на поле — галочка снимется сама. На телефоне кнопка «Без даты» больше не уезжает за край экрана",
         "На телефоне фон карточки фильма или игры больше не цепляется пальцем — страница прокручивается, где бы ни начал свайп"]}},
     {v: "3.5", date: "2026-11-09", title: "Прошёл на YouTube, Лицензия и комментарии в книге", kind: "minor", sec: {
       n: ["<b>Прошёл на YouTube</b> — новый статус для игр, которые смотрел, а не играл: свой фильтр в библиотеке и своя полка в профиле. Цена и источник для них не нужны",
@@ -8643,7 +8646,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     const ent = f => { const vs = BOOK.votes.filter(v => v.feedback_id === f.id), up = vs.filter(v => v.v === 1), dn = vs.filter(v => v.v === -1), my = vs.find(v => v.user_id === ME.id);
       return `<article class="bk-e"><div class="bk-h">${avaHTML(profOf(f.user_id), "sm")}<b>${esc(nickOf(f.user_id))}</b><small>${esc(vkDate(f.created_at))}</small>${f.user_id === ME.id ? `<button class="bk-x" data-bkdel="${esc(f.id)}" title="Удалить">${ICON.x}</button>` : ""}</div>
         ${f.body ? `<p class="bk-t">${richText(f.body)}</p>` : ""}${f.image ? `<img class="bk-img" src="${esc(publicUrl(f.image))}" alt="" data-vkimg="${esc(f.image)}" loading="lazy">` : ""}
-        <div class="bk-v"><button class="up${my && my.v === 1 ? " on" : ""}" data-bkv="${esc(f.id)}:1">${THUMB_U}<b>${up.length || ""}</b></button><button class="dn${my && my.v === -1 ? " on" : ""}" data-bkv="${esc(f.id)}:-1">${THUMB_D}<b>${dn.length || ""}</b></button><button class="cm${bkOpen.has(f.id) ? " on" : ""}" data-bkc="${esc(f.id)}" title="Комментировать">${ICON.chat}<b>${(BOOK.comments || []).filter(c => c.feedback_id === f.id).length || ""}</b></button>${vs.length ? `<button class="who" data-bkwho="${esc(f.id)}">${avaStack(vs.map(v => v.user_id), 4)}<span>кто</span></button>` : ""}</div>${bkComments(f)}</article>`; };
+        <div class="bk-v"><button class="up${my && my.v === 1 ? " on" : ""}" data-bkv="${esc(f.id)}:1">${THUMB_U}<b>${up.length || ""}</b></button><button class="dn${my && my.v === -1 ? " on" : ""}" data-bkv="${esc(f.id)}:-1">${THUMB_D}<b>${dn.length || ""}</b></button><button class="bk-cmb${bkOpen.has(f.id) ? " on" : ""}" data-bkc="${esc(f.id)}" title="Ответить">${ICON.chat}<span>${(BOOK.comments || []).filter(c => c.feedback_id === f.id).length || "Ответить"}</span></button>${vs.length ? `<button class="who" data-bkwho="${esc(f.id)}">${avaStack(vs.map(v => v.user_id), 4)}<span>кто</span></button>` : ""}</div>${bkComments(f)}</article>`; };
     return `<div class="fb-card book"><div class="bk-rings"><i></i><i></i><i></i><i></i><i></i><i></i></div>
       <h3 class="bk-title">Книга жалоб<br>и предложений</h3><p class="bk-sub">Что бесит, чего не хватает, идеи для сайта</p>
       <div class="bk-form"><textarea id="bkT" rows="3" maxlength="3000" placeholder="Пиши как есть…">${esc(bookDraft.text)}</textarea>
@@ -8710,7 +8713,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
   function bkComments(f){
     const cms = (BOOK.comments || []).filter(c => c.feedback_id === f.id).sort((a, b) => String(a.created_at).localeCompare(String(b.created_at)));
     const open = bkOpen.has(f.id), shown = open ? cms : cms.slice(-2);
-    const cm = c => `<div class="bk-cm">${avaHTML(profOf(c.user_id), "xs")}<div class="bk-cb"><div class="bk-ch"><b>${esc(nickOf(c.user_id))}</b><small>${esc(vkDate(c.created_at))}</small>${c.user_id === ME.id ? `<button class="bk-x" data-bkcdel="${esc(c.id)}" title="Удалить">${ICON.x}</button>` : ""}</div><p>${richText(c.body)}</p></div></div>`;
+    const cm = c => `<div class="bk-cm">${avaHTML(profOf(c.user_id), "xs")}<div class="bk-cb"><div class="bk-ch"><b>${esc(nickOf(c.user_id))}</b><small>${esc(vkDate(c.created_at))}</small>${c.user_id === ME.id ? `<button class="bk-x" data-bkcdel="${esc(c.id)}" title="Удалить">${ICON.x}</button>` : ""}</div><p>${richText(c.body)}</p>${c.user_id !== ME.id ? `<button class="bk-rep" data-bkc="${esc(f.id)}" data-bkat="${esc(nickOf(c.user_id))}">Ответить</button>` : ""}</div></div>`;
     return `${cms.length > shown.length ? `<button class="bk-cmore" data-bkc="${esc(f.id)}">Показать все ${cms.length} ${plural(cms.length, "комментарий", "комментария", "комментариев")}</button>` : ""}
       ${shown.length ? `<div class="bk-cl">${shown.map(cm).join("")}</div>` : ""}
       ${open ? `<div class="bk-cf"><textarea id="bkC-${esc(f.id)}" rows="1" maxlength="1000" placeholder="Ответить…">${esc(bkCDraft[f.id] || "")}</textarea><button type="button" data-bkcs="${esc(f.id)}" title="Отправить">↵</button></div>` : ""}`;
@@ -8726,7 +8729,8 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     renderPeople(); setTimeout(() => { const n = $("bkC-" + id); if (n) n.focus(); }, 30);
   }
   document.addEventListener("click", async e => { const el = e.target.closest && e.target.closest("[data-bkc],[data-bkcs],[data-bkcdel]"); if (!el || !ME || !BOOK) return;
-    if (el.dataset.bkc){ const id = el.dataset.bkc; if (bkOpen.has(id) && el.classList.contains("cm")) bkOpen.delete(id); else bkOpen.add(id); renderPeople(); if (bkOpen.has(id)) setTimeout(() => { const n = $("bkC-" + id); if (n) n.focus(); }, 30); return; }
+    if (el.dataset.bkc){ const id = el.dataset.bkc; if (bkOpen.has(id) && el.classList.contains("bk-cmb")) bkOpen.delete(id); else bkOpen.add(id);
+      if (el.dataset.bkat){ const nk = "@" + el.dataset.bkat + " "; if (!(bkCDraft[id] || "").includes(nk)) bkCDraft[id] = nk + (bkCDraft[id] || ""); } renderPeople(); if (bkOpen.has(id)) setTimeout(() => { const n = $("bkC-" + id); if (n){ n.focus(); n.setSelectionRange(n.value.length, n.value.length); } }, 30); return; }
     if (el.dataset.bkcs){ bkSend(el.dataset.bkcs); return; }
     if (el.dataset.bkcdel){ if (!confirm("Удалить комментарий?")) return; const {error} = await SB.from("feedback_comments").delete().eq("id", el.dataset.bkcdel); if (error){ toast("Не удалилось"); return; } BOOK.comments = BOOK.comments.filter(c => c.id !== el.dataset.bkcdel); renderPeople(); }
   });
