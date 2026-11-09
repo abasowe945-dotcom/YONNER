@@ -3343,6 +3343,20 @@ html:has(body.view-open),body.view-open{overflow:hidden}
 .imp-bar span{position:relative;display:block;padding:0 12px;line-height:30px;font:600 12.5px/30px var(--ios);color:#fff}
 .imp-l2{display:none}
 @media (max-width:640px){.imp-l1,.imp-seg small{display:none}.imp-l2{display:inline}.imp-seg{width:auto}.imp-r .st{flex-direction:column;align-items:flex-end;gap:4px;font-size:11px}.imp-seg button{padding:0 11px;font-size:13px}}
+
+/* ===== 3.8: значок-цепочка «открыть источник» ===== */
+.ln{position:absolute;right:7px;top:7px;z-index:5;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:rgba(0,0,0,.66);color:#e5e5ea;box-shadow:0 0 0 1px rgba(255,255,255,.16);cursor:pointer;opacity:.8;transition:transform .18s cubic-bezier(.3,1.6,.5,1),opacity .15s,background .15s;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.ln svg{width:13px;height:13px;pointer-events:none}
+.ln:hover,.ln:focus-visible{opacity:1;transform:scale(1.18);background:#0a84ff;color:#fff;outline:none;box-shadow:0 4px 12px rgba(10,132,255,.5)}
+@media (hover:hover){.poster:not(:hover) .ln,.rx-cv:not(:hover) .ln{opacity:.55}}
+.rx-cv .ln{left:8px;top:30px;bottom:auto;width:24px;height:24px}
+.rx-cv:not(:has(.tp)) .ln{top:8px}
+.fd-row .ln,.nf-now .ln,.hm-now .ln,.mini-f .ln,.sx .ln,.gw-t .ln,.wpick .ln,.tt .ln,.tlb .ln,.ff-r .ln,.imp-r .ln,.pk .ln,.tlc-r .ln,.mn-pop .ln,.ntf .ln,.rs-top .ln,.hm-c .ln{display:none}
+.poster:has(.tgt) .ln{top:44px}
+.dvd-case .ln{top:auto;bottom:8px;right:8px}
+.rx-cv .ln{right:auto}
+.tv-c .ln{top:8px;right:auto;left:8px}
+.tv-c .poster:has(.tv-r) .ln{left:8px}
 /* «ОЦЕНИТЬ» */
 .rate-cta{position:relative;display:flex;align-items:center;gap:14px;width:100%;margin:22px 0 0;padding:14px 18px;border:0;border-radius:16px;cursor:pointer;color:#1b1200;text-align:left;background:linear-gradient(110deg,#ffd60a,#ff9f0a 55%,#ff6b00);box-shadow:0 14px 34px rgba(255,159,10,.32),inset 0 1px 0 rgba(255,255,255,.5);overflow:hidden;transition:transform .25s cubic-bezier(.3,1.5,.4,1)}
 .rate-cta::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.55) 50%,transparent 65%);background-size:250% 100%;animation:ctaShine 3.2s ease-in-out infinite}
@@ -3595,6 +3609,16 @@ html:has(body.view-open),body.view-open{overflow:hidden}
 
   // ================= постер =================
   const posStyle = p => { p = p || {}; const x = p.x ?? 50, y = p.y ?? 50, s = p.s ?? 1; return `object-position:${x}% ${y}%;transform:scale(${s});transform-origin:${x}% ${y}%`; };
+  // 3.8: ссылка на страницу, откуда добавили
+  const LINK_I2 = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
+  const srcLink = it => { if (!it) return null; const u = it.srcUrl || it.url; if (u && /^https?:\/\//i.test(u)) return u;
+    if (it.steamId && isGame(it)) return `https://store.steampowered.com/app/${encodeURIComponent(it.steamId)}/`;
+    if (it.kpId && !isGame(it)) return `https://www.kinopoisk.ru/film/${encodeURIComponent(it.kpId)}/`; return null; };
+  const linkName = u => { try { const hst = new URL(u).hostname.replace(/^www\./, ""); return /steam/.test(hst) ? "Steam" : /kinopoisk/.test(hst) ? "Кинопоиск" : /myshows/.test(hst) ? "MyShows" : /mangalib|lib\.social/.test(hst) ? "MangaLib" : /remanga/.test(hst) ? "ReManga" : hst; } catch(_){ return "сайт"; } };
+  const linkBadge = it => { const u = srcLink(it); return u ? `<span class="ln" role="link" tabindex="0" data-href="${esc(u)}" title="Открыть на ${esc(linkName(u))}" aria-label="Открыть на ${esc(linkName(u))}">${LINK_I2}</span>` : ""; };
+  ["pointerdown", "mousedown", "touchstart"].forEach(t => document.addEventListener(t, e => { if (e.target.closest && e.target.closest(".ln[data-href]")) e.stopPropagation(); }, {capture: true, passive: true}));
+  document.addEventListener("click", e => { const l = e.target.closest && e.target.closest(".ln[data-href]"); if (!l) return; e.preventDefault(); e.stopPropagation(); window.open(l.dataset.href, "_blank", "noopener"); }, true);
+  document.addEventListener("keydown", e => { const l = e.target.closest && e.target.closest(".ln[data-href]"); if (l && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); e.stopPropagation(); window.open(l.dataset.href, "_blank", "noopener"); } }, true);
   function posterHTML(it, o = {}){
     const img = it.cover ? `<img alt="" src="${blobUrl(it.cover)}" style="${posStyle(it.coverPos)}" onerror="this.remove()">` : "";
     const ph = it.cover ? "" : `<div class="ph">${esc(it.title)}</div>`;
@@ -3607,6 +3631,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     if (isGame(it) && hasActive(it) && o.tgt !== false) b += `<span class="tgt" title="Активный контракт">${ICON.target}</span>`;
     const s = isGame(it) && o.src ? srcOf(it) : null;
     if (s) b += `<span class="src-chip ${s}" title="${SRC_NAME[s]}">${SRC_ICON[s]}</span>`;
+    if (o.link !== false && !o.editable) b += linkBadge(it);
     const ed = o.editable ? ` editable" tabindex="0" role="button" aria-label="Изменить обложку` : "";
     const hint = o.editable ? `<span class="edit-hint">${it.cover ? "Изменить обложку" : "Добавить обложку"}</span>` : "";
     return `<div class="poster${ed}"${o.id ? ` id="${o.id}"` : ""}>${ph}${img}${b}${hint}</div>`;
@@ -5531,6 +5556,8 @@ html:has(body.view-open),body.view-open{overflow:hidden}
   // ================= патчноуты =================
   // Новые версии добавляются В НАЧАЛО списка. n — новое, c — изменено, f — исправлено, r — удалено.
   const PATCHES = [
+    {v: "3.8", date: "2026-11-09", title: "Ссылка на источник на постерах", kind: "minor", sec: {
+      n: ["<b>Значок-цепочка</b> в углу постера: нажми — откроется страница, по ссылке с которой добавляли игру, фильм, сериал или мангу (Steam, Кинопоиск, MyShows, MangaLib). Если добавляли вручную — значка нет"]}},
     {v: "3.7", date: "2026-11-09", title: "Перенос списков с Кинопоиска, MyShows и MangaLib", kind: "major", sec: {
       n: ["<b>Перенос списков</b>: при добавлении фильма или тайтла переключи «Один фильм» → «Весь список» — и все твои фильмы и сериалы переедут разом. То же есть в профиле → «Перенести списки»",
         "<b>MyShows</b>: впиши ник — подтянутся все сериалы и аниме со статусами (смотрю, досмотрел, буду смотреть, бросил), оценками, сериями и постерами",
@@ -7188,7 +7215,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
   }
   const rHue = t => { let h = 0; for (const c of String(t || "")) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
   const rCover = r => { const src = r.cover ? publicUrl(r.cover) : r.coverUrl, h = rHue(r.title);
-    return `<span class="rx-cv">${r.type ? `<span class="tp">${RTYPE[r.type] || ""}</span>` : ""}${r.myRating != null ? `<span class="rb ${rateCls(r.myRating)}">${num1(r.myRating)}</span>` : ""}${r.status === "done" ? `<span class="ok" title="Прочитано"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>` : ""}${r.status === "reading" && r.chTotal > (r.chRead || 0) ? `<span class="new">+${r.chTotal - (r.chRead || 0)}</span>` : ""}${src ? `<img src="${esc(src)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : ""}<span class="ph" style="--h:${h}"><b>${esc(r.title || "Без обложки")}</b>${r.year ? `<small>${esc(r.year)}</small>` : ""}</span></span>`; };
+    return `<span class="rx-cv">${r.type ? `<span class="tp">${RTYPE[r.type] || ""}</span>` : ""}${linkBadge(r)}${r.myRating != null ? `<span class="rb ${rateCls(r.myRating)}">${num1(r.myRating)}</span>` : ""}${r.status === "done" ? `<span class="ok" title="Прочитано"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>` : ""}${r.status === "reading" && r.chTotal > (r.chRead || 0) ? `<span class="new">+${r.chTotal - (r.chRead || 0)}</span>` : ""}${src ? `<img src="${esc(src)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : ""}<span class="ph" style="--h:${h}"><b>${esc(r.title || "Без обложки")}</b>${r.year ? `<small>${esc(r.year)}</small>` : ""}</span></span>`; };
   function renderRead(){
     appleHead("Читалка", `<button class="a-link" data-radd="1">+ Добавить</button>`);
     if (!ME){ $("aMain").innerHTML = `<div class="a-empty" style="margin-top:20px"><b>Нужно войти</b></div>`; return; }
@@ -9043,6 +9070,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
           const body = {type: x.type || "movie", title: x.title, originalTitle: x.orig || null, year: x.year || null, status: st, rating: st === "future" ? null : (x.rating ?? null),
             createdAt: now(), updatedAt: now(), via};
           if (cover) body.cover = cover;
+          if (src === "ms" && /^ms:\d+$/.test(x.ext)) body.srcUrl = `https://myshows.me/view/${x.ext.slice(3)}/`;
           if (ser){ body.epTotal = x.epT || null; body.epWatched = st === "done" && x.epT ? x.epT : (x.epW ?? null); }
           if (st === "done"){ if (x.date){ body.date = x.date; } else body.noDate = true; }
           if (st === "dropped") body.noDate = true;
