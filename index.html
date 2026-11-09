@@ -3298,6 +3298,19 @@ html:has(body.view-open),body.view-open{overflow:hidden}
 .imp-kps span{margin-right:2px}
 .imp-kps button{height:30px;padding:0 12px;border-radius:15px;border:1px solid rgba(255,255,255,.14);background:none;color:#fff;font:600 12.5px/1 var(--ios);cursor:pointer}
 .imp-kps button[aria-pressed="true"]{background:#fff;color:#111;border-color:#fff}
+.imp-faq{margin-top:14px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);overflow:hidden}
+.imp-faq-h{display:flex;align-items:center;gap:7px;padding:11px 14px 9px;color:#8e8e93;font:700 11.5px/1 var(--ios);letter-spacing:.06em;text-transform:uppercase}
+.imp-faq-h svg{width:14px;height:14px}
+.imp-faq details{border-top:1px solid rgba(255,255,255,.06)}
+.imp-faq summary{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;list-style:none;color:#fff;font:600 14px/1.3 var(--ios)}
+.imp-faq summary::-webkit-details-marker{display:none}
+.imp-faq summary::after{content:"";margin-left:auto;flex:none;width:8px;height:8px;border-right:2px solid #8e8e93;border-bottom:2px solid #8e8e93;transform:rotate(45deg) translate(-2px,-2px);transition:transform .2s}
+.imp-faq details[open] summary::after{transform:rotate(-135deg) translate(-2px,-2px)}
+.imp-faq summary:hover{background:rgba(255,255,255,.04)}
+.imp-faq-a{padding:0 14px 12px;color:#c7c7cc;font:500 13.5px/1.55 var(--ios)}
+.imp-faq-a ol,.imp-faq-a ul{margin:0;padding-left:20px}.imp-faq-a li{margin:3px 0}.imp-faq-a p{margin:6px 0 0}.imp-faq-a p:first-child{margin-top:0}
+.imp-faq-a a{color:#64d2ff}.imp-faq-a b{color:#fff}
+.imp-faq-a code{padding:1px 6px;border-radius:5px;background:rgba(255,255,255,.08);font:500 12.5px/1.4 ui-monospace,Menlo,Consolas,monospace;color:#fff}
 .imp-note{margin:10px 0 0;color:#8e8e93;font:500 12.5px/1.45 var(--ios)}
 .imp-wait{display:flex;align-items:center;gap:10px;margin:16px 0 0;color:#c7c7cc;font:500 14px/1 var(--ios)}
 .imp-spin{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;animation:impSpin .8s linear infinite}
@@ -5523,7 +5536,8 @@ html:has(body.view-open),body.view-open{overflow:hidden}
         "<b>MyShows</b>: впиши ник — подтянутся все сериалы и аниме со статусами (смотрю, досмотрел, буду смотреть, бросил), оценками, сериями и постерами",
         "<b>MangaLib</b>: вставь ссылку на профиль — закладки встанут на полки Читалки: читаю, прочитано, в планах, любимые, с главами и обложками",
         "<b>Кинопоиск</b>: открой свои оценки, скопируй страницу целиком и вставь — фильмы, годы, оценки и даты разберутся сами",
-        "Перед переносом видно весь список: можно снять лишнее или целые группы, а то, что уже есть на полке, пропускается"]}},
+        "Перед переносом видно весь список: можно снять лишнее или целые группы, а то, что уже есть на полке, пропускается",
+        "<b>Вопросы и подробная инструкция</b> под каждым источником: где взять ник или ссылку, как скопировать с телефона, что делать, если профиль скрыт, что переносится и куда"]}},
     {v: "3.6", date: "2026-11-09", title: "Таймер до конца работы и «Назад» в окнах", kind: "minor", sec: {
       n: ["<b>Таймер в шапке</b> рядом с часами: красным «ОСТАЛОСЬ РАБОТАТЬ» до конца смены с секундами, после — «смена окончена»",
         "<b>Свой рабочий день</b>: нажми на таймер или зайди в профиль → «Рабочий день» — начало и конец смены, рабочие дни, можно совсем скрыть таймер. У каждого свои настройки"],
@@ -8934,6 +8948,29 @@ html:has(body.view-open),body.view-open{overflow:hidden}
       const b = await r.blob(); if (!b.type.startsWith("image/") || b.size < 800) return null; return (await assets.upload(b, {type: b.type})).id; } catch(_){ return null; }
   }
   const rKey = t => normT(t).replace(/\s+/g, "");
+
+  const IMP_FAQ = {
+    ms: [
+      ["Где взять ник MyShows?", `<ol><li>Открой <a href="https://myshows.me/" target="_blank" rel="noopener">myshows.me</a> в браузере и войди.</li><li>Нажми на свою аватарку → «Профиль».</li><li>В адресной строке будет <code>myshows.me/ТВОЙ_НИК</code> — скопируй адрес целиком и вставь сюда. Можно вписать и просто ник.</li></ol><p>С телефона удобнее открыть сайт myshows.me в браузере: в приложении адрес профиля не видно.</p>`],
+      ["Пишет «профиль не найден» или список пустой", `<ul><li>Проверь ник — без пробелов и лишних символов, именно как в адресе профиля.</li><li>Профиль должен быть открытым: в настройках приватности MyShows разреши показывать профиль всем. Закрытый профиль сайт не видит.</li><li>Если только что поменял настройки — подожди минуту и нажми «Найти» ещё раз.</li></ul>`],
+      ["Что переносится и куда", `<ul><li><b>Смотрю</b> → «Смотрю», с числом просмотренных серий.</li><li><b>Досмотрел</b> → «Просмотрено», все серии отмечены.</li><li><b>Буду смотреть</b> → «На будущее».</li><li><b>Бросил</b> → «Брошено» (по умолчанию выключено — включи кнопкой над списком).</li><li>Оценки MyShows пятибалльные — умножаю на 2: ★4 станет 8.</li><li>Постеры, год, оригинальное название, аниме или сериал — тоже переносятся.</li></ul>`],
+      ["Что не переносится", `<p>Фильмы (MyShows не отдаёт их по нику), комментарии, даты просмотра отдельных серий и избранные эпизоды.</p>`],
+      ["Можно перенести ещё раз?", `<p>Да. То, что уже есть на полке, помечается «уже есть» и пропускается — дублей не будет. Удобно, если досмотрел что-то новое на MyShows.</p>`]],
+    ml: [
+      ["Где взять ссылку на профиль MangaLib?", `<ol><li>Открой <a href="https://mangalib.me/" target="_blank" rel="noopener">mangalib.me</a> и войди.</li><li>Нажми на аватарку → «Профиль».</li><li>Скопируй адрес из браузера — он вида <code>mangalib.me/ru/user/1234567</code>. Можно вставить и только число.</li></ol><p>В приложении: открой профиль → «Поделиться» → «Копировать ссылку».</p>`],
+      ["Пишет «закладки скрыты» или «не нашёл»", `<ul><li>На MangaLib открой настройки → приватность и разреши показывать закладки всем.</li><li>Проверь, что ссылка именно на профиль (<code>/user/…</code>), а не на мангу.</li><li>После смены настроек подожди минуту и нажми «Найти» ещё раз.</li></ul>`],
+      ["Что переносится и куда", `<ul><li><b>Читаю</b> → «Читаю», <b>Прочитано</b> → «Прочитано», <b>В планах</b> → «В планах».</li><li><b>Любимые</b> → в любимые (сердечко на полке).</li><li><b>Брошено</b> и свои папки → «В планах» (брошенное по умолчанию выключено).</li><li>Сколько глав прочитал, сколько вышло, твоя оценка, ссылка на тайтл и обложка.</li></ul>`],
+      ["Что не переносится", `<p>Ранобэ и аниме с других сайтов Lib, заметки к закладкам, история чтения по датам.</p>`],
+      ["Можно перенести ещё раз?", `<p>Да, повторный перенос добавит только новые тайтлы — то, что уже есть в Читалке, пропускается.</p>`]],
+    kp: [
+      ["Как скопировать оценки с компьютера", `<ol><li>Открой <a href="https://www.kinopoisk.ru/" target="_blank" rel="noopener">kinopoisk.ru</a> и войди.</li><li>Нажми на аватарку → «Оценки» (или «Буду смотреть»).</li><li>Нажми <b>Ctrl+A</b> (выделить всё), затем <b>Ctrl+C</b> (копировать). На Mac — ⌘A и ⌘C.</li><li>Вернись сюда, кликни в поле и нажми <b>Ctrl+V</b> — список разберётся сам.</li></ol>`],
+      ["Как сделать это с телефона", `<ol><li>Открой kinopoisk.ru в браузере, не в приложении — из приложения текст не скопировать.</li><li>В меню браузера включи «Версия для ПК» / «Полная версия сайта».</li><li>Зайди в «Оценки», зажми текст → «Выбрать всё» → «Копировать».</li><li>Вставь сюда долгим нажатием → «Вставить».</li></ol>`],
+      ["Оценок много, они на нескольких страницах", `<p>Кинопоиск показывает оценки по страницам. Скопируй первую страницу, перенеси, потом открой следующую и повтори — то, что уже перенесено, пропустится. Если внизу есть выбор «показывать по …», поставь максимум — страниц будет меньше.</p>`],
+      ["Перенести «Буду смотреть»", `<p>Открой на Кинопоиске список «Буду смотреть», скопируй так же и перед разбором выбери «Положить как → Буду смотреть». Фильмы встанут в «На будущее».</p>`],
+      ["Что переносится и куда", `<ul><li>Название, оригинальное название, год, твоя оценка и дата, когда поставил оценку — она станет датой просмотра.</li><li>Сериалы узнаю по пометке «сериал» или по годам вида 2008–2013.</li><li>Постеров в тексте страницы нет — карточки будут с названием. Постер легко поставить потом: открой карточку → «Редактировать» → вставь ссылку на фильм с Кинопоиска → «Заполнить».</li></ul>`],
+      ["Не нашлось ни одного фильма", `<ul><li>Скопируй страницу целиком — вместе с названиями и годами, а не только оценки.</li><li>Можно вставить и свой список, по фильму на строку: <code>Интерстеллар (2014) 10</code>.</li><li>Если всё равно не выходит — скинь скопированный текст в «Книгу жалоб и предложений», поправим разбор.</li></ul>`]],
+    all: [["Это безопасно?", `<p>Пароли не нужны и никуда не вводятся. Беру только то, что и так открыто в твоём профиле на этих сайтах, и ничего там не меняю.</p>`]]};
+  const impFaqHTML = src => `<div class="imp-faq"><div class="imp-faq-h">${ICON.info || ""}Вопросы и подробная инструкция</div>${[...IMP_FAQ[src], ...IMP_FAQ.all].map(([q, a]) => `<details><summary>${esc(q)}</summary><div class="imp-faq-a">${a}</div></details>`).join("")}</div>`;
   function importSheet(mode){
     if (!ME){ toast("Сначала войди"); return; }
     const srcs = Object.entries(IMP).filter(([, v]) => mode === "all" || v.kind === mode);
@@ -8951,9 +8988,9 @@ html:has(body.view-open),body.view-open{overflow:hidden}
       q("#impIn").innerHTML = src === "kp" ? `<ol class="imp-steps"><li>Открой <a href="https://www.kinopoisk.ru/" target="_blank" rel="noopener">Кинопоиск</a> → свой профиль → <b>Оценки</b> (или «Буду смотреть»)</li><li>Нажми <b>Ctrl+A</b>, затем <b>Ctrl+C</b> — на телефоне «Выбрать всё» → «Копировать»</li><li>Вставь сюда — разберу сам</li></ol>
           <textarea class="in imp-ta" id="impQ" rows="4" placeholder="Вставь сюда всё со страницы оценок"></textarea>
           <div class="imp-kps"><span>Положить как</span><button type="button" data-kps="done" aria-pressed="true">Просмотрено</button><button type="button" data-kps="future" aria-pressed="false">Буду смотреть</button></div>
-          <div class="acts"><button class="ib blue" id="impGo">Разобрать</button></div><p class="imp-note">Кинопоиск не даёт забрать список по ссылке, поэтому так. Постеров в тексте нет — карточки будут с названием, постер можно поставить потом.</p>`
+          <div class="acts"><button class="ib blue" id="impGo">Разобрать</button></div>${impFaqHTML("kp")}`
         : `<label class="f">${src === "ms" ? "Ник или ссылка на профиль MyShows" : "Ссылка на профиль MangaLib"}<input class="in" id="impQ" autocomplete="off" placeholder="${src === "ms" ? "myshows.me/твой_ник" : "mangalib.me/ru/user/1234567"}"></label>
-          <div class="acts"><button class="ib blue" id="impGo">Найти</button></div><p class="imp-note">${src === "ms" ? "Профиль должен быть открытым. Ник — то, что после myshows.me/ в адресе профиля." : "Открой свой профиль на MangaLib и скопируй адрес из браузера. Закладки должны быть открыты в настройках приватности."}</p>`;
+          <div class="acts"><button class="ib blue" id="impGo">Найти</button></div>${impFaqHTML(src)}`;
       const inp = q("#impQ"); setTimeout(() => inp.focus(), 60);
       inp.addEventListener("keydown", e => { if (e.key === "Enter" && src !== "kp"){ e.preventDefault(); load(); } });
       if (src === "kp") inp.addEventListener("paste", () => setTimeout(load, 30));
