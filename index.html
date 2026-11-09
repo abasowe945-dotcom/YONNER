@@ -3083,8 +3083,8 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
 .tle-b{display:grid;gap:4px;border-radius:12px;overflow:hidden}
 .tle-r{display:grid;grid-template-columns:96px minmax(0,1fr);min-height:84px;background:rgba(255,255,255,.04)}
 .tle-l{position:relative;display:grid;align-content:center;gap:4px;padding:6px;background:var(--c)}
-.tle-l input{width:100%;min-width:0;border:0;background:transparent;color:#111;font:800 17px/1.1 var(--ios);text-align:center;outline:none;padding:2px}
-.tle-l input:focus{background:rgba(255,255,255,.35);border-radius:5px}
+.tle-l input,.tle-l textarea{width:100%;min-width:0;border:0;background:transparent;color:#111;font:800 17px/1.1 var(--ios);text-align:center;outline:none;padding:2px;resize:none;overflow:hidden;display:block}
+.tle-l input:focus,.tle-l textarea:focus{background:rgba(255,255,255,.35);border-radius:5px}
 .tle-lb{display:flex;justify-content:center;gap:2px;opacity:.55;transition:opacity .2s}
 .tle-r:hover .tle-lb,.tle-l:focus-within .tle-lb{opacity:1}
 .tle-lb button{width:22px;height:22px;border:0;border-radius:5px;background:rgba(0,0,0,.18);color:#111;font:700 11px/1 var(--ios);cursor:pointer;padding:0}
@@ -3140,6 +3140,8 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
 .tmi-prog .bar{height:8px;border-radius:99px;background:var(--c-cell-out);overflow:hidden}
 .tmi-prog .bar i{display:block;height:100%;width:0;border-radius:inherit;background:linear-gradient(90deg,#ff7f7f,#ffdf7f,#7fff7f,#7fbfff);transition:width .25s}
 .tmi-prog small{color:var(--c-dim);font:500 12.5px/1.3 var(--ios)}
+.tlc-tm{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-top:8px;padding:9px 10px;border:1.5px dashed var(--c-line);border-radius:12px;background:none;color:var(--c-dim);font:600 13px/1 var(--ios);cursor:pointer}
+.tlc-tm svg{width:15px;height:15px}.tlc-tm:hover{color:var(--c-fg);border-color:var(--c-dim)}
 .tlc h3 .tlc-imp{margin-left:auto;display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 11px;border:0;border-radius:99px;background:var(--c-cell-out);color:inherit;font:600 12.5px/1 var(--ios);cursor:pointer}
 .tlc h3 .tlc-imp svg{width:14px;height:14px}.tlc h3 .tlc-imp:hover{background:var(--c-line)}
 .tlc h3 .tlc-imp + .ev-add{margin-left:6px}
@@ -8775,7 +8777,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     const q = x => s.el.querySelector(x);
     const itH = x => `<span class="tle-it" data-iid="${esc(x.id)}">${x.img ? `<img src="${esc(publicUrl(x.img))}" alt="" draggable="false">` : `<i class="up"></i>`}${x.t ? `<small>${esc(x.t)}</small>` : ""}</span>`;
     const draw = () => {
-      q("#tleB").innerHTML = tl.tiers.map((t, i) => `<div class="tle-r"><div class="tle-l" style="--c:${esc(t.c)}"><input value="${esc(t.n)}" maxlength="40" data-tn="${i}" aria-label="Название тира"><span class="tle-lb"><button type="button" data-tc="${i}" title="Цвет">●</button><button type="button" data-tu="${i}" title="Выше" ${i ? "" : "disabled"}>↑</button><button type="button" data-tx="${i}" title="Убрать тир">✕</button></span></div><div class="tle-z" data-ti="${i}">${t.items.map(itH).join("")}</div></div>`).join("");
+      q("#tleB").innerHTML = tl.tiers.map((t, i) => `<div class="tle-r"><div class="tle-l" style="--c:${esc(t.c)}"><textarea rows="${Math.min(3, Math.max(1, Math.ceil((t.n || "").length / 9)))}" maxlength="40" data-tn="${i}" aria-label="Название тира" style="font-size:${(t.n || "").length > 14 ? 12 : (t.n || "").length > 6 ? 14 : 17}px">${esc(t.n)}</textarea><span class="tle-lb"><button type="button" data-tc="${i}" title="Цвет">●</button><button type="button" data-tu="${i}" title="Выше" ${i ? "" : "disabled"}>↑</button><button type="button" data-tx="${i}" title="Убрать тир">✕</button></span></div><div class="tle-z" data-ti="${i}">${t.items.map(itH).join("")}</div></div>`).join("");
       q("#tleP").innerHTML = tl.pool.map(itH).join("") + `<label class="tle-add">${ICON.plus}<input type="file" accept="image/*" multiple hidden data-tlf="1"></label>`;
     };
     const find = iid => { for (const t of tl.tiers){ const i = t.items.findIndex(x => x.id === iid); if (i >= 0) return [t.items, i]; } const i = tl.pool.findIndex(x => x.id === iid); return i >= 0 ? [tl.pool, i] : null; };
@@ -8785,7 +8787,8 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     q("#tleF").onchange = e => addFiles(e.target.files);
     s.el.addEventListener("change", e => { if (e.target.dataset && e.target.dataset.tlf) addFiles(e.target.files); });
     bindDrop(q(".tle"), f => addFiles([f])); pasteTarget = f => addFiles([f]);
-    s.el.addEventListener("input", e => { const i = e.target.dataset && e.target.dataset.tn; if (i != null) tl.tiers[+i].n = e.target.value; });
+    s.el.addEventListener("input", e => { const i = e.target.dataset && e.target.dataset.tn; if (i != null) tl.tiers[+i].n = e.target.value.replace(/\s*\n\s*/g, " "); });
+    s.el.addEventListener("keydown", e => { if (e.key === "Enter" && e.target.dataset && e.target.dataset.tn != null){ e.preventDefault(); e.target.blur(); } });
     s.el.addEventListener("click", e => {
       const c = e.target.closest("[data-tc]"), u = e.target.closest("[data-tu]"), x = e.target.closest("[data-tx]");
       if (c){ const t = tl.tiers[+c.dataset.tc]; t.c = TL_COLORS[(TL_COLORS.indexOf(t.c) + 1) % TL_COLORS.length]; draw(); return; }
@@ -8859,8 +8862,8 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     const roots = tlAll().filter(x => !x.reply_to).sort(byAt("updated_at"));
     const row = t => { const n = tlAll().filter(x => x.reply_to === t.id).length, th = tlItems(t).slice(0, 4);
       return `<button class="tlc-r" data-tlv="${esc(t.id)}"><span class="th">${th.length ? th.map(x => `<img src="${esc(publicUrl(x.img))}" alt="">`).join("") : `<i>${ICON.tiers}</i>`}</span><span class="t"><b>${esc(t.title)}</b><small>${avaHTML(profOf(t.user_id), "xs")} ${esc(nickOf(t.user_id))}${n ? ` · ${n} ${plural(n, "версия", "версии", "версий")}` : ""}</small></span></button>`; };
-    return `<div class="fb-card tlc"><h3>${ICON.tiers}Тир-листы<button class="tlc-imp" data-tmimp="1" title="Перенести тир-лист с TierMaker">${ICON.down}TierMaker</button><button class="ev-add" data-tlnew="1" title="Создать тир-лист" aria-label="Создать тир-лист">+</button></h3>
-      ${roots.length ? `<div class="tlc-l">${roots.slice(0, 6).map(row).join("")}</div>${roots.length > 6 ? `<button class="ib full" data-tlall="1" style="margin-top:8px">Все ${roots.length}</button>` : ""}` : `<p class="a-sub" style="margin:0 0 10px;font-size:13px">Свой тир-лист на любую тему: картинки, тиры, подписи. Или перенеси готовый с TierMaker по ссылке. Друзья могут ответить своей версией.</p><div class="tlc-empty"><button class="ib blue bd-set" data-tlnew="1">Создать тир-лист</button><button class="ib bd-set" data-tmimp="1">${ICON.down}С TierMaker</button></div>`}</div>`;
+    return `<div class="fb-card tlc"><h3>${ICON.tiers}Тир-листы<button class="ev-add" data-tlnew="1" title="Создать тир-лист" aria-label="Создать тир-лист">+</button></h3>
+      ${roots.length ? `<div class="tlc-l">${roots.slice(0, 6).map(row).join("")}</div>${roots.length > 6 ? `<button class="ib full" data-tlall="1" style="margin-top:8px">Все ${roots.length}</button>` : ""}<button class="tlc-tm" data-tmimp="1">${ICON.down}Импорт с TierMaker</button>` : `<p class="a-sub" style="margin:0 0 10px;font-size:13px">Свой тир-лист на любую тему: картинки, тиры, подписи. Или перенеси готовый с TierMaker по ссылке. Друзья могут ответить своей версией.</p><div class="tlc-empty"><button class="ib blue bd-set" data-tlnew="1">Создать тир-лист</button><button class="ib bd-set" data-tmimp="1">${ICON.down}С TierMaker</button></div>`}</div>`;
   }
   document.addEventListener("click", e => { const el = e.target.closest && e.target.closest("[data-tlnew],[data-tlv],[data-tlall],[data-tmimp]"); if (!el || !ME || el.closest(".sh")) return;
     if (el.dataset.tlnew){ tlEditor(null); return; }
