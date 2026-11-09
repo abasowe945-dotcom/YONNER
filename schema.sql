@@ -434,3 +434,6 @@ drop policy if exists fcl_insert on public.feedback_comment_likes; create policy
 drop policy if exists fcl_delete on public.feedback_comment_likes; create policy fcl_delete on public.feedback_comment_likes for delete to authenticated using (user_id = (select auth.uid()));
 revoke all on public.feedback_comment_likes from anon;
 do $$ begin begin alter publication supabase_realtime add table public.feedback_comment_likes; exception when others then null; end; end $$;
+
+-- ===== 3.6.1: свой рабочий день для таймера в шапке =====
+alter table public.profiles add column if not exists work jsonb;

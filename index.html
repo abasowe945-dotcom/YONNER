@@ -3243,7 +3243,15 @@ html:has(body.view-open),body.view-open{overflow:hidden}
 .nd-row{flex-wrap:wrap}
 @media (max-width:640px){label:has(> .nd-row){grid-column:1/-1}}
 /* ===== 3.6: таймер до конца работы ===== */
-.gh-work{display:flex;align-items:center;gap:6px;padding:0 9px 0 7px;height:36px;border-radius:11px;background:rgba(255,59,48,.1);box-shadow:inset 0 0 0 1px rgba(255,59,48,.28);white-space:nowrap;line-height:1}
+.gh-work[hidden]{display:none!important}
+.gh-work:hover{filter:brightness(1.15)}
+.wk-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.wk-days{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.wk-days button{min-width:44px;height:36px;padding:0 10px;border-radius:10px;border:1px solid var(--c-line);background:var(--c-cell-out);color:var(--c-fg);font:600 13px/1 var(--ios);cursor:pointer}
+.wk-days button[aria-pressed="true"]{background:#ff453a;border-color:#ff453a;color:#fff}
+.wk-on{display:flex;align-items:center;gap:10px;margin-top:16px;font:500 14px/1.3 var(--ios);cursor:pointer}
+.wk-on input{width:18px;height:18px;margin:0;accent-color:#0a84ff}
+.gh-work{display:flex;align-items:center;gap:6px;padding:0 9px 0 7px;height:36px;border:0;border-radius:11px;cursor:pointer;color:inherit;text-align:left;background:rgba(255,59,48,.1);box-shadow:inset 0 0 0 1px rgba(255,59,48,.28);white-space:nowrap;line-height:1}
 .gh-work i{font-style:normal;font-size:17px;line-height:1}
 .gh-work span{display:flex;flex-direction:column;gap:3px}
 .gh-work small{font:800 8.5px/1 var(--ios);letter-spacing:.03em;color:#ff453a}
@@ -3354,7 +3362,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     <button class="gh-ic" id="bgBtn" type="button" title="Фон этой страницы" aria-label="Фон страницы"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg></button>
     <button class="gh-ic" id="sndBtn" type="button" title="Звуки" aria-label="Звуки сайта"></button>
     <button class="gh-ic" id="modeBtn" type="button" title="Светлая тема" aria-label="Переключить тему"></button>
-    <div class="gh-work" id="workT" hidden></div>
+    <button type="button" class="gh-work" id="workT" hidden></button>
     <div class="gh-time" id="clock" aria-label="Дата и время"></div>
     <div class="gh-me"><span class="me-slot"></span></div>
   </div>
@@ -3909,13 +3917,36 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     $("clock").innerHTML = `<b>${d.toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit"})}</b><small>${s.charAt(0).toUpperCase()+s.slice(1)}</small>`; }
   tick(); setInterval(tick, 20000);
   // 3.6: сколько осталось работать до 18:00 (по будням)
-  function workTick(){ const el = $("workT"); if (!el) return; const d = new Date(), wd = d.getDay(), end = new Date(d); end.setHours(18, 0, 0, 0);
-    if (wd === 0 || wd === 6 || d.getHours() < 6){ el.hidden = true; return; }
+  const WORK_DEF = {on: true, start: "09:00", end: "18:00", days: [1, 2, 3, 4, 5]};
+  const workCfg = () => { let w = null; try { w = MEP && MEP.work; } catch(_){} return {...WORK_DEF, ...(w || {})}; };
+  const hm = s => { const [a, b] = String(s || "0:0").split(":").map(Number); return (a || 0) * 60 + (b || 0); };
+  function workTick(){ const el = $("workT"); if (!el) return; const d = new Date(), wd = d.getDay(), W = workCfg(), end = new Date(d), em = hm(W.end); end.setHours(Math.floor(em / 60), em % 60, 0, 0);
+    if (!W.on || !W.days.includes(wd) || d.getHours() * 60 + d.getMinutes() < hm(W.start) - 60){ el.hidden = true; return; }
     el.hidden = false; const left = Math.floor((end - d) / 1000), p2 = n => String(n).padStart(2, "0");
     const html = left > 0 ? `<i aria-hidden="true">👨‍💻</i><span><small>ОСТАЛОСЬ РАБОТАТЬ</small><b>${Math.floor(left / 3600)}:${p2(Math.floor(left / 60) % 60)}:${p2(left % 60)}</b></span>`
       : `<i aria-hidden="true">🍻</i><span><small class="ok">СМЕНА ОКОНЧЕНА</small><b class="ok">свобода</b></span>`;
-    el.classList.toggle("done", left <= 0); el.title = left > 0 ? "До конца рабочего дня (18:00)" : "Рабочий день окончен"; if (el.innerHTML !== html) el.innerHTML = html; }
-  workTick(); setInterval(workTick, 1000);
+    el.classList.toggle("done", left <= 0); el.title = (left > 0 ? `До конца рабочего дня (${W.end})` : "Рабочий день окончен") + " · нажми, чтобы настроить"; if (el.innerHTML !== html) el.innerHTML = html; }
+  setTimeout(workTick, 0); setInterval(workTick, 1000);
+  const WD_NAMES = [[1, "Пн"], [2, "Вт"], [3, "Ср"], [4, "Чт"], [5, "Пт"], [6, "Сб"], [0, "Вс"]];
+  function workSheet(){
+    if (!ME){ toast("Сначала войди"); return; }
+    const W = workCfg(); let days = [...W.days], on = W.on;
+    const s = openSheet(`<h3>Рабочий день</h3><p class="sub">Таймер «Осталось работать» в шапке считает до конца твоей смены. Видишь его только ты.</p>
+      <div class="wk-row"><label class="f">Начало<input class="in" type="time" id="wkS" value="${esc(W.start)}"></label><label class="f">Конец<input class="in" type="time" id="wkE" value="${esc(W.end)}"></label></div>
+      <div class="av-lb">Рабочие дни</div><div class="wk-days" id="wkD">${WD_NAMES.map(([n, l]) => `<button type="button" data-wd="${n}" aria-pressed="${days.includes(n)}">${l}</button>`).join("")}</div>
+      <label class="wk-on"><input type="checkbox" id="wkOn" ${on ? "checked" : ""}><span>Показывать таймер в шапке</span></label>
+      <p class="sub" style="margin:10px 0 0">Таймер появляется за час до начала смены, после конца горит зелёным до полуночи.</p>
+      <div class="acts" style="margin-top:14px"><button class="ib blue" id="wkOk">Сохранить</button><button class="ib" id="wkDef">По умолчанию (9–18, будни)</button></div>`);
+    const q = x => s.el.querySelector(x);
+    q("#wkD").onclick = e => { const b = e.target.closest("[data-wd]"); if (!b) return; const n = +b.dataset.wd; days = days.includes(n) ? days.filter(x => x !== n) : [...days, n]; b.setAttribute("aria-pressed", days.includes(n)); };
+    q("#wkDef").onclick = () => { q("#wkS").value = WORK_DEF.start; q("#wkE").value = WORK_DEF.end; days = [...WORK_DEF.days]; q("#wkOn").checked = true; s.el.querySelectorAll("[data-wd]").forEach(b => b.setAttribute("aria-pressed", days.includes(+b.dataset.wd))); };
+    q("#wkOk").onclick = async () => { const st = q("#wkS").value || WORK_DEF.start, en = q("#wkE").value || WORK_DEF.end;
+      if (hm(en) <= hm(st)){ toast("Конец смены должен быть позже начала"); return; }
+      if (!days.length){ toast("Выбери хотя бы один день"); return; }
+      const b = q("#wkOk"); b.disabled = true;
+      if (await saveProf({work: {on: q("#wkOn").checked, start: st, end: en, days: days.sort()}})){ s.close(); workTick(); toast(q("#wkOn").checked ? `Таймер до ${en}` : "Таймер скрыт — вернуть можно в профиле"); } else b.disabled = false; };
+  }
+  document.addEventListener("click", e => { if (e.target.closest && e.target.closest("#workT,[data-worksheet]")) workSheet(); });
 
   // ================= APPLE-СТРАНИЦЫ =================
   function appleHead(crumb, acts = ""){ $("aCrumb").textContent = crumb; $("aTopActs").innerHTML = acts; }
@@ -5420,7 +5451,8 @@ html:has(body.view-open),body.view-open{overflow:hidden}
   // Новые версии добавляются В НАЧАЛО списка. n — новое, c — изменено, f — исправлено, r — удалено.
   const PATCHES = [
     {v: "3.6", date: "2026-11-09", title: "Таймер до конца работы", kind: "minor", sec: {
-      n: ["<b>Таймер в шапке</b> рядом с часами: по будням красным «ОСТАЛОСЬ РАБОТАТЬ» до 18:00 с секундами, после — «смена окончена». В выходные не мешает"],
+      n: ["<b>Таймер в шапке</b> рядом с часами: красным «ОСТАЛОСЬ РАБОТАТЬ» до конца смены с секундами, после — «смена окончена»",
+        "<b>Свой рабочий день</b>: нажми на таймер или зайди в профиль → «Рабочий день» — начало и конец смены, рабочие дни, можно совсем скрыть таймер. У каждого свои настройки"],
       c: ["На средних экранах «Тир-лист» в шапке показан значком, чтобы всё влезло"]}},
     {v: "3.5.1", date: "2026-11-09", title: "Ответы и лайки в книге жалоб, дата просмотра", kind: "minor", sec: {
       n: ["<b>Лайки на ответы в книге жалоб</b>: ответили, что исправлено, — лайкни. Видно, сколько лайков и кто поставил"],
@@ -6052,6 +6084,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     const s = openSheet(`<h3>Профиль</h3><p class="sub">${esc(ME.email || "")}</p>
       <div class="acts" style="align-items:center">${avaHTML(myProf(), "md")}<button class="ib" id="pfAva">Аватар</button><button class="ib" id="pfNick" style="flex:1">Ник: <b style="margin-left:6px">${esc(NICK)}</b></button></div>
       <div class="acts" style="margin-top:10px"><button class="ib" id="pfBd" style="flex:1">День рождения: <b style="margin-left:6px">${MEP && MEP.birthday ? bdLabel(MEP.birthday) : "не указан"}</b></button></div>
+      <div class="acts" style="margin-top:10px"><button class="ib" data-worksheet="1" style="flex:1">Рабочий день: <b style="margin-left:6px">${(() => { const W = workCfg(); return W.on ? `${W.start}–${W.end}` : "таймер скрыт"; })()}</b></button></div>
       <div class="av-lb">Фоны разделов</div>
       <div class="sb-grid">${Object.entries(SEC_NAMES).map(([k, l]) => { const c = SECBG && SECBG[k]; return `<button data-secbg="${k}" class="${c && c.img ? "on" : ""}" style="${c && c.img ? `background-image:linear-gradient(rgba(0,0,0,.15),rgba(0,0,0,.55)),url('${publicUrl(c.img)}')` : ""}">${l}</button>`; }).join("")}</div>
       <div class="acts" style="margin-top:12px"><button class="ib" data-theme-open="1">Цвета сайта</button><button class="ib" id="pfPw">Сменить пароль</button></div>
@@ -6063,7 +6096,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     s.el.querySelector("#pfAva").onclick = () => { s.close(); avaSheet(false); };
     s.el.querySelector("#pfPw").onclick = () => { s.close(); passwordSheet(false); };
     s.el.querySelector("#pfBd").onclick = () => { s.close(); bdaySheet(); };
-    s.el.querySelectorAll("[data-secbg],[data-theme-open]").forEach(b => b.addEventListener("click", () => s.close()));
+    s.el.querySelectorAll("[data-secbg],[data-theme-open],[data-worksheet]").forEach(b => b.addEventListener("click", () => s.close()));
     s.el.querySelectorAll("[data-secbg]").forEach(b => bindDrop(b, f => { s.close(); bgSheet(b.dataset.secbg, f); }));
     s.el.querySelector("#pfExp").onclick = e => runBackup(e.currentTarget);
     s.el.querySelector("#pfImpF").onchange = async e => {
@@ -6199,7 +6232,8 @@ html:has(body.view-open),body.view-open{overflow:hidden}
 
   async function start(user){
     ME = user;
-    let {data: prof, error: pe} = await SB.from("profiles").select("nick,avatar,ava_animal,ava_color,birthday,pid,bg,bg_m,bg_dim").eq("user_id", user.id).maybeSingle();
+    let {data: prof, error: pe} = await SB.from("profiles").select("nick,avatar,ava_animal,ava_color,birthday,pid,bg,bg_m,bg_dim,work").eq("user_id", user.id).maybeSingle();
+    if (pe) ({data: prof, error: pe} = await SB.from("profiles").select("nick,avatar,ava_animal,ava_color,birthday,pid,bg,bg_m,bg_dim").eq("user_id", user.id).maybeSingle());
     if (pe) ({data: prof} = await SB.from("profiles").select("nick,avatar,ava_animal,ava_color,birthday").eq("user_id", user.id).maybeSingle());
     if (prof && prof.nick){ setNick(prof.nick); MEP = prof; setTimeout(patchPopup, 1500); setTimeout(askBday, 50); } else { lsSet("nexus_patch_seen", PATCHES[0].v); lsSet("nexus_patch_pop", PATCHES[0].v); await nickSheet(true); MEP = {nick: NICK, ...(nickSheet.bday ? {birthday: nickSheet.bday} : {})}; assets = makeBackend(SB, user.id).assets; await avaSheet(true); }
     const be = makeBackend(SB, user.id); db = be.db; assets = be.assets; canWrite = !FV;
