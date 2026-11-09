@@ -3212,7 +3212,12 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
 /* ===== 3.5: комментарии в книге ===== */
 .bk-v .bk-cmb span{font:700 12px/1 var(--ios)}
 .bk-v .bk-cmb.on{background:#22252b;border-color:#22252b;color:#fbfaf6}
-.bk-rep{margin-top:3px;padding:0;border:0;background:none;color:#7a7f89;font:600 11.5px/1 var(--ios);cursor:pointer}.bk-rep:hover{color:#22252b;text-decoration:underline}
+.bk-ca{display:flex;align-items:center;gap:10px;margin-top:4px}
+.bk-lk{display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 8px;border:1px solid #e1ddd2;border-radius:11px;background:#fff;color:#9a9ea6;cursor:pointer;transition:transform .15s}
+.bk-lk svg{width:12px;height:12px}.bk-lk b{font:700 11.5px/1 var(--ios)}
+.bk-lk:active{transform:scale(.9)}.bk-lk.on{background:#ffecef;border-color:#ffb3c0;color:#e5304f}
+.bk-lw{display:inline-flex;padding:0;border:0;background:none;cursor:pointer}.bk-lw .fr-ava{width:18px;height:18px;font-size:8px}
+.bk-rep{padding:0;border:0;background:none;color:#7a7f89;font:600 11.5px/1 var(--ios);cursor:pointer}.bk-rep:hover{color:#22252b;text-decoration:underline}
 .bk-cl{display:grid;gap:8px;margin:10px 0 0 14px;padding-left:12px;border-left:2px solid #e4e0d5}
 .bk-cm{display:flex;gap:8px;align-items:flex-start}
 .bk-cm .fr-ava{flex:none;width:22px;height:22px;font-size:10px;margin-top:1px}
@@ -5391,7 +5396,8 @@ html:has(body.view-open),body.view-open{overflow:hidden}
   // ================= патчноуты =================
   // Новые версии добавляются В НАЧАЛО списка. n — новое, c — изменено, f — исправлено, r — удалено.
   const PATCHES = [
-    {v: "3.5.1", date: "2026-11-09", title: "Дата просмотра и прокрутка карточки", kind: "minor", sec: {
+    {v: "3.5.1", date: "2026-11-09", title: "Ответы и лайки в книге жалоб, дата просмотра", kind: "minor", sec: {
+      n: ["<b>Лайки на ответы в книге жалоб</b>: ответили, что исправлено, — лайкни. Видно, сколько лайков и кто поставил"],
       f: ["<b>Книга жалоб</b>: кнопка «Ответить» теперь стоит под каждой записью (раньше она улетала наверх блокнота), а на любой комментарий можно ответить отдельно — подставится ник",
         "Дату просмотра снова можно вписать, даже если стояло «Без даты»: нажми на поле — галочка снимется сама. На телефоне кнопка «Без даты» больше не уезжает за край экрана",
         "На телефоне фон карточки фильма или игры больше не цепляется пальцем — страница прокручивается, где бы ни начал свайп"]}},
@@ -8631,12 +8637,12 @@ html:has(body.view-open),body.view-open{overflow:hidden}
   let BOOK = null, bookLoading = null, bookDraft = {text: "", file: null}, bookN = 5;
   async function loadBook(force){
     if (!SB || !ME) return null; if (BOOK && !force) return BOOK; if (bookLoading) return bookLoading;
-    bookLoading = (async () => { const [f, v, c] = await Promise.all([SB.from("feedback").select("*").order("created_at", {ascending: false}).limit(200), SB.from("feedback_votes").select("*"), SB.from("feedback_comments").select("*").order("created_at", {ascending: true})]);
-      BOOK = {items: f.error ? [] : (f.data || []).sort(byAt("created_at")), votes: v.error ? [] : v.data || [], comments: c && !c.error ? c.data || [] : []}; bookLoading = null; if (route === "people") renderPeople(); return BOOK; })();
+    bookLoading = (async () => { const [f, v, c, cl] = await Promise.all([SB.from("feedback").select("*").order("created_at", {ascending: false}).limit(200), SB.from("feedback_votes").select("*"), SB.from("feedback_comments").select("*").order("created_at", {ascending: true}), SB.from("feedback_comment_likes").select("comment_id,user_id")]);
+      BOOK = {items: f.error ? [] : (f.data || []).sort(byAt("created_at")), votes: v.error ? [] : v.data || [], comments: c && !c.error ? c.data || [] : [], clikes: cl && !cl.error ? cl.data || [] : []}; bookLoading = null; if (route === "people") renderPeople(); return BOOK; })();
     return bookLoading;
   }
   function subscribeBook(){ if (!SB || !ME) return; let t = 0; const k = () => { clearTimeout(t); t = setTimeout(() => loadBook(true), 300); };
-    SB.channel("nexus-book").on("postgres_changes", {event: "*", schema: "public", table: "feedback"}, k).on("postgres_changes", {event: "*", schema: "public", table: "feedback_votes"}, k).on("postgres_changes", {event: "*", schema: "public", table: "feedback_comments"}, k)
+    SB.channel("nexus-book").on("postgres_changes", {event: "*", schema: "public", table: "feedback"}, k).on("postgres_changes", {event: "*", schema: "public", table: "feedback_votes"}, k).on("postgres_changes", {event: "*", schema: "public", table: "feedback_comments"}, k).on("postgres_changes", {event: "*", schema: "public", table: "feedback_comment_likes"}, k)
       .on("postgres_changes", {event: "*", schema: "public", table: "tierlists"}, () => { clearTimeout(subscribeBook.t); subscribeBook.t = setTimeout(() => loadFriends(true), 500); }).subscribe(); }
   const THUMB_U = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v11H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1h3Zm0 0 4-7c1.5 0 3 1 2.5 3l-.8 4H19a2 2 0 0 1 2 2.3l-1.2 7A2 2 0 0 1 17.8 21H7"/></svg>';
   const THUMB_D = THUMB_U.replace("<svg", '<svg style="transform:rotate(180deg)"');
@@ -8713,10 +8719,15 @@ html:has(body.view-open),body.view-open{overflow:hidden}
   function bkComments(f){
     const cms = (BOOK.comments || []).filter(c => c.feedback_id === f.id).sort((a, b) => String(a.created_at).localeCompare(String(b.created_at)));
     const open = bkOpen.has(f.id), shown = open ? cms : cms.slice(-2);
-    const cm = c => `<div class="bk-cm">${avaHTML(profOf(c.user_id), "xs")}<div class="bk-cb"><div class="bk-ch"><b>${esc(nickOf(c.user_id))}</b><small>${esc(vkDate(c.created_at))}</small>${c.user_id === ME.id ? `<button class="bk-x" data-bkcdel="${esc(c.id)}" title="Удалить">${ICON.x}</button>` : ""}</div><p>${richText(c.body)}</p>${c.user_id !== ME.id ? `<button class="bk-rep" data-bkc="${esc(f.id)}" data-bkat="${esc(nickOf(c.user_id))}">Ответить</button>` : ""}</div></div>`;
+    const cm = c => `<div class="bk-cm">${avaHTML(profOf(c.user_id), "xs")}<div class="bk-cb"><div class="bk-ch"><b>${esc(nickOf(c.user_id))}</b><small>${esc(vkDate(c.created_at))}</small>${c.user_id === ME.id ? `<button class="bk-x" data-bkcdel="${esc(c.id)}" title="Удалить">${ICON.x}</button>` : ""}</div><p>${richText(c.body)}</p><div class="bk-ca">${bkLikeBtn(c)}${c.user_id !== ME.id ? `<button class="bk-rep" data-bkc="${esc(f.id)}" data-bkat="${esc(nickOf(c.user_id))}">Ответить</button>` : ""}</div></div></div>`;
     return `${cms.length > shown.length ? `<button class="bk-cmore" data-bkc="${esc(f.id)}">Показать все ${cms.length} ${plural(cms.length, "комментарий", "комментария", "комментариев")}</button>` : ""}
       ${shown.length ? `<div class="bk-cl">${shown.map(cm).join("")}</div>` : ""}
       ${open ? `<div class="bk-cf"><textarea id="bkC-${esc(f.id)}" rows="1" maxlength="1000" placeholder="Ответить…">${esc(bkCDraft[f.id] || "")}</textarea><button type="button" data-bkcs="${esc(f.id)}" title="Отправить">↵</button></div>` : ""}`;
+  }
+  const BK_HEART = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.8 4.5c2.2 0 3.6 1.2 5.2 3.1 1.6-1.9 3-3.1 5.2-3.1 3.8 0 5.9 3.9 4.4 7.3C19.5 16.4 12 21 12 21Z"/></svg>';
+  function bkLikeBtn(c){
+    const ls = (BOOK.clikes || []).filter(l => l.comment_id === c.id), on = ls.some(l => l.user_id === ME.id);
+    return `<button class="bk-lk${on ? " on" : ""}" data-bkl="${esc(c.id)}" title="${on ? "Убрать лайк" : "Лайк"}">${BK_HEART}${ls.length ? `<b>${ls.length}</b>` : ""}</button>${ls.length ? `<button class="bk-lw" data-bklw="${esc(c.id)}" title="Кто лайкнул">${avaStack(ls.map(l => l.user_id), 3)}</button>` : ""}`;
   }
   async function bkSend(id){
     const t = $("bkC-" + id); if (!t) return; const body = t.value.trim(); if (!body) return; t.disabled = true;
@@ -8728,7 +8739,12 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     if (to.size) notify([...to], "book_comment", "book:" + id, body);
     renderPeople(); setTimeout(() => { const n = $("bkC-" + id); if (n) n.focus(); }, 30);
   }
-  document.addEventListener("click", async e => { const el = e.target.closest && e.target.closest("[data-bkc],[data-bkcs],[data-bkcdel]"); if (!el || !ME || !BOOK) return;
+  document.addEventListener("click", async e => { const el = e.target.closest && e.target.closest("[data-bkc],[data-bkcs],[data-bkcdel],[data-bkl],[data-bklw]"); if (!el || !ME || !BOOK) return;
+    if (el.dataset.bklw){ whoSheet("Лайкнули", [["Лайки", BK_HEART, (BOOK.clikes || []).filter(l => l.comment_id === el.dataset.bklw).map(l => l.user_id)]]); return; }
+    if (el.dataset.bkl){ const id = el.dataset.bkl, on = (BOOK.clikes || []).some(l => l.comment_id === id && l.user_id === ME.id);
+      BOOK.clikes = on ? BOOK.clikes.filter(l => !(l.comment_id === id && l.user_id === ME.id)) : [...(BOOK.clikes || []), {comment_id: id, user_id: ME.id}]; renderPeople(); if (!on) SND.click("soft");
+      const r = on ? await SB.from("feedback_comment_likes").delete().eq("comment_id", id).eq("user_id", ME.id) : await SB.from("feedback_comment_likes").insert({comment_id: id, user_id: ME.id});
+      if (r.error){ toast("Не получилось"); loadBook(true); } return; }
     if (el.dataset.bkc){ const id = el.dataset.bkc; if (bkOpen.has(id) && el.classList.contains("bk-cmb")) bkOpen.delete(id); else bkOpen.add(id);
       if (el.dataset.bkat){ const nk = "@" + el.dataset.bkat + " "; if (!(bkCDraft[id] || "").includes(nk)) bkCDraft[id] = nk + (bkCDraft[id] || ""); } renderPeople(); if (bkOpen.has(id)) setTimeout(() => { const n = $("bkC-" + id); if (n){ n.focus(); n.setSelectionRange(n.value.length, n.value.length); } }, 30); return; }
     if (el.dataset.bkcs){ bkSend(el.dataset.bkcs); return; }

@@ -420,3 +420,17 @@ drop policy if exists fc_insert on public.feedback_comments; create policy fc_in
 drop policy if exists fc_delete on public.feedback_comments; create policy fc_delete on public.feedback_comments for delete to authenticated using (user_id = (select auth.uid()));
 revoke all on public.feedback_comments from anon;
 do $$ begin begin alter publication supabase_realtime add table public.feedback_comments; exception when others then null; end; end $$;
+
+-- ===== 3.5.2: лайки на комментарии в книге жалоб =====
+create table if not exists public.feedback_comment_likes (
+  comment_id uuid not null references public.feedback_comments(id) on delete cascade,
+  user_id uuid not null default auth.uid() references auth.users on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (comment_id, user_id)
+);
+alter table public.feedback_comment_likes enable row level security;
+drop policy if exists fcl_select on public.feedback_comment_likes; create policy fcl_select on public.feedback_comment_likes for select to authenticated using (true);
+drop policy if exists fcl_insert on public.feedback_comment_likes; create policy fcl_insert on public.feedback_comment_likes for insert to authenticated with check (user_id = (select auth.uid()));
+drop policy if exists fcl_delete on public.feedback_comment_likes; create policy fcl_delete on public.feedback_comment_likes for delete to authenticated using (user_id = (select auth.uid()));
+revoke all on public.feedback_comment_likes from anon;
+do $$ begin begin alter publication supabase_realtime add table public.feedback_comment_likes; exception when others then null; end; end $$;
