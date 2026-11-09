@@ -3114,6 +3114,48 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
 @media (max-width:640px){.tle-r{grid-template-columns:64px minmax(0,1fr);min-height:66px}.tle-l input{font-size:14px}.tle-lb button{width:18px;height:18px;font-size:9px}.tle-it,.tle-add{width:56px;height:56px}.tle-z{min-height:66px;gap:4px;padding:4px}}
 
 /* ===== 3.4: просмотр тир-листа и версии ===== */
+/* ===== 3.9: импорт с TierMaker, ссылка и картинка ===== */
+.tmi{display:grid;gap:14px}
+.tmi-h{display:flex;gap:14px;align-items:flex-start}
+.tmi-h h3{margin:0 0 4px}.tmi-h .sub{margin:0}
+.tmi-logo{flex:none;width:44px;height:44px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(135deg,#ff7f7f,#ffdf7f 45%,#7fff7f 70%,#7fbfff);color:#111}
+.tmi-logo svg{width:22px;height:22px}
+.tmi-f{display:flex;gap:8px}.tmi-f[hidden]{display:none}
+.tmi-f .in{flex:1;min-width:0}
+#tmR{display:grid;gap:12px}#tmR:empty{display:none}
+.tmi-wait{display:flex;align-items:center;justify-content:center;gap:10px;color:var(--c-dim,#8e8e93);font:500 14px/1.3 var(--ios);padding:14px 2px}
+.tmi-wait i{width:16px;height:16px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;animation:tmSpin .8s linear infinite}
+@keyframes tmSpin{to{transform:rotate(360deg)}}
+.tmi-err{margin:0;padding:12px 14px;border-radius:12px;background:rgba(255,69,58,.12);color:#ff6961;font:500 14px/1.35 var(--ios)}
+.tmi-t{margin:0}
+.tmi-b{max-height:min(46vh,420px);overflow:auto}
+.tmi-more{display:grid;place-items:center;color:var(--c-dim);font:700 12px/1 var(--ios)}
+.tmi-chk{display:flex;gap:10px;align-items:flex-start;padding:11px 12px;border-radius:12px;background:var(--c-cell-out);cursor:pointer}
+.tmi-chk input{margin:1px 0 0;width:18px;height:18px;accent-color:#0a84ff;flex:none}
+.tmi-chk span{display:grid;gap:3px}.tmi-chk b{font:600 14px/1.2 var(--ios)}.tmi-chk small{color:var(--c-dim);font:500 12.5px/1.3 var(--ios)}
+.tmi-foot{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tmi-sum{color:var(--c-dim);font:500 13px/1.2 var(--ios)}
+.tmi-prog{display:grid;gap:10px;padding:6px 0}
+.tmi-prog b{font:600 15px/1.2 var(--ios)}
+.tmi-prog .bar{height:8px;border-radius:99px;background:var(--c-cell-out);overflow:hidden}
+.tmi-prog .bar i{display:block;height:100%;width:0;border-radius:inherit;background:linear-gradient(90deg,#ff7f7f,#ffdf7f,#7fff7f,#7fbfff);transition:width .25s}
+.tmi-prog small{color:var(--c-dim);font:500 12.5px/1.3 var(--ios)}
+.tlc h3 .tlc-imp{margin-left:auto;display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 11px;border:0;border-radius:99px;background:var(--c-cell-out);color:inherit;font:600 12.5px/1 var(--ios);cursor:pointer}
+.tlc h3 .tlc-imp svg{width:14px;height:14px}.tlc h3 .tlc-imp:hover{background:var(--c-line)}
+.tlc h3 .tlc-imp + .ev-add{margin-left:6px}
+.tlc-empty{display:grid;gap:8px}.tlc-empty .bd-set{margin-top:0}.tlc-empty .ib svg{width:16px;height:16px}
+.tlv-src{color:inherit;text-decoration:underline;text-underline-offset:2px}
+.tlv-share{margin-top:14px}.tlv-share .ib svg,.tlg .ib svg,#tpA .ib svg{width:17px;height:17px}
+.tlpng{display:grid;place-items:center;min-height:140px;max-height:66vh;overflow:auto;border-radius:14px;background:#0e0e10}
+.tlpng img{display:block;width:100%;height:auto}
+.tlg{width:min(920px,100%);margin:auto;padding:22px;background:rgba(28,28,30,.92);border:1px solid rgba(255,255,255,.1);border-radius:24px;color:#f2f2f7;box-shadow:0 30px 80px rgba(0,0,0,.5);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
+.tlg-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.tlg-top .au-logo{font-size:24px}
+.tlg .tlb-r{background:rgba(255,255,255,.05)}.tlg .tlb-i{background:#20232a}
+.tlg-note{margin:14px 0 0;font-size:13px;color:#8e8e93}
+.auth:has(.tlg){overflow-y:auto;place-items:start center}
+body.guest-tl .sh-wrap{z-index:90}
+@media (max-width:640px){.tlg{padding:16px;border-radius:18px}.tmi-f{flex-wrap:wrap}.tmi-f .ib{width:100%}}
 .tlv-h{display:flex;align-items:center;gap:12px;margin-bottom:14px}
 .tlv-h h3{margin:0}.tlv-h .sub{margin:3px 0 0}
 .tlv-pool{margin-top:10px}.tlv-pool small{display:block;color:var(--c-dim);font:600 12px/1 var(--ios);margin-bottom:6px}
@@ -3549,6 +3591,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     cake:I('<path d="M4 21h16M5 21v-7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v7"/><path d="M5 16c1.2 1 2.5 1 3.5 0s2.3-1 3.5 0 2.3 1 3.5 0 2.3-1 3.5 0M12 12V8M12 5.5c-.8-.8-.8-1.8 0-3 .8 1.2.8 2.2 0 3Z"/>'),
     key:I('<circle cx="8" cy="15" r="4"/><path d="m10.8 12.2 8.7-8.7M16 7l2.5 2.5M18.5 4.5 21 7"/>'),
     pin:I('<path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/>'),
+    link:I('<path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/>'),
     party:I('<path d="M4 20 9.5 6.5l8 8Z"/><path d="M13 4.5c.5 1.2.2 2.2-1 3M17 8c1.2-.6 2.4-.4 3.2.6M15.5 3.5l.5 1M20.5 12l-1 .3M19 3.5 18 5.5"/>'),
     sound:I('<path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5Z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/>')
   };
@@ -4212,6 +4255,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     if (h.startsWith("user:")){ route = "user"; viewUid = h.slice(5); return; }
     if (h.startsWith("event:")){ route = "event"; viewEv = h.slice(6); return; }
     if (h.startsWith("watch:")){ route = "watch"; viewEv = h.slice(6); return; }
+    if (h.startsWith("tier:")){ pendingTl = h.slice(5); route = "people"; return; }
     route = ROUTES[h] && !["user", "event", "watch"].includes(h) ? h : "home"; }
   function animateWorld(){
     const r = ROUTES[route], p = ROUTES[prevRoute] || r;
@@ -5556,6 +5600,13 @@ html:has(body.view-open),body.view-open{overflow:hidden}
   // ================= патчноуты =================
   // Новые версии добавляются В НАЧАЛО списка. n — новое, c — изменено, f — исправлено, r — удалено.
   const PATCHES = [
+    {v: "3.9", date: "2026-11-09", title: "Тир-листы: импорт с TierMaker, ссылки и картинки", kind: "major", sec: {
+      n: ["<b>Импорт с TierMaker</b>: в Активности у тир-листов или в редакторе жми «TierMaker», вставь ссылку на тир-лист — переедет всё: названия и цвета тиров, картинки по местам. Пустой шаблон тоже подойдёт: картинки лягут в «Не распределено»",
+        "После переноса тир-лист сразу открывается в редакторе: двигай картинки, переименовывай тиры, удаляй лишнее — и сохраняй как свой",
+        "<b>Поделиться ссылкой</b>: в любом тир-листе. Ссылка открывается даже у тех, у кого нет аккаунта, а после входа можно сразу ответить своей версией",
+        "<b>Тир-лист картинкой</b>: одна кнопка — и готовая PNG, можно скачать или скопировать и вставить в Telegram",
+        "У перенесённых тир-листов есть пометка «с TierMaker» со ссылкой на оригинал"],
+      c: ["Названия тиров теперь до 40 символов, в выборе цвета тира — палитра TierMaker"]}},
     {v: "3.8", date: "2026-11-09", title: "Ссылка на источник на постерах", kind: "minor", sec: {
       n: ["<b>Значок-цепочка</b> в углу постера: нажми — откроется страница, по ссылке с которой добавляли игру, фильм, сериал или мангу (Steam, Кинопоиск, MyShows, MangaLib). Если добавляли вручную — значка нет"]}},
     {v: "3.7", date: "2026-11-09", title: "Перенос списков с Кинопоиска, MyShows и MangaLib", kind: "major", sec: {
@@ -6359,6 +6410,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     db.doc("meta/bg").onSnapshot(d => { SECBG = d.exists ? d.data() : null; applySecBg(); });
     Promise.all(["backup", "autobackup"].map(x => db.doc("meta/" + x).get().then(d => d.exists ? d.data() : null).catch(() => null)))
       .then(([b, a]) => { lastBackup = b; autoBackup = a; if (route === "more") render(); });
+    document.body.classList.remove("guest-tl"); if (pendingTl) setTimeout(openTlLink, 300);
     loadFriends(); loadEvents(); subscribeEvents(); loadWall(); subscribeWall(); loadNtf(); subscribeNtf(); subscribeBook(); loadReads().then(() => handleInbox());
     db.collection("items").onSnapshot(snap => {
       if (!snap.metadata.fromCache){ clearTimeout(timer); itemsLoaded = true; }
@@ -8676,7 +8728,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
   document.addEventListener("click", e => { const el = e.target.closest && e.target.closest("[data-tierq]"); if (el && ME) openTiers(el.dataset.tierq); });
 
   // ================= 3.4: свои тир-листы =================
-  const TL_COLORS = ["#ff5f57", "#ff9f0a", "#ffd60a", "#30d158", "#64d2ff", "#0a84ff", "#bf5af2", "#ff375f", "#8e8e93"];
+  const TL_COLORS = ["#ff5f57", "#ff9f0a", "#ffd60a", "#30d158", "#64d2ff", "#0a84ff", "#bf5af2", "#ff375f", "#8e8e93", "#ff7f7f", "#ffbf7f", "#ffdf7f", "#ffff7f", "#bfff7f", "#7fff7f", "#7fffff", "#7fbfff", "#7f7fff", "#ff7fff"];
   const tlAll = () => (FR && FR.tierlists) || [];
   const tlById = id => tlAll().find(x => x.id === id);
   const tlRoot = tl => tl && tl.reply_to ? (tlById(tl.reply_to) || tl) : tl;
@@ -8693,11 +8745,11 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     const pins = tlAll().filter(x => x.user_id === uid && x.pinned).sort(byAt("updated_at"));
     if (!gl.length && !kl.length && !pins.length && !mine) return "";
     const box = (title, body, act) => `<section class="pf-box tl-box"><header><h3>${title}</h3>${act || ""}</header>${body}</section>`;
-    return `<section class="pf-floor fl-t"><div class="pf-fh"><span class="ic">${ICON.tiers}</span><h2>Тир-листы</h2>${mine ? `<button class="pf-fh-b" data-tlnew="1">${ICON.plus}Создать</button>` : ""}</div>
+    return `<section class="pf-floor fl-t"><div class="pf-fh"><span class="ic">${ICON.tiers}</span><h2>Тир-листы</h2>${mine ? `<span class="pf-fh-r"><button class="pf-fh-b" data-tmimp="1">${ICON.down}TierMaker</button><button class="pf-fh-b" data-tlnew="1">${ICON.plus}Создать</button></span>` : ""}</div>
       ${gl.length ? box("Игры", itemTierBoard(gl, true), mine ? `<button class="pf-mini" data-tierq="games">${ICON.edit}Изменить</button>` : "") : ""}
       ${kl.length ? box("Кино и сериалы", itemTierBoard(kl, true), mine ? `<button class="pf-mini" data-tierq="kino">${ICON.edit}Изменить</button>` : "") : ""}
       ${pins.map(t => box(esc(t.title), tlBoard(t, true), `<button class="pf-mini" data-tlv="${esc(t.id)}">Открыть</button>`)).join("")}
-      ${!gl.length && !kl.length && !pins.length ? `<div class="pf-empty"><span>Составь тир-лист игр или кино, или свой — на любую тему, с картинками. Закреплённые видят все.</span><button class="pf-eb" data-tlnew="1">${ICON.plus}Создать</button></div>` : ""}</section>`;
+      ${!gl.length && !kl.length && !pins.length ? `<div class="pf-empty"><span>Составь тир-лист игр или кино, или свой — на любую тему, с картинками. Можно перенести готовый с TierMaker. Закреплённые видят все.</span><button class="pf-eb" data-tlnew="1">${ICON.plus}Создать</button></div>` : ""}</section>`;
   }
   async function squareImg(file, S = 256){
     const img = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = URL.createObjectURL(file); });
@@ -8708,21 +8760,22 @@ html:has(body.view-open),body.view-open{overflow:hidden}
   const rid = () => Math.random().toString(36).slice(2, 10);
   function tlEditor(src, o = {}){
     if (!assets){ toast("Сначала войди"); return; }
-    const isNew = !src || !!o.reply, base = src ? JSON.parse(JSON.stringify(src)) : null;
-    const tl = isNew ? {id: crypto.randomUUID(), title: o.reply ? `Моя версия: ${base.title}`.slice(0, 80) : "", tiers: base ? base.tiers : TIERS.map(([n, c]) => ({n, c, items: []})), pool: base ? base.pool || [] : [], pinned: false, reply_to: o.reply ? (base.reply_to || base.id) : null}
+    const isNew = !src || !!o.reply || !!o.preset, base = src ? JSON.parse(JSON.stringify(src)) : null;
+    const tl = o.preset ? {id: crypto.randomUUID(), title: o.preset.title || "", tiers: o.preset.tiers, pool: o.preset.pool || [], pinned: false, reply_to: null, source: o.preset.source || null}
+      : isNew ? {id: crypto.randomUUID(), title: o.reply ? `Моя версия: ${base.title}`.slice(0, 80) : "", tiers: base ? base.tiers : TIERS.map(([n, c]) => ({n, c, items: []})), pool: base ? base.pool || [] : [], pinned: false, reply_to: o.reply ? (base.reply_to || base.id) : null, source: base ? base.source || null : null}
       : base;
     if (o.reply) tl.tiers.forEach(t => t.items.forEach(x => x.id = rid()));
     let busy = 0;
     const s = openSheet(`<div class="tle"><input class="in tle-ti" id="tleT" maxlength="80" placeholder="Название тир-листа: «Лучшие боссы», «Аниме-опенинги»…" value="${esc(tl.title)}">
       <div class="tle-b" id="tleB"></div>
       <div class="tle-pool"><div class="tle-ph"><b>Не распределено</b><small>перетащи картинки в тиры · нажми на картинку, чтобы подписать</small></div><div class="tle-z" data-ti="pool" id="tleP"></div></div>
-      <div class="tle-tools"><label class="ib">${ICON.img}Добавить картинки<input type="file" id="tleF" accept="image/*" multiple hidden></label><button class="ib" id="tleAddT">${ICON.plus}Тир</button><button type="button" class="ib tle-pin${tl.pinned ? " on" : ""}" id="tlePin">${ICON.pin}${tl.pinned ? "Закреплён в профиле" : "Закрепить в профиле"}</button></div>
+      <div class="tle-tools"><label class="ib">${ICON.img}Добавить картинки<input type="file" id="tleF" accept="image/*" multiple hidden></label><button class="ib" id="tleAddT">${ICON.plus}Тир</button><button type="button" class="ib" id="tleTm">${ICON.down}Импорт с TierMaker</button><button type="button" class="ib tle-pin${tl.pinned ? " on" : ""}" id="tlePin">${ICON.pin}${tl.pinned ? "Закреплён в профиле" : "Закрепить в профиле"}</button></div>
       <div class="acts" style="margin-top:12px"><button class="ib blue" id="tleOk">Сохранить</button><button class="ib" id="tleNo">Отмена</button></div></div>`, {wide: true});
     s.el.classList.add("tle-sheet");
     const q = x => s.el.querySelector(x);
     const itH = x => `<span class="tle-it" data-iid="${esc(x.id)}">${x.img ? `<img src="${esc(publicUrl(x.img))}" alt="" draggable="false">` : `<i class="up"></i>`}${x.t ? `<small>${esc(x.t)}</small>` : ""}</span>`;
     const draw = () => {
-      q("#tleB").innerHTML = tl.tiers.map((t, i) => `<div class="tle-r"><div class="tle-l" style="--c:${esc(t.c)}"><input value="${esc(t.n)}" maxlength="24" data-tn="${i}" aria-label="Название тира"><span class="tle-lb"><button type="button" data-tc="${i}" title="Цвет">●</button><button type="button" data-tu="${i}" title="Выше" ${i ? "" : "disabled"}>↑</button><button type="button" data-tx="${i}" title="Убрать тир">✕</button></span></div><div class="tle-z" data-ti="${i}">${t.items.map(itH).join("")}</div></div>`).join("");
+      q("#tleB").innerHTML = tl.tiers.map((t, i) => `<div class="tle-r"><div class="tle-l" style="--c:${esc(t.c)}"><input value="${esc(t.n)}" maxlength="40" data-tn="${i}" aria-label="Название тира"><span class="tle-lb"><button type="button" data-tc="${i}" title="Цвет">●</button><button type="button" data-tu="${i}" title="Выше" ${i ? "" : "disabled"}>↑</button><button type="button" data-tx="${i}" title="Убрать тир">✕</button></span></div><div class="tle-z" data-ti="${i}">${t.items.map(itH).join("")}</div></div>`).join("");
       q("#tleP").innerHTML = tl.pool.map(itH).join("") + `<label class="tle-add">${ICON.plus}<input type="file" accept="image/*" multiple hidden data-tlf="1"></label>`;
     };
     const find = iid => { for (const t of tl.tiers){ const i = t.items.findIndex(x => x.id === iid); if (i >= 0) return [t.items, i]; } const i = tl.pool.findIndex(x => x.id === iid); return i >= 0 ? [tl.pool, i] : null; };
@@ -8740,6 +8793,10 @@ html:has(body.view-open),body.view-open{overflow:hidden}
       if (x){ const i = +x.dataset.tx; tl.pool.push(...tl.tiers[i].items); tl.tiers.splice(i, 1); draw(); return; }
     });
     q("#tleAddT").onclick = () => { if (tl.tiers.length >= 20) return; tl.tiers.push({n: String.fromCharCode(65 + tl.tiers.length), c: TL_COLORS[tl.tiers.length % TL_COLORS.length], items: []}); draw(); };
+    q("#tleTm").onclick = () => tmImport(x => { const empty = !tl.tiers.some(t => t.items.length) && !tl.pool.length;
+      if (empty){ tl.tiers = x.tiers; tl.pool = x.pool; tl.source = x.source; if (!q("#tleT").value.trim()) q("#tleT").value = x.title; }
+      else tl.pool.push(...x.tiers.flatMap(t => t.items), ...x.pool);
+      draw(); toast(empty ? "Тир-лист перенесён — правь под себя" : "Картинки с TierMaker добавлены в «Не распределено»"); });
     q("#tlePin").onclick = () => { tl.pinned = !tl.pinned; const b = q("#tlePin"); b.classList.toggle("on", tl.pinned); b.innerHTML = `${ICON.pin}${tl.pinned ? "Закреплён в профиле" : "Закрепить в профиле"}`; };
     // перетаскивание картинок между тирами
     let dr = null;
@@ -8768,7 +8825,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     q("#tleOk").onclick = async () => { tl.title = q("#tleT").value.trim(); if (!tl.title){ q("#tleT").focus(); toast("Придумай название"); return; }
       if (busy){ toast("Подожди, картинки ещё грузятся"); return; }
       const clean = a => a.filter(x => x.img).map(x => ({id: x.id, img: x.img, t: x.t || ""}));
-      const row = {id: tl.id, user_id: ME.id, title: tl.title, tiers: tl.tiers.map(t => ({n: (t.n || "").trim() || "?", c: t.c, items: clean(t.items)})), pool: clean(tl.pool), pinned: !!tl.pinned, reply_to: tl.reply_to || null, updated_at: now()};
+      const row = {id: tl.id, user_id: ME.id, title: tl.title, tiers: tl.tiers.map(t => ({n: (t.n || "").trim() || "?", c: t.c, items: clean(t.items)})), pool: clean(tl.pool), pinned: !!tl.pinned, reply_to: tl.reply_to || null, source: tl.source || null, updated_at: now()};
       const b = q("#tleOk"); b.disabled = true; b.textContent = "Сохраняю…";
       const {error} = await SB.from("tierlists").upsert(row);
       if (error){ toast("Не сохранилось: " + error.message); b.disabled = false; b.textContent = "Сохранить"; return; }
@@ -8781,12 +8838,15 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     const tl = tlById(id); if (!tl){ toast("Тир-лист не найден"); return; }
     const root = tlRoot(tl), mine = ME && tl.user_id === ME.id, p = profOf(tl.user_id);
     const vers = tlAll().filter(x => x.reply_to === root.id && x.user_id !== root.user_id).sort(byAt("updated_at"));
-    const s = openSheet(`<div class="tlv-h">${avaHTML(p, "md")}<div><h3>${esc(tl.title)}</h3><p class="sub">${esc(mine ? "твой тир-лист" : p.nick || "")}${tl.reply_to && root !== tl ? ` · версия тир-листа «${esc(root.title)}»` : ""}${tl.pinned ? " · закреплён в профиле" : ""}</p></div></div>
+    const s = openSheet(`<div class="tlv-h">${avaHTML(p, "md")}<div><h3>${esc(tl.title)}</h3><p class="sub">${esc(mine ? "твой тир-лист" : p.nick || "")}${tl.reply_to && root !== tl ? ` · версия тир-листа «${esc(root.title)}»` : ""}${tl.pinned ? " · закреплён в профиле" : ""}${tmSrc(tl)}</p></div></div>
       ${tlBoard(tl)}${(tl.pool || []).length ? `<div class="tlv-pool"><small>Не распределено</small><div class="tlb-z">${tl.pool.map(x => `<span class="tlb-i"><img src="${esc(publicUrl(x.img))}" alt=""></span>`).join("")}</div></div>` : ""}
-      <div class="acts" style="margin-top:14px">${mine ? `<button class="ib blue" data-tle="${esc(tl.id)}">Редактировать</button><button class="ib" data-tlpin="${esc(tl.id)}">${tl.pinned ? "Открепить" : "Закрепить в профиле"}</button><button class="ib red" data-tldel="${esc(tl.id)}">Удалить</button>`
+      <div class="acts tlv-share"><button class="ib" data-tlshare="1">${ICON.link}Поделиться ссылкой</button><button class="ib" data-tlpng="1">${ICON.img}Картинкой</button></div>
+      <div class="acts" style="margin-top:10px">${mine ? `<button class="ib blue" data-tle="${esc(tl.id)}">Редактировать</button><button class="ib" data-tlpin="${esc(tl.id)}">${tl.pinned ? "Открепить" : "Закрепить в профиле"}</button><button class="ib red" data-tldel="${esc(tl.id)}">Удалить</button>`
         : `<button class="ib blue" data-tlreply="${esc(tl.id)}">Ответить своей версией</button>`}${tl !== root ? `<button class="ib" data-tlv="${esc(root.id)}">Оригинал</button>` : ""}</div>
       <div class="tlv-vers"><h4>Версии других<small>${vers.length}</small></h4>${vers.length ? vers.map(v => `<button class="tlv-r${v.id === tl.id ? " on" : ""}" data-tlv="${esc(v.id)}">${avaHTML(profOf(v.user_id), "sm")}<span class="t"><b>${esc(profOf(v.user_id).nick || "")}</b><small>${esc(v.title)} · ${esc(agoTs(v.updated_at || v.created_at))}</small></span><span class="th">${tlItems(v).slice(0, 4).map(x => `<img src="${esc(publicUrl(x.img))}" alt="">`).join("")}</span></button>`).join("") : `<p class="sub" style="margin:0">Пока никто не ответил своей версией.</p>`}</div>`, {wide: true});
-    s.el.addEventListener("click", async e => { const b = e.target.closest("[data-tle],[data-tlpin],[data-tldel],[data-tlreply],[data-tlv]"); if (!b) return; e.stopPropagation();
+    s.el.addEventListener("click", async e => { const b = e.target.closest("[data-tle],[data-tlpin],[data-tldel],[data-tlreply],[data-tlv],[data-tlshare],[data-tlpng]"); if (!b) return; e.stopPropagation();
+      if (b.dataset.tlshare){ tlShareLink(tl); return; }
+      if (b.dataset.tlpng){ tlImageSheet(tl, profOf(tl.user_id)); return; }
       if (b.dataset.tlv){ s.close(); setTimeout(() => tlView(b.dataset.tlv), 60); return; }
       if (b.dataset.tle){ s.close(); tlEditor(tl); return; }
       if (b.dataset.tlreply){ s.close(); tlEditor(tl, {reply: true}); return; }
@@ -8799,16 +8859,187 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     const roots = tlAll().filter(x => !x.reply_to).sort(byAt("updated_at"));
     const row = t => { const n = tlAll().filter(x => x.reply_to === t.id).length, th = tlItems(t).slice(0, 4);
       return `<button class="tlc-r" data-tlv="${esc(t.id)}"><span class="th">${th.length ? th.map(x => `<img src="${esc(publicUrl(x.img))}" alt="">`).join("") : `<i>${ICON.tiers}</i>`}</span><span class="t"><b>${esc(t.title)}</b><small>${avaHTML(profOf(t.user_id), "xs")} ${esc(nickOf(t.user_id))}${n ? ` · ${n} ${plural(n, "версия", "версии", "версий")}` : ""}</small></span></button>`; };
-    return `<div class="fb-card tlc"><h3>${ICON.tiers}Тир-листы<button class="ev-add" data-tlnew="1" title="Создать тир-лист" aria-label="Создать тир-лист">+</button></h3>
-      ${roots.length ? `<div class="tlc-l">${roots.slice(0, 6).map(row).join("")}</div>${roots.length > 6 ? `<button class="ib full" data-tlall="1" style="margin-top:8px">Все ${roots.length}</button>` : ""}` : `<p class="a-sub" style="margin:0 0 10px;font-size:13px">Свой тир-лист на любую тему: картинки, тиры, подписи. Друзья могут ответить своей версией.</p><button class="ib blue bd-set" data-tlnew="1">Создать тир-лист</button>`}</div>`;
+    return `<div class="fb-card tlc"><h3>${ICON.tiers}Тир-листы<button class="tlc-imp" data-tmimp="1" title="Перенести тир-лист с TierMaker">${ICON.down}TierMaker</button><button class="ev-add" data-tlnew="1" title="Создать тир-лист" aria-label="Создать тир-лист">+</button></h3>
+      ${roots.length ? `<div class="tlc-l">${roots.slice(0, 6).map(row).join("")}</div>${roots.length > 6 ? `<button class="ib full" data-tlall="1" style="margin-top:8px">Все ${roots.length}</button>` : ""}` : `<p class="a-sub" style="margin:0 0 10px;font-size:13px">Свой тир-лист на любую тему: картинки, тиры, подписи. Или перенеси готовый с TierMaker по ссылке. Друзья могут ответить своей версией.</p><div class="tlc-empty"><button class="ib blue bd-set" data-tlnew="1">Создать тир-лист</button><button class="ib bd-set" data-tmimp="1">${ICON.down}С TierMaker</button></div>`}</div>`;
   }
-  document.addEventListener("click", e => { const el = e.target.closest && e.target.closest("[data-tlnew],[data-tlv],[data-tlall]"); if (!el || !ME || el.closest(".sh")) return;
+  document.addEventListener("click", e => { const el = e.target.closest && e.target.closest("[data-tlnew],[data-tlv],[data-tlall],[data-tmimp]"); if (!el || !ME || el.closest(".sh")) return;
     if (el.dataset.tlnew){ tlEditor(null); return; }
+    if (el.dataset.tmimp){ tmImport(); return; }
     if (el.dataset.tlv){ tlView(el.dataset.tlv); return; }
     if (el.dataset.tlall){ const roots = tlAll().filter(x => !x.reply_to).sort(byAt("updated_at"));
       const s = openSheet(`<h3>Все тир-листы</h3><div class="tlc-l">${roots.map(t => `<button class="tlc-r" data-tlv="${esc(t.id)}"><span class="th">${tlItems(t).slice(0, 4).map(x => `<img src="${esc(publicUrl(x.img))}" alt="">`).join("")}</span><span class="t"><b>${esc(t.title)}</b><small>${esc(nickOf(t.user_id))}</small></span></button>`).join("")}</div>`, {wide: true});
       s.el.addEventListener("click", ev => { const b = ev.target.closest("[data-tlv]"); if (b){ s.close(); setTimeout(() => tlView(b.dataset.tlv), 60); } }, true); }
   });
+
+  // ================= 3.9: импорт с TierMaker, ссылка и картинка тир-листа =================
+  const TM_FN = () => `${String(CFG.SUPABASE_URL).replace(/\/$/, "")}/functions/v1/tiermaker`;
+  const TM_POOL_MAX = 150;
+  const tmProx = u => TM_FN() + "?img=" + encodeURIComponent(u);
+  const tmSrc = tl => tl && /^https:\/\/tiermaker\.com\//i.test(tl.source || "") ? ` · <a class="tlv-src" href="${esc(tl.source)}" target="_blank" rel="noopener">с TierMaker</a>` : "";
+  // квадрат по центру, с прозрачностью (логотипы на TierMaker часто PNG без фона)
+  async function sqWebp(blob, S = 256){
+    const u = URL.createObjectURL(blob);
+    try {
+      const img = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = u; });
+      const c = document.createElement("canvas"); c.width = c.height = S; const m = Math.min(img.naturalWidth, img.naturalHeight) || 1;
+      c.getContext("2d").drawImage(img, (img.naturalWidth - m) / 2, (img.naturalHeight - m) / 2, m, m, 0, 0, S, S);
+      return await new Promise(ok => c.toBlob(ok, "image/webp", .86));
+    } finally { URL.revokeObjectURL(u); }
+  }
+  function tmImport(onDone){
+    if (!assets){ toast("Сначала войди"); return; }
+    const s = openSheet(`<div class="tmi"><div class="tmi-h"><span class="tmi-logo">${ICON.down}</span><div><h3>Импорт с TierMaker</h3><p class="sub">Открой тир-лист на tiermaker.com, скопируй ссылку из адресной строки и вставь сюда. Подойдёт и чужой готовый тир-лист, и пустой шаблон.</p></div></div>
+      <form class="tmi-f" id="tmF"><input class="in" id="tmU" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://tiermaker.com/list/…"><button class="ib blue" id="tmGo" type="submit">Загрузить</button></form>
+      <div id="tmR"></div></div>`, {wide: true});
+    pasteTarget = null;
+    const q = x => s.el.querySelector(x), inp = q("#tmU");
+    setTimeout(() => inp.focus(), 80);
+    let data = null, busy = false, dead = false;
+    const c0 = s.close; s.close = () => { dead = true; c0(); };
+    const load = async () => {
+      const u = inp.value.trim(); if (!u){ inp.focus(); return; } if (busy) return; busy = true;
+      q("#tmGo").disabled = true; q("#tmR").innerHTML = `<div class="tmi-wait"><i></i>Читаю тир-лист с TierMaker…</div>`;
+      try { const r = await fetch(TM_FN(), {method: "POST", headers: {"Content-Type": "application/json", apikey: CFG.SUPABASE_ANON_KEY}, body: JSON.stringify({url: u})}); data = await r.json(); }
+      catch(_){ data = {error: "Сервер не ответил. Проверь интернет и попробуй ещё раз"}; }
+      busy = false; if (dead) return; q("#tmGo").disabled = false;
+      if (!data || data.error){ q("#tmR").innerHTML = `<p class="tmi-err">${esc((data && data.error) || "Не получилось")}</p>`; data = null; return; }
+      preview();
+    };
+    q("#tmF").onsubmit = e => { e.preventDefault(); load(); };
+    inp.addEventListener("paste", () => setTimeout(() => { if (/tiermaker\.com\//i.test(inp.value)) load(); }, 30));
+    const preview = () => {
+      const d = data, ranked = d.tiers.reduce((n, t) => n + t.items.length, 0) + (d.extra || []).length, poolN = d.pool.length;
+      const poolOn = d.kind === "template" || !ranked;
+      q("#tmR").innerHTML = `<label class="f tmi-t">Название<input class="in" id="tmT" maxlength="80" value="${esc(d.title)}"></label>
+        <div class="tlb sm tmi-b">${d.tiers.map(t => `<div class="tlb-r"><span class="tlb-l" style="--c:${esc(t.c)}">${esc(t.n)}</span><span class="tlb-z">${t.items.slice(0, 40).map(x => `<span class="tlb-i"><img src="${esc(tmProx(x))}" alt="" loading="lazy"></span>`).join("")}${t.items.length > 40 ? `<span class="tlb-i tmi-more">+${t.items.length - 40}</span>` : ""}</span></div>`).join("")}</div>
+        ${poolN ? `<label class="tmi-chk"><input type="checkbox" id="tmP" ${poolOn ? "checked" : ""}><span><b>${ranked ? "Ещё и нераспределённые картинки" : "Картинки шаблона"}</b><small>${poolN > TM_POOL_MAX ? `в шаблоне их ${poolN}, возьму первые ${TM_POOL_MAX}` : `${poolN} шт.`} — лягут в «Не распределено», раскидаешь по тирам сам</small></span></label>` : ""}
+        <div class="tmi-foot"><span class="tmi-sum" id="tmS"></span><span style="flex:1"></span><button class="ib" id="tmNo">Отмена</button><button class="ib blue" id="tmOk">Перенести в NEXUS</button></div>`;
+      const cnt = () => ranked + (q("#tmP") && q("#tmP").checked ? Math.min(poolN, TM_POOL_MAX) : 0);
+      const sum = () => { const n = cnt(); q("#tmS").textContent = `${d.tiers.length} ${plural(d.tiers.length, "тир", "тира", "тиров")} · ${n} ${plural(n, "картинка", "картинки", "картинок")}`; };
+      sum(); if (q("#tmP")) q("#tmP").onchange = sum;
+      q("#tmNo").onclick = () => s.close();
+      q("#tmOk").onclick = run;
+    };
+    const run = async () => {
+      const d = data, withPool = !!(q("#tmP") && q("#tmP").checked), title = (q("#tmT").value.trim() || d.title).slice(0, 80);
+      const tiers = d.tiers.map(t => ({n: String(t.n).slice(0, 40), c: String(t.c).toLowerCase(), items: []})), pool = [], jobs = [];
+      const add = (u, dest) => { const slot = {id: rid(), img: null, t: ""}; dest.push(slot); jobs.push({u, slot}); };
+      d.tiers.forEach((t, i) => t.items.forEach(u => add(u, tiers[i].items)));
+      (d.extra || []).forEach(u => add(u, pool));
+      if (withPool) d.pool.slice(0, TM_POOL_MAX).forEach(u => add(u, pool));
+      q("#tmF").hidden = true;
+      q("#tmR").innerHTML = `<div class="tmi-prog"><b id="tmPn">Переношу картинки: 0 из ${jobs.length}</b><span class="bar"><i id="tmPb"></i></span><small>Картинки копируются к нам — не пропадут, даже если их удалят с TierMaker</small></div>`;
+      let done = 0, fail = 0, i = 0;
+      const worker = async () => { while (i < jobs.length && !dead){ const j = jobs[i++];
+        try { const r = await fetch(tmProx(j.u)); if (!r.ok) throw 0; const b = await sqWebp(await r.blob()); if (!b) throw 0; j.slot.img = await upload(b); } catch(_){ fail++; }
+        done++; const pn = q("#tmPn"); if (pn){ pn.textContent = `Переношу картинки: ${done} из ${jobs.length}`; q("#tmPb").style.width = (done / jobs.length * 100).toFixed(1) + "%"; } } };
+      await Promise.all(Array.from({length: Math.min(6, jobs.length)}, worker));
+      if (dead) return;
+      const keep = a => a.filter(x => x.img); tiers.forEach(t => t.items = keep(t.items));
+      const tl = {title, tiers, pool: keep(pool), source: d.source || null};
+      c0(); if (fail) toast(`Не загрузилось картинок: ${fail} из ${jobs.length}`);
+      (onDone || (x => tlEditor(null, {preset: x})))(tl);
+    };
+  }
+
+  // ссылка: открывается и у друзей, и у тех, у кого нет аккаунта
+  let pendingTl = null;
+  const tlLink = id => location.origin + location.pathname + "#tier:" + id;
+  async function tlShareLink(tl){
+    const url = tlLink(tl.id);
+    if (navigator.share && matchMedia("(pointer:coarse)").matches){ try { await navigator.share({title: tl.title, text: `Тир-лист «${tl.title}»`, url}); return; } catch(e){ if (e && e.name === "AbortError") return; } }
+    try { await navigator.clipboard.writeText(url); toast("Ссылка скопирована — откроется даже без аккаунта"); }
+    catch(_){ prompt("Скопируй ссылку:", url); }
+  }
+  function openTlLink(){
+    const id = pendingTl; if (!id || !ME) return; pendingTl = null;
+    history.replaceState(null, "", location.pathname + "#people"); if (route !== "people"){ route = "people"; render(); }
+    const op = () => tlById(id) ? tlView(id) : toast("Тир-лист не найден — возможно, его удалили");
+    if (FR && tlById(id)) op(); else loadFriends(true).then(op);
+  }
+  window.addEventListener("hashchange", () => { if (pendingTl && ME) setTimeout(openTlLink, 60); });
+  async function guestTier(id){
+    const el = $("auth"); el.hidden = false; document.body.classList.add("ov-open", "guest-tl");
+    el.innerHTML = `<div class="au-box"><div class="au-logo">NEXUS</div><p class="au-sub" style="margin-bottom:0">Открываю тир-лист…</p></div>`;
+    const {data, error} = await SB.rpc("tierlist_public", {p_id: id});
+    if (error || !data || !data.tl){ pendingTl = null; authScreen("Тир-лист не найден — возможно, его удалили"); return; }
+    const tl = {...data.tl, tiers: Array.isArray(data.tl.tiers) ? data.tl.tiers : [], pool: Array.isArray(data.tl.pool) ? data.tl.pool : []}, a = data.author || {};
+    document.title = tl.title + " — NEXUS";
+    el.innerHTML = `<div class="tlg"><div class="tlg-top"><span class="au-logo">NEXUS</span><button class="ib blue" id="tgIn">Войти</button></div>
+      <div class="tlv-h">${avaHTML(a, "md")}<div><h3>${esc(tl.title)}</h3><p class="sub">${esc(a.nick || "")}${data.root_title ? ` · версия тир-листа «${esc(data.root_title)}»` : ""}${tmSrc(tl)}</p></div></div>
+      ${tlBoard(tl)}
+      <div class="acts" style="margin-top:14px"><button class="ib blue" id="tgMine">Сделать свою версию</button><button class="ib" id="tgPng">${ICON.img}Скачать картинкой</button></div>
+      <p class="sub tlg-note">NEXUS — полка игр, кино и тир-листов для своих. Чтобы ответить своей версией, войди или создай аккаунт: тир-лист откроется сразу после входа.</p></div>`;
+    $("tgIn").onclick = $("tgMine").onclick = () => authScreen("Войди — и тир-лист сразу откроется");
+    $("tgPng").onclick = () => tlImageSheet(tl, a);
+  }
+
+  // картинка: рисуем тир-лист на холсте в духе TierMaker
+  const TL_FONT = '-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI","Inter",system-ui,sans-serif';
+  const tlLum = hex => { const m = String(hex || "").replace("#", "").match(/^([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i); if (!m) return 1; const [r, g, b] = m.slice(1).map(v => parseInt(v, 16) / 255); return .2126 * r + .7152 * g + .0722 * b; };
+  const tlLoadImg = src => new Promise(ok => { const i = new Image(); i.crossOrigin = "anonymous"; i.onload = () => ok(i); i.onerror = () => ok(null); i.src = src; });
+  const tlWrap = (x, text, maxW) => { const out = []; let cur = "";
+    String(text || "").split(/\s+/).filter(Boolean).forEach(w => { const t = cur ? cur + " " + w : w; if (!cur || x.measureText(t).width <= maxW) cur = t; else { out.push(cur); cur = w; } });
+    if (cur) out.push(cur); return out; };
+  const tlRR = (x, a, b, w, h, r) => { x.beginPath(); x.moveTo(a + r, b); x.arcTo(a + w, b, a + w, b + h, r); x.arcTo(a + w, b + h, a, b + h, r); x.arcTo(a, b + h, a, b, r); x.arcTo(a, b, a + w, b, r); x.closePath(); };
+  async function tlRender(tl, author){
+    const S = 2, W = 1200, P = 32, LW = 150, T = 96, G = 4, headH = 108, footH = 56;
+    const tiers = (tl.tiers || []).length ? tl.tiers : [{n: "", c: "#8e8e93", items: tl.pool || []}];
+    const cols = Math.max(1, Math.floor((W - P * 2 - LW - G) / (T + G)));
+    const rowH = t => Math.max(T + G * 2, Math.ceil((t.items || []).length / cols) * (T + G) + G);
+    const H = headH + tiers.reduce((h, t) => h + rowH(t) + G, 0) - G + footH;
+    const c = document.createElement("canvas"); c.width = W * S; c.height = H * S;
+    const x = c.getContext("2d"); x.scale(S, S);
+    x.fillStyle = "#0e0e10"; x.fillRect(0, 0, W, H);
+    // шапка
+    x.textBaseline = "alphabetic"; x.fillStyle = "#f2f2f7"; x.font = `800 38px ${TL_FONT}`;
+    let title = String(tl.title || ""), cut = false; while (title.length > 3 && x.measureText(title + (cut ? "…" : "")).width > W - P * 2){ title = title.slice(0, -1); cut = true; }
+    x.fillText(title + (cut ? "…" : ""), P, 60);
+    x.fillStyle = "#8e8e93"; x.font = `600 18px ${TL_FONT}`; x.fillText(`${author && author.nick ? author.nick + " · " : ""}тир-лист`, P, 90);
+    // картинки грузим разом; без CORS картинка просто пропустится, холст не испортится
+    const paths = [...new Set(tiers.flatMap(t => (t.items || []).map(i => i.img)).filter(Boolean))];
+    const imgs = new Map(await Promise.all(paths.map(async pth => [pth, await tlLoadImg(publicUrl(pth) + "?nx=png")])));
+    let y = headH;
+    for (const t of tiers){
+      const h = rowH(t), col = t.c || "#8e8e93";
+      x.fillStyle = "#1b1b1f"; x.fillRect(P, y, W - P * 2, h);
+      x.fillStyle = col; x.fillRect(P, y, LW, h);
+      // подпись тира: подбираем размер, чтобы влезла
+      x.fillStyle = tlLum(col) > .5 ? "#111" : "#fff"; x.textAlign = "center"; x.textBaseline = "middle";
+      let fs = 36, lines = [];
+      for (; fs >= 11; fs -= 1){ x.font = `800 ${fs}px ${TL_FONT}`; lines = tlWrap(x, t.n, LW - 18); if (lines.every(l => x.measureText(l).width <= LW - 18) && lines.length * fs * 1.12 <= h - 14) break; }
+      const lh = Math.max(fs, 11) * 1.12, y0 = y + h / 2 - (lines.length - 1) * lh / 2;
+      lines.forEach((l, k) => x.fillText(l, P + LW / 2, y0 + k * lh, LW - 12));
+      (t.items || []).forEach((it, k) => {
+        const cx = P + LW + G + (k % cols) * (T + G), cy = y + G + Math.floor(k / cols) * (T + G);
+        x.save(); tlRR(x, cx, cy, T, T, 6); x.clip(); x.fillStyle = "#2a2d35"; x.fillRect(cx, cy, T, T);
+        const im = imgs.get(it.img); if (im){ const m = Math.min(im.naturalWidth, im.naturalHeight) || 1; x.drawImage(im, (im.naturalWidth - m) / 2, (im.naturalHeight - m) / 2, m, m, cx, cy, T, T); }
+        if (it.t){ const g = x.createLinearGradient(0, cy + T - 44, 0, cy + T); g.addColorStop(0, "rgba(0,0,0,0)"); g.addColorStop(1, "rgba(0,0,0,.88)"); x.fillStyle = g; x.fillRect(cx, cy + T - 44, T, 44);
+          x.fillStyle = "#fff"; x.font = `700 12px ${TL_FONT}`; x.textAlign = "center"; x.textBaseline = "alphabetic";
+          const ls = tlWrap(x, it.t, T - 8).slice(0, 2); ls.forEach((l, q) => x.fillText(l, cx + T / 2, cy + T - 7 - (ls.length - 1 - q) * 14, T - 6)); }
+        x.restore(); });
+      y += h + G;
+    }
+    x.textBaseline = "middle"; x.textAlign = "right"; x.fillStyle = "#48484a"; x.font = `800 16px ${TL_FONT}`;
+    if ("letterSpacing" in x) x.letterSpacing = "3px";
+    x.fillText("NEXUS", W - P, H - footH / 2);
+    return await new Promise((ok, no) => { try { c.toBlob(b => b ? ok(b) : no(new Error("пустая картинка")), "image/png"); } catch(e){ no(e); } });
+  }
+  async function tlImageSheet(tl, author){
+    let url = null;
+    const s = openSheet(`<h3>Тир-лист картинкой</h3><div class="tlpng"><div class="tmi-wait"><i></i>Рисую картинку…</div></div><div class="acts" id="tpA" style="margin-top:12px"></div>`, {wide: true, onClose: () => { if (url) URL.revokeObjectURL(url); }});
+    let blob; try { blob = await tlRender(tl, author); } catch(e){ s.el.querySelector(".tlpng").innerHTML = `<p class="tmi-err">Не получилось нарисовать: ${esc(e.message || e)}</p>`; return; }
+    if (s.closed) return;
+    url = URL.createObjectURL(blob);
+    const name = (String(tl.title || "").replace(/[\\/:*?"<>|]+/g, "").trim().slice(0, 60) || "tierlist") + ".png", file = new File([blob], name, {type: "image/png"});
+    s.el.querySelector(".tlpng").innerHTML = `<img src="${url}" alt="${esc(tl.title)}">`;
+    const canShare = !!(navigator.canShare && navigator.canShare({files: [file]}) && matchMedia("(pointer:coarse)").matches), canCopy = !!(window.ClipboardItem && navigator.clipboard && navigator.clipboard.write);
+    s.el.querySelector("#tpA").innerHTML = `${canShare ? `<button class="ib blue" data-tp="share">Отправить</button>` : ""}<button class="ib${canShare ? "" : " blue"}" data-tp="dl">${ICON.down}Скачать PNG</button>${canCopy ? `<button class="ib" data-tp="copy">${ICON.img}Скопировать</button>` : ""}`;
+    s.el.querySelector("#tpA").onclick = async e => { const b = e.target.closest("[data-tp]"); if (!b) return;
+      if (b.dataset.tp === "dl"){ const a = document.createElement("a"); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove(); return; }
+      if (b.dataset.tp === "copy"){ try { await navigator.clipboard.write([new ClipboardItem({"image/png": blob})]); toast("Картинка в буфере — вставь в Telegram через Ctrl+V"); } catch(_){ toast("Браузер не дал скопировать — скачай PNG"); } return; }
+      if (b.dataset.tp === "share"){ try { await navigator.share({files: [file], title: tl.title}); } catch(_){} } };
+  }
 
   // ================= 3.4: книга жалоб и предложений =================
   let BOOK = null, bookLoading = null, bookDraft = {text: "", file: null}, bookN = 5;
@@ -9263,7 +9494,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     SB.auth.onAuthStateChange(ev => { if (ev === "PASSWORD_RECOVERY") setTimeout(() => passwordSheet(true), 600); });
     if (recoveryLink) setTimeout(() => { if (/access_token|type=recovery/.test(location.hash)) history.replaceState(null, "", location.pathname + "#games"); }, 1500);
     const {data: {session}} = await SB.auth.getSession();
-    if (session) start(session.user); else authScreen();
+    if (session) start(session.user); else if (pendingTl) guestTier(pendingTl); else authScreen();
   })();
 })();
 </script>

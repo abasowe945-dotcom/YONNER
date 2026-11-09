@@ -437,3 +437,19 @@ do $$ begin begin alter publication supabase_realtime add table public.feedback_
 
 -- ===== 3.6.1: свой рабочий день для таймера в шапке =====
 alter table public.profiles add column if not exists work jsonb;
+
+-- ===== 3.9: импорт тир-листов с TierMaker и публичная ссылка на тир-лист =====
+alter table public.tierlists add column if not exists source text;
+alter table public.tierlists drop constraint if exists tierlists_source_len;
+alter table public.tierlists add constraint tierlists_source_len check (source is null or char_length(source) <= 300);
+-- по ссылке #tier:<id> тир-лист открывается даже без входа (id не угадать)
+create or replace function public.tierlist_public(p_id uuid) returns json
+language sql stable security definer set search_path = public as $$
+  select json_build_object(
+    'tl', json_build_object('id', t.id, 'user_id', t.user_id, 'title', t.title, 'tiers', t.tiers, 'pool', t.pool, 'reply_to', t.reply_to, 'source', t.source, 'created_at', t.created_at, 'updated_at', t.updated_at),
+    'author', (select json_build_object('nick', p.nick, 'avatar', p.avatar, 'ava_animal', p.ava_animal, 'ava_color', p.ava_color) from public.profiles p where p.user_id = t.user_id),
+    'root_title', (select r.title from public.tierlists r where r.id = t.reply_to))
+  from public.tierlists t where t.id = p_id;
+$$;
+revoke all on function public.tierlist_public(uuid) from public;
+grant execute on function public.tierlist_public(uuid) to anon, authenticated;
