@@ -402,3 +402,21 @@ do $$ begin
   begin alter publication supabase_realtime add table public.feedback; exception when others then null; end;
   begin alter publication supabase_realtime add table public.feedback_votes; exception when others then null; end;
 end $$;
+
+-- ===== 3.5: комментарии в книге жалоб =====
+alter table public.notifications drop constraint if exists notifications_kind_check;
+alter table public.notifications add constraint notifications_kind_check check (kind in ('mention_post','mention_comment','comment','invite','mention_event','tier_reply','book_comment'));
+create table if not exists public.feedback_comments (
+  id uuid primary key default gen_random_uuid(),
+  feedback_id uuid not null references public.feedback(id) on delete cascade,
+  user_id uuid not null default auth.uid() references auth.users on delete cascade,
+  body text not null check (char_length(body) between 1 and 1000),
+  created_at timestamptz not null default now()
+);
+create index if not exists feedback_comments_fb_idx on public.feedback_comments(feedback_id);
+alter table public.feedback_comments enable row level security;
+drop policy if exists fc_select on public.feedback_comments; create policy fc_select on public.feedback_comments for select to authenticated using (true);
+drop policy if exists fc_insert on public.feedback_comments; create policy fc_insert on public.feedback_comments for insert to authenticated with check (user_id = (select auth.uid()));
+drop policy if exists fc_delete on public.feedback_comments; create policy fc_delete on public.feedback_comments for delete to authenticated using (user_id = (select auth.uid()));
+revoke all on public.feedback_comments from anon;
+do $$ begin begin alter publication supabase_realtime add table public.feedback_comments; exception when others then null; end; end $$;

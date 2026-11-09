@@ -1586,6 +1586,10 @@ body[data-theme="kino"] .view .shade{background:linear-gradient(90deg,var(--k-bg
 .k-lower{position:relative;z-index:3!important}
 .k-hero > .k-glass{position:relative;z-index:3!important}
 
+/* 3.5: кровь на странице кинопоказа — за карточкой, а не поверх текста */
+.wp-hero .wp-glass{position:relative;z-index:3}
+.wp-in > :not(.wp-hero){position:relative;z-index:3}
+.wp-pcol .pwrap > .poster{position:relative;z-index:5}
 /* ===== 2.3: ГО ПОСМОТРИМ ===== */
 .gw-card{position:relative;overflow:hidden;margin-bottom:16px;border-radius:20px;padding:16px;color:#fff;background:radial-gradient(90% 120% at 100% 0,#e5091433,transparent 60%),linear-gradient(135deg,#1a0f12,#0f0f14);box-shadow:0 14px 34px rgba(0,0,0,.25)}
 .gw-card::before{content:"";position:absolute;inset:0;background:var(--cine) 0 0/240px 240px;opacity:.06;pointer-events:none}
@@ -3167,6 +3171,62 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
 
 :root[data-mode="light"] body.has-secbg[data-route="home"],:root[data-mode="light"] body.has-secbg[data-route="user"]{background:transparent!important}
 .pk .rx-cv .rb,.pk .rx-cv .ok,.pk .rx-cv .tp,.pk .rx-cv .new{display:none}
+
+/* ===== 3.5: «Прошёл на YouTube» ===== */
+.s-stat.yt b{color:#ff7a93}
+.s-flag.youtube{background:rgba(255,48,64,.14);color:#ff8a8a}
+.chips button[aria-pressed="true"].youtube{background:#ff0033;border-color:#ff0033;color:#fff}
+.s-pricebox .st.youtube{background:#ff0033;color:#fff}
+.s-card.st-youtube .poster{box-shadow:0 26px 34px -16px rgba(255,0,51,.6),0 6px 16px rgba(0,0,0,.5)}
+:root[data-mode="light"] .s-flag.youtube{color:#c4001f;background:rgba(196,0,31,.1)}
+.pf-c.yt .poster::after{content:"";position:absolute;right:8px;bottom:8px;width:30px;height:21px;border-radius:6px;background:#ff0033 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M3.5 2.5v5l4-2.5z' fill='%23fff'/%3E%3C/svg%3E") center/62% no-repeat;box-shadow:0 3px 8px rgba(0,0,0,.45);z-index:3}
+
+/* ===== 3.5: «уже есть у друзей» в форме ===== */
+.ff{position:relative}
+.ff-in{position:relative;display:block}
+.ff-in svg{position:absolute;left:13px;top:50%;width:16px;height:16px;transform:translateY(-50%);opacity:.55;pointer-events:none}
+.ff-in input{padding-left:38px!important;width:100%;box-sizing:border-box}
+.ff-res{position:absolute;left:0;right:0;top:100%;z-index:30;margin-top:6px;padding:6px;border-radius:14px;background:#1c1c1f;border:1px solid rgba(255,255,255,.12);box-shadow:0 24px 50px rgba(0,0,0,.55);max-height:360px;overflow:auto}
+.ff-r{display:flex;align-items:center;gap:10px;width:100%;padding:6px;border:0;border-radius:10px;background:none;color:#fff;text-align:left;cursor:pointer;font:500 13px/1.25 var(--ios)}
+.ff-r:hover:not([disabled]),.ff-r:focus-visible{background:rgba(255,255,255,.08);outline:none}
+.ff-r[disabled]{opacity:.55;cursor:default}
+.ff-r .poster{flex:none;width:36px;border-radius:5px;box-shadow:none}
+.ff-r .poster .ph{font-size:7px;padding:2px}
+.ff-r .t{min-width:0;flex:1;display:grid;gap:3px}
+.ff-r .t b{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ff-r .t small{color:#9a9aa2;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ff-r .w,.ff-has .ff-ok{display:flex;align-items:center;gap:6px;flex:none;max-width:46%}
+.ff-r .w small,.ff-ok small{color:#9a9aa2;font:500 11.5px/1.2 var(--ios);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ff-r .w .fr-ava,.ff-ok .fr-ava{width:20px;height:20px;font-size:9px}
+.ff-r .mine{color:#30d158!important}
+.ff-none{margin:8px;color:#9a9aa2;font:500 13px/1.3 var(--ios)}
+.ff-has{margin-top:-4px}
+.ff-has .ff-ok{max-width:none;padding:8px 12px;border-radius:12px;background:rgba(48,209,88,.1);display:inline-flex}
+.ff-has .ff-ok small{color:inherit;opacity:.85}
+.ff-warn{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:12px;background:rgba(255,159,10,.14);color:#ffb340;font:600 12.5px/1.2 var(--ios)}
+.ff-warn svg{width:15px;height:15px}
+:root[data-mode="light"] .ff-res{background:#fff;border-color:#e3e5ea;box-shadow:0 20px 44px rgba(20,22,27,.18)}
+:root[data-mode="light"] .ff-r{color:#14161b}:root[data-mode="light"] .ff-r:hover:not([disabled]){background:#f1f3f6}
+@media (max-width:640px){.ff-r .w small{display:none}}
+
+/* ===== 3.5: комментарии в книге ===== */
+.bk-v .cm.on{background:#22252b;border-color:#22252b;color:#fbfaf6}
+.bk-cl{display:grid;gap:8px;margin:10px 0 0 14px;padding-left:12px;border-left:2px solid #e4e0d5}
+.bk-cm{display:flex;gap:8px;align-items:flex-start}
+.bk-cm .fr-ava{flex:none;width:22px;height:22px;font-size:10px;margin-top:1px}
+.bk-cb{min-width:0;flex:1}
+.bk-ch{display:flex;align-items:center;gap:6px}
+.bk-ch b{font:700 12.5px/1 var(--ios)}.bk-ch small{color:#8a8f98;font:500 11px/1 var(--ios)}
+.bk-ch .bk-x{width:20px;height:20px}
+.bk-cb p{margin:3px 0 0;font:500 13px/1.4 ui-monospace,"SF Mono",Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word}
+.bk-cb p a{color:#0a63c9}
+.bk-cmore{display:block;margin:10px 0 0 14px;border:0;background:none;padding:0;color:#5d626c;font:600 12px/1 var(--ios);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.bk-cf{display:flex;align-items:flex-end;gap:6px;margin:10px 0 0 14px}
+.bk-cf textarea{flex:1;min-width:0;min-height:34px;resize:none;border:0;border-radius:9px;padding:8px 10px;background:rgba(255,255,255,.85);box-shadow:inset 0 0 0 1px #e1ddd2;color:#22252b;font:500 13px/1.35 ui-monospace,"SF Mono",Menlo,Consolas,monospace;outline:none}
+.bk-cf textarea:focus{box-shadow:inset 0 0 0 1.5px #22252b}
+.bk-cf button{flex:none;width:34px;height:34px;border:0;border-radius:9px;background:#22252b;color:#fbfaf6;font:700 15px/1 var(--ios);cursor:pointer}
+.bk-e.flash{animation:bkFlash 1.4s ease}
+@keyframes bkFlash{0%,40%{background:rgba(255,214,10,.28)}100%{background:transparent}}
 /* «ОЦЕНИТЬ» */
 .rate-cta{position:relative;display:flex;align-items:center;gap:14px;width:100%;margin:22px 0 0;padding:14px 18px;border:0;border-radius:16px;cursor:pointer;color:#1b1200;text-align:left;background:linear-gradient(110deg,#ffd60a,#ff9f0a 55%,#ff6b00);box-shadow:0 14px 34px rgba(255,159,10,.32),inset 0 1px 0 rgba(255,255,255,.5);overflow:hidden;transition:transform .25s cubic-bezier(.3,1.5,.4,1)}
 .rate-cta::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.55) 50%,transparent 65%);background-size:250% 100%;animation:ctaShine 3.2s ease-in-out infinite}
@@ -3304,12 +3364,12 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
 (() => {
   // ================= справочники =================
   const KTYPES = {movie:"Фильм", series:"Сериал", anime:"Аниме"};
-  const GSTATUS = {playing:"В процессе", endless:"Онлайн-игра", done:"Пройдено", dropped:"Дроп"};
+  const GSTATUS = {playing:"В процессе", endless:"Онлайн-игра", done:"Пройдено", youtube:"Прошёл на YouTube", dropped:"Дроп"};
   const KSTATUS = {playing:{l:"Смотрю",c:"#7cc4ff"}, done:{l:"Досмотрено",c:"#9be15d"}, played:{l:"Смотрел",c:"#c9c9d8"}, paused:{l:"Отложено",c:"#f2d43a"}, dropped:{l:"Брошено",c:"#ff8a86"}};
   const KORDER = ["playing","done","played","paused","dropped"];
   // 2.1: у фильмов только «Просмотрено» и «Отложено», у сериалов и аниме — «Смотрю» и «Брошено» (досмотренные помечаются сами по сериям)
   const isSerT = t => t === "series" || t === "anime";
-  const kOpts = t => isSerT(t) ? [["playing","Смотрю"],["dropped","Брошено"]] : [["done","Просмотрено"],["paused","Отложено"]];
+  const kOpts = t => isSerT(t) ? [["playing","Смотрю"],["done","Просмотрено"],["dropped","Брошено"]] : [["done","Просмотрено"],["paused","Отложено"]];
   const kNorm = it => { const s = it.status; if (isSerT(it.type)) return s === "dropped" ? "dropped" : s === "done" ? "done" : "playing"; return s === "done" || s === "played" ? "done" : "paused"; };
   const KCOL = {playing:"#7cc4ff", done:"#9be15d", paused:"#f2d43a", dropped:"#ff8a86"};
   const kLab = it => { const n = kNorm(it); return {l: n === "done" ? (isSerT(it.type) ? "Досмотрено" : "Просмотрено") : n === "paused" ? "Отложено" : n === "dropped" ? "Брошено" : "Смотрю", c: KCOL[n]}; };
@@ -3365,7 +3425,7 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
     steam:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor"><path d="M11.2 19.9 17.4 14.6" stroke-width="4.2" stroke-linecap="round"/><circle cx="21.2" cy="11.2" r="6.4" stroke-width="2.6"/><circle cx="21.2" cy="11.2" r="2.5" fill="currentColor" stroke="none"/><circle cx="9.4" cy="21.6" r="3.9" stroke-width="2.6"/></svg>',
     pirate:'<svg viewBox="0 0 32 32"><path fill="currentColor" d="M2 17.5c2.6-1 4.4-6.5 14-6.5s11.4 5.5 14 6.5c-2.4 2.6-6.8 4-14 4s-11.6-1.4-14-4Z"/><path fill="currentColor" d="M7 15.2C8.4 9.3 11.6 6 16 6s7.6 3.3 9 9.2C22.6 13.6 19.6 13 16 13s-6.6.6-9 2.2Z"/><circle cx="16" cy="13.6" r="3.2" fill="#0b0b0c"/><rect x="14.3" y="16" width="3.4" height="2.4" rx=".6" fill="#0b0b0c"/><circle cx="14.9" cy="13.4" r=".9" fill="currentColor"/><circle cx="17.1" cy="13.4" r=".9" fill="currentColor"/><path d="M11.5 19.6l9-3.2M11.5 16.4l9 3.2" stroke="#0b0b0c" stroke-width="1.3" stroke-linecap="round"/></svg>'
   };
-  const SRC_NAME = {steam:"Steam", pirate:"Пиратка"};
+  const SRC_NAME = {steam:"Лицензия", pirate:"Пиратка"};
 
   // ================= состояние =================
   let items = [], route = "games", prevRoute = null;
@@ -3757,12 +3817,12 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
     list.sort((a,b) => sorter(gSort)(a,b) || (a.title||"").localeCompare(b.title||"","ru"));
     $("sMain").innerHTML = `${FV ? fvBanner("games") : contractBanner() + releasesPanel("games") + ctaRow("games")}
       <div class="s-head" style="margin-top:26px"><div><div class="t-row"><h1 class="s-h1">Библиотека</h1>${futPill("games", futs.length)}</div>
-        <div class="src-pills">${[["","Все",lib.length,""],["steam","Steam",srcCount("steam"),SRC_ICON.steam],["pirate","Пиратка",srcCount("pirate"),SRC_ICON.pirate]]
+        <div class="src-pills">${[["","Все",lib.length,""],["steam","Лицензия",srcCount("steam"),SRC_ICON.steam],["pirate","Пиратка",srcCount("pirate"),SRC_ICON.pirate]]
           .map(([v,l,n,ic]) => `<button class="src-p ${v}" data-src="${v}" aria-pressed="${gSrc===v}">${ic ? `<span class="i">${ic}</span>` : ""}${l}<small>${n}</small></button>`).join("")}</div></div>
-        <div class="s-stats">${[["",pool.length,"всего"],["blue",cnt("playing"),"в процессе"],["purple",cnt("endless"),"онлайн-игры"],["green",cnt("done"),"пройдено"],["red",cnt("dropped"),"дроп"],["",avg,"средняя"]]
+        <div class="s-stats">${[["",pool.length,"всего"],["blue",cnt("playing"),"в процессе"],["purple",cnt("endless"),"онлайн-игры"],["green",cnt("done"),"пройдено"],["yt",cnt("youtube"),"на YouTube"],["red",cnt("dropped"),"дроп"],["",avg,"средняя"]]
           .map(([c,v,l]) => `<div class="s-stat ${c}"><b>${esc(v)}</b><small>${l}</small></div>`).join("")}</div></div>
       ${now.length ? `<div class="s-shelf-h">В процессе</div><div class="s-row">${now.map(gCard).join("")}</div>` : ""}
-      <div class="s-bar"><div class="seg">${[["","Все",pool.length],["playing","В процессе",cnt("playing")],["endless","Онлайн-игры",cnt("endless")],["done","Пройдено",cnt("done")],["dropped","Дроп",cnt("dropped")]]
+      <div class="s-bar"><div class="seg">${[["","Все",pool.length],["playing","В процессе",cnt("playing")],["endless","Онлайн-игры",cnt("endless")],["done","Пройдено",cnt("done")],["youtube","На YouTube",cnt("youtube")],["dropped","Дроп",cnt("dropped")]]
         .map(([v,l,n]) => `<button data-gf="${v}" aria-pressed="${gF===v}">${l}<small>${n}</small></button>`).join("")}</div>
         <span style="display:flex;gap:10px;align-items:center"><select class="s-sel" id="gSort" aria-label="Сортировка">${sortOpts(gSort)}</select>${canWrite ? `<button class="s-btn dark" data-reord="lib:games" title="Расставить вручную">${ICON.drag}</button>` : ""}${canWrite ? `<button class="s-btn" data-addk="games">${ICON.plus}Добавить</button>` : ""}</span></div>
       <section class="s-grid">${list.length ? list.map(gCard).join("") :
@@ -4224,7 +4284,7 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
     if (via) patch.via = via;
     try { await write(it.id, patch); } catch(e){ toast("Не сохранилось"); return; }
     const upd = {...it, ...patch};
-    toast(isGame(it) ? "Погнали. Выбери Steam или Пиратка и цену" : "Приятного просмотра");
+    toast(isGame(it) ? "Погнали. Выбери Лицензия или Пиратка и цену" : "Приятного просмотра");
     openForm(upd, isGame(it) ? "games" : "kino");
   }
 
@@ -4334,11 +4394,12 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
     if (g ? gStatus(it.status) === st : it.status === st) return;
     const patch = {status: st};
     if (g){
-      patch.finishedAt = (st === "done" || st === "dropped") ? today() : null;
+      patch.finishedAt = (st === "done" || st === "dropped" || st === "youtube") ? today() : null;
       if (hasActive(it) && st === "dropped"){ failContract(it); return; }
       if (hasActive(it) && st === "done") patch.contract = {...it.contract, state: "done", closedAt: today()};
     }
     const watched = x => x === "done" || x === "played";
+    if (!g && isSerT(it.type) && st === "done"){ if (+it.epTotal && (+it.epWatched || 0) < +it.epTotal) patch.epWatched = +it.epTotal; patch.now = null; }
     if (g){ if (!it.date) patch.date = today(); }
     else patch.date = watched(st) ? (watched(it.status) && it.date ? it.date : today()) : null;
     if (st === "dropped"){ dropSheet(it, patch); return; }
@@ -4426,7 +4487,7 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
           <div class="k-meta">${meta.map((m,i) => (i ? "<i></i>" : "") + `<span>${esc(m)}</span>`).join("")}</div>
           ${canWrite ? `<div class="k-rate"><div class="lb">Моя оценка</div>${wheelHTML("vRate", it.rating)}</div>` : ""}
           ${isSeries(it) ? epBlock(it) : ""}
-          ${canWrite ? `<div class="k-sts" id="stChips">${[...kOpts(it.type), ...(kNorm(it) === "done" && isSerT(it.type) ? [["done","Досмотрено"]] : [])].map(([k,l]) => `<button type="button" data-st="${k}" style="--c:${KCOL[k]}" aria-pressed="${k===kNorm(it)}">${l}</button>`).join("")}</div>`
+          ${canWrite ? `<div class="k-sts" id="stChips">${kOpts(it.type).map(([k,l]) => `<button type="button" data-st="${k}" style="--c:${KCOL[k]}" aria-pressed="${k===kNorm(it)}">${l}</button>`).join("")}</div>`
             : `<span class="k-status" style="background:${st.c}">${esc(st.l)}</span>`}
         </div>
       </div>
@@ -4628,16 +4689,16 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
       showView(`
         <div class="s-crumb"><a id="crumb">Все игры</a> &gt; ${isNew ? "Новая игра" : esc(it.title)}</div>
         <h2 class="s-title">${lock === "future" ? (isNew ? "На будущее" : "Изменить: на будущее") : lock === "soon" ? (isNew ? "Ждать релиз" : "Изменить релиз") : isNew ? "Добавить игру" : "Изменить игру"}</h2>
-        ${lock ? `<p style="margin:-8px 0 18px;color:var(--s-dim)">${lock === "future" ? "Попадёт в «На будущее» и в пул рулетки. Оценка, дата начала, цена и Steam/Пиратка — когда начнёшь играть." : "Попадёт в календарь выходов с обратным отсчётом."}</p>` : ""}
+        ${lock ? `<p style="margin:-8px 0 18px;color:var(--s-dim)">${lock === "future" ? "Попадёт в «На будущее» и в пул рулетки. Оценка, дата начала, цена и Лицензия/Пиратка — когда начнёшь играть." : "Попадёт в календарь выходов с обратным отсчётом."}</p>` : ""}
         <div class="s-form">
           <div>${posterBox()}</div>
           <form class="s-fields" id="editForm" novalidate>
             <div class="af-row"><p class="af-cap">Ссылка на игру в Steam</p>
               <div class="af-link"><span class="lk">${LINK_I}<input class="s-in" id="f_url" inputmode="url" autocomplete="off" placeholder="store.steampowered.com/app/1245620"></span><button type="button" class="s-btn" id="f_urlGo">Заполнить</button></div>
-              <div class="af-sum" id="afSum"></div></div>
+              <div class="af-sum" id="afSum"></div></div>${isNew ? frFindHTML(g ? "s-in" : "k-in") : ""}
             ${lock === "soon" ? releaseFields(it, "s-in") : ""}
             ${lock ? "" : `<label>Статус<div class="chips" id="f_st">${Object.entries(GSTATUS).map(([k,l]) => `<button type="button" class="${k}" data-v="${k}" aria-pressed="${k===st}">${l}</button>`).join("")}<button type="button" data-v="future" aria-pressed="${st === "future"}">На будущее</button></div></label>`}
-            <label id="srcWrap" ${lock || st === "future" ? "hidden" : ""}>Где взял<div class="chips" id="f_src">${["steam","pirate"].map(k => `<button type="button" class="${k}" data-v="${k}" aria-pressed="${k===srcSel}">${SRC_ICON[k]}${SRC_NAME[k]}</button>`).join("")}</div></label>
+            <label id="srcWrap" ${lock || st === "future" || st === "youtube" ? "hidden" : ""}>Где взял<div class="chips" id="f_src">${["steam","pirate"].map(k => `<button type="button" class="${k}" data-v="${k}" aria-pressed="${k===srcSel}">${SRC_ICON[k]}${SRC_NAME[k]}</button>`).join("")}</div></label>
             <label id="dropWrap" ${st === "dropped" ? "" : "hidden"}>Причина дропа<textarea class="s-in" id="f_drop" style="min-height:70px" placeholder="Почему бросил">${esc(it.dropReason||"")}</textarea></label>
             ${togBtn(lock ? "название, описание, жанры, заметки" : "название, описание, жанры, даты, цена, оценка, заметки")}
             <div class="af-dr" id="afDr"><div class="af-in">
@@ -4650,7 +4711,7 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
                 <label>Дата выхода<input class="s-in" id="f_release" placeholder="16 мая. 2024" value="${esc(it.release||"")}"></label>
                 ${lock ? "" : `<label>Начал играть<span class="nd-row"><input class="s-in" id="f_date" type="date" value="${it.noDate ? "" : esc(dateVal)}" ${it.noDate ? "disabled" : ""}><label class="nd-tog"><input type="checkbox" id="f_nodate" ${it.noDate ? "checked" : ""}><span>Без даты</span></label></span></label>`}
               </div>`}
-              <div id="buyWrap" style="display:grid;gap:14px" ${lock || st === "future" ? "hidden" : ""}>
+              <div id="buyWrap" style="display:grid;gap:14px" ${lock || st === "future" || st === "youtube" ? "hidden" : ""}>
               <label>Цена<div class="price-row"><div class="cur"><input class="s-in" id="f_rub" inputmode="numeric" placeholder="1 999" value="${rub0 ?? ""}"><span>₽</span></div>
                 <div class="cur"><input class="s-in" id="f_kzt" inputmode="numeric" placeholder="10 915" value="${rub0 != null ? Math.round(rub0 * KZT_PER_RUB) : ""}"><span>₸</span></div>
                 <button type="button" class="free" id="f_free" aria-pressed="${!!it.priceFree}">Бесплатно</button></div>
@@ -4667,7 +4728,7 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
       const kit = formKit(isNew, "Steam");
       const chips = (id, fn) => $(id).onclick = e => { const b = e.target.closest("[data-v]"); if (!b) return; $(id).querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); fn(b.dataset.v); };
       chips("f_src", v => srcSel = v);
-      if (!lock) chips("f_st", v => { st = v; $("dropWrap").hidden = st !== "dropped"; $("buyWrap").hidden = $("srcWrap").hidden = st === "future"; });
+      if (!lock) chips("f_st", v => { st = v; $("dropWrap").hidden = st !== "dropped"; $("buyWrap").hidden = $("srcWrap").hidden = st === "future" || st === "youtube"; });
       genreChips("f_genre");
       const rel = lock === "soon" ? wireRelease() : null;
       const setFree = v => { free = v; $("f_free").setAttribute("aria-pressed", v); $("f_rub").disabled = $("f_kzt").disabled = v; };
@@ -4705,11 +4766,18 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
             $("fPoster").outerHTML = posterBox(); wireFormPoster(); got.push("обложку");
           }
           if (!got.length) throw new Error("Steam ничего не отдал");
-          kit.sum("ok"); toast("Подтянул: " + got.join(", "));
+          kit.sum("ok"); ffHasChk(); toast("Подтянул: " + got.join(", "));
         } catch(e){ kit.sum("bad", "Steam не отдал данные (" + (e.message || e) + "). Заполни вручную — поля ниже"); kit.openDr(true); setTimeout(() => $("f_title").focus(), 350); }
         btn.disabled = false; btn.textContent = "Заполнить";
       };
       $("f_urlGo").onclick = () => steamFill($("f_url").value);
+      wireFrFind(true, async fi => {
+        if (fi.title) $("f_title").value = fi.title; if (fi.desc) $("f_desc").value = fi.desc;
+        if (fi.genre){ $("f_genre").value = fi.genre; $("f_genre").dispatchEvent(new Event("input")); }
+        if (fi.release && $("f_release")) $("f_release").value = fi.release; if (rel && fi.releaseDate) rel.fill(fi.releaseDate);
+        if (fi.steamId) FORM_IDS.steamId = fi.steamId;
+        if (!cover.file){ const f = await frCoverFile(fi); if (f){ cover = {file: f, url: URL.createObjectURL(f), pos: fi.coverPos || null, remove: false}; $("fPoster").outerHTML = posterBox(); wireFormPoster(); } }
+        kit.sum("ok"); });
       $("f_url").addEventListener("keydown", e => { if (e.key === "Enter"){ e.preventDefault(); steamFill($("f_url").value); } });
       $("f_url").addEventListener("paste", () => setTimeout(() => { const v = $("f_url").value.trim(); if (v) steamFill(v); }, 0));
       $("f_quick").addEventListener("input", () => { if (/^\s*https?:\/\/store\.steampowered\.com\/app\/\d+\S*\s*$/i.test($("f_quick").value)){ $("f_url").value = $("f_quick").value.trim(); $("f_quick").value = ""; steamFill($("f_url").value); return; }
@@ -4724,17 +4792,17 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
         if (got.length){ toast("Нашёл: " + got.join(", ")); kit.sum("ok"); } });
       $("editForm").onsubmit = async e => { e.preventDefault();
         if (lock) st = lock;
-        const later = st === "future" || st === "soon";
+        const later = st === "future" || st === "soon", yt = st === "youtube";
         if (!$("f_title").value.trim()){ kit.openDr(true); kit.sum("bad", "Нужно название: вставь ссылку или впиши его вручную"); setTimeout(() => $("f_title").focus(), 300); return; }
-        if (!later && !srcSel){ toast("Выбери, где взял: Steam или Пиратка"); $("srcWrap").scrollIntoView({behavior: "smooth", block: "center"}); return; }
+        if (!later && !yt && !srcSel){ toast("Выбери, где взял: Лицензия или Пиратка"); $("srcWrap").scrollIntoView({behavior: "smooth", block: "center"}); return; }
         let relTxt = $("f_release") ? $("f_release").value.trim() : (it.release || ""), relD = null;
         if (lock === "soon"){ relD = rel.get(); if (!relD){ toast("Укажи дату или месяц выхода"); return; } if (!relTxt) relTxt = relLabel(relD); }
         const ym = (relD ? relD.releaseDate : relTxt).match(/(19|20)\d{2}/);
         const nd = $("f_nodate") && $("f_nodate").checked;
         const body = {type:"game", title:$("f_title").value.trim(), desc:$("f_desc").value.trim() || null, genre:$("f_genre").value.trim() || null,
-          release: relTxt || null, year: ym ? +ym[0] : (it.year || null), price: later ? (it.price ?? null) : null, priceFree: later ? !!it.priceFree : free, priceRub: later ? (it.priceRub ?? null) : (free ? null : (digits($("f_rub").value) ? +digits($("f_rub").value) : null)),
-          rating: lock ? (it.rating ?? null) : wheelVal("f_rating"), date: lock || nd ? null : (($("f_date") && $("f_date").value) || null), noDate: !lock && !!nd, source: later ? (it.source || null) : srcSel, status: st,
-          finishedAt: nd ? null : (st === "done" || st === "dropped") ? (it.finishedAt && gStatus(it.status) === st ? it.finishedAt : today()) : null, dropReason: st === "dropped" ? ($("f_drop").value.trim() || null) : null, note:$("f_note").value.trim() || null};
+          release: relTxt || null, year: ym ? +ym[0] : (it.year || null), price: later ? (it.price ?? null) : null, priceFree: later ? !!it.priceFree : yt ? false : free, priceRub: later ? (it.priceRub ?? null) : (free || yt ? null : (digits($("f_rub").value) ? +digits($("f_rub").value) : null)),
+          rating: lock ? (it.rating ?? null) : wheelVal("f_rating"), date: lock || nd ? null : (($("f_date") && $("f_date").value) || null), noDate: !lock && !!nd, source: later ? (it.source || null) : yt ? null : srcSel, status: st,
+          finishedAt: nd ? null : (st === "done" || st === "dropped" || st === "youtube") ? (it.finishedAt && gStatus(it.status) === st ? it.finishedAt : today()) : null, dropReason: st === "dropped" ? ($("f_drop").value.trim() || null) : null, note:$("f_note").value.trim() || null};
         if (relD) Object.assign(body, relD);
         await save(it, isNew, body, cover); };
     } else {
@@ -4753,7 +4821,7 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
             ${lock ? `<p style="margin:0;color:var(--k-dim);text-transform:none;letter-spacing:0">${lock === "future" ? "Попадёт в «На будущее» и в пул рулетки." : "Попадёт в календарь выходов. Дата премьеры подтянется из Кинопоиска."}</p>` : ""}
             <div class="af-row"><p class="af-cap">Ссылка на Кинопоиск</p>
               <div class="af-link"><span class="lk">${LINK_I}<input class="k-in" id="f_url" inputmode="url" autocomplete="off" placeholder="kinopoisk.ru/film/301"></span><button type="button" class="k-btn white sm" id="f_urlGo">Заполнить</button></div>
-              <div class="af-sum" id="afSum"></div></div>
+              <div class="af-sum" id="afSum"></div></div>${isNew ? frFindHTML(g ? "s-in" : "k-in") : ""}
             <div class="af-row"><div><span class="af-seg" id="f_typeSeg">${Object.entries(KTYPES).map(([k,l]) => `<button type="button" data-t="${k}" aria-pressed="${k===it.type}">${l}</button>`).join("")}</span></div>
               <select id="f_type" hidden>${Object.entries(KTYPES).map(([k,l]) => `<option value="${k}"${k===it.type?" selected":""}>${l}</option>`).join("")}</select></div>
             ${lock ? "" : `<div class="af-row"><div class="ks-chips" id="f_stc"></div><select id="f_status" hidden>${["playing","done","played","paused","dropped","future"].map(s => `<option value="${s}"${s===st?" selected":""}>${s}</option>`).join("")}</select></div>`}
@@ -4797,7 +4865,7 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
       // статусы под тип: фильм — Просмотрено/Отложено, сериал — Смотрю/Брошено
       const okSt = t => isSerT(t) ? ["playing","dropped","done","future"] : ["done","played","paused","future"];
       const drawSt = () => { if (lock) return; const t = $("f_type").value, cur = st === "future" ? "future" : kNorm({type: t, status: st});
-        const opts = [...kOpts(t), ...(isSerT(t) && st === "done" ? [["done","Досмотрено"]] : []), ["future","На будущее"]];
+        const opts = [...kOpts(t), ["future","На будущее"]];
         $("f_stc").innerHTML = opts.map(([k,l]) => `<button type="button" data-v="${k}" class="${k === "future" ? "fut" : ""}" style="--c:${KCOL[k] || "#c7c7d6"}" aria-pressed="${k === cur}">${l}</button>`).join(""); };
       const setSt = v => { st = v; $("f_status").value = v; $("f_status").dispatchEvent(new Event("change")); drawSt(); };
       let stTouched = false;
@@ -4853,11 +4921,22 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
             $("fPoster").outerHTML = posterBox(); wireFormPoster(); got.push("постер");
           }
           if (!got.length) throw new Error("Кинопоиск ничего не отдал");
-          kit.sum("ok"); toast("Подтянул: " + got.join(", "));
+          kit.sum("ok"); ffHasChk(); toast("Подтянул: " + got.join(", "));
         } catch(e){ kit.sum("bad", (e.message || "Не получилось достать данные с Кинопоиска") + ". Заполни вручную — поля ниже"); kit.openDr(true); setTimeout(() => $("f_title").focus(), 350); }
         btn.disabled = false; btn.textContent = "Заполнить";
       };
       $("f_urlGo").onclick = () => kpFill($("f_url").value);
+      wireFrFind(false, async fi => {
+        const set = (id, v) => { if (v != null && v !== "" && $(id)) $(id).value = v; };
+        set("f_title", fi.title); set("f_originalTitle", fi.originalTitle); set("f_year", fi.year);
+        if (fi.type && KTYPES[fi.type]){ $("f_type").value = fi.type; $("f_type").dataset.touched = "1"; serToggle(); }
+        set("f_genre", fi.genre); set("f_short", fi.short); set("f_desc", fi.desc); set("f_cast", fi.cast);
+        if (Array.isArray(fi.seasonEps) && fi.seasonEps.length){ seArr = fi.seasonEps.map(x => x > 0 ? +x : null); seKnown = +fi.epTotal || seKnown; seRender(); }
+        else { set("f_seasons", fi.seasons); set("f_epTotal", fi.epTotal); seFromInputs(); }
+        let extra = 0; KPF.forEach(([k]) => { if (fi[k] != null && fi[k] !== "" && $("f_" + k)){ $("f_" + k).value = fi[k]; extra++; } }); if (extra) $("kMore").open = true;
+        if (fi.kpId) FORM_IDS.kpId = fi.kpId; if (rel && fi.releaseDate) rel.fill(fi.releaseDate);
+        if (!cover.file){ const f = await frCoverFile(fi); if (f){ cover = {file: f, url: URL.createObjectURL(f), pos: fi.coverPos || null, remove: false}; $("fPoster").outerHTML = posterBox(); wireFormPoster(); } }
+        kit.sum("ok"); });
       $("f_url").addEventListener("keydown", e => { if (e.key === "Enter"){ e.preventDefault(); kpFill($("f_url").value); } });
       $("f_url").addEventListener("paste", () => setTimeout(() => { const v = $("f_url").value.trim(); if (v) kpFill(v); }, 0));
       $("f_quick").addEventListener("input", () => {
@@ -4887,6 +4966,7 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
         const ser = isSerT(body.type);
         body.seasons = ser ? n("f_seasons") : null; body.epTotal = ser ? n("f_epTotal") : null; body.seasonEps = ser && seArr.length ? seArr.slice() : null;
         body.epWatched = ser ? (lock ? (it.epWatched ?? null) : ($("f_epWatched").value === "" ? null : +$("f_epWatched").value.replace(/\D/g, "") || 0)) : null;
+        if (ser && st === "done"){ if (body.epTotal && (body.epWatched ?? 0) < body.epTotal) body.epWatched = body.epTotal; body.now = null; }
         if (body.kpRating) body.kpRating = parseFloat(String(body.kpRating).replace(",", ".")) || null;
         if (relD) Object.assign(body, relD);
         await save(it, isNew, body, cover); };
@@ -4909,7 +4989,7 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
       else { if (cover.file) body.cover = await upload(cover.file); if (cover.url || cover.file) body.coverPos = cover.pos || null; }
       let id = it.id;
       if (FORM_IDS.steamId && isGame(body)) body.steamId = FORM_IDS.steamId; if (FORM_IDS.kpId && !isGame(body)) body.kpId = FORM_IDS.kpId;
-      if (isNew && isGame(body) && (body.status === "done" || body.status === "dropped")) body.addedDone = true;
+      if (isNew && isGame(body) && (body.status === "done" || body.status === "dropped" || body.status === "youtube")) body.addedDone = true;
       if (isNew && pfPend && Date.now() - pfPend.t < 15 * 6e4 && (pfPend.kind === "games") === isGame(body)){ body[pfPend.flag] = true; body[pfPend.flag + "At"] = body.updatedAt; pfPend = null; }
       if (isNew){ body.createdAt = body.updatedAt; id = (await db.collection("items").add(body)).id; }
       else await db.doc("items/" + it.id).update(body);
@@ -5301,6 +5381,13 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
   // ================= патчноуты =================
   // Новые версии добавляются В НАЧАЛО списка. n — новое, c — изменено, f — исправлено, r — удалено.
   const PATCHES = [
+    {v: "3.5", date: "2026-11-09", title: "Прошёл на YouTube, Лицензия и комментарии в книге", kind: "minor", sec: {
+      n: ["<b>Прошёл на YouTube</b> — новый статус для игр, которые смотрел, а не играл: свой фильтр в библиотеке и своя полка в профиле. Цена и источник для них не нужны",
+        "<b>Комментарии в книге жалоб и предложений</b>: отвечай под любой записью, автору и участникам обсуждения придёт уведомление",
+        "<b>Уже есть у друзей</b>: при добавлении фильма, сериала или игры начни вводить название — покажу, у кого он уже есть, и одним нажатием подтяну название, описание, сезоны и постер. Если вставил ссылку, тоже подскажу, у кого он есть"],
+      c: ["Раздел <b>Steam</b> теперь называется <b>«Лицензия»</b>, значок тот же",
+        "У сериалов и аниме при добавлении теперь можно сразу выбрать <b>«Просмотрено»</b>, как у фильмов — все серии отметятся просмотренными"],
+      f: ["На телефоне кровь у ужастиков на странице кинопоказа заливала текст — теперь стекает за карточкой"]}},
     {v: "3.4", date: "2026-11-09", title: "Тир-листы, книга жалоб и кино как в стримингах", kind: "major", sec: {
       n: ["<b>Свои тир-листы</b> в Активности: придумай название, свои тиры с цветами, накидай квадратных картинок (перетащи, вставь или выбери файлы) и подпиши любую, если хочешь. Картинки раскладываются перетаскиванием",
         "<b>Закрепи тир-лист в профиле</b> — его увидят все. В профиле появился этаж «Тир-листы»: там же твои тир-листы игр и кино",
@@ -6393,7 +6480,7 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
     const d = Math.round(h / 24); return d === 1 ? "вчера" : d < 30 ? `${d} дн.` : fmtDate(localDate(new Date(ts))); };
   const verbOf = it => {
     if (isGame(it)){ const s = gStatus(it.status);
-      return it.status === "future" ? "хочет поиграть в" : it.status === "soon" ? "ждёт релиз" : s === "done" ? "прошёл" : s === "dropped" ? "дропнул" : s === "endless" ? "залип в" : "играет в"; }
+      return it.status === "future" ? "хочет поиграть в" : it.status === "soon" ? "ждёт релиз" : s === "done" ? "прошёл" : s === "youtube" ? "посмотрел прохождение" : s === "dropped" ? "дропнул" : s === "endless" ? "залип в" : "играет в"; }
     return it.status === "future" ? "хочет посмотреть" : it.status === "soon" ? "ждёт премьеру" : it.status === "done" || it.status === "played" ? "посмотрел" : it.status === "dropped" ? "бросил" : it.status === "paused" ? "отложил" : "смотрит";
   };
   function renderPeople(){
@@ -7504,7 +7591,7 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
       const add = (d, verb) => { if (d) ev.push({it, uid: it.uid, d: isoDay(d), ts: it._upd || "", verb}); };
       if (isGame(it)){ const s = gStatus(it.status);
         if (it.status === "future") add(it.createdAt, "хочет поиграть в"); else if (it.status === "soon") add(it.createdAt, "ждёт релиз");
-        else if (s === "done") add(it.finishedAt || it.date || it.createdAt, "прошёл"); else if (s === "dropped") add(it.finishedAt || it.date || it.createdAt, "дропнул");
+        else if (s === "done") add(it.finishedAt || it.date || it.createdAt, "прошёл"); else if (s === "youtube") add(it.finishedAt || it.date || it.createdAt, "посмотрел прохождение"); else if (s === "dropped") add(it.finishedAt || it.date || it.createdAt, "дропнул");
         else if (s === "endless") add(it.date || it.createdAt, "залип в"); else add(it.date || it.createdAt, "играет в");
       } else {
         if (it.status === "future") add(it.createdAt, "хочет посмотреть"); else if (it.status === "soon") add(it.createdAt, "ждёт премьеру");
@@ -7558,7 +7645,7 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
     const rail = (list, fn, addKey) => list.length || addKey ? railHTML("pf-rail", list.map(fn).join("") + (addKey ? add(addKey) : "")) : "";
     const stTxt = it => isFuture(it) ? "на будущее" : isSoon(it) ? (isGame(it) ? "ждёт релиз" : "ждёт премьеру") : isGame(it) ? GSTATUS[gStatus(it.status)].toLowerCase() : kLab(it).l.toLowerCase();
     // ---- игры
-    const nowG = shelfOf("gnow", g), favG = shelfOf("gfav", g), doneG = shelfOf("gdone", g), dropG = shelfOf("gdrop", g);
+    const nowG = shelfOf("gnow", g), favG = shelfOf("gfav", g), doneG = shelfOf("gdone", g), ytG = shelfOf("gyt", g), dropG = shelfOf("gdrop", g);
     const R = (k, list) => mine ? reordBtn(k, list.length) : "";
     const pile = (list, fn, addKey) => list.length || addKey ? railHTML("pf-rail pf-pile", list.map(fn).join("") + (addKey ? add(addKey) : "")).replace('data-hscroll="1"', 'data-hscroll="1" data-pile="1"') : "";
     const vrail = (list, sub, addKey) => list.length || addKey ? railHTML("pf-rail pf-tv", list.map(i => tvCard(i, mine ? `data-id="${esc(i.id)}"` : `data-fi="${esc(uid + "/" + i.id)}"`, sub(i))).join("") + (addKey ? add(addKey) : "")) : "";
@@ -7595,6 +7682,7 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
         ${show("Сейчас играю", nowG.length || null, nowG.length ? `<div class="pf-now">${nowG.map(i => `<button class="pf-nw" ${mine ? `data-id="${esc(i.id)}"` : `data-fi="${esc(uid + "/" + i.id)}"`}>${i.cover ? `<span class="bgx" style="--bg:url('${publicUrl(i.cover)}')"></span>` : ""}${posterHTML(i, {tgt: false, rate: false})}<span class="t"><small>${esc(stTxt(i))}${i.date ? ` · с ${fmtShort(i.date)}` : ""}</small><b>${esc(i.title)}</b><span>${esc(genres(i).slice(0, 3).join(", "))}</span></span></button>`).join("")}${mine ? `<button class="pf-nw-add" type="button" data-pfpick="games:now">${ICON.plus}</button>` : ""}</div>` : empty(mine ? "Выбери, во что играешь сейчас — это увидят друзья" : "Ничего не отметил", "games:now"), {cls: "now", act: (mine && nowG.length ? `<button class="pf-mini" data-pfpick="games:now">${ICON.edit}Изменить</button>` : "") + R("gnow", nowG)})}
         ${show("Любимые игры", favG.length || null, favG.length || mine ? pile(favG, i => card(i, esc(stTxt(i))), "games:fav") : empty("Пока не выбрал любимые"), {cls: "fav", act: R("gfav", favG)})}
         ${show("Пройденные", doneG.length || null, doneG.length ? pile(doneG, i => card(i, (i.finishedAt || i.date) ? `пройдена ${fmtShort(i.finishedAt || i.date)}` : "пройдена", " done")) : empty(mine ? "Пройденные игры появятся здесь с медалью" : "Пока ничего не прошёл"), {act: R("gdone", doneG)})}
+        ${ytG.length ? show("Прошёл на YouTube", ytG.length, pile(ytG, i => card(i, (i.finishedAt || i.date) ? `посмотрел ${fmtShort(i.finishedAt || i.date)}` : "посмотрел прохождение", " yt")), {cls: "yt-b", act: R("gyt", ytG)}) : ""}
         ${show("Дроп", dropG.length || null, dropG.length ? pile(dropG, dropCard) : empty(mine ? "Брошенные игры встанут сюда — серые, с красным штампом" : "Ничего не бросал"), {cls: "drop-b", act: R("gdrop", dropG)})}
       </section>`;
     const kino = `<section class="pf-floor fl-k">${fh(ICON.kino, "Кино и сериалы", mine ? "#kino" : `#fv:${esc(uid)}:kino`, "kino")}
@@ -8298,6 +8386,7 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
     gnow: {t: "Сейчас играю", f: i => isGame(i) && i.now, fb: (a, b) => byAt("nowAt")(a, b)},
     gfav: {t: "Любимые игры", f: i => isGame(i) && i.fav, fb: (a, b) => byAt("favAt")(a, b)},
     gdone: {t: "Пройденные", f: i => isGame(i) && inLib(i) && gStatus(i.status) === "done", fb: byFin},
+    gyt: {t: "Прошёл на YouTube", f: i => isGame(i) && inLib(i) && gStatus(i.status) === "youtube", fb: byFin},
     gdrop: {t: "Дроп", f: i => isGame(i) && inLib(i) && gStatus(i.status) === "dropped", fb: byFin},
     kfav: {t: "Любимые фильмы и сериалы", f: i => !isGame(i) && i.fav, fb: (a, b) => byAt("favAt")(a, b)},
     know: {t: "Смотрю", f: i => !isGame(i) && i.now && kNorm(i) !== "done", fb: (a, b) => byAt("nowAt")(a, b)},
@@ -8525,12 +8614,12 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
   let BOOK = null, bookLoading = null, bookDraft = {text: "", file: null}, bookN = 5;
   async function loadBook(force){
     if (!SB || !ME) return null; if (BOOK && !force) return BOOK; if (bookLoading) return bookLoading;
-    bookLoading = (async () => { const [f, v] = await Promise.all([SB.from("feedback").select("*").order("created_at", {ascending: false}).limit(200), SB.from("feedback_votes").select("*")]);
-      BOOK = {items: f.error ? [] : (f.data || []).sort(byAt("created_at")), votes: v.error ? [] : v.data || []}; bookLoading = null; if (route === "people") renderPeople(); return BOOK; })();
+    bookLoading = (async () => { const [f, v, c] = await Promise.all([SB.from("feedback").select("*").order("created_at", {ascending: false}).limit(200), SB.from("feedback_votes").select("*"), SB.from("feedback_comments").select("*").order("created_at", {ascending: true})]);
+      BOOK = {items: f.error ? [] : (f.data || []).sort(byAt("created_at")), votes: v.error ? [] : v.data || [], comments: c && !c.error ? c.data || [] : []}; bookLoading = null; if (route === "people") renderPeople(); return BOOK; })();
     return bookLoading;
   }
   function subscribeBook(){ if (!SB || !ME) return; let t = 0; const k = () => { clearTimeout(t); t = setTimeout(() => loadBook(true), 300); };
-    SB.channel("nexus-book").on("postgres_changes", {event: "*", schema: "public", table: "feedback"}, k).on("postgres_changes", {event: "*", schema: "public", table: "feedback_votes"}, k)
+    SB.channel("nexus-book").on("postgres_changes", {event: "*", schema: "public", table: "feedback"}, k).on("postgres_changes", {event: "*", schema: "public", table: "feedback_votes"}, k).on("postgres_changes", {event: "*", schema: "public", table: "feedback_comments"}, k)
       .on("postgres_changes", {event: "*", schema: "public", table: "tierlists"}, () => { clearTimeout(subscribeBook.t); subscribeBook.t = setTimeout(() => loadFriends(true), 500); }).subscribe(); }
   const THUMB_U = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v11H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1h3Zm0 0 4-7c1.5 0 3 1 2.5 3l-.8 4H19a2 2 0 0 1 2 2.3l-1.2 7A2 2 0 0 1 17.8 21H7"/></svg>';
   const THUMB_D = THUMB_U.replace("<svg", '<svg style="transform:rotate(180deg)"');
@@ -8540,7 +8629,7 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
     const ent = f => { const vs = BOOK.votes.filter(v => v.feedback_id === f.id), up = vs.filter(v => v.v === 1), dn = vs.filter(v => v.v === -1), my = vs.find(v => v.user_id === ME.id);
       return `<article class="bk-e"><div class="bk-h">${avaHTML(profOf(f.user_id), "sm")}<b>${esc(nickOf(f.user_id))}</b><small>${esc(vkDate(f.created_at))}</small>${f.user_id === ME.id ? `<button class="bk-x" data-bkdel="${esc(f.id)}" title="Удалить">${ICON.x}</button>` : ""}</div>
         ${f.body ? `<p class="bk-t">${richText(f.body)}</p>` : ""}${f.image ? `<img class="bk-img" src="${esc(publicUrl(f.image))}" alt="" data-vkimg="${esc(f.image)}" loading="lazy">` : ""}
-        <div class="bk-v"><button class="up${my && my.v === 1 ? " on" : ""}" data-bkv="${esc(f.id)}:1">${THUMB_U}<b>${up.length || ""}</b></button><button class="dn${my && my.v === -1 ? " on" : ""}" data-bkv="${esc(f.id)}:-1">${THUMB_D}<b>${dn.length || ""}</b></button>${vs.length ? `<button class="who" data-bkwho="${esc(f.id)}">${avaStack(vs.map(v => v.user_id), 4)}<span>кто</span></button>` : ""}</div></article>`; };
+        <div class="bk-v"><button class="up${my && my.v === 1 ? " on" : ""}" data-bkv="${esc(f.id)}:1">${THUMB_U}<b>${up.length || ""}</b></button><button class="dn${my && my.v === -1 ? " on" : ""}" data-bkv="${esc(f.id)}:-1">${THUMB_D}<b>${dn.length || ""}</b></button><button class="cm${bkOpen.has(f.id) ? " on" : ""}" data-bkc="${esc(f.id)}" title="Комментировать">${ICON.chat}<b>${(BOOK.comments || []).filter(c => c.feedback_id === f.id).length || ""}</b></button>${vs.length ? `<button class="who" data-bkwho="${esc(f.id)}">${avaStack(vs.map(v => v.user_id), 4)}<span>кто</span></button>` : ""}</div>${bkComments(f)}</article>`; };
     return `<div class="fb-card book"><div class="bk-rings"><i></i><i></i><i></i><i></i><i></i><i></i></div>
       <h3 class="bk-title">Книга жалоб<br>и предложений</h3><p class="bk-sub">Что бесит, чего не хватает, идеи для сайта</p>
       <div class="bk-form"><textarea id="bkT" rows="3" maxlength="3000" placeholder="Пиши как есть…">${esc(bookDraft.text)}</textarea>
@@ -8567,6 +8656,68 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
       const r = cur && cur.v === v ? await SB.from("feedback_votes").delete().eq("feedback_id", id).eq("user_id", ME.id) : await SB.from("feedback_votes").upsert({feedback_id: id, user_id: ME.id, v, created_at: now()});
       if (r.error){ toast("Не получилось"); loadBook(true); } }
   });
+
+
+  // ================= 3.5: «уже есть у друзей» при добавлении =================
+  let FF_G = false;
+  const frFindHTML = cls => FR && FR.items && FR.items.length && !FV ? `<div class="af-row ff" id="ffBox"><p class="af-cap">Или возьми у друзей</p><span class="ff-in">${ICON.search}<input class="${cls}" id="ffQ" autocomplete="off" placeholder="Начни вводить название — покажу, у кого уже есть"></span><div class="ff-res" id="ffRes" hidden></div></div><div class="ff-has" id="ffHas" hidden></div>` : `<div class="ff-has" id="ffHas" hidden></div>`;
+  async function frCoverFile(it){ if (!it.cover) return null; try { const r = await fetch(publicUrl(it.cover)); if (!r.ok) return null; const b = await r.blob(); return new File([b], "cover.jpg", {type: b.type || "image/jpeg"}); } catch(_){ return null; } }
+  const ffPool = g => { const m = new Map(); (FR ? FR.items : []).filter(i => ME && i.uid !== ME.id && (g ? isGame(i) : !isGame(i)) && i.title && i.status !== "wish").forEach(i => { const k = frKey(i), e = m.get(k);
+    if (e){ if (!e.uids.includes(i.uid)) e.uids.push(i.uid); if (!e.it.cover && i.cover) e.it = i; } else m.set(k, {it: i, uids: [i.uid]}); }); return [...m.values()]; };
+  const ffWho = uids => `${avaStack(uids, 3)}<small>есть у ${esc(uids.map(nickOf).slice(0, 2).join(", "))}${uids.length > 2 ? ` и ещё ${uids.length - 2}` : ""}</small>`;
+  function wireFrFind(g, apply){
+    FF_G = g; const q = $("ffQ"), box = $("ffRes"); if (!q || !box) return;
+    let hits = [];
+    const draw = () => { const v = normT(q.value).trim(); if (v.length < 2){ box.hidden = true; return; }
+      const mk = myKeys(); hits = ffPool(g).filter(e => [e.it.title, e.it.originalTitle].some(t => t && normT(t).includes(v)))
+        .sort((a, b) => b.uids.length - a.uids.length || (normT(a.it.title).startsWith(v) ? -1 : 0) - (normT(b.it.title).startsWith(v) ? -1 : 0)).slice(0, 8);
+      box.hidden = false;
+      box.innerHTML = hits.length ? hits.map((e, i) => { const have = mk.hasIt(e.it);
+        return `<button type="button" class="ff-r" data-ff="${i}" ${have ? "disabled" : ""}>${posterHTML(e.it, {tgt: false, rate: false, badge: false})}<span class="t"><b>${esc(e.it.title)}</b><small>${esc([e.it.year, g ? genres(e.it).slice(0, 2).join(", ") : KTYPES[e.it.type]].filter(Boolean).join(" · "))}</small></span><span class="w">${have ? `<small class="mine">уже у тебя</small>` : ffWho(e.uids)}</span></button>`; }).join("")
+        : `<p class="ff-none">У друзей такого нет — вставь ссылку выше</p>`; };
+    q.addEventListener("input", draw); q.addEventListener("focus", draw);
+    q.addEventListener("keydown", e => { if (e.key === "Escape") box.hidden = true; if (e.key === "Enter"){ e.preventDefault(); const b = box.querySelector(".ff-r:not([disabled])"); if (b) b.click(); } });
+    document.addEventListener("pointerdown", e => { if (!e.target.closest("#ffBox")) box.hidden = true; }, {capture: true});
+    box.onclick = async e => { const b = e.target.closest("[data-ff]"); if (!b || b.disabled) return; const h0 = hits[+b.dataset.ff]; if (!h0) return;
+      box.hidden = true; q.value = h0.it.title; b.disabled = true; SND.click("soft");
+      await apply(h0.it); ffHasChk(); toast(`Взял у ${nickOf(h0.uids[0])} — осталось выбрать статус${g ? "" : " и оценку"}`); };
+  }
+  function ffHasChk(){
+    const el = $("ffHas"); if (!el || !FR) return; const t = $("f_title") && $("f_title").value.trim(); if (!t){ el.hidden = true; return; }
+    const probe = {type: FF_G ? "game" : (($("f_type") || {}).value || "movie"), title: t, originalTitle: $("f_originalTitle") ? $("f_originalTitle").value.trim() : "", steamId: FORM_IDS.steamId, kpId: FORM_IDS.kpId};
+    const uids = [...new Set(FR.items.filter(i => ME && i.uid !== ME.id && sameIt(i, probe)).map(i => i.uid))];
+    const mine = MYITEMS.some(i => sameIt(i, probe));
+    el.hidden = !uids.length && !mine;
+    el.innerHTML = mine ? `<span class="ff-warn">${ICON.info || "!"}Это уже есть в твоей библиотеке</span>` : uids.length ? `<span class="ff-ok">${ffWho(uids)}</span>` : "";
+  }
+
+  // ================= 3.5: комментарии в книге жалоб =================
+  const bkOpen = new Set(), bkCDraft = {};
+  function bkComments(f){
+    const cms = (BOOK.comments || []).filter(c => c.feedback_id === f.id).sort((a, b) => String(a.created_at).localeCompare(String(b.created_at)));
+    const open = bkOpen.has(f.id), shown = open ? cms : cms.slice(-2);
+    const cm = c => `<div class="bk-cm">${avaHTML(profOf(c.user_id), "xs")}<div class="bk-cb"><div class="bk-ch"><b>${esc(nickOf(c.user_id))}</b><small>${esc(vkDate(c.created_at))}</small>${c.user_id === ME.id ? `<button class="bk-x" data-bkcdel="${esc(c.id)}" title="Удалить">${ICON.x}</button>` : ""}</div><p>${richText(c.body)}</p></div></div>`;
+    return `${cms.length > shown.length ? `<button class="bk-cmore" data-bkc="${esc(f.id)}">Показать все ${cms.length} ${plural(cms.length, "комментарий", "комментария", "комментариев")}</button>` : ""}
+      ${shown.length ? `<div class="bk-cl">${shown.map(cm).join("")}</div>` : ""}
+      ${open ? `<div class="bk-cf"><textarea id="bkC-${esc(f.id)}" rows="1" maxlength="1000" placeholder="Ответить…">${esc(bkCDraft[f.id] || "")}</textarea><button type="button" data-bkcs="${esc(f.id)}" title="Отправить">↵</button></div>` : ""}`;
+  }
+  async function bkSend(id){
+    const t = $("bkC-" + id); if (!t) return; const body = t.value.trim(); if (!body) return; t.disabled = true;
+    const row = {id: crypto.randomUUID(), feedback_id: id, user_id: ME.id, body, created_at: now()};
+    const {error} = await SB.from("feedback_comments").insert(row);
+    if (error){ toast("Не отправилось: " + error.message); t.disabled = false; return; }
+    BOOK.comments = [...(BOOK.comments || []), row]; delete bkCDraft[id]; SND.paper("soft");
+    const f = BOOK.items.find(x => x.id === id), to = new Set([f && f.user_id, ...BOOK.comments.filter(c => c.feedback_id === id).map(c => c.user_id), ...mentionedUids(body)]); to.delete(ME.id);
+    if (to.size) notify([...to], "book_comment", "book:" + id, body);
+    renderPeople(); setTimeout(() => { const n = $("bkC-" + id); if (n) n.focus(); }, 30);
+  }
+  document.addEventListener("click", async e => { const el = e.target.closest && e.target.closest("[data-bkc],[data-bkcs],[data-bkcdel]"); if (!el || !ME || !BOOK) return;
+    if (el.dataset.bkc){ const id = el.dataset.bkc; if (bkOpen.has(id) && el.classList.contains("cm")) bkOpen.delete(id); else bkOpen.add(id); renderPeople(); if (bkOpen.has(id)) setTimeout(() => { const n = $("bkC-" + id); if (n) n.focus(); }, 30); return; }
+    if (el.dataset.bkcs){ bkSend(el.dataset.bkcs); return; }
+    if (el.dataset.bkcdel){ if (!confirm("Удалить комментарий?")) return; const {error} = await SB.from("feedback_comments").delete().eq("id", el.dataset.bkcdel); if (error){ toast("Не удалилось"); return; } BOOK.comments = BOOK.comments.filter(c => c.id !== el.dataset.bkcdel); renderPeople(); }
+  });
+  document.addEventListener("input", e => { const t = e.target; if (t && t.id && t.id.startsWith("bkC-")){ bkCDraft[t.id.slice(4)] = t.value; t.style.height = "auto"; t.style.height = Math.min(140, t.scrollHeight) + "px"; } });
+  document.addEventListener("keydown", e => { const t = e.target; if (t && t.id && t.id.startsWith("bkC-") && e.key === "Enter" && !e.shiftKey && !document.querySelector(".mn-pop:not([hidden])")){ e.preventDefault(); bkSend(t.id.slice(4)); } });
 
   // ================= 3.4: «+» на полке Читалки — выбрать из своих тайтлов =================
   function readShelfPick(st, fav){
@@ -8642,13 +8793,15 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
     }).subscribe();
   }
   const ntfText = n => { const who = `<b>${esc(profOf(n.actor).nick || "кто-то")}</b>`;
-    return n.kind === "mention_post" ? `${who} отметил тебя в посте` : n.kind === "mention_comment" ? `${who} отметил тебя в комментарии` : n.kind === "comment" ? `${who} ответил на твой пост` : n.kind === "mention_event" ? `${who} отметил тебя на стене ${String(n.ref || "").startsWith("watch:") ? "кинопоказа" : "мероприятия"}` : n.kind === "tier_reply" ? `${who} ответил своей версией на твой тир-лист` : `${who} зовёт тебя`; };
+    return n.kind === "mention_post" ? `${who} отметил тебя в посте` : n.kind === "mention_comment" ? `${who} отметил тебя в комментарии` : n.kind === "comment" ? `${who} ответил на твой пост` : n.kind === "mention_event" ? `${who} отметил тебя на стене ${String(n.ref || "").startsWith("watch:") ? "кинопоказа" : "мероприятия"}` : n.kind === "tier_reply" ? `${who} ответил своей версией на твой тир-лист` : n.kind === "book_comment" ? `${who} ответил в книге жалоб` : `${who} зовёт тебя`; };
   const bellInv = () => (EV && ME ? myInvites() : []).map(m => ({inv: true, m, e: evById(m.event_id), ts: m.updated_at || (evById(m.event_id) || {}).created_at || ""})).filter(x => x.e);
   const ntfUnread = () => NTF.filter(n => !n.read).length + bellInv().length;
   function syncBell(){ const b = $("bellBtn"); if (!b) return; const n = ntfUnread(), d = b.querySelector(".bell-n"); d.hidden = !n; d.textContent = n > 9 ? "9+" : n; b.classList.toggle("on", !!n); }
   function ntfGo(n){
     const [k, id] = String(n.ref || "").split(":"); if (!id) return;
     if (k === "event" || k === "watch"){ go(n.ref); return; }
+    if (k === "book"){ bkOpen.add(id); const jb = () => { const el = document.querySelector(`[data-bkc="${CSS.escape(id)}"]`); if (el){ const a = el.closest(".bk-e"); a.scrollIntoView({behavior: "smooth", block: "center"}); a.classList.remove("flash"); void a.offsetWidth; a.classList.add("flash"); } else if (bookN < 500){ bookN = 500; renderPeople(); } };
+      if (route === "people") renderPeople(); else go("people"); setTimeout(jb, 400); setTimeout(jb, 1300); return; }
     if (k === "tier"){ const op = () => tlById(id) ? tlView(id) : loadFriends(true).then(() => tlView(id)); if (FR) op(); else loadFriends().then(op); return; }
     actTab = "wall"; lsSet("nexus_acttab", "wall"); if (k === "comment") wOpen.add(id);
     const jump = () => { const el = document.querySelector(`[data-wp="${CSS.escape(id)}"]`); if (el){ el.scrollIntoView({behavior: "smooth", block: "center"}); el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); } };
@@ -8662,7 +8815,7 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
     pop.innerHTML = `<div class="ntf-h"><b>Уведомления</b>${NTF.some(n => !n.read) ? `<button type="button" data-ntfall="1">Прочитать всё</button>` : ""}</div><div class="ntf-l">${all.length ? all.map(x => {
       if (x.inv){ const e = x.e, f = e.kind === "watch" ? filmItem(e) : null;
         return `<button class="ntf-r unread" data-ntfev="${esc(evRoute(e))}">${avaHTML(profOf(x.m.invited_by || e.owner), "sm")}<span class="t"><span><b>${esc(frNick(x.m.invited_by || e.owner))}</b> зовёт ${e.kind === "watch" ? "смотреть" : "на"} «${esc(f ? f.title || e.title : e.title)}»</span><small>${esc(evIn(e) || evWhen(e))} · ждёт ответа</small></span><i class="ntf-k inv">${ICON.calendar}</i></button>`; }
-      const n = x.n; return `<button class="ntf-r${n.read ? "" : " unread"}" data-ntf="${esc(n.id)}">${avaHTML(profOf(n.actor), "sm")}<span class="t"><span>${ntfText(n)}</span>${n.body ? `<em>«${esc(n.body)}»</em>` : ""}<small>${esc(agoTs(n.created_at))}</small></span><i class="ntf-k">${n.kind === "comment" ? ICON.chat : n.kind === "tier_reply" ? ICON.tiers : "@"}</i></button>`; }).join("")
+      const n = x.n; return `<button class="ntf-r${n.read ? "" : " unread"}" data-ntf="${esc(n.id)}">${avaHTML(profOf(n.actor), "sm")}<span class="t"><span>${ntfText(n)}</span>${n.body ? `<em>«${esc(n.body)}»</em>` : ""}<small>${esc(agoTs(n.created_at))}</small></span><i class="ntf-k">${n.kind === "comment" || n.kind === "book_comment" ? ICON.chat : n.kind === "tier_reply" ? ICON.tiers : "@"}</i></button>`; }).join("")
       : `<p class="ntf-e">Пока тихо. Сюда придут упоминания, ответы на посты и приглашения.</p>`}</div>`;
     document.body.appendChild(pop);
     const w = pop.offsetWidth; pop.style.left = Math.max(8, Math.min(innerWidth - w - 8, r.right - w)) + "px"; pop.style.top = (r.bottom + 8) + "px";
@@ -8719,7 +8872,7 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
     const pos = ta.selectionStart ?? ta.value.length, before = ta.value.slice(0, pos).replace(/@([\p{L}\p{N}_.-]{0,16})$/u, "@" + p.nick + " ");
     ta.value = before + ta.value.slice(pos); ta.setSelectionRange(before.length, before.length); ta.dispatchEvent(new Event("input", {bubbles: true})); mnClose(); ta.focus();
   }
-  const isWallTa = t => t && t.tagName === "TEXTAREA" && (t.id === "wlT" || t.id === "vkT" || /^wlC-/.test(t.id));
+  const isWallTa = t => t && t.tagName === "TEXTAREA" && (t.id === "wlT" || t.id === "vkT" || /^(wlC|bkC)-/.test(t.id));
   document.addEventListener("input", e => { if (isWallTa(e.target)){ mnSel = 0; mnShow(e.target); } });
   document.addEventListener("keydown", e => { if (!mnBox || e.target !== mnTa) return;
     if (e.key === "ArrowDown" || e.key === "ArrowUp"){ e.preventDefault(); e.stopPropagation(); mnSel = (mnSel + (e.key === "ArrowDown" ? 1 : -1) + mnList.length) % mnList.length; mnShow(mnTa); }
