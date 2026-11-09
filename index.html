@@ -1385,6 +1385,33 @@ body[data-route="user"] .a-main{max-width:none;padding:0}
 .ev-ph.has{border-style:solid;border-color:transparent}
 .ev-ph.has span{opacity:0}
 .ev-ph.drop{border-color:#0a84ff}
+/* ===== 4.1: предложить фильм другу ===== */
+.sg-strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin:0 0 22px}
+.sg-c{display:flex;gap:14px;align-items:stretch;padding:12px;border-radius:18px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);color:inherit;text-align:left;cursor:pointer;font-family:var(--ios);transition:background .15s,transform .15s}
+.sg-c:hover{background:rgba(255,255,255,.11)}.sg-c:active{transform:scale(.98)}
+.sg-c .poster{flex:none;width:74px;border-radius:10px}
+.sg-c .t{display:flex;flex-direction:column;gap:4px;min-width:0;justify-content:center}
+.sg-c .who{display:flex;align-items:center;gap:6px;font:500 12.5px/1 var(--ios);color:var(--k-dim,#a1a1aa)}
+.sg-c .who b{color:inherit;font-weight:700}
+.sg-c .nm{font:700 17px/1.2 var(--ios);overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.sg-c small{font:500 12.5px/1.3 var(--ios);color:var(--k-dim,#a1a1aa)}
+.sg-c em{font:italic 500 13px/1.3 var(--ios);color:rgba(255,255,255,.82);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.k-label small{margin-left:8px;padding:2px 8px;border-radius:99px;background:#ff375f;color:#fff;font:700 11px/1.4 var(--ios);letter-spacing:0;vertical-align:2px}
+.sg-top{display:flex;gap:16px;align-items:flex-start;margin-bottom:14px}
+.sg-top .poster{flex:none;width:84px;border-radius:10px}
+.sg-top h3{margin:0 0 4px}.sg-top .sub{margin:0}
+.sg-pick button small{margin-left:2px;font:500 11px/1 var(--ios);opacity:.6}
+.sg-pick button.had{opacity:.7}
+.sg-from{display:flex;align-items:center;gap:7px;margin-top:8px}
+.sg-note{margin:8px 0 0;padding:9px 12px;border-radius:12px;background:#2c2c2e;font:italic 500 14px/1.4 var(--ios);color:#f2f2f7}
+.sg-st{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
+.sg-st button{display:flex;align-items:center;justify-content:center;gap:7px;height:44px;padding:0 10px;border-radius:12px;border:1.5px solid transparent;background:#2c2c2e;color:#f2f2f7;font:600 14px/1 var(--ios);cursor:pointer}
+.sg-st button svg{width:17px;height:17px;flex:none}
+.sg-st button[aria-pressed="true"]{border-color:var(--c);background:color-mix(in srgb,var(--c) 18%,#2c2c2e);color:var(--c)}
+.k-acts .sg-fb svg,.pv-btn.sg-pv svg{width:16px;height:16px}
+.k-acts .sg-fb{display:inline-flex;align-items:center;gap:7px}
+.pv-acts .sg-pv{grid-column:1/-1}
+@media (max-width:640px){.sg-strip{grid-template-columns:1fr}.sg-c .poster{width:64px}}
 /* ===== 4.0: формат и масштаб фото мероприятия ===== */
 .ev-th img{width:100%;height:100%;object-fit:cover;display:block}
 .evp-img,.evp-pic{overflow:hidden}
@@ -3628,6 +3655,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     cake:I('<path d="M4 21h16M5 21v-7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v7"/><path d="M5 16c1.2 1 2.5 1 3.5 0s2.3-1 3.5 0 2.3 1 3.5 0 2.3-1 3.5 0M12 12V8M12 5.5c-.8-.8-.8-1.8 0-3 .8 1.2.8 2.2 0 3Z"/>'),
     key:I('<circle cx="8" cy="15" r="4"/><path d="m10.8 12.2 8.7-8.7M16 7l2.5 2.5M18.5 4.5 21 7"/>'),
     pin:I('<path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/>'),
+    send:I('<path d="M21 3 10 14"/><path d="m21 3-7 18-4-7-7-4 18-7Z"/>'),
     link:I('<path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/>'),
     party:I('<path d="M4 20 9.5 6.5l8 8Z"/><path d="M13 4.5c.5 1.2.2 2.2-1 3M17 8c1.2-.6 2.4-.4 3.2.6M15.5 3.5l.5 1M20.5 12l-1 .3M19 3.5 18 5.5"/>'),
     sound:I('<path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5Z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/>')
@@ -4077,7 +4105,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     list.sort((a,b) => sorter(kSort)(a,b) || (a.title||"").localeCompare(b.title||"","ru"));
     $("kMain").innerHTML = `${fvBanner("kino")}<div class="t-row"><h1 class="k-h1">Кино и сериалы</h1>${futPill("kino", futs.length)}</div>
       <div class="k-stats">${[[lib.length,"всего"],[lib.filter(i=>kNorm(i)==="done").length,"просмотрено"],[nowW.length,"смотрю"],[avg,"средняя оценка"]].map(([v,l]) => `<span><b>${esc(v)}</b>${l}</span>`).join("")}</div>
-      ${FV ? "" : releasesPanel("kino") + ctaRow("kino")}
+      ${FV ? "" : sugStrip() + releasesPanel("kino") + ctaRow("kino")}
       ${nowW.length ? `<div class="k-label">Смотрю сейчас</div><div class="k-row">${nowW.map(kCard).join("")}</div>` : ""}
       <div class="k-filters"><button class="k-chipb" data-kf="" aria-pressed="${kF===""}">Все</button>${[["done","Просмотрено"],["paused","Отложено"],["playing","Смотрю"],["dropped","Брошено"]].filter(([s]) => lib.some(i => kNorm(i) === s)).map(([s,l]) => `<button class="k-chipb" data-kf="${s}" aria-pressed="${kF===s}">${l}</button>`).join("")}
         <span class="k-sepv"></span><button class="k-chipb" data-kt="" aria-pressed="${kT===""}">Всё кино</button>${[["movie","Фильмы"],["series","Сериалы"],["anime","Аниме"]].map(([k,l]) => `<button class="k-chipb" data-kt="${k}" aria-pressed="${kT===k}">${l}</button>`).join("")}
@@ -4733,7 +4761,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     showView(`
       <div class="k-hero">
         <div class="k-hcol"><div class="pwrap">${posterHTML(it, {id:"heroPoster", editable: canWrite && !!assets, rate:false})}<div class="gfx" id="gfx"></div></div>
-          ${canWrite ? `<div class="pv-acts"><button class="pv-btn" id="editBtn">${ICON.edit}Редактировать</button>${assets ? `<button class="pv-btn" id="wallBtn">${ICON.wall}Фон страницы</button>` : ""}</div>` : ""}</div>
+          ${canWrite ? `<div class="pv-acts"><button class="pv-btn" id="editBtn">${ICON.edit}Редактировать</button>${assets ? `<button class="pv-btn" id="wallBtn">${ICON.wall}Фон страницы</button>` : ""}${ME ? `<button class="pv-btn sg-pv" id="sugBtn">${ICON.send}Предложить другу</button>` : ""}</div>` : ""}</div>
         <div class="k-glass" style="position:relative">
           <h2 class="k-title">${esc(it.title)}</h2>
           ${it.originalTitle || it.age ? `<div class="k-orig">${it.originalTitle ? `<span>${esc(it.originalTitle)}</span>` : ""}${it.age ? `<span class="k-age">${esc(it.age)}</span>` : ""}</div>` : ""}
@@ -4762,6 +4790,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     playFx(it);
     if (!canWrite) return;
     if ($("editBtn")) $("editBtn").onclick = () => openForm(it, "kino");
+    if ($("sugBtn")) $("sugBtn").onclick = () => suggestItem(it);
     $("stChips").onclick = e => { const b = e.target.closest("[data-st]"); if (b) quickStatus(it, b.dataset.st); };
     wireWheel("vRate", v => quickRate(it, v));
     wirePoster(it); wireShots(it);
@@ -5111,7 +5140,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
               </details>
               <label>Заметка<textarea class="k-in" id="f_note">${esc(it.note||"")}</textarea></label>
             </div></div>
-            <div class="k-acts" style="margin-top:6px"><button class="k-btn white" type="submit">${isNew ? (lock === "future" ? "Добавить на будущее" : lock === "soon" ? "Ждать релиз" : "Добавить") : "Сохранить"}</button><button class="k-btn" type="button" id="cancelBtn">Отмена</button>${isNew ? "" : `<button class="k-btn danger" type="button" id="delBtn">Удалить</button>`}</div>
+            <div class="k-acts" style="margin-top:6px"><button class="k-btn white" type="submit">${isNew ? (lock === "future" ? "Добавить на будущее" : lock === "soon" ? "Ждать релиз" : "Добавить") : "Сохранить"}</button>${ME ? `<button class="k-btn sg-fb" type="button" id="sugFormBtn" title="Отправить эту карточку другу — без твоего статуса и заметок">${ICON.send}Предложить другу</button>` : ""}<button class="k-btn" type="button" id="cancelBtn">Отмена</button>${isNew ? "" : `<button class="k-btn danger" type="button" id="delBtn">Удалить</button>`}</div>
             <div id="confirmBox"></div>
           </form>
         </div>`, it.cover ? it : null);
@@ -5225,7 +5254,9 @@ html:has(body.view-open),body.view-open{overflow:hidden}
         if (ser && st === "done"){ if (body.epTotal && (body.epWatched ?? 0) < body.epTotal) body.epWatched = body.epTotal; body.now = null; }
         if (body.kpRating) body.kpRating = parseFloat(String(body.kpRating).replace(",", ".")) || null;
         if (relD) Object.assign(body, relD);
+        if (kSugNext){ kSugNext = false; suggestFromForm(it, body, cover); return; }
         await save(it, isNew, body, cover); };
+      if ($("sugFormBtn")) $("sugFormBtn").onclick = () => { kSugNext = true; $("editForm").requestSubmit(); kSugNext = false; };
     }
     wireFormPoster();
     if (isNew) setTimeout(() => { const u = $("f_url"); if (u && matchMedia("(pointer:fine)").matches) u.focus(); }, 120);
@@ -5637,6 +5668,11 @@ html:has(body.view-open),body.view-open{overflow:hidden}
   // ================= патчноуты =================
   // Новые версии добавляются В НАЧАЛО списка. n — новое, c — изменено, f — исправлено, r — удалено.
   const PATCHES = [
+    {v: "4.1", date: "2026-11-10", title: "Предложи фильм другу", kind: "major", sec: {
+      n: ["<b>Предложить другу</b>: в карточке фильма или прямо при добавлении жми «Предложить другу», выбери кому и черкни пару слов. Уйдёт сам фильм с постером и описанием — без твоего статуса и заметок",
+        "Другу приходит уведомление в колокольчик, а в «Кино» появляется блок «Тебе предлагают посмотреть»",
+        "Из предложения фильм сохраняется к себе в один клик: по умолчанию в «На будущее», но можно сразу отметить «Просмотрено», «Смотрю» или другой статус и поставить оценку",
+        "Если предложение не зашло — «Не интересно», и оно исчезнет. Тот, кто предложил, об этом не узнает, а вот о сохранении — узнает"]}},
     {v: "4.0", date: "2026-11-09", title: "Фото мероприятий: формат и масштаб", kind: "minor", sec: {
       n: ["У фото мероприятия теперь три формата: <b>горизонтально</b> (16:9), <b>как сториз</b> (9:16) и <b>квадрат</b>. Выбирается при создании или в «Изменить»",
         "Фото можно приблизить ползунком или колесом мыши и сдвинуть мышкой или пальцем — в кадре будет ровно то, что нужно",
@@ -6453,7 +6489,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     Promise.all(["backup", "autobackup"].map(x => db.doc("meta/" + x).get().then(d => d.exists ? d.data() : null).catch(() => null)))
       .then(([b, a]) => { lastBackup = b; autoBackup = a; if (route === "more") render(); });
     document.body.classList.remove("guest-tl"); if (pendingTl) setTimeout(openTlLink, 300);
-    loadFriends(); loadEvents(); subscribeEvents(); loadWall(); subscribeWall(); loadNtf(); subscribeNtf(); subscribeBook(); loadReads().then(() => handleInbox());
+    loadFriends(); loadEvents(); subscribeEvents(); loadWall(); subscribeWall(); loadNtf(); subscribeNtf(); loadSug(); subscribeBook(); loadReads().then(() => handleInbox());
     db.collection("items").onSnapshot(snap => {
       if (!snap.metadata.fromCache){ clearTimeout(timer); itemsLoaded = true; }
       MYITEMS = snap.docs.map(d => ({id: d.id, ...d.data()}));
@@ -8954,6 +8990,117 @@ html:has(body.view-open),body.view-open{overflow:hidden}
       s.el.addEventListener("click", ev => { const b = ev.target.closest("[data-tlv]"); if (b){ s.close(); setTimeout(() => tlView(b.dataset.tlv), 60); } }, true); }
   });
 
+  // ================= 4.1: предложить фильм другу =================
+  // что переезжает к другу: только сам фильм, без твоих статуса, даты и заметок
+  const SUG_KEEP = ["title", "originalTitle", "type", "year", "genre", "short", "desc", "cast", "seasons", "epTotal", "seasonEps", "kpId", "releaseDate", "releasePrec",
+    "country", "director", "writer", "producer", "operator", "composer", "duration", "age", "tagline", "budget", "boxWorld", "premiereWorld", "premiereRu", "kpRating"];
+  let SUG = [], kSugNext = false;
+  const sugIn = () => SUG.filter(x => ME && x.to_user === ME.id && x.status === "pending");
+  async function loadSug(){
+    if (!SB || !ME) return;
+    const {data, error} = await SB.from("suggestions").select("*").eq("to_user", ME.id).eq("status", "pending").order("created_at", {ascending: false}).limit(50);
+    if (error) return; SUG = data || [];
+    if (route === "kino" && !FV) renderKino();
+  }
+  const sugFilm = (src, coverPath, coverPos) => { const f = {}; SUG_KEEP.forEach(k => { if (src[k] != null && src[k] !== "") f[k] = src[k]; });
+    if (coverPath){ f.cover = coverPath; if (coverPos) f.coverPos = coverPos; }
+    if (typeof src.rating === "number" && src.status !== "future") f.fromRating = src.rating;
+    return f; };
+  // окно «кому предложить»
+  async function suggestSheet(film){
+    if (!ME || !SB){ toast("Сначала войди"); return; }
+    if (!film || !film.title){ toast("Сначала впиши название"); return; }
+    if (!FR) await loadFriends();
+    const others = (FR ? FR.profiles : []).filter(p => p.user_id !== ME.id);
+    if (!others.length){ toast("На сайте пока нет друзей"); return; }
+    const has = uid => FR.items.some(i => i.uid === uid && sameIt(i, film));
+    const s = openSheet(`<div class="sg-top">${posterHTML(film, {tgt: false, rate: false, badge: false, link: false})}<div><h3>Предложить посмотреть</h3><p class="sub"><b style="color:inherit">${esc(film.title)}</b>${film.year ? ` · ${esc(film.year)}` : ""}${film.type ? ` · ${esc(KTYPES[film.type] || "")}` : ""}</p><p class="sub" style="margin-top:6px">Другу придёт уведомление, а карточка появится у него в «Кино» — сохранит к себе в один клик.</p></div></div>
+      <div class="av-lb">Кому</div><div class="ev-pick sg-pick" id="sgPk">${others.map(p => { const h = has(p.user_id); return `<button type="button" data-u="${esc(p.user_id)}" aria-pressed="false"${h ? ' class="had" title="Этот фильм уже есть у него"' : ""}>${avaHTML(p)}${esc(p.nick)}${h ? "<small>уже есть</small>" : ""}</button>`; }).join("")}</div>
+      <label class="f">Пару слов <small style="text-transform:none;letter-spacing:0;opacity:.7">по желанию</small><textarea class="in" id="sgN" rows="2" maxlength="300" placeholder="Зайдёт под пиццу, концовка — разнос"></textarea></label>
+      <div class="acts"><button class="ib blue" id="sgGo" disabled>Предложить</button><button class="ib" id="sgNo">Отмена</button></div>`, {wide: true});
+    const q = x => s.el.querySelector(x), go_ = q("#sgGo");
+    const picked = () => [...q("#sgPk").querySelectorAll('[aria-pressed="true"]')].map(b => b.dataset.u);
+    const sync = () => { const n = picked().length; go_.disabled = !n; go_.textContent = n > 1 ? `Предложить ${n} друзьям` : "Предложить"; };
+    q("#sgPk").onclick = e => { const b = e.target.closest("[data-u]"); if (!b) return; b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") !== "true"); sync(); };
+    q("#sgNo").onclick = () => s.close();
+    go_.onclick = async () => {
+      const uids = picked(); if (!uids.length) return; go_.disabled = true; go_.textContent = "Отправляю…";
+      const note = q("#sgN").value.trim() || null, ts = now();
+      const rows = uids.map(u => ({id: crypto.randomUUID(), from_user: ME.id, to_user: u, item: film, note, status: "pending", created_at: ts, updated_at: ts}));
+      const {error} = await SB.from("suggestions").insert(rows);
+      if (error){ toast("Не отправилось: " + error.message); sync(); return; }
+      const nt = await SB.from("notifications").insert(rows.map(r => ({user_id: r.to_user, actor: ME.id, kind: "suggest", ref: "sug:" + r.id, body: film.title.slice(0, 140)})));
+      if (nt.error) console.warn("suggest notify", nt.error.message);
+      s.close(); SND.click && SND.click();
+      toast(uids.length > 1 ? `Предложил ${uids.length} ${plural(uids.length, "другу", "друзьям", "друзьям")}` : `Предложил ${frNick(uids[0])}`);
+    };
+  }
+  // из открытой карточки фильма
+  async function suggestItem(it){ suggestSheet(sugFilm(it, it.cover || null, it.coverPos || null)); }
+  // из формы: собираем то, что заполнено, постер грузим сразу
+  async function suggestFromForm(it, body, cover){
+    let path = null;
+    try { if (!cover.remove){ if (cover.file){ toast("Загружаю постер…"); path = await upload(cover.file); } else path = it.cover || null; } }
+    catch(err){ toast(upErr(err)); return; }
+    suggestSheet(sugFilm({...body, rating: body.rating}, path, cover.remove ? null : cover.pos || it.coverPos || null));
+  }
+  // полоска в «Кино»
+  function sugStrip(){
+    const L = sugIn(); if (!L.length || FV) return "";
+    return `<div class="k-label">Тебе предлагают посмотреть<small>${L.length}</small></div><div class="sg-strip">${L.map(x => { const f = x.item || {};
+      return `<button class="sg-c" data-sug="${esc(x.id)}">${posterHTML(f, {tgt: false, rate: false, badge: false, link: false})}<span class="t"><span class="who">${avaHTML(profOf(x.from_user), "xs")}<b>${esc(frNick(x.from_user))}</b></span><b class="nm">${esc(f.title || "")}</b><small>${esc([f.year, KTYPES[f.type], genres(f).slice(0, 2).join(", ")].filter(Boolean).join(" · "))}</small>${x.note ? `<em>«${esc(x.note)}»</em>` : ""}</span></button>`; }).join("")}</div>`;
+  }
+  // окно «что с этим фильмом делать»
+  async function sugSheet(id){
+    let x = SUG.find(y => y.id === id);
+    if (!x){ const {data} = await SB.from("suggestions").select("*").eq("id", id).maybeSingle(); x = data; }
+    if (!x){ toast("Предложение не найдено — возможно, его удалили"); return; }
+    if (x.status !== "pending"){ toast(x.status === "taken" ? "Этот фильм ты уже сохранил" : "Ты уже отказался от этого фильма"); return; }
+    if (!FR) await loadFriends();
+    const f = x.item || {}, ser = isSerT(f.type), have = myKeys().hasIt(f), who = frNick(x.from_user);
+    const opts = [["future", "На будущее", ICON.clock], ...kOpts(f.type || "movie").map(([k, l]) => [k, l, k === "done" ? ICON.film : k === "playing" ? ICON.kino : k === "dropped" ? ICON.blood : ICON.clock])];
+    let st = "future";
+    const s = openSheet(`<div class="qa-top">${posterHTML(f, {tgt: false, rate: false, link: false})}<div><h3>${esc(f.title || "")}</h3>
+        <p class="sub">${esc([KTYPES[f.type] || "Фильм", f.year, genres(f).slice(0, 3).join(", ")].filter(Boolean).join(" · "))}</p>
+        <p class="sub sg-from">${avaHTML(profOf(x.from_user), "xs")} <span><b style="color:inherit">${esc(who)}</b> предлагает посмотреть${typeof f.fromRating === "number" ? ` · его оценка <b class="${rateCls(f.fromRating)}">${num1(f.fromRating)}</b>` : ""}</span></p>
+        ${x.note ? `<p class="sg-note">«${esc(x.note)}»</p>` : ""}</div></div>
+      ${f.desc ? `<p class="sub" style="margin:14px 0 0;max-height:140px;overflow:auto;white-space:pre-line">${esc(String(f.desc).slice(0, 900))}</p>` : ""}
+      ${have ? `<div class="acts" style="margin-top:16px"><button class="ib full" disabled>Уже есть у тебя</button></div><div class="acts" style="margin-top:8px"><button class="ib" data-sgx="hide">Убрать из предложений</button></div>`
+      : `<div class="av-lb" style="margin-top:16px">Сохранить к себе как</div><div class="sg-st" id="sgSt">${opts.map(([k, l, ic]) => `<button type="button" data-st="${k}" aria-pressed="${k === st}" style="--c:${KCOL[k] || "#c7c7d6"}">${ic}${l}</button>`).join("")}</div>
+        <div id="sgRw" hidden><div class="av-lb" style="margin-top:14px">Твоя оценка</div>${wheelHTML("sgRate", null)}</div>
+        <div class="acts" style="margin-top:16px"><button class="ib blue" id="sgOk">Сохранить себе</button><button class="ib" data-sgx="no">Не интересно</button></div>`}`, {wide: true});
+    s.el.querySelector(".qa-top .poster").classList.add("qa-poster");
+    const q = sel => s.el.querySelector(sel);
+    let wheelOn = false;
+    if (q("#sgSt")) q("#sgSt").onclick = e => { const b = e.target.closest("[data-st]"); if (!b) return; st = b.dataset.st;
+      q("#sgSt").querySelectorAll("[data-st]").forEach(y => y.setAttribute("aria-pressed", y.dataset.st === st));
+      q("#sgRw").hidden = st === "future"; if (st !== "future" && !wheelOn){ wheelOn = true; wireWheel("sgRate"); }
+      q("#sgOk").textContent = st === "future" ? "Сохранить себе" : "Сохранить"; };
+    s.el.addEventListener("click", async e => { const b = e.target.closest("[data-sgx]"); if (!b) return; b.disabled = true;
+      const {error} = await SB.from("suggestions").update({status: "declined", updated_at: now()}).eq("id", x.id);
+      if (error){ toast("Не получилось: " + error.message); b.disabled = false; return; }
+      SUG = SUG.filter(y => y.id !== x.id); s.close(); toast(b.dataset.sgx === "no" ? "Убрал — " + who + " об этом не узнает" : "Убрал из предложений"); if (route === "kino") renderKino(); });
+    if (q("#sgOk")) q("#sgOk").onclick = async () => {
+      const btn = q("#sgOk"); btn.disabled = true; btn.textContent = "Сохраняю…";
+      const body = {}; SUG_KEEP.forEach(k => { if (f[k] != null) body[k] = f[k]; });
+      Object.assign(body, {status: st, createdAt: now(), updatedAt: now(), via: "suggest:" + who});
+      const r = st === "future" ? null : wheelVal("sgRate"); if (r != null) body.rating = r;
+      if (st === "done"){ body.date = today(); if (ser && body.epTotal) body.epWatched = body.epTotal; }
+      if (st === "playing") body.date = today();
+      if (f.cover && assets){ try { const rs = await fetch(publicUrl(f.cover)); if (!rs.ok) throw 0; const bl = await rs.blob(); body.cover = await upload(bl); if (f.coverPos) body.coverPos = f.coverPos; } catch(_){} }
+      try {
+        const {id: newId} = await db.collection("items").add(body);
+        await SB.from("suggestions").update({status: "taken", updated_at: now()}).eq("id", x.id);
+        SB.from("notifications").insert({user_id: x.from_user, actor: ME.id, kind: "suggest_ok", ref: "user:" + ME.id, body: String(f.title || "").slice(0, 140)}).then(() => {});
+        SUG = SUG.filter(y => y.id !== x.id); s.close();
+        toast(st === "future" ? `${f.title} — в «На будущее»` : st === "done" ? `${f.title} — в просмотренных` : `${f.title} — сохранено`);
+        if (route === "kino") renderKino();
+        if (st !== "future") setTimeout(() => openItem(newId), 150);
+      } catch(_){ toast("Не сохранилось, попробуй ещё раз"); btn.disabled = false; btn.textContent = "Сохранить"; }
+    };
+  }
+  document.addEventListener("click", e => { const el = e.target.closest && e.target.closest("[data-sug]"); if (!el || !ME) return; e.preventDefault(); sugSheet(el.dataset.sug); });
+
   // ================= 3.9: импорт с TierMaker, ссылка и картинка тир-листа =================
   const TM_FN = () => `${String(CFG.SUPABASE_URL).replace(/\/$/, "")}/functions/v1/tiermaker`;
   const TM_POOL_MAX = 150;
@@ -9471,19 +9618,22 @@ html:has(body.view-open),body.view-open{overflow:hidden}
   function subscribeNtf(){
     if (!SB || !ME) return;
     SB.channel("nexus-ntf-" + ME.id).on("postgres_changes", {event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${ME.id}`}, p => {
-      const n = p.new; if (!n || NTF.some(x => x.id === n.id)) return; NTF.unshift(n); syncBell(); const t = ntfText(n);
+      const n = p.new; if (!n || NTF.some(x => x.id === n.id)) return; NTF.unshift(n); syncBell(); const t = ntfText(n) + (n.kind === "suggest" && n.body ? ` «${esc(n.body)}»` : "");
+      if (n.kind === "suggest") loadSug();
       toast(t.replace(/<[^>]+>/g, "")); SND.click(); sysNote("NEXUS", t.replace(/<[^>]+>/g, ""), () => ntfGo(n));
       if (ntfOpen) bellPop(true);
     }).subscribe();
   }
   const ntfText = n => { const who = `<b>${esc(profOf(n.actor).nick || "кто-то")}</b>`;
-    return n.kind === "mention_post" ? `${who} отметил тебя в посте` : n.kind === "mention_comment" ? `${who} отметил тебя в комментарии` : n.kind === "comment" ? `${who} ответил на твой пост` : n.kind === "mention_event" ? `${who} отметил тебя на стене ${String(n.ref || "").startsWith("watch:") ? "кинопоказа" : "мероприятия"}` : n.kind === "tier_reply" ? `${who} ответил своей версией на твой тир-лист` : n.kind === "book_comment" ? `${who} ответил в книге жалоб` : `${who} зовёт тебя`; };
+    return n.kind === "mention_post" ? `${who} отметил тебя в посте` : n.kind === "mention_comment" ? `${who} отметил тебя в комментарии` : n.kind === "comment" ? `${who} ответил на твой пост` : n.kind === "mention_event" ? `${who} отметил тебя на стене ${String(n.ref || "").startsWith("watch:") ? "кинопоказа" : "мероприятия"}` : n.kind === "tier_reply" ? `${who} ответил своей версией на твой тир-лист` : n.kind === "book_comment" ? `${who} ответил в книге жалоб` : n.kind === "suggest" ? `${who} предлагает посмотреть` : n.kind === "suggest_ok" ? `${who} сохранил себе твой фильм` : `${who} зовёт тебя`; };
   const bellInv = () => (EV && ME ? myInvites() : []).map(m => ({inv: true, m, e: evById(m.event_id), ts: m.updated_at || (evById(m.event_id) || {}).created_at || ""})).filter(x => x.e);
   const ntfUnread = () => NTF.filter(n => !n.read).length + bellInv().length;
   function syncBell(){ const b = $("bellBtn"); if (!b) return; const n = ntfUnread(), d = b.querySelector(".bell-n"); d.hidden = !n; d.textContent = n > 9 ? "9+" : n; b.classList.toggle("on", !!n); }
   function ntfGo(n){
     const [k, id] = String(n.ref || "").split(":"); if (!id) return;
     if (k === "event" || k === "watch"){ go(n.ref); return; }
+    if (k === "sug"){ if (route !== "kino") go("kino"); setTimeout(() => sugSheet(id), 150); return; }
+    if (k === "user"){ go(n.ref); return; }
     if (k === "book"){ bkOpen.add(id); const jb = () => { const el = document.querySelector(`[data-bkc="${CSS.escape(id)}"]`); if (el){ const a = el.closest(".bk-e"); a.scrollIntoView({behavior: "smooth", block: "center"}); a.classList.remove("flash"); void a.offsetWidth; a.classList.add("flash"); } else if (bookN < 500){ bookN = 500; renderPeople(); } };
       if (route === "people") renderPeople(); else go("people"); setTimeout(jb, 400); setTimeout(jb, 1300); return; }
     if (k === "tier"){ const op = () => tlById(id) ? tlView(id) : loadFriends(true).then(() => tlView(id)); if (FR) op(); else loadFriends().then(op); return; }
@@ -9499,7 +9649,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     pop.innerHTML = `<div class="ntf-h"><b>Уведомления</b>${NTF.some(n => !n.read) ? `<button type="button" data-ntfall="1">Прочитать всё</button>` : ""}</div><div class="ntf-l">${all.length ? all.map(x => {
       if (x.inv){ const e = x.e, f = e.kind === "watch" ? filmItem(e) : null;
         return `<button class="ntf-r unread" data-ntfev="${esc(evRoute(e))}">${avaHTML(profOf(x.m.invited_by || e.owner), "sm")}<span class="t"><span><b>${esc(frNick(x.m.invited_by || e.owner))}</b> зовёт ${e.kind === "watch" ? "смотреть" : "на"} «${esc(f ? f.title || e.title : e.title)}»</span><small>${esc(evIn(e) || evWhen(e))} · ждёт ответа</small></span><i class="ntf-k inv">${ICON.calendar}</i></button>`; }
-      const n = x.n; return `<button class="ntf-r${n.read ? "" : " unread"}" data-ntf="${esc(n.id)}">${avaHTML(profOf(n.actor), "sm")}<span class="t"><span>${ntfText(n)}</span>${n.body ? `<em>«${esc(n.body)}»</em>` : ""}<small>${esc(agoTs(n.created_at))}</small></span><i class="ntf-k">${n.kind === "comment" || n.kind === "book_comment" ? ICON.chat : n.kind === "tier_reply" ? ICON.tiers : "@"}</i></button>`; }).join("")
+      const n = x.n; return `<button class="ntf-r${n.read ? "" : " unread"}" data-ntf="${esc(n.id)}">${avaHTML(profOf(n.actor), "sm")}<span class="t"><span>${ntfText(n)}</span>${n.body ? `<em>«${esc(n.body)}»</em>` : ""}<small>${esc(agoTs(n.created_at))}</small></span><i class="ntf-k">${n.kind === "comment" || n.kind === "book_comment" ? ICON.chat : n.kind === "tier_reply" ? ICON.tiers : n.kind === "suggest" || n.kind === "suggest_ok" ? ICON.film : "@"}</i></button>`; }).join("")
       : `<p class="ntf-e">Пока тихо. Сюда придут упоминания, ответы на посты и приглашения.</p>`}</div>`;
     document.body.appendChild(pop);
     const w = pop.offsetWidth; pop.style.left = Math.max(8, Math.min(innerWidth - w - 8, r.right - w)) + "px"; pop.style.top = (r.bottom + 8) + "px";

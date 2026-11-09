@@ -462,3 +462,36 @@ alter table public.events drop constraint if exists events_photo_fmt_chk;
 alter table public.events add constraint events_photo_fmt_chk check (photo_fmt is null or photo_fmt in ('wide','story','square'));
 alter table public.events drop constraint if exists events_photo_pos_chk;
 alter table public.events add constraint events_photo_pos_chk check (photo_pos is null or (jsonb_typeof(photo_pos) = 'object' and pg_column_size(photo_pos) < 400));
+
+-- ===== 4.1: предложить фильм другу =====
+create table if not exists public.suggestions (
+  id uuid primary key default gen_random_uuid(),
+  from_user uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  to_user uuid not null references auth.users (id) on delete cascade,
+  item jsonb not null,
+  note text check (note is null or char_length(note) <= 300),
+  status text not null default 'pending' check (status in ('pending','taken','declined')),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  check (from_user <> to_user),
+  check (jsonb_typeof(item) = 'object' and pg_column_size(item) < 60000)
+);
+create index if not exists suggestions_to_idx on public.suggestions (to_user, created_at desc);
+create index if not exists suggestions_from_idx on public.suggestions (from_user);
+alter table public.suggestions enable row level security;
+drop policy if exists sg_select on public.suggestions;
+drop policy if exists sg_insert on public.suggestions;
+drop policy if exists sg_update on public.suggestions;
+drop policy if exists sg_delete on public.suggestions;
+create policy sg_select on public.suggestions for select to authenticated using ((select auth.uid()) in (from_user, to_user));
+create policy sg_insert on public.suggestions for insert to authenticated with check ((select auth.uid()) = from_user and status = 'pending');
+create policy sg_update on public.suggestions for update to authenticated using ((select auth.uid()) = to_user) with check ((select auth.uid()) = to_user);
+create policy sg_delete on public.suggestions for delete to authenticated using ((select auth.uid()) in (from_user, to_user));
+revoke all on public.suggestions from anon;
+-- получатель меняет только статус
+revoke update on public.suggestions from authenticated;
+grant update (status, updated_at) on public.suggestions to authenticated;
+alter table public.suggestions replica identity full;
+do $$ begin alter publication supabase_realtime add table public.suggestions; exception when duplicate_object then null; end $$;
+alter table public.notifications drop constraint if exists notifications_kind_check;
+alter table public.notifications add constraint notifications_kind_check check (kind in ('mention_post','mention_comment','comment','invite','mention_event','tier_reply','book_comment','suggest','suggest_ok'));
