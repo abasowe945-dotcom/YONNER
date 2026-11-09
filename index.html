@@ -3227,6 +3227,14 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
 .bk-cf button{flex:none;width:34px;height:34px;border:0;border-radius:9px;background:#22252b;color:#fbfaf6;font:700 15px/1 var(--ios);cursor:pointer}
 .bk-e.flash{animation:bkFlash 1.4s ease}
 @keyframes bkFlash{0%,40%{background:rgba(255,214,10,.28)}100%{background:transparent}}
+
+/* ===== 3.5.1: фон карточки не цепляется пальцем, дата «без даты» ===== */
+#viewBg{overflow:hidden!important;pointer-events:none}
+#view.view{background:transparent!important;overflow-x:hidden;overscroll-behavior:contain}
+html:has(body.view-open),body.view-open{overflow:hidden}
+.dp-btn.off{opacity:.5}
+.nd-row{flex-wrap:wrap}
+@media (max-width:640px){label:has(> .nd-row){grid-column:1/-1}}
 /* «ОЦЕНИТЬ» */
 .rate-cta{position:relative;display:flex;align-items:center;gap:14px;width:100%;margin:22px 0 0;padding:14px 18px;border:0;border-radius:16px;cursor:pointer;color:#1b1200;text-align:left;background:linear-gradient(110deg,#ffd60a,#ff9f0a 55%,#ff6b00);box-shadow:0 14px 34px rgba(255,159,10,.32),inset 0 1px 0 rgba(255,255,255,.5);overflow:hidden;transition:transform .25s cubic-bezier(.3,1.5,.4,1)}
 .rate-cta::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.55) 50%,transparent 65%);background-size:250% 100%;animation:ctaShine 3.2s ease-in-out infinite}
@@ -3349,7 +3357,7 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
 <aside class="fw" id="fw" hidden aria-label="Активность друзей"></aside>
 <footer class="site-ft" id="siteFt">Сайт создан <b>Claude</b><span class="sep"></span>редактировал <b>H3RO</b><span class="sep"></span>с 7 ноября 2026</footer>
 <nav class="tabbar" id="tabbar" aria-label="Разделы"></nav>
-<div class="view" id="view" hidden></div>
+<div class="view vbg" id="viewBg" hidden aria-hidden="true"></div><div class="view" id="view" hidden></div>
 <div class="tier" id="tier" hidden></div>
 <div class="rl" id="rl" hidden></div>
 <div class="rl" id="bt" hidden></div>
@@ -4353,7 +4361,7 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
   function closeView(){
     FULL_ID = null;
     fxSeen = null;
-    $("view").hidden = true; $("view").innerHTML = ""; openId = null; pasteTarget = null;
+    $("view").hidden = true; $("view").innerHTML = ""; $("viewBg").hidden = true; $("viewBg").innerHTML = ""; openId = null; pasteTarget = null;
     document.body.classList.remove("view-open");
     document.body.dataset.theme = (ROUTES[route] || ROUTES.games).theme;
   }
@@ -4362,10 +4370,10 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
     const bg = it && it.wallpaper ? `<div class="bgimg wall" style="background-image:url('${blobUrl(it.wallpaper)}');filter:blur(${it.wallBlur ?? 6}px) brightness(${1 - (it.wallDim ?? 35) / 100})"></div>`
       : it && it.cover ? `<div class="bgimg" style="background-image:url('${blobUrl(it.cover)}')"></div>` : "";
     const cls = viewTheme === "games" ? "s-close" : "k-close";
-    $("view").innerHTML = `${bg}<div class="shade"></div><button class="${cls}" id="closeBtnX" aria-label="Закрыть">${ICON.x}</button><button class="v-back" id="closeBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>Назад</button><div class="${viewTheme === "games" ? "s-view" : "k-view"}">${html}</div>`;
-    $("view").classList.toggle("nocover", !(it && (it.cover || it.wallpaper)));
-    $("view").classList.toggle("haswall", !!(it && it.wallpaper));
-    $("view").hidden = false; document.body.classList.add("view-open");
+    $("viewBg").innerHTML = `${bg}<div class="shade"></div>`;
+    $("view").innerHTML = `<button class="${cls}" id="closeBtnX" aria-label="Закрыть">${ICON.x}</button><button class="v-back" id="closeBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>Назад</button><div class="${viewTheme === "games" ? "s-view" : "k-view"}">${html}</div>`;
+    ["view", "viewBg"].forEach(k => { $(k).classList.toggle("nocover", !(it && (it.cover || it.wallpaper))); $(k).classList.toggle("haswall", !!(it && it.wallpaper)); $(k).hidden = false; });
+    document.body.classList.add("view-open");
     $("closeBtn").onclick = closeView;
   }
   function wirePoster(it){
@@ -5381,6 +5389,9 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
   // ================= патчноуты =================
   // Новые версии добавляются В НАЧАЛО списка. n — новое, c — изменено, f — исправлено, r — удалено.
   const PATCHES = [
+    {v: "3.5.1", date: "2026-11-09", title: "Дата просмотра и прокрутка карточки", kind: "minor", sec: {
+      f: ["Дату просмотра снова можно вписать, даже если стояло «Без даты»: нажми на поле — галочка снимется сама. На телефоне кнопка «Без даты» больше не уезжает за край экрана",
+        "На телефоне фон карточки фильма или игры больше не цепляется пальцем — страница прокручивается, где бы ни начал свайп"]}},
     {v: "3.5", date: "2026-11-09", title: "Прошёл на YouTube, Лицензия и комментарии в книге", kind: "minor", sec: {
       n: ["<b>Прошёл на YouTube</b> — новый статус для игр, которые смотрел, а не играл: свой фильтр в библиотеке и своя полка в профиле. Цена и источник для них не нужны",
         "<b>Комментарии в книге жалоб и предложений</b>: отвечай под любой записью, автору и участникам обсуждения придёт уведомление",
@@ -6278,12 +6289,15 @@ body[data-route="home"] .gh-crumb,body[data-route="read"] .gh-crumb,body[data-ro
     inp.after(btn); inp.type = "hidden";
     const sync = () => { const v = dv.get.call(inp), s = btn.querySelector(".v");
       s.textContent = v ? fmtDP(v) : (inp.getAttribute("placeholder") || "Выбрать дату"); s.classList.toggle("ph", !v);
-      btn.disabled = dd.get.call(inp); btn.hidden = dh.get.call(inp); };
+      const off = dd.get.call(inp), nd = off && btn.closest(".nd-row");
+      if (nd){ s.textContent = "Нажми, чтобы указать"; s.classList.add("ph"); }
+      btn.disabled = off && !nd; btn.classList.toggle("off", !!nd); btn.hidden = dh.get.call(inp); };
     Object.defineProperty(inp, "value", {configurable: true, get(){ return dv.get.call(inp); }, set(v){ dv.set.call(inp, v); sync(); }});
     Object.defineProperty(inp, "disabled", {configurable: true, get(){ return dd.get.call(inp); }, set(v){ dd.set.call(inp, v); sync(); }});
     Object.defineProperty(inp, "hidden", {configurable: true, get(){ return dh.get.call(inp); }, set(v){ dh.set.call(inp, v); sync(); }});
     inp.focus = () => btn.click();
-    btn.onclick = () => datePop(btn, dv.get.call(inp), v => { inp.value = v; inp.dispatchEvent(new Event("input", {bubbles: true})); inp.dispatchEvent(new Event("change", {bubbles: true})); },
+    btn.onclick = () => { if (dd.get.call(inp)){ const nd = btn.closest(".nd-row") && btn.closest(".nd-row").querySelector("input[type=checkbox]"); if (!nd) return; nd.checked = false; fdTouched = true; nd.dispatchEvent(new Event("change", {bubbles: true})); } openDP(); };
+    const openDP = () => datePop(btn, dv.get.call(inp), v => { inp.value = v; inp.dispatchEvent(new Event("input", {bubbles: true})); inp.dispatchEvent(new Event("change", {bubbles: true})); },
       {clear: !inp.hasAttribute("required"), bday: inp.dataset.bday === "1"});
     sync();
   }
