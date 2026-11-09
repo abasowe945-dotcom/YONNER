@@ -3242,6 +3242,20 @@ html:has(body.view-open),body.view-open{overflow:hidden}
 .dp-btn.off{opacity:.5}
 .nd-row{flex-wrap:wrap}
 @media (max-width:640px){label:has(> .nd-row){grid-column:1/-1}}
+/* ===== 3.6: таймер до конца работы ===== */
+.gh-work{display:flex;align-items:center;gap:6px;padding:0 9px 0 7px;height:36px;border-radius:11px;background:rgba(255,59,48,.1);box-shadow:inset 0 0 0 1px rgba(255,59,48,.28);white-space:nowrap;line-height:1}
+.gh-work i{font-style:normal;font-size:17px;line-height:1}
+.gh-work span{display:flex;flex-direction:column;gap:3px}
+.gh-work small{font:800 8.5px/1 var(--ios);letter-spacing:.03em;color:#ff453a}
+.gh-work b{font:800 15px/1 var(--ios);color:#ff453a;font-variant-numeric:tabular-nums;letter-spacing:.01em}
+.gh-work.done{background:rgba(48,209,88,.1);box-shadow:inset 0 0 0 1px rgba(48,209,88,.3)}
+.gh-work .ok{color:#30d158}
+:root[data-mode="light"] .gh-work small,:root[data-mode="light"] .gh-work b{color:#d70015}
+@media (min-width:821px){#rlTopS span,#rlTopK span{display:none}#rlTopS,#rlTopK{padding-left:12px;padding-right:12px}.gh-search{width:170px}.gh-search:focus-within{width:240px}.gh-mid{overflow-x:auto;scrollbar-width:none;padding:3px 0}.gh-mid::-webkit-scrollbar{display:none}}
+@media (min-width:821px){#tierS span,#tierK span{display:none}#tierS,#tierK{padding-left:12px;padding-right:12px}}
+@media (max-width:1180px) and (min-width:821px){.gh-work small{display:none}.gh-work{padding:0 8px}}
+@media (max-width:980px) and (min-width:821px){.gh-work i{display:none}.gh-right{gap:8px!important}}
+@media (max-width:900px){.gh-work{display:none!important}}
 /* «ОЦЕНИТЬ» */
 .rate-cta{position:relative;display:flex;align-items:center;gap:14px;width:100%;margin:22px 0 0;padding:14px 18px;border:0;border-radius:16px;cursor:pointer;color:#1b1200;text-align:left;background:linear-gradient(110deg,#ffd60a,#ff9f0a 55%,#ff6b00);box-shadow:0 14px 34px rgba(255,159,10,.32),inset 0 1px 0 rgba(255,255,255,.5);overflow:hidden;transition:transform .25s cubic-bezier(.3,1.5,.4,1)}
 .rate-cta::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.55) 50%,transparent 65%);background-size:250% 100%;animation:ctaShine 3.2s ease-in-out infinite}
@@ -3340,6 +3354,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     <button class="gh-ic" id="bgBtn" type="button" title="Фон этой страницы" aria-label="Фон страницы"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg></button>
     <button class="gh-ic" id="sndBtn" type="button" title="Звуки" aria-label="Звуки сайта"></button>
     <button class="gh-ic" id="modeBtn" type="button" title="Светлая тема" aria-label="Переключить тему"></button>
+    <div class="gh-work" id="workT" hidden></div>
     <div class="gh-time" id="clock" aria-label="Дата и время"></div>
     <div class="gh-me"><span class="me-slot"></span></div>
   </div>
@@ -3893,6 +3908,14 @@ html:has(body.view-open),body.view-open{overflow:hidden}
   function tick(){ const d = new Date(), s = d.toLocaleDateString("ru-RU",{weekday:"short",day:"numeric",month:"short"}).replace(/\.$/,"");
     $("clock").innerHTML = `<b>${d.toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit"})}</b><small>${s.charAt(0).toUpperCase()+s.slice(1)}</small>`; }
   tick(); setInterval(tick, 20000);
+  // 3.6: сколько осталось работать до 18:00 (по будням)
+  function workTick(){ const el = $("workT"); if (!el) return; const d = new Date(), wd = d.getDay(), end = new Date(d); end.setHours(18, 0, 0, 0);
+    if (wd === 0 || wd === 6 || d.getHours() < 6){ el.hidden = true; return; }
+    el.hidden = false; const left = Math.floor((end - d) / 1000), p2 = n => String(n).padStart(2, "0");
+    const html = left > 0 ? `<i aria-hidden="true">👨‍💻</i><span><small>ОСТАЛОСЬ РАБОТАТЬ</small><b>${Math.floor(left / 3600)}:${p2(Math.floor(left / 60) % 60)}:${p2(left % 60)}</b></span>`
+      : `<i aria-hidden="true">🍻</i><span><small class="ok">СМЕНА ОКОНЧЕНА</small><b class="ok">свобода</b></span>`;
+    el.classList.toggle("done", left <= 0); el.title = left > 0 ? "До конца рабочего дня (18:00)" : "Рабочий день окончен"; if (el.innerHTML !== html) el.innerHTML = html; }
+  workTick(); setInterval(workTick, 1000);
 
   // ================= APPLE-СТРАНИЦЫ =================
   function appleHead(crumb, acts = ""){ $("aCrumb").textContent = crumb; $("aTopActs").innerHTML = acts; }
@@ -5396,6 +5419,9 @@ html:has(body.view-open),body.view-open{overflow:hidden}
   // ================= патчноуты =================
   // Новые версии добавляются В НАЧАЛО списка. n — новое, c — изменено, f — исправлено, r — удалено.
   const PATCHES = [
+    {v: "3.6", date: "2026-11-09", title: "Таймер до конца работы", kind: "minor", sec: {
+      n: ["<b>Таймер в шапке</b> рядом с часами: по будням красным «ОСТАЛОСЬ РАБОТАТЬ» до 18:00 с секундами, после — «смена окончена». В выходные не мешает"],
+      c: ["На средних экранах «Тир-лист» в шапке показан значком, чтобы всё влезло"]}},
     {v: "3.5.1", date: "2026-11-09", title: "Ответы и лайки в книге жалоб, дата просмотра", kind: "minor", sec: {
       n: ["<b>Лайки на ответы в книге жалоб</b>: ответили, что исправлено, — лайкни. Видно, сколько лайков и кто поставил"],
       f: ["<b>Книга жалоб</b>: кнопка «Ответить» теперь стоит под каждой записью (раньше она улетала наверх блокнота), а на любой комментарий можно ответить отдельно — подставится ник",
