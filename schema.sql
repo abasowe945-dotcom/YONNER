@@ -453,3 +453,12 @@ language sql stable security definer set search_path = public as $$
 $$;
 revoke all on function public.tierlist_public(uuid) from public;
 grant execute on function public.tierlist_public(uuid) to anon, authenticated;
+
+-- ===== 4.0: формат и масштаб фото мероприятия =====
+-- photo_fmt: wide (16:9), story (9:16), square (1:1); photo_pos: {x, y, s} — сдвиг в % и масштаб
+alter table public.events add column if not exists photo_fmt text;
+alter table public.events add column if not exists photo_pos jsonb;
+alter table public.events drop constraint if exists events_photo_fmt_chk;
+alter table public.events add constraint events_photo_fmt_chk check (photo_fmt is null or photo_fmt in ('wide','story','square'));
+alter table public.events drop constraint if exists events_photo_pos_chk;
+alter table public.events add constraint events_photo_pos_chk check (photo_pos is null or (jsonb_typeof(photo_pos) = 'object' and pg_column_size(photo_pos) < 400));

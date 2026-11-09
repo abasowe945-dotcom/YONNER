@@ -1385,6 +1385,41 @@ body[data-route="user"] .a-main{max-width:none;padding:0}
 .ev-ph.has{border-style:solid;border-color:transparent}
 .ev-ph.has span{opacity:0}
 .ev-ph.drop{border-color:#0a84ff}
+/* ===== 4.0: формат и масштаб фото мероприятия ===== */
+.ev-th img{width:100%;height:100%;object-fit:cover;display:block}
+.evp-img,.evp-pic{overflow:hidden}
+.evp-img{position:absolute;inset:0}
+.evp-img img,.evp-pic img{width:100%;height:100%;object-fit:cover;display:block}
+.evp-hero.ph-wide{aspect-ratio:16/9;min-height:0}
+.evp-hero.ph-story,.evp-hero.ph-square{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:end;min-height:0;padding:22px}
+.evp-blur{position:absolute;inset:-60px;background:center/cover;filter:blur(40px) saturate(1.4) brightness(.5)}
+.evp-pic{position:relative;z-index:2;border-radius:16px;box-shadow:0 22px 60px rgba(0,0,0,.55)}
+.ph-story .evp-pic{width:min(250px,40vw);aspect-ratio:9/16}
+.ph-square .evp-pic{width:min(320px,44vw);aspect-ratio:1}
+.evp-hero.ph-story .in,.evp-hero.ph-square .in{padding:8px 6px 6px 26px}
+.evp-hero.ph-story::after,.evp-hero.ph-square::after{background:linear-gradient(90deg,rgba(0,0,0,0) 30%,rgba(0,0,0,.35))}
+body[data-route="event"] .evp-pic{border-radius:4px}
+@media (max-width:640px){
+  .evp-hero.ph-story,.evp-hero.ph-square{grid-template-columns:1fr;justify-items:center;padding:18px}
+  .ph-story .evp-pic{width:min(230px,70vw)}.ph-square .evp-pic{width:min(320px,100%)}
+  .evp-hero.ph-story .in,.evp-hero.ph-square .in{padding:16px 0 4px;text-align:center}}
+.evf{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.evf button{display:grid;justify-items:center;gap:5px;padding:10px 6px;border-radius:12px;border:1.5px solid transparent;background:#2c2c2e;color:#f2f2f7;cursor:pointer;font-family:var(--ios)}
+.evf button[aria-pressed="true"]{border-color:#0a84ff;background:rgba(10,132,255,.14)}
+.evf i{display:block;height:22px;border:2px solid currentColor;border-radius:4px;opacity:.85}
+.evf .r-wide{width:39px}.evf .r-story{width:13px}.evf .r-square{width:22px}
+.evf b{font:600 13px/1.1 var(--ios)}.evf small{font:500 11.5px/1 var(--ios);color:#8e8e93}
+.ev-ph{touch-action:none}
+.ev-ph.f-wide{aspect-ratio:16/9}
+.ev-ph.f-story{aspect-ratio:9/16;width:min(100%,230px);margin-left:auto;margin-right:auto}
+.ev-ph.f-square{aspect-ratio:1;width:min(100%,320px);margin-left:auto;margin-right:auto}
+.ev-ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;user-select:none;-webkit-user-drag:none;pointer-events:none}
+.ev-ph.has{cursor:grab}.ev-ph.grab{cursor:grabbing}
+.ev-zoom{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:-2px 0 14px}
+.ev-zoom[hidden]{display:none}
+.ev-zoom label{flex:1 1 180px;display:flex;align-items:center;gap:10px;font:500 13px/1 var(--ios);color:#8e8e93}
+.ev-zoom input{flex:1;accent-color:#0a84ff}
+.ev-zoom .ib{padding:8px 12px;font-size:13px;border-radius:10px}
 .ev-two{display:grid;grid-template-columns:1.4fr 1fr;gap:10px}
 .ev-pick{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 14px}
 .ev-pick button{display:inline-flex;align-items:center;gap:7px;padding:5px 12px 5px 5px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:#2c2c2e;color:#f2f2f7;font:600 13px/1 var(--ios);cursor:pointer}
@@ -5602,6 +5637,11 @@ html:has(body.view-open),body.view-open{overflow:hidden}
   // ================= патчноуты =================
   // Новые версии добавляются В НАЧАЛО списка. n — новое, c — изменено, f — исправлено, r — удалено.
   const PATCHES = [
+    {v: "4.0", date: "2026-11-09", title: "Фото мероприятий: формат и масштаб", kind: "minor", sec: {
+      n: ["У фото мероприятия теперь три формата: <b>горизонтально</b> (16:9), <b>как сториз</b> (9:16) и <b>квадрат</b>. Выбирается при создании или в «Изменить»",
+        "Фото можно приблизить ползунком или колесом мыши и сдвинуть мышкой или пальцем — в кадре будет ровно то, что нужно",
+        "Кнопка «Картинка» на странице мероприятия копирует фото уже обрезанным под выбранный формат — сразу в Телеграм или в сториз"],
+      c: ["Вертикальные и квадратные фото на странице мероприятия показываются целиком, с размытым фоном"]}},
     {v: "3.9", date: "2026-11-09", title: "Тир-листы: импорт с TierMaker, ссылки и картинки", kind: "major", sec: {
       n: ["<b>Импорт с TierMaker</b>: в Активности у тир-листов или в редакторе жми «TierMaker», вставь ссылку на тир-лист — переедет всё: названия и цвета тиров, картинки по местам. Пустой шаблон тоже подойдёт: картинки лягут в «Не распределено»",
         "После переноса тир-лист сразу открывается в редакторе: двигай картинки, переименовывай тиры, удаляй лишнее — и сохраняй как свой",
@@ -6998,6 +7038,21 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     return d < 0 ? "прошло" : d === 0 ? (s < new Date() ? "идёт сейчас" : "сегодня") : d === 1 ? "завтра" : `через ${d} ${plural(d, "день", "дня", "дней")}`; };
   const EV_G = ["linear-gradient(135deg,#5e5ce6,#bf5af2)", "linear-gradient(135deg,#ff375f,#ff9f0a)", "linear-gradient(135deg,#30d158,#0a84ff)", "linear-gradient(135deg,#ff9f0a,#ff375f)", "linear-gradient(135deg,#64d2ff,#5e5ce6)"];
   const evBg = e => e.photo ? `url('${publicUrl(e.photo)}')` : EV_G[(e.title || "").length % EV_G.length];
+  // формат фото мероприятия и его масштаб/сдвиг (как у обложек)
+  const EV_FMT = {wide: {t: "Горизонтально", r: "16:9", w: 1600, h: 900}, story: {t: "Как сториз", r: "9:16", w: 1080, h: 1920}, square: {t: "Квадрат", r: "1:1", w: 1080, h: 1080}};
+  const evFmt = e => e && EV_FMT[e.photo_fmt] ? e.photo_fmt : "wide";
+  const evPos = e => e && e.photo_pos && typeof e.photo_pos === "object" ? e.photo_pos : null;
+  const evImg = e => e && e.photo ? `<img alt="" src="${publicUrl(e.photo)}" style="${posStyle(evPos(e))}" draggable="false">` : "";
+  // картинка ровно в выбранном формате и кадре — для Телеграма и сториз
+  async function evCrop(e){
+    const F = EV_FMT[evFmt(e)], p = {x: 50, y: 50, s: 1, ...(evPos(e) || {})};
+    const r = await fetch(publicUrl(e.photo), {mode: "cors"}); if (!r.ok) throw new Error("нет картинки");
+    const im = await createImageBitmap(await r.blob()), W = F.w, H = F.h, c = document.createElement("canvas"); c.width = W; c.height = H;
+    const x = c.getContext("2d"), k = Math.max(W / im.width, H / im.height), dw = im.width * k, dh = im.height * k;
+    const ox = (W - dw) * p.x / 100, oy = (H - dh) * p.y / 100, cx = W * p.x / 100, cy = H * p.y / 100;
+    x.imageSmoothingQuality = "high"; x.drawImage(im, cx + (ox - cx) * p.s, cy + (oy - cy) * p.s, dw * p.s, dh * p.s);
+    return await new Promise((ok, no) => c.toBlob(b => b ? ok(b) : no(new Error("пусто")), "image/png"));
+  }
   const myInvites = () => EV && ME ? EV.members.filter(m => m.user_id === ME.id && m.status === "invited" && evById(m.event_id) && !evPast(evById(m.event_id))) : [];
   async function loadEvents(force){
     if (!SB || !ME) return null;
@@ -7049,7 +7104,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     const inv = myInvites(), MON = ["янв","фев","мар","апр","мая","июн","июл","авг","сен","окт","ноя","дек"];
     const up = EV.events.filter(e => e.kind !== "watch" && !evPast(e)).sort((a, b) => (a.starts_at || "9").localeCompare(b.starts_at || "9"));
     const past = EV.events.filter(e => e.kind !== "watch" && evPast(e)).sort((a, b) => b.starts_at.localeCompare(a.starts_at));
-    const th = e => { const s = evStart(e); return `<span class="ev-th" style="--g:${evBg(e)}">${e.photo ? "" : s ? `<small>${MON[s.getMonth()]}</small><b>${s.getDate()}</b>` : `<b>?</b>`}</span>`; };
+    const th = e => { const s = evStart(e); return `<span class="ev-th" style="--g:${e.photo ? "#2c2c2e" : evBg(e)}">${e.photo ? evImg(e) : s ? `<small>${MON[s.getMonth()]}</small><b>${s.getDate()}</b>` : `<b>?</b>`}</span>`; };
     const row = e => { const go_ = evMem(e.id).filter(m => m.status === "going"); return `<button class="ev-row${evPast(e) ? " past" : ""}" data-ev="${esc(e.id)}">${th(e)}<span class="t"><b>${esc(e.title)}</b><small>${esc(evIn(e) || evWhen(e))}${go_.length ? ` · ${go_.length} ${plural(go_.length, "идёт", "идут", "идут")}` : ""}</small></span>${go_.length ? avaStack(go_.map(m => m.user_id), 3) : ""}</button>`; };
     const note = "Notification" in window && Notification.permission === "default" ? `<button class="ev-note" data-notif="1">Включить уведомления о приглашениях</button>` : "";
     return `<div class="fb-card ev-card"><h3>${ICON.party} Мероприятия<button class="ev-add" data-evnew="1" title="Создать мероприятие" aria-label="Создать мероприятие">+</button></h3>
@@ -7084,7 +7139,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
         <div class="vk-d">${vkDate(p.created_at)} | ${(() => { const lk = likesOf(p.id), on = lk.some(l => l.user_id === ME.id);
           return `<a class="vk-like${on ? " on" : ""}" data-like="${esc(p.id)}" title="${esc(lk.length ? "Понравилось: " + lk.map(l => profOf(l.user_id).nick).join(", ") : "Мне нравится")}">Мне нравится${lk.length ? ` ♥ ${lk.length}` : ""}</a>${lk.length ? `<span class="vk-lk">${lk.slice(0, 6).map(l => avaHTML(profOf(l.user_id))).join("")}</span>` : ""}`; })()}${p.user_id === ME.id || own ? ` | <a data-vkdel="${esc(p.id)}">удалить</a>` : ""}</div></div></div>`).join("") : `<div class="vk-empty">На стене пока нет записей. Напиши первым.</div>`}</div>`;
     $("aMain").innerHTML = `<div class="evp">
-      <div class="evp-hero" style="--g:${evBg(e)}">${evIn(e) ? `<span class="cd">${esc(evIn(e))}</span>` : ""}<div class="in"><div class="when">${esc(evWhen(e))}</div><h1>${esc(e.title)}</h1></div></div>
+      <div class="evp-hero${e.photo ? " ph-" + evFmt(e) : ""}" style="--g:${e.photo ? "#111" : evBg(e)}">${e.photo ? (evFmt(e) === "wide" ? `<div class="evp-img">${evImg(e)}</div>` : `<div class="evp-blur" style="background-image:url('${publicUrl(e.photo)}')"></div><div class="evp-pic">${evImg(e)}</div>`) : ""}${evIn(e) ? `<span class="cd">${esc(evIn(e))}</span>` : ""}<div class="in"><div class="when">${esc(evWhen(e))}</div><h1>${esc(e.title)}</h1></div></div>
       <div class="evp-grid"><div class="evp-a">
         <div class="ios-card evp-info">
           <div class="ios-row"><span class="ic" style="background:${GRAD.red}">${ICON.calendar}</span><span class="t">${esc(evWhen(e))}</span><span class="val">${esc(evIn(e))}</span></div>
@@ -7130,10 +7185,13 @@ html:has(body.view-open),body.view-open{overflow:hidden}
   }
   function eventSheet(e){
     if (!ME || !assets) return;
-    const isNew = !e; let file = null; const photo0 = e ? e.photo : null;
+    const isNew = !e; let file = null, removed = false, fmt = evFmt(e), pos = {x: 50, y: 50, s: 1, ...(evPos(e) || {})}; const photo0 = e ? e.photo : null;
+    let url = photo0 ? publicUrl(photo0) : "";
     const s0 = evStart(e), others = FR ? FR.profiles.filter(p => p.user_id !== ME.id) : [];
     const s = openSheet(`<h3>${isNew ? "Новое мероприятие" : "Изменить мероприятие"}</h3><p class="sub">Нужно только название. Фото, место и описание — по желанию.</p>
-      <div class="ev-ph${photo0 ? " has" : ""}" id="evPh" role="button" tabindex="0" style="${photo0 ? `background-image:url('${publicUrl(photo0)}')` : ""}"><span>Фото: перетащи, вставь Ctrl+V<br>или нажми, чтобы выбрать</span></div><input type="file" id="evF" accept="image/*" hidden>
+      <div class="evf" id="evFm" role="group" aria-label="Формат фото">${Object.entries(EV_FMT).map(([k, v]) => `<button type="button" data-fmt="${k}" aria-pressed="${k === fmt}"><i class="r-${k}"></i><b>${v.t}</b><small>${v.r}</small></button>`).join("")}</div>
+      <div class="ev-ph" id="evPh" role="button" tabindex="0"></div><input type="file" id="evF" accept="image/*" hidden>
+      <div class="ev-zoom" id="evZ"><label>Масштаб<input type="range" id="evS" min="1" max="3" step="0.01"></label><button type="button" class="ib" id="evRe">Сбросить</button><button type="button" class="ib" id="evCh">Заменить</button><button type="button" class="ib red" id="evRm">Убрать</button></div>
       <label class="f">Название<input class="in" id="evT" maxlength="80" placeholder="Кино в пятницу" value="${esc(e ? e.title : "")}"></label>
       <div class="ev-two"><label class="f">Дата<input class="in" type="date" id="evD" placeholder="Выбрать дату" value="${s0 ? localDate(s0) : ""}"></label><label class="f">Время<input class="in" type="time" id="evTm" value="${s0 ? pad(s0.getHours()) + ":" + pad(s0.getMinutes()) : "19:00"}"></label></div>
       <label class="f">Место<input class="in" id="evPl" maxlength="200" placeholder="Адрес или название места" value="${esc(e ? e.place || "" : "")}"></label>
@@ -7141,8 +7199,29 @@ html:has(body.view-open),body.view-open{overflow:hidden}
       ${isNew && others.length ? `<div class="av-lb">Позвать друзей</div><div class="ev-pick" id="evPk">${others.map(p => `<button type="button" data-u="${esc(p.user_id)}" aria-pressed="false">${avaHTML(p)}${esc(p.nick)}</button>`).join("")}</div>` : ""}
       <div class="acts"><button class="ib blue" id="evOk">${isNew ? "Создать" : "Сохранить"}</button><button class="ib" id="evNo">Отмена</button></div>`, {wide: true});
     const q = x => s.el.querySelector(x), ph = q("#evPh");
-    const take = f => { if (!f || !f.type.startsWith("image/")) return; file = f; ph.style.backgroundImage = `url('${URL.createObjectURL(f)}')`; ph.classList.add("has"); };
-    ph.onclick = () => q("#evF").click(); q("#evF").onchange = ev => take(ev.target.files[0]); bindDrop(ph, take); pasteTarget = take;
+    const drawPh = () => {
+      ph.className = `ev-ph f-${fmt}${url ? " has" : ""}`;
+      ph.innerHTML = url ? `<img src="${url}" alt="" draggable="false" style="${posStyle(pos)}">` : `<span>Фото: перетащи, вставь Ctrl+V<br>или нажми, чтобы выбрать</span>`;
+      q("#evZ").hidden = !url; q("#evS").value = pos.s;
+      q("#evFm").querySelectorAll("[data-fmt]").forEach(b => b.setAttribute("aria-pressed", b.dataset.fmt === fmt));
+    };
+    const applyPos = () => { const im = ph.querySelector("img"); if (im) im.setAttribute("style", posStyle(pos)); q("#evS").value = pos.s; };
+    const take = f => { if (!f || !f.type.startsWith("image/")) return; file = f; removed = false; url = URL.createObjectURL(f); pos = {x: 50, y: 50, s: 1}; drawPh(); };
+    ph.onclick = () => { if (!url) q("#evF").click(); }; q("#evF").onchange = ev => take(ev.target.files[0]); bindDrop(ph, take); pasteTarget = take;
+    q("#evFm").onclick = ev => { const b = ev.target.closest("[data-fmt]"); if (b){ fmt = b.dataset.fmt; drawPh(); } };
+    q("#evS").oninput = ev => { pos.s = +ev.target.value; applyPos(); };
+    q("#evRe").onclick = () => { pos = {x: 50, y: 50, s: 1}; applyPos(); };
+    q("#evCh").onclick = () => q("#evF").click();
+    q("#evRm").onclick = () => { file = null; url = ""; removed = true; pos = {x: 50, y: 50, s: 1}; drawPh(); };
+    ph.addEventListener("wheel", ev => { if (!url) return; ev.preventDefault(); pos.s = Math.min(3, Math.max(1, +(pos.s - ev.deltaY * 0.0015).toFixed(3))); applyPos(); }, {passive: false});
+    let drag = null;
+    ph.addEventListener("pointerdown", ev => { if (!url) return; drag = {x: ev.clientX, y: ev.clientY, px: pos.x, py: pos.y, w: ph.clientWidth, h: ph.clientHeight}; ph.setPointerCapture(ev.pointerId); ph.classList.add("grab"); });
+    ph.addEventListener("pointermove", ev => { if (!drag) return; const k = Math.max(pos.s - .4, .6);
+      pos.x = Math.min(100, Math.max(0, drag.px - (ev.clientX - drag.x) / drag.w * 100 / k));
+      pos.y = Math.min(100, Math.max(0, drag.py - (ev.clientY - drag.y) / drag.h * 100 / k)); applyPos(); });
+    const endDrag = () => { drag = null; ph.classList.remove("grab"); };
+    ph.addEventListener("pointerup", endDrag); ph.addEventListener("pointercancel", endDrag);
+    drawPh();
     if (q("#evPk")) q("#evPk").onclick = ev => { const b = ev.target.closest("[data-u]"); if (b) b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") !== "true"); };
     q("#evNo").onclick = () => s.close();
     q("#evOk").onclick = async () => {
@@ -7150,8 +7229,9 @@ html:has(body.view-open),body.view-open{overflow:hidden}
       const d = q("#evD").value, tm = q("#evTm").value || "19:00", starts_at = d ? new Date(`${d}T${tm}`).toISOString() : null;
       const btn = q("#evOk"); btn.disabled = true; btn.textContent = "Сохраняю…";
       try {
-        const photo = file ? await upload(file) : photo0;
-        const row = {title, descr: q("#evDs").value.trim() || null, place: q("#evPl").value.trim() || null, starts_at, photo};
+        const photo = file ? await upload(file) : removed ? null : photo0;
+        const row = {title, descr: q("#evDs").value.trim() || null, place: q("#evPl").value.trim() || null, starts_at, photo,
+          photo_fmt: photo ? fmt : null, photo_pos: photo ? {x: +pos.x.toFixed(1), y: +pos.y.toFixed(1), s: +(+pos.s).toFixed(3)} : null};
         let id = e && e.id;
         if (isNew){
           id = crypto.randomUUID();
@@ -8625,7 +8705,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
   document.addEventListener("click", async e => { const el = e.target.closest && e.target.closest("[data-tgposter]"); if (!el || !ME) return; e.preventDefault();
     const ev = evById(el.dataset.tgposter); if (!ev) return; const pic = ev.kind === "watch" ? (filmItem(ev).cover || ev.photo) : ev.photo; if (!pic) return; const f = {cover: pic}; el.disabled = true;
     try {
-      const png = new Promise(async (ok, no) => { try { const r = await fetch(publicUrl(f.cover), {mode: "cors"}); const b = await r.blob(); if (b.type === "image/png") return ok(b);
+      const png = ev.kind !== "watch" && ev.photo ? evCrop(ev) : new Promise(async (ok, no) => { try { const r = await fetch(publicUrl(f.cover), {mode: "cors"}); const b = await r.blob(); if (b.type === "image/png") return ok(b);
         const im = await createImageBitmap(b), c = document.createElement("canvas"); c.width = im.width; c.height = im.height; c.getContext("2d").drawImage(im, 0, 0); c.toBlob(x => x ? ok(x) : no(0), "image/png"); } catch(err){ no(err); } });
       await navigator.clipboard.write([new ClipboardItem({"image/png": png})]);
       toast((ev.kind === "watch" ? "Постер" : "Картинка") + " скопирована — вставь в чат, а текст приглашения в подпись");
