@@ -2841,6 +2841,18 @@ body{overflow-x:clip}
 .fg-n{padding:0;border:0;background:none;color:var(--c-fg);font:700 15px/1.2 var(--ios);cursor:pointer}
 .fg-n:hover{text-decoration:underline}
 .fg-d{color:var(--c-dim);font:500 12.5px/1 var(--ios)}
+/* лента друзей: время у каждого действия */
+.fg-h .fg-c{margin-left:auto;color:var(--c-dim);font:500 12px/1 var(--ios)}
+.fg-tl{gap:2px}
+.fg-tl li.fg-e{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:baseline;padding-left:0}
+.fg-tl li.fg-e::before{display:none}
+.fg-tl time{min-width:44px;color:var(--c-dim);font:600 12px/1.4 var(--ios);font-variant-numeric:tabular-nums;white-space:nowrap}
+.fg-t{min-width:0;padding:2px 0;border:0;background:none;color:inherit;text-align:left;font:400 14px/1.4 var(--ios);cursor:pointer}
+.fg-t:hover b{text-decoration:underline;text-underline-offset:2px}
+.fg-t em{font-style:normal;color:var(--c-dim);font-size:12.5px}
+.fg-r{display:inline-block;padding:1px 6px;border-radius:99px;font:700 11.5px/1.4 var(--ios);background:var(--c-cell-out)}
+.fg-r.green{background:rgba(48,209,88,.18);color:#30d158}.fg-r.yellow{background:rgba(255,214,10,.16);color:#d4a900}.fg-r.red{background:rgba(255,69,58,.16);color:#ff6b5e}
+.fg-all{margin-top:6px;padding:6px 0;border:0;background:none;color:var(--c-ring);font:600 13px/1 var(--ios);cursor:pointer}
 .fg-l{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:4px;font:400 14px/1.4 var(--ios);color:var(--c-fg)}
 .fg-l li{position:relative;padding-left:14px}
 .fg-l li::before{content:"";position:absolute;left:2px;top:.6em;width:5px;height:5px;border-radius:50%;background:var(--c-ring);opacity:.7}
@@ -8310,15 +8322,25 @@ html:has(body.view-open),body.view-open{overflow:hidden}
   const RNOUN = {manga: "мангу", comic: "комикс", book: "книгу"};
   const evKind = e => e.rd ? (RTYPE[e.rd.type] || "книга").toLowerCase() : isGame(e.it) ? "игра" : (KTYPES[e.it.type] || "кино").toLowerCase();
   const evTitle = e => e.rd ? e.rd.title : e.it.title;
+  // лента: каждое действие со своим временем, свежее сверху; подряд идущие действия одного друга — одной карточкой
+  const evTs = x => x._upd || x.updatedAt || x.createdAt || "";
   function feedGroups(){
-    const groups = [], idx = new Map();
-    const evs = [...pfEvents(null, false)];
+    const evs = [];
+    for (const it of FR.items){ if (ME && it.uid === ME.id) continue; const ts = evTs(it); if (ts) evs.push({it, uid: it.uid, ts, verb: verbOf(it)}); }
+    for (const r of FR.reads || []){ if (ME && r.uid === ME.id) continue; const ts = evTs(r), st = rNorm(r.status); if (ts) evs.push({rd: r, uid: r.uid, ts, verb: st === "done" ? "прочитал" : st === "reading" ? "читает" : "хочет прочитать"}); }
     FR.profiles.filter(p => p.created_at && ME && p.user_id !== ME.id && Date.now() - Date.parse(p.created_at) < 60 * 864e5)
-      .forEach(p => evs.push({join: true, uid: p.user_id, d: localDate(new Date(p.created_at)), ts: p.created_at, verb: "присоединился к NEXUS"}));
-    evs.sort((a, b) => b.d.localeCompare(a.d) || String(b.ts).localeCompare(String(a.ts)));
-    for (const e of evs){ const k = e.uid + "|" + e.d; let g = idx.get(k); if (!g){ g = {uid: e.uid, d: e.d, ev: []}; idx.set(k, g); groups.push(g); } g.ev.push(e); }
+      .forEach(p => evs.push({join: true, uid: p.user_id, ts: p.created_at, verb: "присоединился к NEXUS"}));
+    evs.sort((x, y) => String(y.ts).localeCompare(String(x.ts)));
+    const groups = [];
+    for (const e of evs){ const g = groups[groups.length - 1];
+      if (g && g.uid === e.uid && !e.join && !g.ev[0].join && Date.parse(g.ev[g.ev.length - 1].ts) - Date.parse(e.ts) < 6 * 36e5) g.ev.push(e);
+      else groups.push({uid: e.uid, ts: e.ts, d: localDate(new Date(e.ts)), ev: [e]}); }
     return groups;
   }
+  const feedTime = ts => { const d = new Date(ts), t = d.toLocaleTimeString("ru-RU", {hour: "2-digit", minute: "2-digit"}), k = localDate(d), td = today();
+    return k === td ? t : k === addDays(td, -1) ? "вчера, " + t : d.toLocaleDateString("ru-RU", {day: "numeric", month: "short"}).replace(".", "") + ", " + t; };
+  const feedAgo = ts => { const m = (Date.now() - Date.parse(ts)) / 6e4; return m < 60 * 12 ? agoTs(ts) + (m >= 1 ? " назад" : "") : feedTime(ts); };
+  const evRate = e => e.it && typeof e.it.rating === "number" && /прошёл|дропнул|посмотрел|бросил|залип|играет|смотрит/.test(e.verb) ? e.it.rating : e.rd && e.rd.myRating != null ? e.rd.myRating : null;
   // строки «прошёл A, B и ещё 2» — по одному глаголу на строку
   function groupLines(g, max = 3){
     const by = new Map();
@@ -8326,21 +8348,25 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     const lines = [...by.values()];
     return {html: lines.slice(0, max).map(l => `<li><span class="vb">${esc(l.verb)}</span>${l.ev[0].join ? "" : ` ${l.ev.slice(0, 2).map(e => `<b>${esc(evTitle(e))}</b>`).join(", ")}${l.ev.length > 2 ? ` <em>и ещё ${l.ev.length - 2}</em>` : ""}`}</li>`).join(""), more: Math.max(0, lines.length - max)};
   }
+  const FEED_SHOW = 5;
   function feedGroupHTML(g, i){
-    const p = profOf(g.uid), L = groupLines(g), covs = g.ev.filter(e => !e.join).slice(0, 4);
-    const td = today(), dl = g.d === td ? "сегодня" : g.d === addDays(td, -1) ? "вчера" : fmtShort(g.d);
+    const p = profOf(g.uid), shown = g.ev.slice(0, FEED_SHOW), rest = g.ev.length - shown.length;
+    const li = e => { const r = evRate(e);
+      return e.join ? `<li class="fg-e"><time>${esc(feedTime(e.ts))}</time><span class="vb">${esc(e.verb)}</span></li>`
+        : `<li class="fg-e"><time>${esc(feedTime(e.ts))}</time><button class="fg-t" ${e.rd ? `data-frd="${esc(e.uid + "/" + e.rd.id)}"` : `data-fi="${esc(e.uid + "/" + e.it.id)}"`}><span class="vb">${esc(e.verb)}</span> <b>${esc(evTitle(e))}</b> <em>${esc(evKind(e))}</em>${r != null ? ` <span class="fg-r ${rateCls(r)}">${num1(r)}</span>` : ""}</button></li>`; };
     return `<article class="fg"><button class="fg-a" data-user="${esc(g.uid)}">${avaHTML(p)}</button>
-      <div class="fg-b"><div class="fg-h"><button class="fg-n" data-user="${esc(g.uid)}">${esc(p.nick || "кто-то")}</button><span class="fg-d">${dl}</span></div>
-        <ul class="fg-l">${L.html}${L.more ? `<li class="fg-more">и ещё ${L.more} ${plural(L.more, "действие", "действия", "действий")}</li>` : ""}</ul>
-        ${g.ev[0].join ? "" : `<button class="fg-go" data-fgrp="${i}">${covs.map(e => `<span class="fg-cv">${e.rd ? rCover(e.rd) : posterHTML(e.it, {rate: false, tgt: false, badge: false})}</span>`).join("")}<span class="fg-dt">Подробно<small>${g.ev.length} ${plural(g.ev.length, "событие", "события", "событий")}</small></span></button>`}
+      <div class="fg-b"><div class="fg-h"><button class="fg-n" data-user="${esc(g.uid)}">${esc(p.nick || "кто-то")}</button><span class="fg-d">${esc(feedAgo(g.ts))}</span>${g.ev.length > 1 ? `<span class="fg-c">${g.ev.length} ${plural(g.ev.length, "действие", "действия", "действий")}</span>` : ""}</div>
+        <ul class="fg-l fg-tl">${shown.map(li).join("")}</ul>
+        ${rest > 0 ? `<button class="fg-all" data-fgrp="${i}">Ещё ${rest} ${plural(rest, "действие", "действия", "действий")} — показать все</button>` : ""}
       </div></article>`;
   }
   let FGROUPS = [];
   function feedGroupSheet(i){
     const g = FGROUPS[i]; if (!g) return; const p = profOf(g.uid);
-    const row = e => { const r = e.it && typeof e.it.rating === "number" && /прошёл|дропнул|посмотрел|бросил/.test(e.verb) ? `<span class="r ${rateCls(e.it.rating)}">${num1(e.it.rating)}</span>` : e.rd && e.rd.myRating != null ? `<span class="r ${rateCls(e.rd.myRating)}">${num1(e.rd.myRating)}</span>` : "";
-      return `<button class="fgs-r" ${e.rd ? `data-frd="${esc(e.uid + "/" + e.rd.id)}"` : `data-fi="${esc(e.uid + "/" + e.it.id)}"`}>${e.rd ? rCover(e.rd) : posterHTML(e.it, {rate: false, tgt: false})}<span class="t"><span class="vb">${esc(e.verb)}</span><b>${esc(evTitle(e))}</b><small>${esc(evKind(e))}${e.it && genres(e.it)[0] ? " · " + esc(genres(e.it)[0].toLowerCase()) : ""}</small></span>${r}</button>`; };
-    const s = openSheet(`<div class="fgs-h">${avaHTML(p, "md")}<div><h3>${esc(p.nick || "")}</h3><p class="sub">${g.d === today() ? "Сегодня" : fmtDate(g.d)} · ${g.ev.length} ${plural(g.ev.length, "событие", "события", "событий")}</p></div><button class="ib" data-user="${esc(g.uid)}">Профиль</button></div>
+    const row = e => { const r = evRate(e);
+      return `<button class="fgs-r" ${e.rd ? `data-frd="${esc(e.uid + "/" + e.rd.id)}"` : `data-fi="${esc(e.uid + "/" + e.it.id)}"`}>${e.rd ? rCover(e.rd) : posterHTML(e.it, {rate: false, tgt: false})}<span class="t"><span class="vb">${esc(feedTime(e.ts))} · ${esc(e.verb)}</span><b>${esc(evTitle(e))}</b><small>${esc(evKind(e))}${e.it && genres(e.it)[0] ? " · " + esc(genres(e.it)[0].toLowerCase()) : ""}</small></span>${r != null ? `<span class="r ${rateCls(r)}">${num1(r)}</span>` : ""}</button>`; };
+    const last = g.ev[g.ev.length - 1];
+    const s = openSheet(`<div class="fgs-h">${avaHTML(p, "md")}<div><h3>${esc(p.nick || "")}</h3><p class="sub">${g.ev.length} ${plural(g.ev.length, "действие", "действия", "действий")} · ${esc(feedTime(last.ts))} — ${esc(feedTime(g.ts))}</p></div><button class="ib" data-user="${esc(g.uid)}">Профиль</button></div>
       <div class="fgs">${g.ev.filter(e => !e.join).map(row).join("")}</div>`, {wide: true});
     s.el.addEventListener("click", e => { if (e.target.closest("[data-user]")) s.close(); });
   }
