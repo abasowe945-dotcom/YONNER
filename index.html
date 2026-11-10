@@ -1385,6 +1385,26 @@ body[data-route="user"] .a-main{max-width:none;padding:0}
 .ev-ph.has{border-style:solid;border-color:transparent}
 .ev-ph.has span{opacity:0}
 .ev-ph.drop{border-color:#0a84ff}
+/* ===== 4.2: предложения во всех разделах ===== */
+.sg-wrap{margin:22px 0 6px;font-family:var(--ios)}
+.sg-h{display:flex;align-items:center;gap:8px;margin:0 0 12px;font:700 19px/1.2 var(--ios);letter-spacing:-.01em}
+.sg-h small{padding:2px 8px;border-radius:99px;background:#ff375f;color:#fff;font:700 11px/1.4 var(--ios)}
+.sg-kino .sg-h{font-weight:300;font-size:22px;color:var(--k-dim)}
+.sg-game .sg-c{background:#1f2127;border-color:rgba(255,255,255,.08);border-radius:14px}.sg-game .sg-c:hover{background:#2a2d35}
+.sg-read{margin:6px 0 18px}
+.sg-read .sg-c{background:var(--c-cell);border-color:var(--c-line);box-shadow:var(--c-shadow);-webkit-backdrop-filter:none;backdrop-filter:none}
+.sg-read .sg-c:hover{background:var(--c-cell-out)}
+.sg-read .sg-c .who,.sg-read .sg-c small{color:var(--c-dim)}.sg-read .sg-c em{color:inherit;opacity:.8}
+.sg-c .who i{font-style:normal;font-weight:800;margin-left:2px}
+.sg-c .poster img,.sg-top .poster img,.rcc-r .poster img,.rp-r .poster img,.sg-q .poster img{width:100%;height:100%;object-fit:cover}
+.rcc-tabs{display:flex;gap:4px;flex-wrap:wrap;margin:-2px 0 10px}
+.rcc-tabs button{display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 10px;border:0;border-radius:99px;background:var(--c-cell-out);color:inherit;font:600 12.5px/1 var(--ios);cursor:pointer}
+.rcc-tabs button small{color:var(--c-dim);font-weight:600}
+.rcc-tabs button[aria-pressed="true"]{background:var(--c-ring);color:#fff}.rcc-tabs button[aria-pressed="true"] small{color:rgba(255,255,255,.75)}
+.rp-tabs button{background:#2c2c2e;color:#f2f2f7}
+.rcc-r .kd{color:var(--c-dim);font:500 11.5px/1 var(--ios)}
+.rcc-r .kd .mine{color:#30d158;font-weight:600}
+.s-acts .sg-fb,.acts .sg-rb{display:inline-flex;align-items:center;gap:7px}.s-acts .sg-fb svg,.acts .sg-rb svg{width:16px;height:16px}
 /* ===== 4.1: «Друзья советуют» ===== */
 .rcc h3 .ev-add{margin-left:auto;width:28px;height:28px;border-radius:50%;border:0;background:var(--c-ring);color:#fff;font:600 19px/1 var(--ios);cursor:pointer;display:grid;place-items:center}
 .rcc-l,.rp-l{display:grid;gap:4px}
@@ -4101,7 +4121,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     const now = pool.filter(i => gStatus(i.status) === "playing" || gStatus(i.status) === "endless");
     let list = pool.filter(i => (!gF || gStatus(i.status) === gF) && match(i));
     list.sort((a,b) => sorter(gSort)(a,b) || (a.title||"").localeCompare(b.title||"","ru"));
-    $("sMain").innerHTML = `${FV ? fvBanner("games") : contractBanner() + releasesPanel("games") + ctaRow("games")}
+    $("sMain").innerHTML = `${FV ? fvBanner("games") : sugStrip("game") + contractBanner() + releasesPanel("games") + ctaRow("games")}
       <div class="s-head" style="margin-top:26px"><div><div class="t-row"><h1 class="s-h1">Библиотека</h1>${futPill("games", futs.length)}</div>
         <div class="src-pills">${[["","Все",lib.length,""],["steam","Лицензия",srcCount("steam"),SRC_ICON.steam],["pirate","Пиратка",srcCount("pirate"),SRC_ICON.pirate]]
           .map(([v,l,n,ic]) => `<button class="src-p ${v}" data-src="${v}" aria-pressed="${gSrc===v}">${ic ? `<span class="i">${ic}</span>` : ""}${l}<small>${n}</small></button>`).join("")}</div></div>
@@ -4141,7 +4161,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     list.sort((a,b) => sorter(kSort)(a,b) || (a.title||"").localeCompare(b.title||"","ru"));
     $("kMain").innerHTML = `${fvBanner("kino")}<div class="t-row"><h1 class="k-h1">Кино и сериалы</h1>${futPill("kino", futs.length)}</div>
       <div class="k-stats">${[[lib.length,"всего"],[lib.filter(i=>kNorm(i)==="done").length,"просмотрено"],[nowW.length,"смотрю"],[avg,"средняя оценка"]].map(([v,l]) => `<span><b>${esc(v)}</b>${l}</span>`).join("")}</div>
-      ${FV ? "" : sugStrip() + releasesPanel("kino") + ctaRow("kino")}
+      ${FV ? "" : sugStrip("kino") + releasesPanel("kino") + ctaRow("kino")}
       ${nowW.length ? `<div class="k-label">Смотрю сейчас</div><div class="k-row">${nowW.map(kCard).join("")}</div>` : ""}
       <div class="k-filters"><button class="k-chipb" data-kf="" aria-pressed="${kF===""}">Все</button>${[["done","Просмотрено"],["paused","Отложено"],["playing","Смотрю"],["dropped","Брошено"]].filter(([s]) => lib.some(i => kNorm(i) === s)).map(([s,l]) => `<button class="k-chipb" data-kf="${s}" aria-pressed="${kF===s}">${l}</button>`).join("")}
         <span class="k-sepv"></span><button class="k-chipb" data-kt="" aria-pressed="${kT===""}">Всё кино</button>${[["movie","Фильмы"],["series","Сериалы"],["anime","Аниме"]].map(([k,l]) => `<button class="k-chipb" data-kt="${k}" aria-pressed="${kT===k}">${l}</button>`).join("")}
@@ -4767,7 +4787,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
         </div>
         <div class="s-side">
           ${posterHTML(it, {id:"heroPoster", editable: canWrite && !!assets, tgt:false, rate:false})}
-          ${canWrite ? `<div class="pv-acts"><button class="pv-btn" id="editBtn">${ICON.edit}Редактировать</button>${assets ? `<button class="pv-btn" id="wallBtn">${ICON.wall}Фон страницы</button>` : ""}</div>` : ""}
+          ${canWrite ? `<div class="pv-acts"><button class="pv-btn" id="editBtn">${ICON.edit}Редактировать</button>${assets ? `<button class="pv-btn" id="wallBtn">${ICON.wall}Фон страницы</button>` : ""}${ME ? `<button class="pv-btn sg-pv" id="sugBtn">${ICON.send}Предложить другу</button>` : ""}</div>` : ""}
           <dl class="s-facts">${facts.map(([k,v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("")}</dl>
           ${gs.length ? `<div class="s-tags">${gs.map(g => `<span>${esc(g)}</span>`).join("")}</div>` : ""}
           ${canWrite && (s === "playing" || s === "endless") && (!c || c.state !== "active") ? `<div class="s-acts" style="margin-top:16px"><button class="s-btn red" id="ctBtn">${ICON.target}Заключить контракт</button></div>` : ""}
@@ -4781,6 +4801,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     $("crumb").onclick = closeView;
     if (!canWrite) return;
     if ($("editBtn")) $("editBtn").onclick = () => openForm(it, "games");
+    if ($("sugBtn")) $("sugBtn").onclick = () => suggestItem(it);
     $("stChips").onclick = e => { const b = e.target.closest("[data-st]"); if (b) quickStatus(it, b.dataset.st); };
     wireWheel("vRate", v => quickRate(it, v));
     if ($("ctBtn")) $("ctBtn").onclick = () => contractSheet(it);
@@ -5040,7 +5061,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
               </div>
               <label>Мои заметки<textarea class="s-in" id="f_note" style="min-height:80px">${esc(it.note||"")}</textarea></label>
             </div></div>
-            <div class="s-acts"><button class="s-btn green" type="submit">${isNew ? (lock === "future" ? "Добавить на будущее" : lock === "soon" ? "Ждать релиз" : "Добавить в библиотеку") : "Сохранить"}</button><button class="s-btn dark" type="button" id="cancelBtn">Отмена</button>${isNew ? "" : `<button class="s-btn red" type="button" id="delBtn">Удалить</button>`}</div>
+            <div class="s-acts"><button class="s-btn green" type="submit">${isNew ? (lock === "future" ? "Добавить на будущее" : lock === "soon" ? "Ждать релиз" : "Добавить в библиотеку") : "Сохранить"}</button>${ME ? `<button class="s-btn dark sg-fb" type="button" id="sugFormBtn" title="Отправить эту карточку другу — без твоего статуса и заметок">${ICON.send}Предложить другу</button>` : ""}<button class="s-btn dark" type="button" id="cancelBtn">Отмена</button>${isNew ? "" : `<button class="s-btn red" type="button" id="delBtn">Удалить</button>`}</div>
             <div id="confirmBox"></div>
           </form>
         </div>`, it.cover ? it : null);
@@ -5114,7 +5135,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
         if (lock) st = lock;
         const later = st === "future" || st === "soon", yt = st === "youtube";
         if (!$("f_title").value.trim()){ kit.openDr(true); kit.sum("bad", "Нужно название: вставь ссылку или впиши его вручную"); setTimeout(() => $("f_title").focus(), 300); return; }
-        if (!later && !yt && !srcSel){ toast("Выбери, где взял: Лицензия или Пиратка"); $("srcWrap").scrollIntoView({behavior: "smooth", block: "center"}); return; }
+        if (!kSugNext && !later && !yt && !srcSel){ toast("Выбери, где взял: Лицензия или Пиратка"); $("srcWrap").scrollIntoView({behavior: "smooth", block: "center"}); return; }
         let relTxt = $("f_release") ? $("f_release").value.trim() : (it.release || ""), relD = null;
         if (lock === "soon"){ relD = rel.get(); if (!relD){ toast("Укажи дату или месяц выхода"); return; } if (!relTxt) relTxt = relLabel(relD); }
         const ym = (relD ? relD.releaseDate : relTxt).match(/(19|20)\d{2}/);
@@ -5124,7 +5145,9 @@ html:has(body.view-open),body.view-open{overflow:hidden}
           rating: lock ? (it.rating ?? null) : wheelVal("f_rating"), date: lock || nd ? null : (($("f_date") && $("f_date").value) || null), noDate: !lock && !!nd, source: later ? (it.source || null) : yt ? null : srcSel, status: st,
           finishedAt: nd ? null : (st === "done" || st === "dropped" || st === "youtube") ? (it.finishedAt && gStatus(it.status) === st ? it.finishedAt : today()) : null, dropReason: st === "dropped" ? ($("f_drop").value.trim() || null) : null, note:$("f_note").value.trim() || null};
         if (relD) Object.assign(body, relD);
+        if (kSugNext){ kSugNext = false; suggestFromForm(it, body, cover); return; }
         await save(it, isNew, body, cover); };
+      if ($("sugFormBtn")) $("sugFormBtn").onclick = () => { kSugNext = true; $("editForm").requestSubmit(); kSugNext = false; };
     } else {
       let st = it.status === "wish" ? "future" : (it.status || "done");
       const watchedSt = x => x === "done" || x === "played";
@@ -5704,6 +5727,11 @@ html:has(body.view-open),body.view-open{overflow:hidden}
   // ================= патчноуты =================
   // Новые версии добавляются В НАЧАЛО списка. n — новое, c — изменено, f — исправлено, r — удалено.
   const PATCHES = [
+    {v: "4.2", date: "2026-11-10", title: "Предлагай всё: игры, манга, комиксы, книги", kind: "major", sec: {
+      n: ["«Предложить другу» теперь есть везде: в играх (в карточке и при добавлении), в Читалке — манга, комиксы, книги — прямо в окне тайтла. Сериалы и аниме — как и фильмы, в «Кино»",
+        "У каждого раздела свой блок предложений: «Тебе предлагают поиграть» в Играх и «Тебе предлагают почитать» в Читалке. Из них сохраняешь к себе с любым статусом и оценкой",
+        "«Друзья советуют» в Активности теперь про всё сразу: вкладки Кино, Игры, Читалка. Игру забираешь «На будущее» или «Уже прошёл», мангу — «В планы» или «Уже прочитал»",
+        "Через «+» в «Друзья советуют» можно посоветовать что угодно со своих полок: фильм, игру или тайтл из Читалки"]}},
     {v: "4.1", date: "2026-11-10", title: "Предложи фильм другу", kind: "major", sec: {
       n: ["<b>Предложить другу</b>: в карточке фильма или прямо при добавлении жми «Предложить другу», выбери кому и черкни пару слов. Уйдёт сам фильм с постером и описанием — без твоего статуса и заметок",
         "Другу приходит уведомление в колокольчик, а в «Кино» появляется блок «Тебе предлагают посмотреть»",
@@ -7448,6 +7476,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
       <div class="rx3-top"><h1 class="rx-h">${BOOK_I} Читалка</h1>
         <div class="rx-sub">${[["", "Всё", READS.length], ...Object.entries(RTYPE).map(([k, l]) => [k, RTYPE_PL[k] || l, READS.filter(r => r.type === k).length])].filter(([v, , n]) => !v || n || v === rType).map(([v, l, n]) => `<button data-rt="${v}" aria-pressed="${rType === v}">${l}<small>${n}</small></button>`).join("")}</div>
         <div class="rx3-stats"><span><b>${pool.length}</b>тайтлов</span><span><b>${chRead}</b>глав прочитано</span>${waiting ? `<span class="hot"><b>${waiting}</b>новых глав ждут</span>` : ""}<span><b>${done.length}</b>прочитано</span></div></div>
+      ${sugStrip("read")}
       <details class="rx-imp" id="rxImp"${!READS.length || lsGet("nexus_rimp") === "1" ? " open" : ""}><summary><span>${ICON.up}</span><b>Перенести с com-x или readmanga</b><small>закладка · файл · ссылка</small></summary>
         <div class="rx-steps">
           <div class="rx-step"><span class="nm">1</span><div class="t"><b>Кнопка-закладка</b><small>Перетащи оранжевую кнопку на панель закладок браузера. Потом открой на сайте тайтл или свою коллекцию и нажми закладку — всё прилетит сюда вместе с обложками.</small></div><a class="rx-bm" id="rxBm" href="${esc(bmHref())}" title="Перетащи на панель закладок">+ в NEXUS</a></div>
@@ -7615,7 +7644,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
         <div class="ev-two"><label class="f">Издатель / автор<input class="in" id="rsPub" value="${esc(r.publisher || "")}"></label><label class="f">Год<input class="in" id="rsY" inputmode="numeric" value="${r.year || ""}"></label></div>
         <label class="f">Ссылка, где читаю<input class="in" id="rsU" value="${esc(r.url || "")}" placeholder="https://"></label>
       </details>
-      <div class="acts"><button class="ib blue" id="rsOk" style="background:#f5a623;color:#1b1206">${isNew ? "Добавить" : "Сохранить"}</button>${isNew ? "" : `<button class="ib red" id="rsDel">Удалить</button>`}<button class="ib" id="rsNo">Отмена</button></div>`, {wide: true});
+      <div class="acts"><button class="ib blue" id="rsOk" style="background:#f5a623;color:#1b1206">${isNew ? "Добавить" : "Сохранить"}</button>${ME ? `<button class="ib sg-rb" id="rsSug" title="Отправить этот тайтл другу — без твоего статуса">${ICON.send}Предложить другу</button>` : ""}${isNew ? "" : `<button class="ib red" id="rsDel">Удалить</button>`}<button class="ib" id="rsNo">Отмена</button></div>`, {wide: true});
     const q = x => s.el.querySelector(x);
     const seg = (id, key) => q(id).onclick = e => { const b = e.target.closest("[data-v]"); if (!b) return; r[key] = b.dataset.v; q(id).querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); SND.tick(.5); };
     seg("#rsT", "type"); seg("#rsS", "status"); wireWheel("rsMy");
@@ -7655,6 +7684,9 @@ html:has(body.view-open),body.view-open{overflow:hidden}
       pick(); };
     bindDrop(q("#rsCv"), take, u => { file = null; r.cover = null; r.coverUrl = u; redraw(); }); pasteTarget = take;
     q("#rsNo").onclick = () => s.close();
+    if (q("#rsSug")) q("#rsSug").onclick = () => { const t = q("#rsTi").value.trim(); if (!t){ q("#rsTi").focus(); toast("Нужно название"); return; }
+      const n = id => { const v = parseFloat(String(q(id).value).replace(",", ".")); return isNaN(v) ? null : v; };
+      suggestRead({...r, title: t, chTotal: n("#rsTot"), publisher: q("#rsPub").value.trim() || null, year: n("#rsY"), myRating: wheelVal("rsMy"), desc: q("#rsDs").value.trim() || null, url: q("#rsU").value.trim() || null}, file); };
     if (q("#rsDel")) q("#rsDel").onclick = async () => { if (!confirm(`Удалить «${r.title}»?`)) return; const {error} = await SB.from("reads").delete().eq("user_id", ME.id).eq("id", r.id); if (error){ toast("Не удалилось"); return; } READS = READS.filter(x => x.id !== r.id); s.close(); render(); };
     q("#rsOk").onclick = async () => {
       r.title = q("#rsTi").value.trim(); if (!r.title){ q("#rsTi").focus(); toast("Нужно название"); return; }
@@ -9028,37 +9060,70 @@ html:has(body.view-open),body.view-open{overflow:hidden}
       s.el.addEventListener("click", ev => { const b = ev.target.closest("[data-tlv]"); if (b){ s.close(); setTimeout(() => tlView(b.dataset.tlv), 60); } }, true); }
   });
 
-  // ================= 4.1: предложить фильм другу =================
-  // что переезжает к другу: только сам фильм, без твоих статуса, даты и заметок
-  const SUG_KEEP = ["title", "originalTitle", "type", "year", "genre", "short", "desc", "cast", "seasons", "epTotal", "seasonEps", "kpId", "releaseDate", "releasePrec",
-    "country", "director", "writer", "producer", "operator", "composer", "duration", "age", "tagline", "budget", "boxWorld", "premiereWorld", "premiereRu", "kpRating"];
+  // ================= 4.1–4.2: предложить другу — кино, игры, Читалка =================
+  // что переезжает к другу: только сам тайтл, без твоих статуса, дат и заметок
+  const SK = {
+    kino: {lbl: "Кино", verb: "посмотреть", strip: "Тебе предлагают посмотреть",
+      keep: ["title", "originalTitle", "type", "year", "genre", "short", "desc", "cast", "seasons", "epTotal", "seasonEps", "kpId", "releaseDate", "releasePrec",
+        "country", "director", "writer", "producer", "operator", "composer", "duration", "age", "tagline", "budget", "boxWorld", "premiereWorld", "premiereRu", "kpRating"]},
+    game: {lbl: "Игры", verb: "поиграть", strip: "Тебе предлагают поиграть",
+      keep: ["title", "type", "desc", "short", "genre", "release", "year", "steamId", "releaseDate", "releasePrec"]},
+    read: {lbl: "Читалка", verb: "почитать", strip: "Тебе предлагают почитать",
+      keep: ["title", "origTitle", "type", "genre", "desc", "publisher", "year", "chTotal", "url", "siteStatus", "score", "kind", "coverUrl"]},
+  };
+  const SUG_KEEP = SK.kino.keep;
+  const sKind = f => f && SK[f._k] ? f._k : f && f.type === "game" ? "game" : "kino";
+  const rSame = (a, b) => { const ka = [a.title, a.origTitle].filter(Boolean).map(normT), kb = [b.title, b.origTitle].filter(Boolean).map(normT); return ka.some(k => k && kb.includes(k)); };
+  const sSame = (a, b) => { const k = sKind(a); if (k !== sKind(b)) return false; return k === "read" ? rSame(a, b) : sameIt(a, b); };
+  const sMine = f => { const k = sKind(f); return k === "read" ? (READS || []).find(r => rSame(r, f)) : MYITEMS.find(i => (k === "game") === isGame(i) && sameIt(i, f)); };
+  const sFrHas = (uid, f) => { const k = sKind(f); return k === "read" ? ((FR && FR.reads) || []).some(r => r.uid === uid && rSame(r, f)) : ((FR && FR.items) || []).some(i => i.uid === uid && (k === "game") === isGame(i) && sameIt(i, f)); };
+  const sMyLab = (m, k) => !m ? "" : k === "read" ? (RSTAT3.find(x => x[0] === rNorm(m.status)) || [, ""])[1].toLowerCase()
+    : isFuture(m) ? "у тебя на будущее" : isSoon(m) ? (k === "game" ? "ждёшь релиз" : "ждёшь премьеру") : k === "game" ? (GSTATUS[gStatus(m.status)] || "").toLowerCase() : kLab(m).l.toLowerCase();
+  const sMyRating = (m, k) => !m ? null : k === "read" ? (typeof m.myRating === "number" ? m.myRating : null) : (typeof m.rating === "number" ? m.rating : null);
+  const sMeta = f => { const k = sKind(f);
+    return (k === "read" ? [RTYPE[f.type] || "Читалка", f.year, f.publisher, genres(f).slice(0, 2).join(", ")] : k === "game" ? ["Игра", f.year || f.release, genres(f).slice(0, 3).join(", ")] : [KTYPES[f.type] || "Фильм", f.year, genres(f).slice(0, 3).join(", ")]).filter(Boolean).join(" · "); };
+  const sCoverSrc = f => f.cover ? publicUrl(f.cover) : f.coverUrl || "";
+  const sPoster = f => { if (sKind(f) !== "read") return posterHTML(f, {tgt: false, rate: false, badge: false, link: false});
+    const src = sCoverSrc(f); return `<div class="poster">${src ? `<img alt="" src="${esc(src)}" referrerpolicy="no-referrer" style="${posStyle(f.coverPos)}" onerror="this.remove()">` : `<div class="ph">${esc(f.title || "")}</div>`}</div>`; };
+  // статусы, с которыми можно сохранить к себе
+  const sOpts = f => { const k = sKind(f);
+    return k === "read" ? [["plan", "В планах", ICON.clock], ["reading", "Читаю", BOOK_I], ["done", "Прочитано", CHECK_I]]
+      : k === "game" ? [["future", "Буду проходить", ICON.clock], ["playing", "Играю", ICON.pad], ["done", "Прошёл", ICON.medal], ["dropped", "Дропнул", ICON.blood]]
+      : [["future", "На будущее", ICON.clock], ...kOpts(f.type || "movie").map(([s, l]) => [s, l, s === "done" ? ICON.film : s === "playing" ? ICON.kino : s === "dropped" ? ICON.blood : ICON.clock])]; };
+  const sCol = s => ({future: "#c7c7d6", plan: "#c7c7d6", reading: "#7cc4ff", playing: "#7cc4ff", done: "#9be15d", paused: "#f2d43a", dropped: "#ff8a86"})[s] || "#c7c7d6";
+
   let SUG = [], kSugNext = false;
   const sugIn = () => SUG.filter(x => ME && x.to_user === ME.id && x.status === "pending");
   async function loadSug(){
     if (!SB || !ME) return;
-    const {data, error} = await SB.from("suggestions").select("*").eq("to_user", ME.id).eq("status", "pending").order("created_at", {ascending: false}).limit(50);
+    const {data, error} = await SB.from("suggestions").select("*").eq("to_user", ME.id).eq("status", "pending").order("created_at", {ascending: false}).limit(80);
     if (error) return; SUG = data || [];
-    if (route === "kino" && !FV) renderKino();
+    if (!FV && ["kino", "games", "read"].includes(route)) render();
   }
-  const sugFilm = (src, coverPath, coverPos) => { const f = {}; SUG_KEEP.forEach(k => { if (src[k] != null && src[k] !== "") f[k] = src[k]; });
-    if (coverPath){ f.cover = coverPath; if (coverPos) f.coverPos = coverPos; }
-    if (typeof src.rating === "number" && src.status !== "future") f.fromRating = src.rating;
-    return f; };
+  // снимок тайтла для отправки
+  function sSnap(src, kind, cover, coverPos){
+    const f = {_k: kind}; SK[kind].keep.forEach(k => { if (src[k] != null && src[k] !== "") f[k] = src[k]; });
+    if (kind === "game") f.type = "game";
+    if (cover){ f.cover = cover; delete f.coverUrl; if (coverPos) f.coverPos = coverPos; }
+    const r = kind === "read" ? (rNorm(src.status) !== "plan" ? src.myRating : null) : (src.status !== "future" && src.status !== "soon" ? src.rating : null);
+    if (typeof r === "number") f.fromRating = r;
+    return f;
+  }
+  const sugFilm = (src, coverPath, coverPos) => sSnap(src, src.type === "game" ? "game" : "kino", coverPath, coverPos);
   // окно «кому предложить»
   async function suggestSheet(film){
     if (!ME || !SB){ toast("Сначала войди"); return; }
     if (!film || !film.title){ toast("Сначала впиши название"); return; }
     if (!FR) await loadFriends(); if (!REC) await loadRecs();
-    const others = (FR ? FR.profiles : []).filter(p => p.user_id !== ME.id);
-    const has = uid => FR.items.some(i => i.uid === uid && sameIt(i, film));
-    const already = (REC || []).some(r => r.user_id === ME.id && sameIt(r.item || {}, film));
+    const k = sKind(film), others = (FR ? FR.profiles : []).filter(p => p.user_id !== ME.id);
+    const already = (REC || []).some(r => r.user_id === ME.id && sSame(r.item || {}, film));
     const myR = typeof film.fromRating === "number" ? film.fromRating : null;
-    const s = openSheet(`<div class="sg-top">${posterHTML(film, {tgt: false, rate: false, badge: false, link: false})}<div><h3>Предложить посмотреть</h3><p class="sub"><b style="color:inherit">${esc(film.title)}</b>${film.year ? ` · ${esc(film.year)}` : ""}${film.type ? ` · ${esc(KTYPES[film.type] || "")}` : ""}</p><p class="sub" style="margin-top:6px">Конкретному другу придёт уведомление. «Всем друзьям» — фильм попадёт в окно «Друзья советуют» в Активности, с твоей оценкой.</p></div></div>
+    const s = openSheet(`<div class="sg-top">${sPoster(film)}<div><h3>Предложить ${SK[k].verb}</h3><p class="sub"><b style="color:inherit">${esc(film.title)}</b> · ${esc(sMeta(film))}</p><p class="sub" style="margin-top:6px">Конкретному другу придёт уведомление. «Всем друзьям» — попадёт в окно «Друзья советуют» в Активности, с твоей оценкой.</p></div></div>
       <div class="av-lb">Кому</div>
-      <button type="button" class="sg-all" id="sgAll" aria-pressed="false"${already ? " disabled" : ""}><span class="ic">${ICON.people}</span><span class="t"><b>Всем друзьям</b><small>${already ? "ты уже советуешь этот фильм" : `в «Друзья советуют»${myR != null ? ` · твоя оценка ${num1(myR)}` : " · без оценки"}`}</small></span><i class="ck"></i></button>
-      ${others.length ? `<div class="sg-or">или конкретным</div><div class="ev-pick sg-pick" id="sgPk">${others.map(p => { const h = has(p.user_id); return `<button type="button" data-u="${esc(p.user_id)}" aria-pressed="false"${h ? ' class="had" title="Этот фильм уже есть у него"' : ""}>${avaHTML(p)}${esc(p.nick)}${h ? "<small>уже есть</small>" : ""}</button>`; }).join("")}</div>` : ""}
+      <button type="button" class="sg-all" id="sgAll" aria-pressed="false"${already ? " disabled" : ""}><span class="ic">${ICON.people}</span><span class="t"><b>Всем друзьям</b><small>${already ? "ты уже советуешь это" : `в «Друзья советуют»${myR != null ? ` · твоя оценка ${num1(myR)}` : " · без оценки"}`}</small></span><i class="ck"></i></button>
+      ${others.length ? `<div class="sg-or">или конкретным</div><div class="ev-pick sg-pick" id="sgPk">${others.map(p => { const h = sFrHas(p.user_id, film); return `<button type="button" data-u="${esc(p.user_id)}" aria-pressed="false"${h ? ' class="had" title="Это уже есть у него"' : ""}>${avaHTML(p)}${esc(p.nick)}${h ? "<small>уже есть</small>" : ""}</button>`; }).join("")}</div>` : ""}
       ${myR == null ? `<div id="sgRw" hidden><div class="av-lb" style="margin-top:12px">Твоя оценка <small style="text-transform:none;letter-spacing:0;opacity:.7">по желанию — её увидят в «Друзья советуют»</small></div>${wheelHTML("sgMyR", null)}</div>` : ""}
-      <label class="f" style="margin-top:12px">Пару слов <small style="text-transform:none;letter-spacing:0;opacity:.7">по желанию</small><textarea class="in" id="sgN" rows="2" maxlength="300" placeholder="Зайдёт под пиццу, концовка — разнос"></textarea></label>
+      <label class="f" style="margin-top:12px">Пару слов <small style="text-transform:none;letter-spacing:0;opacity:.7">по желанию</small><textarea class="in" id="sgN" rows="2" maxlength="300" placeholder="${k === "game" ? "Залетай в коопе, первые 3 часа потерпи" : k === "read" ? "Рисовка — огонь, с 10 главы не оторваться" : "Зайдёт под пиццу, концовка — разнос"}"></textarea></label>
       <div class="acts"><button class="ib blue" id="sgGo" disabled>Предложить</button><button class="ib" id="sgNo">Отмена</button></div>`, {wide: true});
     const q = x => s.el.querySelector(x), go_ = q("#sgGo"), all = q("#sgAll");
     let wheelOn = false;
@@ -9092,157 +9157,183 @@ html:has(body.view-open),body.view-open{overflow:hidden}
       toast((a && !uids.length ? "Посоветовал всем — " : "Отправил: ") + done.join(" и "));
     };
   }
-
-  // ================= 4.1: «Друзья советуют» =================
-  let REC = null, recLoading = false;
-  async function loadRecs(){
-    if (!SB || !ME || recLoading) return; recLoading = true;
-    const {data, error} = await SB.from("recs").select("*").order("created_at", {ascending: false}).limit(200);
-    recLoading = false; if (error){ REC = REC || []; return; }
-    REC = (data || []).map(r => ({...r, rating: r.rating == null ? null : +r.rating}));
-    if (route === "people") renderPeople();
-  }
-  // один фильм — одна строка, даже если советуют несколько
-  function recGroups(){
-    const out = [];
-    (REC || []).forEach(r => { const it = r.item || {}; if (!it.title) return;
-      const g = out.find(x => sameIt(x.item, it)); if (g){ g.recs.push(r); if (!g.item.cover && it.cover) g.item = it; } else out.push({key: r.id, item: it, recs: [r]}); });
-    return out;
-  }
-  const recMine = g => MYITEMS.find(i => !isGame(i) && sameIt(i, g.item));
-  const recMyLab = m => !m ? "" : isFuture(m) ? "у тебя на будущее" : isSoon(m) ? "ждёшь премьеру" : kLab(m).l.toLowerCase();
-  function recCard(){
-    if (!FR) return "";
-    if (!REC){ loadRecs(); return `<div class="fb-card rcc"><h3>${ICON.film}Друзья советуют</h3><p class="a-sub" style="margin:0;font-size:13px">Загружаю…</p></div>`; }
-    const G = recGroups();
-    const row = g => { const m = recMine(g), avg = g.recs.filter(r => r.rating != null), a = avg.length ? avg.reduce((s, r) => s + r.rating, 0) / avg.length : null;
-      return `<button class="rcc-r${m ? " have" : ""}" data-rec="${esc(g.key)}">${posterHTML(g.item, {tgt: false, rate: false, badge: false, link: false})}<span class="t"><b>${esc(g.item.title)}</b>
-        <small class="who">${g.recs.slice(0, 3).map(r => `<span class="w">${avaHTML(profOf(r.user_id), "xs")}${esc(nickOf(r.user_id))}${r.rating != null ? `<i class="${rateCls(r.rating)}">${num1(r.rating)}</i>` : ""}</span>`).join("")}${g.recs.length > 3 ? `<span class="w">+${g.recs.length - 3}</span>` : ""}</small>
-        ${m ? `<small class="mine">${esc(recMyLab(m))}</small>` : ""}</span>${a != null ? `<span class="avg ${rateCls(a)}">${num1(a)}</span>` : ""}</button>`; };
-    return `<div class="fb-card rcc"><h3>${ICON.film}Друзья советуют<button class="ev-add" data-recnew="1" title="Посоветовать фильм всем" aria-label="Посоветовать фильм всем">+</button></h3>
-      ${G.length ? `<div class="rcc-l">${G.slice(0, 6).map(row).join("")}</div>${G.length > 6 ? `<button class="ib full" data-recall="1" style="margin-top:8px">Все ${G.length}</button>` : ""}`
-        : `<p class="a-sub" style="margin:0 0 10px;font-size:13px">Посмотрел что-то годное? Посоветуй всем — с оценкой. Друзья заберут к себе на будущее в один клик.</p><button class="ib blue bd-set" data-recnew="1">Посоветовать фильм</button>`}</div>`;
-  }
-  function recSheet(key){
-    const g = recGroups().find(x => x.key === key || x.recs.some(r => r.id === key)); if (!g){ toast("Совет не найден"); return; }
-    const f = g.item, m = recMine(g);
-    const s = openSheet(`<div class="qa-top">${posterHTML(f, {tgt: false, rate: false, link: false})}<div><h3>${esc(f.title)}</h3>
-        <p class="sub">${esc([KTYPES[f.type] || "Фильм", f.year, genres(f).slice(0, 3).join(", ")].filter(Boolean).join(" · "))}</p>
-        ${m ? `<p class="sub" style="margin-top:8px">У тебя: <b style="color:inherit">${esc(recMyLab(m))}</b>${typeof m.rating === "number" ? ` · твоя оценка <b class="${rateCls(m.rating)}">${num1(m.rating)}</b>` : ""}</p>` : ""}</div></div>
-      <div class="av-lb" style="margin-top:14px">Советуют</div>
-      <div class="rcs-l">${g.recs.map(r => `<div class="rcs-r">${avaHTML(profOf(r.user_id), "sm")}<div class="t"><b>${esc(r.user_id === ME.id ? "Ты" : nickOf(r.user_id))}</b><small>${esc(agoTs(r.created_at))}</small>${r.note ? `<em>«${esc(r.note)}»</em>` : ""}</div>${r.rating != null ? `<span class="rt ${rateCls(r.rating)}">${num1(r.rating)}</span>` : `<span class="rt none">без оценки</span>`}${r.user_id === ME.id ? `<button class="rcs-x" data-recdel="${esc(r.id)}" title="Убрать свой совет" aria-label="Убрать свой совет">×</button>` : ""}</div>`).join("")}</div>
-      ${f.desc ? `<p class="sub" style="margin:14px 0 0;max-height:130px;overflow:auto;white-space:pre-line">${esc(String(f.desc).slice(0, 900))}</p>` : ""}
-      ${m ? `<div class="acts" style="margin-top:16px"><button class="ib full" data-recopen="${esc(m.id)}">Открыть у себя</button></div>`
-        : `<div class="rcs-take"><button class="ib blue" data-rectake="future">${ICON.clock}Забрать на будущее</button><button class="ib" data-rectake="done">${ICON.film}Уже смотрел</button></div>`}`, {wide: true});
-    s.el.querySelector(".qa-top .poster").classList.add("qa-poster");
-    s.el.addEventListener("click", async e => {
-      const d = e.target.closest("[data-recdel]"), t = e.target.closest("[data-rectake]"), o = e.target.closest("[data-recopen]");
-      if (o){ s.close(); setTimeout(() => openItem(o.dataset.recopen), 80); return; }
-      if (d){ d.disabled = true; const {error} = await SB.from("recs").delete().eq("id", d.dataset.recdel); if (error){ toast("Не получилось: " + error.message); d.disabled = false; return; }
-        REC = REC.filter(r => r.id !== d.dataset.recdel); s.close(); toast("Совет убран"); if (route === "people") renderPeople(); return; }
-      if (!t) return; s.el.querySelectorAll("[data-rectake]").forEach(x => x.disabled = true);
-      const id = await recTake(g, t.dataset.rectake);
-      if (id){ s.close(); if (route === "people") renderPeople(); if (t.dataset.rectake === "done") setTimeout(() => openItem(id), 150); }
-      else s.el.querySelectorAll("[data-rectake]").forEach(x => x.disabled = false);
-    });
-  }
-  async function recTake(g, mode){
-    if (!db) return false;
-    const f = g.item, body = {}; SUG_KEEP.forEach(k => { if (f[k] != null) body[k] = f[k]; });
-    const who = g.recs.filter(r => r.user_id !== ME.id).map(r => nickOf(r.user_id)).slice(0, 3).join(", ");
-    Object.assign(body, {status: mode === "done" ? "done" : "future", createdAt: now(), updatedAt: now(), via: "recs:" + who});
-    if (mode === "done"){ body.noDate = true; if (isSerT(body.type) && body.epTotal) body.epWatched = body.epTotal; }
-    if (f.cover && assets){ try { const r = await fetch(publicUrl(f.cover)); if (!r.ok) throw 0; const bl = await r.blob(); body.cover = await upload(bl); if (f.coverPos) body.coverPos = f.coverPos; } catch(_){} }
-    try { const {id} = await db.collection("items").add(body); toast(mode === "done" ? `${f.title} — в просмотренных, поставь оценку` : `${f.title} — в «На будущее»`); return id; }
-    catch(_){ toast("Не сохранилось, попробуй ещё раз"); return false; }
-  }
-  // «+»: выбрать фильм из своей полки и посоветовать всем
-  function recPick(){
-    const mine = MYITEMS.filter(i => !isGame(i) && inLib(i)).sort((a, b) => (b.rating ?? -1) - (a.rating ?? -1) || String(b.date || "").localeCompare(String(a.date || "")));
-    const s = openSheet(`<h3>Посоветовать фильм всем</h3><p class="sub">Выбери из своей полки — уйдёт с твоей оценкой. Нового фильма нет в списке? Добавь его в «Кино» и нажми там «Предложить другу» → «Всем друзьям».</p>
-      <input class="in" id="rpQ" placeholder="Поиск по названию" autocomplete="off" style="margin:4px 0 10px">
-      <div class="rp-l" id="rpL"></div>`, {wide: true});
-    const q = x => s.el.querySelector(x);
-    const draw = () => { const t = q("#rpQ").value.trim().toLowerCase(), L = mine.filter(i => !t || [i.title, i.originalTitle].join(" ").toLowerCase().includes(t)).slice(0, 80);
-      q("#rpL").innerHTML = L.length ? L.map(i => { const was = (REC || []).some(r => r.user_id === ME.id && sameIt(r.item || {}, i));
-        return `<button class="rp-r" data-rpid="${esc(i.id)}"${was ? " disabled" : ""}>${posterHTML(i, {tgt: false, rate: false, badge: false, link: false})}<span class="t"><b>${esc(i.title)}</b><small>${esc([i.year, KTYPES[i.type]].filter(Boolean).join(" · "))}${was ? " · уже советуешь" : ""}</small></span>${typeof i.rating === "number" ? `<span class="avg ${rateCls(i.rating)}">${num1(i.rating)}</span>` : ""}</button>`; }).join("")
-        : `<p class="sub">${mine.length ? "Ничего не нашлось." : "В «Кино» пока пусто."}</p>`; };
-    draw(); q("#rpQ").oninput = draw; setTimeout(() => q("#rpQ").focus(), 60);
-    q("#rpL").onclick = e => { const b = e.target.closest("[data-rpid]"); if (!b) return; const it = MYITEMS.find(i => i.id === b.dataset.rpid); if (!it) return;
-      s.close(); setTimeout(() => suggestSheet(sugFilm(it, it.cover || null, it.coverPos || null)).then(() => { const a = document.querySelector("#sgAll:not([disabled])"); if (a) a.click(); }), 80); };
-  }
-  document.addEventListener("click", e => { const el = e.target.closest && e.target.closest("[data-rec],[data-recnew],[data-recall]"); if (!el || !ME || el.closest(".sh")) return;
-    if (el.dataset.recnew){ recPick(); return; }
-    if (el.dataset.rec){ recSheet(el.dataset.rec); return; }
-    if (el.dataset.recall){ const G = recGroups();
-      const s = openSheet(`<h3>Друзья советуют</h3><div class="rcc-l">${G.map(g => `<button class="rcc-r" data-recg="${esc(g.key)}">${posterHTML(g.item, {tgt: false, rate: false, badge: false, link: false})}<span class="t"><b>${esc(g.item.title)}</b><small class="who">${g.recs.slice(0, 4).map(r => `<span class="w">${avaHTML(profOf(r.user_id), "xs")}${esc(nickOf(r.user_id))}${r.rating != null ? `<i class="${rateCls(r.rating)}">${num1(r.rating)}</i>` : ""}</span>`).join("")}</small></span></button>`).join("")}</div>`, {wide: true});
-      s.el.addEventListener("click", ev => { const b = ev.target.closest("[data-recg]"); if (b){ s.close(); setTimeout(() => recSheet(b.dataset.recg), 60); } }); }
-  });
-  // из открытой карточки фильма
+  // из открытой карточки фильма или игры
   async function suggestItem(it){ suggestSheet(sugFilm(it, it.cover || null, it.coverPos || null)); }
-  // из формы: собираем то, что заполнено, постер грузим сразу
+  // из формы фильма или игры: собираем то, что заполнено, постер грузим сразу
   async function suggestFromForm(it, body, cover){
     let path = null;
     try { if (!cover.remove){ if (cover.file){ toast("Загружаю постер…"); path = await upload(cover.file); } else path = it.cover || null; } }
     catch(err){ toast(upErr(err)); return; }
-    suggestSheet(sugFilm({...body, rating: body.rating}, path, cover.remove ? null : cover.pos || it.coverPos || null));
+    suggestSheet(sugFilm(body, path, cover.remove ? null : cover.pos || it.coverPos || null));
   }
-  // полоска в «Кино»
-  function sugStrip(){
-    const L = sugIn(); if (!L.length || FV) return "";
-    return `<div class="k-label">Тебе предлагают посмотреть<small>${L.length}</small></div><div class="sg-strip">${L.map(x => { const f = x.item || {};
-      return `<button class="sg-c" data-sug="${esc(x.id)}">${posterHTML(f, {tgt: false, rate: false, badge: false, link: false})}<span class="t"><span class="who">${avaHTML(profOf(x.from_user), "xs")}<b>${esc(frNick(x.from_user))}</b></span><b class="nm">${esc(f.title || "")}</b><small>${esc([f.year, KTYPES[f.type], genres(f).slice(0, 2).join(", ")].filter(Boolean).join(" · "))}</small>${x.note ? `<em>«${esc(x.note)}»</em>` : ""}</span></button>`; }).join("")}</div>`;
+  // из Читалки
+  async function suggestRead(r, file){
+    let path = r.cover || null;
+    try { if (file){ toast("Загружаю постер…"); path = await upload(file); } } catch(err){ toast(upErr(err)); return; }
+    suggestSheet(sSnap({...r, coverUrl: path ? null : r.coverUrl}, "read", path, null));
   }
-  // окно «что с этим фильмом делать»
+  // сохранить тайтл к себе (из личного предложения или из «Друзья советуют»)
+  async function sTake(f, st, rating, via){
+    const k = sKind(f), body = {}; SK[k].keep.forEach(x => { if (f[x] != null) body[x] = f[x]; });
+    let cover = null;
+    if (f.cover && assets){ try { const rs = await fetch(publicUrl(f.cover)); if (!rs.ok) throw 0; cover = await upload(await rs.blob()); } catch(_){} }
+    if (k === "read"){
+      const r = {...body, status: st, myRating: rating ?? null, chRead: st === "done" ? (+body.chTotal || 0) : 0, via, createdAt: now()};
+      if (cover){ r.cover = cover; delete r.coverUrl; }
+      const row = await saveRead(r); if (!row) return null;
+      return {id: row.id, read: true};
+    }
+    Object.assign(body, {status: st, createdAt: now(), updatedAt: now(), via});
+    if (rating != null) body.rating = rating;
+    if (cover){ body.cover = cover; if (f.coverPos) body.coverPos = f.coverPos; }
+    if (k === "game"){ if (st === "done" || st === "dropped"){ body.noDate = true; body.addedDone = true; } if (st === "playing") body.date = today(); }
+    else { if (st === "done"){ body.noDate = true; if (isSerT(body.type) && body.epTotal) body.epWatched = body.epTotal; } if (st === "playing") body.date = today(); }
+    try { const {id} = await db.collection("items").add(body); return {id}; } catch(_){ toast("Не сохранилось, попробуй ещё раз"); return null; }
+  }
+  const sTookMsg = (f, st) => { const k = sKind(f);
+    return st === "future" || st === "plan" ? `${f.title} — ${k === "read" ? "в планах" : "в «На будущее»"}` : st === "done" ? `${f.title} — ${k === "game" ? "в пройденных" : k === "read" ? "в прочитанных" : "в просмотренных"}` : `${f.title} — сохранено`; };
+  const sAfter = (res, st) => { if (!res) return; if (res.read){ if (route === "read") render(); return; } if (st !== "future") setTimeout(() => openItem(res.id), 150); };
+
+  // полоска в разделе
+  function sugStrip(kind){
+    const L = sugIn().filter(x => sKind(x.item) === kind); if (!L.length || FV) return "";
+    return `<div class="sg-wrap sg-${kind}"><div class="sg-h">${SK[kind].strip}<small>${L.length}</small></div><div class="sg-strip">${L.map(x => { const f = x.item || {};
+      return `<button class="sg-c" data-sug="${esc(x.id)}">${sPoster(f)}<span class="t"><span class="who">${avaHTML(profOf(x.from_user), "xs")}<b>${esc(frNick(x.from_user))}</b>${typeof f.fromRating === "number" ? `<i class="${rateCls(f.fromRating)}">${num1(f.fromRating)}</i>` : ""}</span><b class="nm">${esc(f.title || "")}</b><small>${esc(sMeta(f))}</small>${x.note ? `<em>«${esc(x.note)}»</em>` : ""}</span></button>`; }).join("")}</div></div>`;
+  }
+  // окно «что с этим делать»
   async function sugSheet(id){
     let x = SUG.find(y => y.id === id);
     if (!x){ const {data} = await SB.from("suggestions").select("*").eq("id", id).maybeSingle(); x = data; }
     if (!x){ toast("Предложение не найдено — возможно, его удалили"); return; }
-    if (x.status !== "pending"){ toast(x.status === "taken" ? "Этот фильм ты уже сохранил" : "Ты уже отказался от этого фильма"); return; }
-    if (!FR) await loadFriends();
-    const f = x.item || {}, ser = isSerT(f.type), have = myKeys().hasIt(f), who = frNick(x.from_user);
-    const opts = [["future", "На будущее", ICON.clock], ...kOpts(f.type || "movie").map(([k, l]) => [k, l, k === "done" ? ICON.film : k === "playing" ? ICON.kino : k === "dropped" ? ICON.blood : ICON.clock])];
-    let st = "future";
-    const s = openSheet(`<div class="qa-top">${posterHTML(f, {tgt: false, rate: false, link: false})}<div><h3>${esc(f.title || "")}</h3>
-        <p class="sub">${esc([KTYPES[f.type] || "Фильм", f.year, genres(f).slice(0, 3).join(", ")].filter(Boolean).join(" · "))}</p>
-        <p class="sub sg-from">${avaHTML(profOf(x.from_user), "xs")} <span><b style="color:inherit">${esc(who)}</b> предлагает посмотреть${typeof f.fromRating === "number" ? ` · его оценка <b class="${rateCls(f.fromRating)}">${num1(f.fromRating)}</b>` : ""}</span></p>
+    if (x.status !== "pending"){ toast(x.status === "taken" ? "Это ты уже сохранил" : "От этого ты уже отказался"); return; }
+    if (!FR) await loadFriends(); const f = x.item || {}, k = sKind(f); if (k === "read" && !READS) await loadReads();
+    const have = sMine(f), who = frNick(x.from_user), opts = sOpts(f);
+    let st = opts[0][0];
+    const s = openSheet(`<div class="qa-top sg-q">${sPoster(f)}<div><h3>${esc(f.title || "")}</h3>
+        <p class="sub">${esc(sMeta(f))}</p>
+        <p class="sub sg-from">${avaHTML(profOf(x.from_user), "xs")} <span><b style="color:inherit">${esc(who)}</b> предлагает ${SK[k].verb}${typeof f.fromRating === "number" ? ` · его оценка <b class="${rateCls(f.fromRating)}">${num1(f.fromRating)}</b>` : ""}</span></p>
         ${x.note ? `<p class="sg-note">«${esc(x.note)}»</p>` : ""}</div></div>
       ${f.desc ? `<p class="sub" style="margin:14px 0 0;max-height:140px;overflow:auto;white-space:pre-line">${esc(String(f.desc).slice(0, 900))}</p>` : ""}
-      ${have ? `<div class="acts" style="margin-top:16px"><button class="ib full" disabled>Уже есть у тебя</button></div><div class="acts" style="margin-top:8px"><button class="ib" data-sgx="hide">Убрать из предложений</button></div>`
-      : `<div class="av-lb" style="margin-top:16px">Сохранить к себе как</div><div class="sg-st" id="sgSt">${opts.map(([k, l, ic]) => `<button type="button" data-st="${k}" aria-pressed="${k === st}" style="--c:${KCOL[k] || "#c7c7d6"}">${ic}${l}</button>`).join("")}</div>
+      ${have ? `<div class="acts" style="margin-top:16px"><button class="ib full" disabled>Уже есть у тебя · ${esc(sMyLab(have, k))}</button></div><div class="acts" style="margin-top:8px"><button class="ib" data-sgx="hide">Убрать из предложений</button></div>`
+      : `<div class="av-lb" style="margin-top:16px">Сохранить к себе как</div><div class="sg-st" id="sgSt">${opts.map(([v, l, ic]) => `<button type="button" data-st="${v}" aria-pressed="${v === st}" style="--c:${sCol(v)}">${ic}${l}</button>`).join("")}</div>
         <div id="sgRw" hidden><div class="av-lb" style="margin-top:14px">Твоя оценка</div>${wheelHTML("sgRate", null)}</div>
         <div class="acts" style="margin-top:16px"><button class="ib blue" id="sgOk">Сохранить себе</button><button class="ib" data-sgx="no">Не интересно</button></div>`}`, {wide: true});
-    s.el.querySelector(".qa-top .poster").classList.add("qa-poster");
-    const q = sel => s.el.querySelector(sel);
+    const q = sel => s.el.querySelector(sel); const pv = q(".qa-top .poster"); if (pv) pv.classList.add("qa-poster");
     let wheelOn = false;
     if (q("#sgSt")) q("#sgSt").onclick = e => { const b = e.target.closest("[data-st]"); if (!b) return; st = b.dataset.st;
       q("#sgSt").querySelectorAll("[data-st]").forEach(y => y.setAttribute("aria-pressed", y.dataset.st === st));
-      q("#sgRw").hidden = st === "future"; if (st !== "future" && !wheelOn){ wheelOn = true; wireWheel("sgRate"); }
-      q("#sgOk").textContent = st === "future" ? "Сохранить себе" : "Сохранить"; };
+      const first = st === opts[0][0]; q("#sgRw").hidden = first; if (!first && !wheelOn){ wheelOn = true; wireWheel("sgRate"); }
+      q("#sgOk").textContent = first ? "Сохранить себе" : "Сохранить"; };
     s.el.addEventListener("click", async e => { const b = e.target.closest("[data-sgx]"); if (!b) return; b.disabled = true;
       const {error} = await SB.from("suggestions").update({status: "declined", updated_at: now()}).eq("id", x.id);
       if (error){ toast("Не получилось: " + error.message); b.disabled = false; return; }
-      SUG = SUG.filter(y => y.id !== x.id); s.close(); toast(b.dataset.sgx === "no" ? "Убрал — " + who + " об этом не узнает" : "Убрал из предложений"); if (route === "kino") renderKino(); });
+      SUG = SUG.filter(y => y.id !== x.id); s.close(); toast(b.dataset.sgx === "no" ? "Убрал — " + who + " об этом не узнает" : "Убрал из предложений"); render(); });
     if (q("#sgOk")) q("#sgOk").onclick = async () => {
       const btn = q("#sgOk"); btn.disabled = true; btn.textContent = "Сохраняю…";
-      const body = {}; SUG_KEEP.forEach(k => { if (f[k] != null) body[k] = f[k]; });
-      Object.assign(body, {status: st, createdAt: now(), updatedAt: now(), via: "suggest:" + who});
-      const r = st === "future" ? null : wheelVal("sgRate"); if (r != null) body.rating = r;
-      if (st === "done"){ body.date = today(); if (ser && body.epTotal) body.epWatched = body.epTotal; }
-      if (st === "playing") body.date = today();
-      if (f.cover && assets){ try { const rs = await fetch(publicUrl(f.cover)); if (!rs.ok) throw 0; const bl = await rs.blob(); body.cover = await upload(bl); if (f.coverPos) body.coverPos = f.coverPos; } catch(_){} }
-      try {
-        const {id: newId} = await db.collection("items").add(body);
-        await SB.from("suggestions").update({status: "taken", updated_at: now()}).eq("id", x.id);
-        SB.from("notifications").insert({user_id: x.from_user, actor: ME.id, kind: "suggest_ok", ref: "user:" + ME.id, body: String(f.title || "").slice(0, 140)}).then(() => {});
-        SUG = SUG.filter(y => y.id !== x.id); s.close();
-        toast(st === "future" ? `${f.title} — в «На будущее»` : st === "done" ? `${f.title} — в просмотренных` : `${f.title} — сохранено`);
-        if (route === "kino") renderKino();
-        if (st !== "future") setTimeout(() => openItem(newId), 150);
-      } catch(_){ toast("Не сохранилось, попробуй ещё раз"); btn.disabled = false; btn.textContent = "Сохранить"; }
+      const rating = st === opts[0][0] || !wheelOn ? null : wheelVal("sgRate");
+      const res = await sTake(f, st, rating, "suggest:" + who);
+      if (!res){ btn.disabled = false; btn.textContent = "Сохранить"; return; }
+      await SB.from("suggestions").update({status: "taken", updated_at: now()}).eq("id", x.id);
+      SB.from("notifications").insert({user_id: x.from_user, actor: ME.id, kind: "suggest_ok", ref: "user:" + ME.id, body: String(f.title || "").slice(0, 140)}).then(() => {});
+      SUG = SUG.filter(y => y.id !== x.id); s.close(); toast(sTookMsg(f, st)); render(); sAfter(res, st === "plan" ? "future" : st);
     };
   }
   document.addEventListener("click", e => { const el = e.target.closest && e.target.closest("[data-sug]"); if (!el || !ME) return; e.preventDefault(); sugSheet(el.dataset.sug); });
+
+  // ================= «Друзья советуют» =================
+  let REC = null, recLoading = false, recTab = lsGet("nexus_rectab") || "";
+  async function loadRecs(){
+    if (!SB || !ME || recLoading) return; recLoading = true;
+    const {data, error} = await SB.from("recs").select("*").order("created_at", {ascending: false}).limit(300);
+    recLoading = false; if (error){ REC = REC || []; return; }
+    REC = (data || []).map(r => ({...r, rating: r.rating == null ? null : +r.rating}));
+    if (route === "people") renderPeople();
+  }
+  // один тайтл — одна строка, даже если советуют несколько
+  function recGroups(){
+    const out = [];
+    (REC || []).forEach(r => { const it = r.item || {}; if (!it.title) return;
+      const g = out.find(x => sSame(x.item, it)); if (g){ g.recs.push(r); if (!g.item.cover && it.cover) g.item = it; } else out.push({key: r.id, kind: sKind(it), item: it, recs: [r]}); });
+    return out;
+  }
+  const recRow = (g, attr) => { const m = sMine(g.item), rated = g.recs.filter(r => r.rating != null), a = rated.length ? rated.reduce((s, r) => s + r.rating, 0) / rated.length : null;
+    return `<button class="rcc-r${m ? " have" : ""}" ${attr}="${esc(g.key)}">${sPoster(g.item)}<span class="t"><b>${esc(g.item.title)}</b>
+      <small class="who">${g.recs.slice(0, 3).map(r => `<span class="w">${avaHTML(profOf(r.user_id), "xs")}${esc(nickOf(r.user_id))}${r.rating != null ? `<i class="${rateCls(r.rating)}">${num1(r.rating)}</i>` : ""}</span>`).join("")}${g.recs.length > 3 ? `<span class="w">+${g.recs.length - 3}</span>` : ""}</small>
+      <small class="kd">${esc(g.kind === "read" ? RTYPE[g.item.type] || "Читалка" : g.kind === "game" ? "Игра" : KTYPES[g.item.type] || "Фильм")}${m ? ` · <span class="mine">${esc(sMyLab(m, g.kind))}</span>` : ""}</small></span>${a != null ? `<span class="avg ${rateCls(a)}">${num1(a)}</span>` : ""}</button>`; };
+  function recCard(){
+    if (!FR) return "";
+    if (!REC){ loadRecs(); return `<div class="fb-card rcc"><h3>${ICON.film}Друзья советуют</h3><p class="a-sub" style="margin:0;font-size:13px">Загружаю…</p></div>`; }
+    if (!READS) loadReads();
+    const all = recGroups(), cnt = k => all.filter(g => g.kind === k).length;
+    const tabs = [["", "Всё", all.length], ["kino", "Кино", cnt("kino")], ["game", "Игры", cnt("game")], ["read", "Читалка", cnt("read")]].filter(([k, , n]) => !k || n);
+    if (recTab && !cnt(recTab)) recTab = "";
+    const G = all.filter(g => !recTab || g.kind === recTab);
+    return `<div class="fb-card rcc"><h3>${ICON.film}Друзья советуют<button class="ev-add" data-recnew="1" title="Посоветовать всем" aria-label="Посоветовать всем">+</button></h3>
+      ${tabs.length > 2 ? `<div class="rcc-tabs">${tabs.map(([k, l, n]) => `<button type="button" data-rectab="${k}" aria-pressed="${recTab === k}">${l}<small>${n}</small></button>`).join("")}</div>` : ""}
+      ${G.length ? `<div class="rcc-l">${G.slice(0, 6).map(g => recRow(g, "data-rec")).join("")}</div>${G.length > 6 ? `<button class="ib full" data-recall="1" style="margin-top:8px">Все ${G.length}</button>` : ""}`
+        : `<p class="a-sub" style="margin:0 0 10px;font-size:13px">Зашёл фильм, игра или манга? Посоветуй всем — с оценкой. Друзья заберут к себе в один клик.</p><button class="ib blue bd-set" data-recnew="1">Посоветовать</button>`}</div>`;
+  }
+  function recSheet(key){
+    const g = recGroups().find(x => x.key === key || x.recs.some(r => r.id === key)); if (!g){ toast("Совет не найден"); return; }
+    const f = g.item, k = g.kind, m = sMine(f), opts = sOpts(f), mr = sMyRating(m, k);
+    const take = k === "read" ? [["plan", "В планы"], ["done", "Уже прочитал"]] : k === "game" ? [["future", "На будущее"], ["done", "Уже прошёл"]] : [["future", "Забрать на будущее"], ["done", "Уже смотрел"]];
+    const s = openSheet(`<div class="qa-top">${sPoster(f)}<div><h3>${esc(f.title)}</h3><p class="sub">${esc(sMeta(f))}</p>
+        ${m ? `<p class="sub" style="margin-top:8px">У тебя: <b style="color:inherit">${esc(sMyLab(m, k))}</b>${mr != null ? ` · твоя оценка <b class="${rateCls(mr)}">${num1(mr)}</b>` : ""}</p>` : ""}</div></div>
+      <div class="av-lb" style="margin-top:14px">Советуют</div>
+      <div class="rcs-l">${g.recs.map(r => `<div class="rcs-r">${avaHTML(profOf(r.user_id), "sm")}<div class="t"><b>${esc(r.user_id === ME.id ? "Ты" : nickOf(r.user_id))}</b><small>${esc(agoTs(r.created_at))}</small>${r.note ? `<em>«${esc(r.note)}»</em>` : ""}</div>${r.rating != null ? `<span class="rt ${rateCls(r.rating)}">${num1(r.rating)}</span>` : `<span class="rt none">без оценки</span>`}${r.user_id === ME.id ? `<button class="rcs-x" data-recdel="${esc(r.id)}" title="Убрать свой совет" aria-label="Убрать свой совет">×</button>` : ""}</div>`).join("")}</div>
+      ${f.desc ? `<p class="sub" style="margin:14px 0 0;max-height:130px;overflow:auto;white-space:pre-line">${esc(String(f.desc).slice(0, 900))}</p>` : ""}
+      ${m ? `<div class="acts" style="margin-top:16px"><button class="ib full" data-recopen="1">Открыть у себя</button></div>`
+        : `<div class="rcs-take">${take.map(([v, l], i) => `<button class="ib${i ? "" : " blue"}" data-rectake="${v}">${(opts.find(o => o[0] === v) || [, , ""])[2]}${l}</button>`).join("")}</div>`}`, {wide: true});
+    const pv = s.el.querySelector(".qa-top .poster"); if (pv) pv.classList.add("qa-poster");
+    s.el.addEventListener("click", async e => {
+      const d = e.target.closest("[data-recdel]"), t = e.target.closest("[data-rectake]"), o = e.target.closest("[data-recopen]");
+      if (o){ s.close(); setTimeout(() => k === "read" ? readSheet(m) : openItem(m.id), 80); return; }
+      if (d){ d.disabled = true; const {error} = await SB.from("recs").delete().eq("id", d.dataset.recdel); if (error){ toast("Не получилось: " + error.message); d.disabled = false; return; }
+        REC = REC.filter(r => r.id !== d.dataset.recdel); s.close(); toast("Совет убран"); if (route === "people") renderPeople(); return; }
+      if (!t) return; s.el.querySelectorAll("[data-rectake]").forEach(x => x.disabled = true);
+      const who = g.recs.filter(r => r.user_id !== ME.id).map(r => nickOf(r.user_id)).slice(0, 3).join(", "), st = t.dataset.rectake;
+      const res = await sTake(f, st, null, "recs:" + who);
+      if (!res){ s.el.querySelectorAll("[data-rectake]").forEach(x => x.disabled = false); return; }
+      s.close(); toast(sTookMsg(f, st) + (st === "done" ? ", поставь оценку" : "")); if (route === "people") renderPeople();
+      if (res.read){ if (st === "done"){ const row = (READS || []).find(r => r.id === res.id); if (row) setTimeout(() => readSheet(row), 150); } }
+      else if (st === "done") setTimeout(() => openItem(res.id), 150);
+    });
+  }
+  // «+»: выбрать со своей полки и посоветовать всем
+  function recPick(){
+    if (!READS) loadReads();
+    let tab = recTab || "kino";
+    const lists = () => ({
+      kino: MYITEMS.filter(i => !isGame(i) && inLib(i)).map(i => ({it: i, r: i.rating})),
+      game: MYITEMS.filter(i => isGame(i) && inLib(i)).map(i => ({it: i, r: i.rating})),
+      read: (READS || []).filter(r => rNorm(r.status) !== "plan").map(r => ({it: {...r, _k: "read"}, r: r.myRating})),
+    });
+    const s = openSheet(`<h3>Посоветовать всем</h3><p class="sub">Выбери со своей полки — уйдёт с твоей оценкой в «Друзья советуют».</p>
+      <div class="rcc-tabs rp-tabs" id="rpT">${[["kino", "Кино"], ["game", "Игры"], ["read", "Читалка"]].map(([k, l]) => `<button type="button" data-rpt="${k}" aria-pressed="${k === tab}">${l}</button>`).join("")}</div>
+      <input class="in" id="rpQ" placeholder="Поиск по названию" autocomplete="off" style="margin:4px 0 10px">
+      <div class="rp-l" id="rpL"></div>`, {wide: true});
+    const q = x => s.el.querySelector(x);
+    const draw = () => { const t = q("#rpQ").value.trim().toLowerCase();
+      const L = lists()[tab].filter(x => !t || [x.it.title, x.it.originalTitle, x.it.origTitle].join(" ").toLowerCase().includes(t))
+        .sort((a, b) => (b.r ?? -1) - (a.r ?? -1) || String(b.it.updatedAt || b.it.date || "").localeCompare(String(a.it.updatedAt || a.it.date || ""))).slice(0, 80);
+      q("#rpL").innerHTML = L.length ? L.map(({it, r}) => { const was = (REC || []).some(x => x.user_id === ME.id && sSame(x.item || {}, it));
+        return `<button class="rp-r" data-rpid="${esc(it.id)}"${was ? " disabled" : ""}>${sPoster(it)}<span class="t"><b>${esc(it.title)}</b><small>${esc(sMeta(it))}${was ? " · уже советуешь" : ""}</small></span>${typeof r === "number" ? `<span class="avg ${rateCls(r)}">${num1(r)}</span>` : ""}</button>`; }).join("")
+        : `<p class="sub">${lists()[tab].length ? "Ничего не нашлось." : tab === "read" ? "В Читалке пока нет прочитанного." : "Тут пока пусто."}</p>`; };
+    draw(); q("#rpQ").oninput = draw; setTimeout(() => q("#rpQ").focus(), 60);
+    q("#rpT").onclick = e => { const b = e.target.closest("[data-rpt]"); if (!b) return; tab = b.dataset.rpt; q("#rpT").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); draw(); };
+    q("#rpL").onclick = e => { const b = e.target.closest("[data-rpid]"); if (!b) return;
+      const snap = tab === "read" ? (() => { const r = (READS || []).find(x => x.id === b.dataset.rpid); return r ? sSnap(r, "read", r.cover || null, null) : null; })()
+        : (() => { const it = MYITEMS.find(i => i.id === b.dataset.rpid); return it ? sugFilm(it, it.cover || null, it.coverPos || null) : null; })();
+      if (!snap) return; s.close(); setTimeout(() => suggestSheet(snap).then(() => { const a = document.querySelector("#sgAll:not([disabled])"); if (a) a.click(); }), 80); };
+  }
+  document.addEventListener("click", e => { const el = e.target.closest && e.target.closest("[data-rec],[data-recnew],[data-recall],[data-rectab]"); if (!el || !ME || el.closest(".sh")) return;
+    if (el.dataset.rectab != null){ recTab = el.dataset.rectab; lsSet("nexus_rectab", recTab); renderPeople(); return; }
+    if (el.dataset.recnew){ recPick(); return; }
+    if (el.dataset.rec){ recSheet(el.dataset.rec); return; }
+    if (el.dataset.recall){ const G = recGroups().filter(g => !recTab || g.kind === recTab);
+      const s = openSheet(`<h3>Друзья советуют</h3><div class="rcc-l">${G.map(g => recRow(g, "data-recg")).join("")}</div>`, {wide: true});
+      s.el.addEventListener("click", ev => { const b = ev.target.closest("[data-recg]"); if (b){ s.close(); setTimeout(() => recSheet(b.dataset.recg), 60); } }); }
+  });
 
   // ================= 3.9: импорт с TierMaker, ссылка и картинка тир-листа =================
   const TM_FN = () => `${String(CFG.SUPABASE_URL).replace(/\/$/, "")}/functions/v1/tiermaker`;
@@ -9768,14 +9859,14 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     }).subscribe();
   }
   const ntfText = n => { const who = `<b>${esc(profOf(n.actor).nick || "кто-то")}</b>`;
-    return n.kind === "mention_post" ? `${who} отметил тебя в посте` : n.kind === "mention_comment" ? `${who} отметил тебя в комментарии` : n.kind === "comment" ? `${who} ответил на твой пост` : n.kind === "mention_event" ? `${who} отметил тебя на стене ${String(n.ref || "").startsWith("watch:") ? "кинопоказа" : "мероприятия"}` : n.kind === "tier_reply" ? `${who} ответил своей версией на твой тир-лист` : n.kind === "book_comment" ? `${who} ответил в книге жалоб` : n.kind === "suggest" ? `${who} предлагает посмотреть` : n.kind === "suggest_ok" ? `${who} сохранил себе твой фильм` : `${who} зовёт тебя`; };
+    return n.kind === "mention_post" ? `${who} отметил тебя в посте` : n.kind === "mention_comment" ? `${who} отметил тебя в комментарии` : n.kind === "comment" ? `${who} ответил на твой пост` : n.kind === "mention_event" ? `${who} отметил тебя на стене ${String(n.ref || "").startsWith("watch:") ? "кинопоказа" : "мероприятия"}` : n.kind === "tier_reply" ? `${who} ответил своей версией на твой тир-лист` : n.kind === "book_comment" ? `${who} ответил в книге жалоб` : n.kind === "suggest" ? `${who} предлагает тебе` : n.kind === "suggest_ok" ? `${who} сохранил себе то, что ты предложил` : `${who} зовёт тебя`; };
   const bellInv = () => (EV && ME ? myInvites() : []).map(m => ({inv: true, m, e: evById(m.event_id), ts: m.updated_at || (evById(m.event_id) || {}).created_at || ""})).filter(x => x.e);
   const ntfUnread = () => NTF.filter(n => !n.read).length + bellInv().length;
   function syncBell(){ const b = $("bellBtn"); if (!b) return; const n = ntfUnread(), d = b.querySelector(".bell-n"); d.hidden = !n; d.textContent = n > 9 ? "9+" : n; b.classList.toggle("on", !!n); }
   function ntfGo(n){
     const [k, id] = String(n.ref || "").split(":"); if (!id) return;
     if (k === "event" || k === "watch"){ go(n.ref); return; }
-    if (k === "sug"){ if (route !== "kino") go("kino"); setTimeout(() => sugSheet(id), 150); return; }
+    if (k === "sug"){ sugSheet(id); return; }
     if (k === "user"){ go(n.ref); return; }
     if (k === "book"){ bkOpen.add(id); const jb = () => { const el = document.querySelector(`[data-bkc="${CSS.escape(id)}"]`); if (el){ const a = el.closest(".bk-e"); a.scrollIntoView({behavior: "smooth", block: "center"}); a.classList.remove("flash"); void a.offsetWidth; a.classList.add("flash"); } else if (bookN < 500){ bookN = 500; renderPeople(); } };
       if (route === "people") renderPeople(); else go("people"); setTimeout(jb, 400); setTimeout(jb, 1300); return; }
