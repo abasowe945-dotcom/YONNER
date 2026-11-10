@@ -1385,6 +1385,42 @@ body[data-route="user"] .a-main{max-width:none;padding:0}
 .ev-ph.has{border-style:solid;border-color:transparent}
 .ev-ph.has span{opacity:0}
 .ev-ph.drop{border-color:#0a84ff}
+/* ===== 4.1: «Друзья советуют» ===== */
+.rcc h3 .ev-add{margin-left:auto;width:28px;height:28px;border-radius:50%;border:0;background:var(--c-ring);color:#fff;font:600 19px/1 var(--ios);cursor:pointer;display:grid;place-items:center}
+.rcc-l,.rp-l{display:grid;gap:4px}
+.rcc-r,.rp-r{display:flex;align-items:center;gap:10px;width:100%;padding:6px;border:0;border-radius:12px;background:none;color:inherit;text-align:left;cursor:pointer;font-family:var(--ios)}
+.rcc-r:hover,.rp-r:hover:not([disabled]){background:var(--c-cell-out)}
+.rp-r[disabled]{opacity:.45;cursor:default}
+.rcc-r .poster,.rp-r .poster{flex:none;width:38px;border-radius:6px}
+.rcc-r .poster .ph,.rp-r .poster .ph{font-size:7px;padding:3px}
+.rcc-r .t,.rp-r .t{flex:1;min-width:0;display:grid;gap:4px}
+.rcc-r .t b,.rp-r .t b{font:600 14px/1.2 var(--ios);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rp-r .t small{color:var(--c-dim);font:500 12px/1.2 var(--ios)}
+.rcc-r .who{display:flex;flex-wrap:wrap;gap:4px 8px;color:var(--c-dim);font:500 12px/1.2 var(--ios)}
+.rcc-r .w{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.rcc-r .w .fr-ava{width:16px;height:16px;font-size:8px}
+.rcc-r .w i{font-style:normal;font-weight:800;margin-left:1px}
+.rcc-r .mine{color:#30d158;font:600 11.5px/1 var(--ios)}
+.rcc-r.have{opacity:.62}
+.avg{flex:none;min-width:34px;height:26px;padding:0 6px;border-radius:8px;display:grid;place-items:center;font:800 13px/1 var(--ios);background:var(--c-cell-out)}
+.rcs-l{display:grid;gap:8px}
+.rcs-r{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:#2c2c2e}
+.rcs-r .t{flex:1;min-width:0;display:grid;gap:2px}
+.rcs-r .t b{font:600 14px/1.2 var(--ios)}.rcs-r .t small{color:#8e8e93;font:500 12px/1.2 var(--ios)}
+.rcs-r .t em{font:italic 500 13.5px/1.35 var(--ios);color:#e5e5ea;margin-top:3px}
+.rcs-r .rt{flex:none;font:800 20px/1 var(--ios)}.rcs-r .rt.none{font:500 12px/1 var(--ios);color:#8e8e93}
+.rcs-x{flex:none;width:26px;height:26px;border-radius:50%;border:0;background:rgba(255,255,255,.08);color:#8e8e93;font:500 16px/1 var(--ios);cursor:pointer}
+.rcs-x:hover{background:rgba(255,69,58,.2);color:#ff6961}
+.rcs-take{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+.rcs-take .ib{display:inline-flex;align-items:center;justify-content:center;gap:7px}.rcs-take .ib svg{width:17px;height:17px}
+.sg-all{display:flex;align-items:center;gap:12px;width:100%;padding:11px 12px;border-radius:14px;border:1.5px solid transparent;background:#2c2c2e;color:#f2f2f7;text-align:left;cursor:pointer;font-family:var(--ios)}
+.sg-all .ic{flex:none;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,#ff9f0a,#ff375f);color:#fff}.sg-all .ic svg{width:19px;height:19px}
+.sg-all .t{flex:1;display:grid;gap:3px}.sg-all b{font:600 15px/1.2 var(--ios)}.sg-all small{font:500 12.5px/1.2 var(--ios);color:#8e8e93}
+.sg-all .ck{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid #48484a}
+.sg-all[aria-pressed="true"]{border-color:#0a84ff;background:rgba(10,132,255,.12)}
+.sg-all[aria-pressed="true"] .ck{border-color:#0a84ff;background:#0a84ff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12 5 5 9-10'/%3E%3C/svg%3E") center/14px no-repeat}
+.sg-all[disabled]{opacity:.5;cursor:default}
+.sg-or{margin:12px 0 6px;color:#8e8e93;font:600 11px/1 var(--ios);letter-spacing:.06em;text-transform:uppercase}
 /* ===== 4.1: предложить фильм другу ===== */
 .sg-strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin:0 0 22px}
 .sg-c{display:flex;gap:14px;align-items:stretch;padding:12px;border-radius:18px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);color:inherit;text-align:left;cursor:pointer;font-family:var(--ios);transition:background .15s,transform .15s}
@@ -5672,7 +5708,9 @@ html:has(body.view-open),body.view-open{overflow:hidden}
       n: ["<b>Предложить другу</b>: в карточке фильма или прямо при добавлении жми «Предложить другу», выбери кому и черкни пару слов. Уйдёт сам фильм с постером и описанием — без твоего статуса и заметок",
         "Другу приходит уведомление в колокольчик, а в «Кино» появляется блок «Тебе предлагают посмотреть»",
         "Из предложения фильм сохраняется к себе в один клик: по умолчанию в «На будущее», но можно сразу отметить «Просмотрено», «Смотрю» или другой статус и поставить оценку",
-        "Если предложение не зашло — «Не интересно», и оно исчезнет. Тот, кто предложил, об этом не узнает, а вот о сохранении — узнает"]}},
+        "Если предложение не зашло — «Не интересно», и оно исчезнет. Тот, кто предложил, об этом не узнает, а вот о сохранении — узнает",
+        "<b>Друзья советуют</b> — новое окно в Активности. Фильм можно предложить не одному другу, а сразу всем: выбери «Всем друзьям». Видно, кто что советует и какую оценку поставил",
+        "Из «Друзья советуют» фильм забирается к себе в один клик: «Забрать на будущее» или «Уже смотрел» — сразу в просмотренные. Плюс в окне — посоветовать фильм со своей полки"]}},
     {v: "4.0", date: "2026-11-09", title: "Фото мероприятий: формат и масштаб", kind: "minor", sec: {
       n: ["У фото мероприятия теперь три формата: <b>горизонтально</b> (16:9), <b>как сториз</b> (9:16) и <b>квадрат</b>. Выбирается при создании или в «Изменить»",
         "Фото можно приблизить ползунком или колесом мыши и сдвинуть мышкой или пальцем — в кадре будет ровно то, что нужно",
@@ -6844,7 +6882,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
       ${myBd ? "" : `<button class="ib blue bd-set" data-bdset="1">Указать свой</button>`}</div>`;
     $("aMain").innerHTML = `<h1 class="a-h1">Активность</h1><p class="a-sub">${others.length ? `${others.length} ${plural(others.length, "человек", "человека", "человек")} на NEXUS кроме тебя. Видно всё, кроме заметок и причин дропа.` : "Пока здесь никого, кроме тебя. Скинь друзьям ссылку на сайт."}</p>
       <div class="fb">
-        <aside class="fb-col fb-l">${eventsCard()}${tlCard()}${bdH}</aside>
+        <aside class="fb-col fb-l">${eventsCard()}${recCard()}${tlCard()}${bdH}</aside>
         <section class="fb-feed-w">${watchCard()}<div class="act-tabs" role="tablist"><button data-acttab="wall" aria-pressed="${actTab === "wall"}">${ICON.chat}Стена${WALL && WALL.posts.length ? `<small>${WALL.posts.length}</small>` : ""}</button><button data-acttab="feed" aria-pressed="${actTab === "feed"}">${ICON.people}Лента друзей</button></div>${actTab === "feed" ? feedCard() : wallCard()}</section>
         <aside class="fb-col fb-r"><div class="fb-card plain"><h3>Друзья<small>${others.length}</small></h3>${others.length ? `<div class="fl">${friendsH}</div>` : `<p class="a-sub" style="margin:0;font-size:13px">Скинь ссылку на сайт — тут появятся друзья и что они делали.</p>`}</div>${bookCard()}</aside>
       </div>`;
@@ -9010,31 +9048,136 @@ html:has(body.view-open),body.view-open{overflow:hidden}
   async function suggestSheet(film){
     if (!ME || !SB){ toast("Сначала войди"); return; }
     if (!film || !film.title){ toast("Сначала впиши название"); return; }
-    if (!FR) await loadFriends();
+    if (!FR) await loadFriends(); if (!REC) await loadRecs();
     const others = (FR ? FR.profiles : []).filter(p => p.user_id !== ME.id);
-    if (!others.length){ toast("На сайте пока нет друзей"); return; }
     const has = uid => FR.items.some(i => i.uid === uid && sameIt(i, film));
-    const s = openSheet(`<div class="sg-top">${posterHTML(film, {tgt: false, rate: false, badge: false, link: false})}<div><h3>Предложить посмотреть</h3><p class="sub"><b style="color:inherit">${esc(film.title)}</b>${film.year ? ` · ${esc(film.year)}` : ""}${film.type ? ` · ${esc(KTYPES[film.type] || "")}` : ""}</p><p class="sub" style="margin-top:6px">Другу придёт уведомление, а карточка появится у него в «Кино» — сохранит к себе в один клик.</p></div></div>
-      <div class="av-lb">Кому</div><div class="ev-pick sg-pick" id="sgPk">${others.map(p => { const h = has(p.user_id); return `<button type="button" data-u="${esc(p.user_id)}" aria-pressed="false"${h ? ' class="had" title="Этот фильм уже есть у него"' : ""}>${avaHTML(p)}${esc(p.nick)}${h ? "<small>уже есть</small>" : ""}</button>`; }).join("")}</div>
-      <label class="f">Пару слов <small style="text-transform:none;letter-spacing:0;opacity:.7">по желанию</small><textarea class="in" id="sgN" rows="2" maxlength="300" placeholder="Зайдёт под пиццу, концовка — разнос"></textarea></label>
+    const already = (REC || []).some(r => r.user_id === ME.id && sameIt(r.item || {}, film));
+    const myR = typeof film.fromRating === "number" ? film.fromRating : null;
+    const s = openSheet(`<div class="sg-top">${posterHTML(film, {tgt: false, rate: false, badge: false, link: false})}<div><h3>Предложить посмотреть</h3><p class="sub"><b style="color:inherit">${esc(film.title)}</b>${film.year ? ` · ${esc(film.year)}` : ""}${film.type ? ` · ${esc(KTYPES[film.type] || "")}` : ""}</p><p class="sub" style="margin-top:6px">Конкретному другу придёт уведомление. «Всем друзьям» — фильм попадёт в окно «Друзья советуют» в Активности, с твоей оценкой.</p></div></div>
+      <div class="av-lb">Кому</div>
+      <button type="button" class="sg-all" id="sgAll" aria-pressed="false"${already ? " disabled" : ""}><span class="ic">${ICON.people}</span><span class="t"><b>Всем друзьям</b><small>${already ? "ты уже советуешь этот фильм" : `в «Друзья советуют»${myR != null ? ` · твоя оценка ${num1(myR)}` : " · без оценки"}`}</small></span><i class="ck"></i></button>
+      ${others.length ? `<div class="sg-or">или конкретным</div><div class="ev-pick sg-pick" id="sgPk">${others.map(p => { const h = has(p.user_id); return `<button type="button" data-u="${esc(p.user_id)}" aria-pressed="false"${h ? ' class="had" title="Этот фильм уже есть у него"' : ""}>${avaHTML(p)}${esc(p.nick)}${h ? "<small>уже есть</small>" : ""}</button>`; }).join("")}</div>` : ""}
+      ${myR == null ? `<div id="sgRw" hidden><div class="av-lb" style="margin-top:12px">Твоя оценка <small style="text-transform:none;letter-spacing:0;opacity:.7">по желанию — её увидят в «Друзья советуют»</small></div>${wheelHTML("sgMyR", null)}</div>` : ""}
+      <label class="f" style="margin-top:12px">Пару слов <small style="text-transform:none;letter-spacing:0;opacity:.7">по желанию</small><textarea class="in" id="sgN" rows="2" maxlength="300" placeholder="Зайдёт под пиццу, концовка — разнос"></textarea></label>
       <div class="acts"><button class="ib blue" id="sgGo" disabled>Предложить</button><button class="ib" id="sgNo">Отмена</button></div>`, {wide: true});
-    const q = x => s.el.querySelector(x), go_ = q("#sgGo");
-    const picked = () => [...q("#sgPk").querySelectorAll('[aria-pressed="true"]')].map(b => b.dataset.u);
-    const sync = () => { const n = picked().length; go_.disabled = !n; go_.textContent = n > 1 ? `Предложить ${n} друзьям` : "Предложить"; };
-    q("#sgPk").onclick = e => { const b = e.target.closest("[data-u]"); if (!b) return; b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") !== "true"); sync(); };
+    const q = x => s.el.querySelector(x), go_ = q("#sgGo"), all = q("#sgAll");
+    let wheelOn = false;
+    const picked = () => q("#sgPk") ? [...q("#sgPk").querySelectorAll('[aria-pressed="true"]')].map(b => b.dataset.u) : [];
+    const toAll = () => all.getAttribute("aria-pressed") === "true";
+    const sync = () => { const n = picked().length, a = toAll(); go_.disabled = !n && !a;
+      go_.textContent = a && n ? `Всем и ${n} лично` : a ? "Посоветовать всем" : n > 1 ? `Предложить ${n} друзьям` : "Предложить";
+      if (q("#sgRw")){ q("#sgRw").hidden = !a; if (a && !wheelOn){ wheelOn = true; wireWheel("sgMyR"); } } };
+    all.onclick = () => { all.setAttribute("aria-pressed", !toAll()); sync(); };
+    if (q("#sgPk")) q("#sgPk").onclick = e => { const b = e.target.closest("[data-u]"); if (!b) return; b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") !== "true"); sync(); };
     q("#sgNo").onclick = () => s.close();
     go_.onclick = async () => {
-      const uids = picked(); if (!uids.length) return; go_.disabled = true; go_.textContent = "Отправляю…";
-      const note = q("#sgN").value.trim() || null, ts = now();
-      const rows = uids.map(u => ({id: crypto.randomUUID(), from_user: ME.id, to_user: u, item: film, note, status: "pending", created_at: ts, updated_at: ts}));
-      const {error} = await SB.from("suggestions").insert(rows);
-      if (error){ toast("Не отправилось: " + error.message); sync(); return; }
-      const nt = await SB.from("notifications").insert(rows.map(r => ({user_id: r.to_user, actor: ME.id, kind: "suggest", ref: "sug:" + r.id, body: film.title.slice(0, 140)})));
-      if (nt.error) console.warn("suggest notify", nt.error.message);
+      const uids = picked(), a = toAll(); if (!uids.length && !a) return; go_.disabled = true; go_.textContent = "Отправляю…";
+      const note = q("#sgN").value.trim() || null, ts = now(), done = [];
+      if (a){
+        const rating = myR != null ? myR : (wheelOn ? wheelVal("sgMyR") : null);
+        const item = {...film}; delete item.fromRating;
+        const {error} = await SB.from("recs").insert({id: crypto.randomUUID(), user_id: ME.id, item, rating, note, created_at: ts});
+        if (error){ toast("Не отправилось: " + error.message); sync(); return; }
+        done.push("в «Друзья советуют»"); loadRecs();
+      }
+      if (uids.length){
+        const rows = uids.map(u => ({id: crypto.randomUUID(), from_user: ME.id, to_user: u, item: film, note, status: "pending", created_at: ts, updated_at: ts}));
+        const {error} = await SB.from("suggestions").insert(rows);
+        if (error){ toast("Не отправилось: " + error.message); sync(); return; }
+        const nt = await SB.from("notifications").insert(rows.map(r => ({user_id: r.to_user, actor: ME.id, kind: "suggest", ref: "sug:" + r.id, body: film.title.slice(0, 140)})));
+        if (nt.error) console.warn("suggest notify", nt.error.message);
+        done.push(uids.length > 1 ? `${uids.length} ${plural(uids.length, "другу", "друзьям", "друзьям")}` : frNick(uids[0]));
+      }
       s.close(); SND.click && SND.click();
-      toast(uids.length > 1 ? `Предложил ${uids.length} ${plural(uids.length, "другу", "друзьям", "друзьям")}` : `Предложил ${frNick(uids[0])}`);
+      toast((a && !uids.length ? "Посоветовал всем — " : "Отправил: ") + done.join(" и "));
     };
   }
+
+  // ================= 4.1: «Друзья советуют» =================
+  let REC = null, recLoading = false;
+  async function loadRecs(){
+    if (!SB || !ME || recLoading) return; recLoading = true;
+    const {data, error} = await SB.from("recs").select("*").order("created_at", {ascending: false}).limit(200);
+    recLoading = false; if (error){ REC = REC || []; return; }
+    REC = (data || []).map(r => ({...r, rating: r.rating == null ? null : +r.rating}));
+    if (route === "people") renderPeople();
+  }
+  // один фильм — одна строка, даже если советуют несколько
+  function recGroups(){
+    const out = [];
+    (REC || []).forEach(r => { const it = r.item || {}; if (!it.title) return;
+      const g = out.find(x => sameIt(x.item, it)); if (g){ g.recs.push(r); if (!g.item.cover && it.cover) g.item = it; } else out.push({key: r.id, item: it, recs: [r]}); });
+    return out;
+  }
+  const recMine = g => MYITEMS.find(i => !isGame(i) && sameIt(i, g.item));
+  const recMyLab = m => !m ? "" : isFuture(m) ? "у тебя на будущее" : isSoon(m) ? "ждёшь премьеру" : kLab(m).l.toLowerCase();
+  function recCard(){
+    if (!FR) return "";
+    if (!REC){ loadRecs(); return `<div class="fb-card rcc"><h3>${ICON.film}Друзья советуют</h3><p class="a-sub" style="margin:0;font-size:13px">Загружаю…</p></div>`; }
+    const G = recGroups();
+    const row = g => { const m = recMine(g), avg = g.recs.filter(r => r.rating != null), a = avg.length ? avg.reduce((s, r) => s + r.rating, 0) / avg.length : null;
+      return `<button class="rcc-r${m ? " have" : ""}" data-rec="${esc(g.key)}">${posterHTML(g.item, {tgt: false, rate: false, badge: false, link: false})}<span class="t"><b>${esc(g.item.title)}</b>
+        <small class="who">${g.recs.slice(0, 3).map(r => `<span class="w">${avaHTML(profOf(r.user_id), "xs")}${esc(nickOf(r.user_id))}${r.rating != null ? `<i class="${rateCls(r.rating)}">${num1(r.rating)}</i>` : ""}</span>`).join("")}${g.recs.length > 3 ? `<span class="w">+${g.recs.length - 3}</span>` : ""}</small>
+        ${m ? `<small class="mine">${esc(recMyLab(m))}</small>` : ""}</span>${a != null ? `<span class="avg ${rateCls(a)}">${num1(a)}</span>` : ""}</button>`; };
+    return `<div class="fb-card rcc"><h3>${ICON.film}Друзья советуют<button class="ev-add" data-recnew="1" title="Посоветовать фильм всем" aria-label="Посоветовать фильм всем">+</button></h3>
+      ${G.length ? `<div class="rcc-l">${G.slice(0, 6).map(row).join("")}</div>${G.length > 6 ? `<button class="ib full" data-recall="1" style="margin-top:8px">Все ${G.length}</button>` : ""}`
+        : `<p class="a-sub" style="margin:0 0 10px;font-size:13px">Посмотрел что-то годное? Посоветуй всем — с оценкой. Друзья заберут к себе на будущее в один клик.</p><button class="ib blue bd-set" data-recnew="1">Посоветовать фильм</button>`}</div>`;
+  }
+  function recSheet(key){
+    const g = recGroups().find(x => x.key === key || x.recs.some(r => r.id === key)); if (!g){ toast("Совет не найден"); return; }
+    const f = g.item, m = recMine(g);
+    const s = openSheet(`<div class="qa-top">${posterHTML(f, {tgt: false, rate: false, link: false})}<div><h3>${esc(f.title)}</h3>
+        <p class="sub">${esc([KTYPES[f.type] || "Фильм", f.year, genres(f).slice(0, 3).join(", ")].filter(Boolean).join(" · "))}</p>
+        ${m ? `<p class="sub" style="margin-top:8px">У тебя: <b style="color:inherit">${esc(recMyLab(m))}</b>${typeof m.rating === "number" ? ` · твоя оценка <b class="${rateCls(m.rating)}">${num1(m.rating)}</b>` : ""}</p>` : ""}</div></div>
+      <div class="av-lb" style="margin-top:14px">Советуют</div>
+      <div class="rcs-l">${g.recs.map(r => `<div class="rcs-r">${avaHTML(profOf(r.user_id), "sm")}<div class="t"><b>${esc(r.user_id === ME.id ? "Ты" : nickOf(r.user_id))}</b><small>${esc(agoTs(r.created_at))}</small>${r.note ? `<em>«${esc(r.note)}»</em>` : ""}</div>${r.rating != null ? `<span class="rt ${rateCls(r.rating)}">${num1(r.rating)}</span>` : `<span class="rt none">без оценки</span>`}${r.user_id === ME.id ? `<button class="rcs-x" data-recdel="${esc(r.id)}" title="Убрать свой совет" aria-label="Убрать свой совет">×</button>` : ""}</div>`).join("")}</div>
+      ${f.desc ? `<p class="sub" style="margin:14px 0 0;max-height:130px;overflow:auto;white-space:pre-line">${esc(String(f.desc).slice(0, 900))}</p>` : ""}
+      ${m ? `<div class="acts" style="margin-top:16px"><button class="ib full" data-recopen="${esc(m.id)}">Открыть у себя</button></div>`
+        : `<div class="rcs-take"><button class="ib blue" data-rectake="future">${ICON.clock}Забрать на будущее</button><button class="ib" data-rectake="done">${ICON.film}Уже смотрел</button></div>`}`, {wide: true});
+    s.el.querySelector(".qa-top .poster").classList.add("qa-poster");
+    s.el.addEventListener("click", async e => {
+      const d = e.target.closest("[data-recdel]"), t = e.target.closest("[data-rectake]"), o = e.target.closest("[data-recopen]");
+      if (o){ s.close(); setTimeout(() => openItem(o.dataset.recopen), 80); return; }
+      if (d){ d.disabled = true; const {error} = await SB.from("recs").delete().eq("id", d.dataset.recdel); if (error){ toast("Не получилось: " + error.message); d.disabled = false; return; }
+        REC = REC.filter(r => r.id !== d.dataset.recdel); s.close(); toast("Совет убран"); if (route === "people") renderPeople(); return; }
+      if (!t) return; s.el.querySelectorAll("[data-rectake]").forEach(x => x.disabled = true);
+      const id = await recTake(g, t.dataset.rectake);
+      if (id){ s.close(); if (route === "people") renderPeople(); if (t.dataset.rectake === "done") setTimeout(() => openItem(id), 150); }
+      else s.el.querySelectorAll("[data-rectake]").forEach(x => x.disabled = false);
+    });
+  }
+  async function recTake(g, mode){
+    if (!db) return false;
+    const f = g.item, body = {}; SUG_KEEP.forEach(k => { if (f[k] != null) body[k] = f[k]; });
+    const who = g.recs.filter(r => r.user_id !== ME.id).map(r => nickOf(r.user_id)).slice(0, 3).join(", ");
+    Object.assign(body, {status: mode === "done" ? "done" : "future", createdAt: now(), updatedAt: now(), via: "recs:" + who});
+    if (mode === "done"){ body.noDate = true; if (isSerT(body.type) && body.epTotal) body.epWatched = body.epTotal; }
+    if (f.cover && assets){ try { const r = await fetch(publicUrl(f.cover)); if (!r.ok) throw 0; const bl = await r.blob(); body.cover = await upload(bl); if (f.coverPos) body.coverPos = f.coverPos; } catch(_){} }
+    try { const {id} = await db.collection("items").add(body); toast(mode === "done" ? `${f.title} — в просмотренных, поставь оценку` : `${f.title} — в «На будущее»`); return id; }
+    catch(_){ toast("Не сохранилось, попробуй ещё раз"); return false; }
+  }
+  // «+»: выбрать фильм из своей полки и посоветовать всем
+  function recPick(){
+    const mine = MYITEMS.filter(i => !isGame(i) && inLib(i)).sort((a, b) => (b.rating ?? -1) - (a.rating ?? -1) || String(b.date || "").localeCompare(String(a.date || "")));
+    const s = openSheet(`<h3>Посоветовать фильм всем</h3><p class="sub">Выбери из своей полки — уйдёт с твоей оценкой. Нового фильма нет в списке? Добавь его в «Кино» и нажми там «Предложить другу» → «Всем друзьям».</p>
+      <input class="in" id="rpQ" placeholder="Поиск по названию" autocomplete="off" style="margin:4px 0 10px">
+      <div class="rp-l" id="rpL"></div>`, {wide: true});
+    const q = x => s.el.querySelector(x);
+    const draw = () => { const t = q("#rpQ").value.trim().toLowerCase(), L = mine.filter(i => !t || [i.title, i.originalTitle].join(" ").toLowerCase().includes(t)).slice(0, 80);
+      q("#rpL").innerHTML = L.length ? L.map(i => { const was = (REC || []).some(r => r.user_id === ME.id && sameIt(r.item || {}, i));
+        return `<button class="rp-r" data-rpid="${esc(i.id)}"${was ? " disabled" : ""}>${posterHTML(i, {tgt: false, rate: false, badge: false, link: false})}<span class="t"><b>${esc(i.title)}</b><small>${esc([i.year, KTYPES[i.type]].filter(Boolean).join(" · "))}${was ? " · уже советуешь" : ""}</small></span>${typeof i.rating === "number" ? `<span class="avg ${rateCls(i.rating)}">${num1(i.rating)}</span>` : ""}</button>`; }).join("")
+        : `<p class="sub">${mine.length ? "Ничего не нашлось." : "В «Кино» пока пусто."}</p>`; };
+    draw(); q("#rpQ").oninput = draw; setTimeout(() => q("#rpQ").focus(), 60);
+    q("#rpL").onclick = e => { const b = e.target.closest("[data-rpid]"); if (!b) return; const it = MYITEMS.find(i => i.id === b.dataset.rpid); if (!it) return;
+      s.close(); setTimeout(() => suggestSheet(sugFilm(it, it.cover || null, it.coverPos || null)).then(() => { const a = document.querySelector("#sgAll:not([disabled])"); if (a) a.click(); }), 80); };
+  }
+  document.addEventListener("click", e => { const el = e.target.closest && e.target.closest("[data-rec],[data-recnew],[data-recall]"); if (!el || !ME || el.closest(".sh")) return;
+    if (el.dataset.recnew){ recPick(); return; }
+    if (el.dataset.rec){ recSheet(el.dataset.rec); return; }
+    if (el.dataset.recall){ const G = recGroups();
+      const s = openSheet(`<h3>Друзья советуют</h3><div class="rcc-l">${G.map(g => `<button class="rcc-r" data-recg="${esc(g.key)}">${posterHTML(g.item, {tgt: false, rate: false, badge: false, link: false})}<span class="t"><b>${esc(g.item.title)}</b><small class="who">${g.recs.slice(0, 4).map(r => `<span class="w">${avaHTML(profOf(r.user_id), "xs")}${esc(nickOf(r.user_id))}${r.rating != null ? `<i class="${rateCls(r.rating)}">${num1(r.rating)}</i>` : ""}</span>`).join("")}</small></span></button>`).join("")}</div>`, {wide: true});
+      s.el.addEventListener("click", ev => { const b = ev.target.closest("[data-recg]"); if (b){ s.close(); setTimeout(() => recSheet(b.dataset.recg), 60); } }); }
+  });
   // из открытой карточки фильма
   async function suggestItem(it){ suggestSheet(sugFilm(it, it.cover || null, it.coverPos || null)); }
   // из формы: собираем то, что заполнено, постер грузим сразу
