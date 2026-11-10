@@ -1385,6 +1385,15 @@ body[data-route="user"] .a-main{max-width:none;padding:0}
 .ev-ph.has{border-style:solid;border-color:transparent}
 .ev-ph.has span{opacity:0}
 .ev-ph.drop{border-color:#0a84ff}
+/* ===== 4.3: нет связи с базой ===== */
+#netFail{position:fixed;inset:0;z-index:300;display:grid;place-items:center;padding:16px;background:rgba(0,0,0,.62);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+#netFail[hidden]{display:none}
+.nf-box{width:min(420px,100%);padding:24px 22px 20px;border-radius:24px;background:#1c1c1e;color:#f2f2f7;box-shadow:0 30px 80px rgba(0,0,0,.55);font-family:var(--ios)}
+.nf-ic{width:52px;height:52px;border-radius:15px;display:grid;place-items:center;margin-bottom:14px;background:rgba(255,159,10,.16);color:#ff9f0a}.nf-ic svg{width:28px;height:28px}
+.nf-box h3{margin:0 0 10px;font:700 21px/1.2 var(--ios)}
+.nf-box p{margin:0 0 10px;color:#c7c7cc;font:400 15px/1.45 var(--ios)}.nf-box p b{color:#f2f2f7}
+.nf-box ol{margin:4px 0 18px;padding-left:22px;font:600 15px/1.7 var(--ios)}
+.nf-acts{display:flex;gap:8px;flex-wrap:wrap}.nf-acts .ib{flex:1}
 /* ===== 4.2: предложения во всех разделах ===== */
 .sg-wrap{margin:22px 0 6px;font-family:var(--ios)}
 .sg-h{display:flex;align-items:center;gap:8px;margin:0 0 12px;font:700 19px/1.2 var(--ios);letter-spacing:-.01em}
@@ -5727,6 +5736,8 @@ html:has(body.view-open),body.view-open{overflow:hidden}
   // ================= патчноуты =================
   // Новые версии добавляются В НАЧАЛО списка. n — новое, c — изменено, f — исправлено, r — удалено.
   const PATCHES = [
+    {v: "4.3", date: "2026-11-10", title: "Честное «нет связи» вместо пустого профиля", kind: "minor", sec: {
+      f: ["Если до базы не достучаться — а из российских сетей без VPN такое сейчас бывает, — сайт больше не показывает пустой профиль, будто всё пропало. Через 12 секунд появится окно: включи VPN и нажми «Обновить». Данные при этом никуда не деваются"]}},
     {v: "4.2", date: "2026-11-10", title: "Предлагай всё: игры, манга, комиксы, книги", kind: "major", sec: {
       n: ["«Предложить другу» теперь есть везде: в играх (в карточке и при добавлении), в Читалке — манга, комиксы, книги — прямо в окне тайтла. Сериалы и аниме — как и фильмы, в «Кино»",
         "У каждого раздела свой блок предложений: «Тебе предлагают поиграть» в Играх и «Тебе предлагают почитать» в Читалке. Из них сохраняешь к себе с любым статусом и оценкой",
@@ -6549,7 +6560,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     if (pe) ({data: prof} = await SB.from("profiles").select("nick,avatar,ava_animal,ava_color,birthday").eq("user_id", user.id).maybeSingle());
     if (prof && prof.nick){ setNick(prof.nick); MEP = prof; setTimeout(patchPopup, 1500); setTimeout(askBday, 50); } else { lsSet("nexus_patch_seen", PATCHES[0].v); lsSet("nexus_patch_pop", PATCHES[0].v); await nickSheet(true); MEP = {nick: NICK, ...(nickSheet.bday ? {birthday: nickSheet.bday} : {})}; assets = makeBackend(SB, user.id).assets; await avaSheet(true); }
     const be = makeBackend(SB, user.id); db = be.db; assets = be.assets; canWrite = !FV;
-    const timer = setTimeout(() => toast("Данные пока не подгрузились. Проверь интернет."), 12000);
+    const timer = setTimeout(netFail, 12000);
     db.doc("meta/theme").onSnapshot(d => { theme = d.exists ? d.data() : null; applyTheme(theme); });
     db.doc("meta/bg").onSnapshot(d => { SECBG = d.exists ? d.data() : null; applySecBg(); });
     Promise.all(["backup", "autobackup"].map(x => db.doc("meta/" + x).get().then(d => d.exists ? d.data() : null).catch(() => null)))
@@ -6557,13 +6568,13 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     document.body.classList.remove("guest-tl"); if (pendingTl) setTimeout(openTlLink, 300);
     loadFriends(); loadEvents(); subscribeEvents(); loadWall(); subscribeWall(); loadNtf(); subscribeNtf(); loadSug(); subscribeBook(); loadReads().then(() => handleInbox());
     db.collection("items").onSnapshot(snap => {
-      if (!snap.metadata.fromCache){ clearTimeout(timer); itemsLoaded = true; }
+      if (!snap.metadata.fromCache){ clearTimeout(timer); itemsLoaded = true; netOk(); }
       MYITEMS = snap.docs.map(d => ({id: d.id, ...d.data()}));
       if (!FV) items = MYITEMS;
       const firstLoad = !start.loaded; start.loaded = true;
       render(); if (firstLoad) enterAnim(); if (!FV) checkAch();
       if (openId && !$("view").hidden && $("heroPoster") && $("ce").hidden && !sheets.length) openItem(openId);
-    }, e => { clearTimeout(timer); toast("Не получилось загрузить данные: " + e.message); });
+    }, e => { clearTimeout(timer); netFail(); });
     render();
   }
 
@@ -9949,6 +9960,24 @@ html:has(body.view-open),body.view-open{overflow:hidden}
   document.addEventListener("focusout", e => { if (e.target === mnTa) setTimeout(mnClose, 120); });
   addEventListener("resize", () => { clearTimeout(applySecBg.t); applySecBg.t = setTimeout(applySecBg, 200); });
 
+  // ================= 4.3: сторож связи с базой =================
+  // если данные не дошли за 12 секунд — говорим прямо, а не показываем пустой профиль
+  let bootWD = 0, netShown = false;
+  function netFail(){
+    if (netShown || itemsLoaded) return; netShown = true;
+    let el = $("netFail"); if (!el){ el = document.createElement("div"); el.id = "netFail"; document.body.appendChild(el); }
+    el.innerHTML = `<div class="nf-box" role="alertdialog" aria-label="Нет связи с базой"><div class="nf-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8.8a15 15 0 0 1 4.2-2.6M22 8.8A15 15 0 0 0 10.5 5.1"/><path d="M5 12.6a10 10 0 0 1 3.5-2M19 12.6a10 10 0 0 0-2.4-1.7"/><path d="M8.5 16.4a5 5 0 0 1 7 0"/><circle cx="12" cy="20" r="1"/><path d="m3 3 18 18"/></svg></div>
+      <h3>Нет связи с базой NEXUS</h3>
+      <p>Сайт открылся, но твои данные до него не доходят. Похоже, провайдер режет соединение с сервером базы — в России такое бывает без VPN.</p>
+      <p><b>Ничего не пропало:</b> игры, фильмы и всё остальное лежат на месте, их просто не видно.</p>
+      <ol><li>Включи VPN</li><li>Нажми «Обновить»</li></ol>
+      <div class="nf-acts"><button type="button" class="ib blue" id="nfR">Обновить</button><button type="button" class="ib" id="nfW">Подождать ещё</button></div></div>`;
+    el.hidden = false; document.body.classList.add("nf-on");
+    $("nfR").onclick = () => location.reload();
+    $("nfW").onclick = () => { el.hidden = true; document.body.classList.remove("nf-on"); netShown = false; clearTimeout(bootWD); bootWD = setTimeout(netFail, 15000); };
+  }
+  function netOk(){ clearTimeout(bootWD); netShown = false; const el = $("netFail"); if (el){ el.hidden = true; document.body.classList.remove("nf-on"); } }
+
   // ================= запуск =================
   readHash(); render();
   (async () => {
@@ -9959,9 +9988,10 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     const recoveryLink = /type=recovery/.test(location.hash);
     SB = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY, {auth: {persistSession: true, autoRefreshToken: true, detectSessionInUrl: true}});
     SB.auth.onAuthStateChange(ev => { if (ev === "PASSWORD_RECOVERY") setTimeout(() => passwordSheet(true), 600); });
+    bootWD = setTimeout(netFail, 12000);
     if (recoveryLink) setTimeout(() => { if (/access_token|type=recovery/.test(location.hash)) history.replaceState(null, "", location.pathname + "#games"); }, 1500);
     const {data: {session}} = await SB.auth.getSession();
-    if (session) start(session.user); else if (pendingTl) guestTier(pendingTl); else authScreen();
+    if (session) start(session.user); else { netOk(); if (pendingTl) guestTier(pendingTl); else authScreen(); }
   })();
 })();
 </script>
