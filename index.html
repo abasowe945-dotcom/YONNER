@@ -3842,6 +3842,11 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
 .slp-dl:active{transform:scale(.97)}
 .slp-dl.steam{background:linear-gradient(135deg,#1b2838,#2a475e);color:#fff;box-shadow:0 12px 30px rgba(27,40,56,.6)}
 .slp-nolink{color:#8d94a6;font-size:13.5px}
+.slp-ftpb{border-style:dashed;border-color:rgba(184,255,61,.45);color:#b8ff3d;background:rgba(184,255,61,.06);padding:14px 16px}
+.slp-ftpb:hover{background:rgba(184,255,61,.13)}
+.slp-ftp{display:flex;gap:8px;flex:1 1 100%;min-width:0}
+.slp-ftp .slp-in{flex:1}
+.slp-ftp .slp-btn{flex:none}
 .slp-c-want{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:14px;border-radius:18px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08)}
 .slp-want{display:inline-flex;align-items:center;gap:9px;padding:13px 18px;border-radius:14px;border:1.5px solid rgba(184,255,61,.5);background:rgba(184,255,61,.07);color:#b8ff3d;font:850 14.5px/1 var(--ios);letter-spacing:.04em;cursor:pointer;white-space:nowrap;transition:background .2s,color .2s,transform .2s cubic-bezier(.3,1.6,.4,1),box-shadow .2s}
 .slp-want svg{font-size:18px}
@@ -6134,7 +6139,8 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
   const PATCHES = [
     {v: "4.6", date: "2026-11-11", title: "Жанры в СЛОПе и «Список желаемого»", kind: "minor", sec: {
       n: ["СЛОП: фильтр по жанрам над плиткой. Жмёшь «Хоррор» — остаются только хорроры, жмёшь ещё «Выживание» — только те, где есть оба. Работает вместе с числом игроков и рулеткой"],
-      c: ["В Играх раздел «На будущее» теперь называется «Список желаемого». В Кино название прежнее"]}},
+      c: ["В Играх раздел «На будущее» теперь называется «Список желаемого». В Кино название прежнее",
+        "СЛОП: в карточке своей игры без ссылки на FreeTP появилась кнопка «Вставить ссылку с FreeTP» — скопировал адрес страницы, нажал, ссылка подставилась из буфера. Через «Изменить» ходить не нужно"]}},
     {v: "4.5", date: "2026-11-11", title: "Лайки на тир-листы и книга жалоб в новом стиле", kind: "minor", sec: {
       n: ["В СЛОП можно добавить игру прямо из своей коллекции или из ожидаемых: ищешь по названию или просто тыкаешь в обложку — название, постер, дата и жанры подставятся сами",
         "Лайки на тир-листы: сердечко в окне тир-листа, рядом видно, кто лайкнул. Счётчик лайков виден и в списке тир-листов"],
@@ -9131,7 +9137,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     const x = ov.querySelector(".slp-c-x"); if (x) x.focus({preventScroll: true});
   }
   function slCloseCard(){
-    const ov = $("slCard"); if (!ov || !slOpenId) return; slOpenId = null;
+    const ov = $("slCard"); if (!ov || !slOpenId) return; slOpenId = null; slFtpEdit = null;
     ov.classList.remove("on"); document.body.classList.remove("slp-open");
     document.querySelectorAll(".slp-fly").forEach(f => f.remove());
     slOpenCard.t = setTimeout(() => { if (!slOpenId){ ov.hidden = true; ov.innerHTML = ""; } }, 300);
@@ -9155,7 +9161,10 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     const ftpL = /freetp/i.test(ftp) ? "Скачать на FreeTP" : "Скачать";
     const dl = ftp ? `<a class="slp-dl" href="${esc(ftp)}" target="_blank" rel="noopener noreferrer">${SLI.dl}${ftpL}</a>${steam ? `<a class="slp-btn" href="${esc(steam)}" target="_blank" rel="noopener noreferrer">${SLI.ext} Steam</a>` : ""}`
       : steam ? `<a class="slp-dl steam" href="${esc(steam)}" target="_blank" rel="noopener noreferrer">${SLI.ext}${out ? "Открыть в Steam" : "Страница в Steam"}</a>`
-      : `<span class="slp-nolink">Ссылку на игру пока не добавили${own ? " — можно дописать через «Изменить»" : ""}.</span>`;
+      : `<span class="slp-nolink">Ссылку на игру пока не добавили.</span>`;
+    // владелец может докинуть ссылку FreeTP одним нажатием — прямо из буфера
+    const ftpAdd = !own || ftp ? "" : slFtpEdit === g.id ? `<span class="slp-ftp"><input class="slp-in" id="slFtpIn" inputmode="url" placeholder="Вставь сюда ссылку с freetp.org (Ctrl+V)" autocomplete="off"><button class="slp-btn pri" type="button" data-sl="ftpsave">Сохранить</button><button class="slp-btn" type="button" data-sl="ftpno" aria-label="Отмена">${SLI.x}</button></span>`
+      : `<button class="slp-btn slp-ftpb" type="button" data-sl="ftp" title="Скопируй адрес страницы игры на freetp.org и нажми">${SLI.dl} Вставить ссылку с FreeTP</button>`;
     const bg = g.screenshots[0] || slHttp(g.header) || slImg(g);
     const tr = g.trailer && (slHttp(g.trailer.mp4) || slHttp(g.trailer.webm)) ? g.trailer : null;
     const cms = SL.comments.filter(x => x.game_id === g.id);
@@ -9172,7 +9181,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
           <div class="slp-by">${avaHTML(p, "sm")}<b>${esc(own ? "Ты" : p.nick || "кто-то")}</b> ${own ? "добавил" : "предлагает"} · ${esc(slAgo(g.created_at))}</div>
         </div>
         <div class="slp-c-act">
-          <div class="slp-c-dl">${dl}</div>
+          <div class="slp-c-dl">${dl}${ftpAdd}</div>
           <div class="slp-c-want"><button class="slp-want${mineW ? " on" : ""}" type="button" data-sl="${out ? "want" : "wait"}" aria-pressed="${mineW}">${mineW ? SLI.check : out ? SLI.hand : SLI.clock}${out ? "ХОЧУ ПОИГРАТЬ" : "ЖДУ"}</button>
             <div class="slp-ppl">${want.length ? want.map(u => `<span class="slp-pp">${avaHTML(profOf(u), "sm")}${esc(u === ME.id ? "Ты" : profOf(u).nick || "?")}</span>`).join("") : `<em>${out ? "Пока никто не отметился. Нажми — и остальные увидят, с кем собираться." : "Пока никто не ждёт. Нажми «Жду» — игра появится и в твоей коллекции."}</em>`}</div></div>
         </div>
@@ -9211,15 +9220,38 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
       else if (a === "want") slToggleWant(id);
       else if (a === "wait") slToggleWait(id);
       else if (a === "csend") slSendComment();
+      else if (a === "ftp") slFtpPaste(id);
+      else if (a === "ftpsave"){ const i = $("slFtpIn"); slFtpSave(id, i ? i.value : ""); }
+      else if (a === "ftpno"){ slFtpEdit = null; slDrawCard(true); }
       else if (a === "edit") slForm(slGame(id));
       else if (a === "del"){ if (b.dataset.sure){ b.disabled = true; const g = slGame(id); const {error} = await SB.from("slop_games").delete().eq("id", id);
           if (error){ toast("Не удалилось"); b.disabled = false; return; } SL.games = SL.games.filter(x => x.id !== id); slCloseCard(); slRefresh(); toast(`${g ? g.title : "Игра"} — удалено из СЛОПа`); }
         else { b.dataset.sure = "1"; b.textContent = "Точно удалить? Нажми ещё раз"; setTimeout(() => { if (b.isConnected){ delete b.dataset.sure; b.textContent = "Удалить игру"; } }, 4000); } }
     });
     ov.addEventListener("keydown", e => { if (e.key !== "Enter" || !e.target.id) return;
+      if (e.target.id === "slFtpIn"){ e.preventDefault(); slFtpSave(slOpenId, e.target.value); return; }
       if (e.target.id === "slCIn"){ e.preventDefault(); slSendComment(); } else if (e.target.id === "slNote"){ e.preventDefault(); e.target.blur(); } });
     ov.addEventListener("focusout", e => { if (e.target.id !== "slNote" || !slOpenId) return; const v = e.target.value.trim().slice(0, 140) || null, cur = SL.status.find(s => s.game_id === slOpenId && s.user_id === ME.id);
       if (cur && (cur.note || null) !== v) slPatchStatus(slOpenId, {note: v}); });
+  }
+  let slFtpEdit = null;
+  const slFtpUrl = t => { t = String(t || "").trim(); const m = t.match(/https?:\/\/[^\s"'<>]+/i); return slHttp(m ? m[0] : /^[\w.-]+\.[a-z]{2,}\/\S*$/i.test(t) ? "https://" + t : ""); };
+  const slFtpAsk = (id, val) => { slFtpEdit = id; slDrawCard(true); const i = $("slFtpIn"); if (i){ if (val) i.value = val; i.focus({preventScroll: true}); } };
+  async function slFtpPaste(id){
+    let t = null; try { t = await navigator.clipboard.readText(); } catch(_){ t = null; }
+    if (slOpenId !== id) return;
+    if (t === null){ slFtpAsk(id); toast("Браузер не дал прочитать буфер — вставь ссылку в поле (Ctrl+V)"); return; }
+    const u = slFtpUrl(t);
+    if (!u){ slFtpAsk(id); toast("В буфере нет ссылки — скопируй адрес страницы игры на freetp.org"); return; }
+    if (!/freetp/i.test(u)){ slFtpAsk(id, u); toast("Это не похоже на FreeTP — проверь ссылку и нажми «Сохранить»"); return; }
+    slFtpSave(id, u);
+  }
+  async function slFtpSave(id, raw){
+    const g = slGame(id), u = slFtpUrl(raw); if (!g) return;
+    if (!u || u.length > 500){ toast("Это не ссылка — нужен адрес страницы игры целиком"); const i = $("slFtpIn"); if (i) i.focus(); return; }
+    const {error} = await SB.from("slop_games").update({freetp_url: u, updated_at: now()}).eq("id", id);
+    if (error){ toast("Не сохранилось, попробуй ещё раз"); return; }
+    g.freetp_url = u; slFtpEdit = null; slRefresh(); try { SND.click("soft"); } catch(_){} toast(`Ссылка FreeTP добавлена — ${g.title}`);
   }
   async function slSendComment(){
     const i = $("slCIn"), id = slOpenId; if (!i || !id) return; const body = i.value.trim().slice(0, 1000); if (!body) return;
