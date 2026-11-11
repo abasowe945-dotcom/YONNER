@@ -512,3 +512,100 @@ create policy rc_delete on public.recs for delete to authenticated using ((selec
 revoke all on public.recs from anon;
 alter table public.notifications drop constraint if exists notifications_kind_check;
 alter table public.notifications add constraint notifications_kind_check check (kind in ('mention_post','mention_comment','comment','invite','mention_event','tier_reply','book_comment','suggest','suggest_ok'));
+
+-- ===== 4.4: СЛОП — кооп-игры с друзьями =====
+-- игры раздела: общий список, ни к чьей личной полке не привязан
+create table if not exists public.slop_games (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  title text not null check (char_length(title) between 1 and 200),
+  steam_id text check (steam_id is null or steam_id ~ '^\d{1,10}$'),
+  freetp_url text check (freetp_url is null or char_length(freetp_url) <= 500),
+  cover text check (cover is null or char_length(cover) <= 600),
+  header text check (header is null or char_length(header) <= 600),
+  descr text check (descr is null or char_length(descr) <= 4000),
+  genres text[] not null default '{}',
+  screenshots jsonb not null default '[]'::jsonb check (jsonb_typeof(screenshots) = 'array'),
+  trailer jsonb check (trailer is null or jsonb_typeof(trailer) = 'object'),
+  min_players int not null default 1 check (min_players between 1 and 100),
+  max_players int not null check (max_players between 1 and 100),
+  release_date date,
+  release_prec text not null default 'day' check (release_prec in ('day','month','quarter','year')),
+  tba boolean not null default false,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  check (min_players <= max_players)
+);
+-- «жду» (до выхода) и «хочу поиграть» (после)
+create table if not exists public.slop_marks (
+  game_id uuid not null references public.slop_games (id) on delete cascade,
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  kind text not null check (kind in ('wait','want')),
+  created_at timestamptz not null default now(),
+  primary key (game_id, user_id, kind)
+);
+-- статус у каждого свой: играем / прошли / дропнули, плюс короткий вердикт
+create table if not exists public.slop_status (
+  game_id uuid not null references public.slop_games (id) on delete cascade,
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  status text not null check (status in ('playing','done','dropped')),
+  verdict text check (verdict is null or verdict in ('worth','meh','skip')),
+  note text check (note is null or char_length(note) <= 140),
+  updated_at timestamptz not null default now(),
+  primary key (game_id, user_id)
+);
+create table if not exists public.slop_comments (
+  id uuid primary key default gen_random_uuid(),
+  game_id uuid not null references public.slop_games (id) on delete cascade,
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  body text not null check (char_length(body) between 1 and 1000),
+  created_at timestamptz not null default now()
+);
+create index if not exists slop_games_created_idx on public.slop_games (created_at desc);
+create index if not exists slop_games_user_idx on public.slop_games (user_id);
+create index if not exists slop_games_steam_idx on public.slop_games (steam_id);
+create index if not exists slop_marks_user_idx on public.slop_marks (user_id);
+create index if not exists slop_status_user_idx on public.slop_status (user_id);
+create index if not exists slop_comments_game_idx on public.slop_comments (game_id, created_at);
+create index if not exists slop_comments_user_idx on public.slop_comments (user_id);
+alter table public.slop_games enable row level security;
+alter table public.slop_marks enable row level security;
+alter table public.slop_status enable row level security;
+alter table public.slop_comments enable row level security;
+drop policy if exists slg_select on public.slop_games;
+drop policy if exists slg_insert on public.slop_games;
+drop policy if exists slg_update on public.slop_games;
+drop policy if exists slg_delete on public.slop_games;
+create policy slg_select on public.slop_games for select to authenticated using (true);
+create policy slg_insert on public.slop_games for insert to authenticated with check ((select auth.uid()) = user_id);
+create policy slg_update on public.slop_games for update to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy slg_delete on public.slop_games for delete to authenticated using ((select auth.uid()) = user_id);
+drop policy if exists slm_select on public.slop_marks;
+drop policy if exists slm_insert on public.slop_marks;
+drop policy if exists slm_delete on public.slop_marks;
+create policy slm_select on public.slop_marks for select to authenticated using (true);
+create policy slm_insert on public.slop_marks for insert to authenticated with check ((select auth.uid()) = user_id);
+create policy slm_delete on public.slop_marks for delete to authenticated using ((select auth.uid()) = user_id);
+drop policy if exists sls_select on public.slop_status;
+drop policy if exists sls_insert on public.slop_status;
+drop policy if exists sls_update on public.slop_status;
+drop policy if exists sls_delete on public.slop_status;
+create policy sls_select on public.slop_status for select to authenticated using (true);
+create policy sls_insert on public.slop_status for insert to authenticated with check ((select auth.uid()) = user_id);
+create policy sls_update on public.slop_status for update to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy sls_delete on public.slop_status for delete to authenticated using ((select auth.uid()) = user_id);
+drop policy if exists slc_select on public.slop_comments;
+drop policy if exists slc_insert on public.slop_comments;
+drop policy if exists slc_delete on public.slop_comments;
+create policy slc_select on public.slop_comments for select to authenticated using (true);
+create policy slc_insert on public.slop_comments for insert to authenticated with check ((select auth.uid()) = user_id);
+create policy slc_delete on public.slop_comments for delete to authenticated
+  using ((select auth.uid()) = user_id or exists (select 1 from public.slop_games g where g.id = game_id and g.user_id = (select auth.uid())));
+revoke all on public.slop_games, public.slop_marks, public.slop_status, public.slop_comments from anon;
+grant select, insert, update, delete on public.slop_games, public.slop_marks, public.slop_status, public.slop_comments to authenticated;
+alter table public.slop_marks replica identity full;
+alter table public.slop_status replica identity full;
+do $$ begin alter publication supabase_realtime add table public.slop_games; exception when duplicate_object then null; end $$;
+do $$ begin alter publication supabase_realtime add table public.slop_marks; exception when duplicate_object then null; end $$;
+do $$ begin alter publication supabase_realtime add table public.slop_status; exception when duplicate_object then null; end $$;
+do $$ begin alter publication supabase_realtime add table public.slop_comments; exception when duplicate_object then null; end $$;

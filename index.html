@@ -3614,6 +3614,321 @@ html:has(body.view-open),body.view-open{overflow:hidden}
 @media (max-width:760px){.pf-shelf .rx-hs .rx-rack{margin:0 -12px;padding-left:12px;padding-right:12px}}
 .rx-sh{flex-wrap:wrap;row-gap:6px}.rx-sh .pf-mini{margin-left:auto;align-self:center;font-size:12px}
 </style>
+<style id="slopCss">
+/* ================= СЛОП: кооп-игры с друзьями ================= */
+body[data-world="wSlop"]:not(.has-secbg){background:#090b10!important}
+body[data-world="wSlop"]{color:#e9ecf3}
+#wSlop{--sl-a:#b8ff3d;--sl-a2:#4dffc3;--sl-ink:#0b1400;--sl-fg:#eef1f7;--sl-dim:#8d94a6;--sl-line:rgba(255,255,255,.09);--sl-cell:rgba(255,255,255,.045);position:relative;font-family:var(--ios);color:var(--sl-fg)}
+#wSlop::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(60% 46% at 12% 0,rgba(184,255,61,.13),transparent 62%),radial-gradient(52% 44% at 96% 8%,rgba(77,255,195,.1),transparent 60%),radial-gradient(70% 50% at 50% 110%,rgba(120,90,255,.1),transparent 60%)}
+.slp-main{max-width:1320px;margin:0 auto;padding:22px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
+.slp-main svg{width:1em;height:1em;flex:none}
+
+.slp-hero{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px 24px;align-items:end;padding:26px 28px;border-radius:28px;border:1px solid var(--sl-line);background:linear-gradient(135deg,rgba(184,255,61,.1),rgba(255,255,255,.025) 42%,rgba(77,255,195,.06));overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.08)}
+.slp-hero::after{content:"";position:absolute;right:-70px;top:-90px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(184,255,61,.22),transparent 65%);filter:blur(10px);pointer-events:none;animation:slpPulse 7s ease-in-out infinite}
+@keyframes slpPulse{50%{transform:scale(1.18) translate(-12px,14px);opacity:.7}}
+.slp-kick{display:inline-flex;align-items:center;gap:7px;font:700 11.5px/1 var(--ios);letter-spacing:.14em;text-transform:uppercase;color:var(--sl-a)}
+.slp-hero h1{margin:8px 0 6px;font:900 clamp(44px,7vw,78px)/.9 var(--ios);letter-spacing:-.045em;font-style:italic;background:linear-gradient(100deg,#fff 20%,var(--sl-a) 70%,var(--sl-a2));-webkit-background-clip:text;background-clip:text;color:transparent;width:fit-content;padding-right:.12em}
+.slp-hero p{margin:0;color:var(--sl-dim);font-size:15px;max-width:46ch}
+.slp-hero-a{position:relative;z-index:1;display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.slp-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--sl-line);border-radius:14px;padding:12px 16px;background:rgba(255,255,255,.07);color:#fff;font:650 14.5px/1 var(--ios);cursor:pointer;text-decoration:none;white-space:nowrap;transition:transform .18s cubic-bezier(.3,1.5,.4,1),background .18s,box-shadow .18s,border-color .18s}
+.slp-btn svg{font-size:17px}
+.slp-btn:hover{background:rgba(255,255,255,.13);transform:translateY(-1px)}
+.slp-btn:active{transform:scale(.96)}
+.slp-btn.pri{background:linear-gradient(135deg,var(--sl-a),var(--sl-a2));color:var(--sl-ink);border-color:transparent;box-shadow:0 10px 26px rgba(150,255,90,.26)}
+.slp-btn.pri:hover{box-shadow:0 14px 34px rgba(150,255,90,.4)}
+.slp-btn.sm{padding:9px 12px;font-size:13px;border-radius:11px}
+.slp-btn.red{color:#ff8f88;background:rgba(255,69,58,.12);border-color:rgba(255,69,58,.2)}
+.slp-btn[disabled]{opacity:.5;pointer-events:none}
+.slp-n{grid-column:1/-1;position:relative;z-index:1;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.slp-n-l{color:var(--sl-dim);font:600 13px/1 var(--ios);margin-right:4px}
+.slp-chip{min-width:62px;height:54px;padding:0 18px;border-radius:18px;border:1px solid var(--sl-line);background:rgba(255,255,255,.05);color:#dfe3ec;font:800 21px/1 var(--ios);letter-spacing:-.02em;cursor:pointer;transition:transform .2s cubic-bezier(.3,1.6,.4,1),background .2s,color .2s,box-shadow .2s,border-color .2s}
+.slp-chip small{display:block;font:600 9.5px/1 var(--ios);letter-spacing:.08em;text-transform:uppercase;color:var(--sl-dim);margin-top:4px;transition:color .2s}
+.slp-chip:hover{transform:translateY(-2px);background:rgba(255,255,255,.1)}
+.slp-chip:active{transform:scale(.94)}
+.slp-chip[aria-pressed="true"]{background:linear-gradient(135deg,var(--sl-a),var(--sl-a2));color:var(--sl-ink);border-color:transparent;box-shadow:0 10px 28px rgba(150,255,90,.32);transform:translateY(-2px)}
+.slp-chip[aria-pressed="true"] small{color:rgba(11,20,0,.62)}
+
+.slp-sec{margin-top:34px}
+.slp-sec > header{display:flex;align-items:baseline;gap:12px;margin:0 2px 14px}
+.slp-sec > header h2{margin:0;font:800 23px/1.1 var(--ios);letter-spacing:-.02em}
+.slp-sec > header span{color:var(--sl-dim);font-size:13.5px}
+.slp-sub{margin:20px 2px 10px;font:700 12px/1 var(--ios);letter-spacing:.12em;text-transform:uppercase;color:var(--sl-dim)}
+
+/* календарь ожиданий */
+.slp-wrow{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(300px,340px);gap:14px;overflow-x:auto;padding:6px 2px 14px;margin:-6px -2px 0;scroll-snap-type:x proximity;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.18) transparent}
+.slp-w{scroll-snap-align:start;position:relative;display:grid;grid-template-columns:104px minmax(0,1fr);gap:14px;padding:12px;border-radius:20px;border:1px solid var(--sl-line);background:var(--sl-cell);cursor:pointer;overflow:hidden;transition:transform .25s cubic-bezier(.2,.9,.25,1),border-color .25s,background .25s,box-shadow .25s;animation:slpIn .5s cubic-bezier(.2,.9,.25,1) backwards;animation-delay:calc(var(--i,0) * 50ms)}
+.slp-w:hover{transform:translateY(-3px);border-color:rgba(184,255,61,.35);background:rgba(255,255,255,.07);box-shadow:0 18px 40px rgba(0,0,0,.4)}
+.slp-w-p{position:relative;align-self:start}
+.slp-w-d{position:absolute;left:6px;top:6px;padding:5px 8px;border-radius:9px;background:rgba(8,10,14,.78);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);font:800 11.5px/1 var(--ios);letter-spacing:.02em;color:#fff;border:1px solid rgba(255,255,255,.14)}
+.slp-w-b{min-width:0;display:flex;flex-direction:column;gap:6px}
+.slp-w-b .t{font:750 16.5px/1.2 var(--ios);letter-spacing:-.01em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.slp-cd{font:800 14px/1 var(--ios);color:var(--sl-a)}
+.slp-cd.dim{color:var(--sl-dim)}
+.slp-m{display:flex;align-items:center;gap:6px;color:var(--sl-dim);font-size:13px}
+.slp-by{display:flex;align-items:center;gap:6px;color:var(--sl-dim);font-size:12.5px;min-width:0}
+.slp-by b{color:#d8dce6;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.slp-c-h .slp-by{flex-wrap:wrap}.slp-c-h .slp-by b{flex:none;max-width:100%}
+.slp-w-f{margin-top:auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px 8px;padding-top:4px}
+.slp-avs{display:inline-flex;align-items:center;min-width:0}
+.slp-avs .fr-ava{margin-left:-7px;box-shadow:0 0 0 2px #14171d;transition:transform .2s}
+.slp-avs .fr-ava:first-child{margin-left:0}
+.slp-avs .fr-ava:hover{transform:translateY(-3px) scale(1.12);z-index:2}
+.slp-avs em{margin-left:6px;font:600 12px/1 var(--ios);font-style:normal;color:var(--sl-dim)}
+.slp-avs.none{color:var(--sl-dim);font-size:12.5px;white-space:nowrap}
+.slp-wait{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(184,255,61,.4);border-radius:12px;padding:9px 13px;background:rgba(184,255,61,.08);color:var(--sl-a);font:750 13.5px/1 var(--ios);cursor:pointer;white-space:nowrap;transition:transform .2s cubic-bezier(.3,1.7,.4,1),background .2s,color .2s}
+.slp-wait:hover{background:rgba(184,255,61,.16)}
+.slp-wait:active{transform:scale(.92)}
+.slp-wait.on{background:linear-gradient(135deg,var(--sl-a),var(--sl-a2));color:var(--sl-ink);border-color:transparent}
+.slp-wait.pop,.slp-want.pop{animation:slpPop .45s cubic-bezier(.3,1.8,.4,1)}
+@keyframes slpPop{0%{transform:scale(.86)}55%{transform:scale(1.1)}100%{transform:scale(1)}}
+@keyframes slpIn{from{opacity:0;transform:translateY(16px) scale(.96)}}
+
+/* постер */
+.slp-p{position:relative;display:block;aspect-ratio:2/3;border-radius:14px;overflow:hidden;background:linear-gradient(160deg,#232733,#12141a);box-shadow:0 10px 26px rgba(0,0,0,.5),inset 0 0 0 1px rgba(255,255,255,.07)}
+.slp-p img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.slp-ph{position:absolute;inset:0;display:grid;place-items:center;padding:12px;text-align:center;font:800 15px/1.2 var(--ios);color:#aab1c2;background:repeating-linear-gradient(135deg,rgba(255,255,255,.03) 0 12px,transparent 12px 24px)}
+
+/* библиотека */
+.slp-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.slp-tabs{display:flex;gap:4px;padding:4px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid var(--sl-line);overflow-x:auto;scrollbar-width:none;max-width:100%}
+.slp-tabs::-webkit-scrollbar{display:none}
+.slp-tab{border:0;border-radius:10px;padding:9px 13px;background:transparent;color:var(--sl-dim);font:650 13.5px/1 var(--ios);cursor:pointer;white-space:nowrap;transition:background .2s,color .2s}
+.slp-tab i{font-style:normal;opacity:.6;margin-left:5px;font-weight:600}
+.slp-tab:hover{color:#fff}
+.slp-tab[aria-pressed="true"]{background:rgba(255,255,255,.13);color:#fff}
+.slp-q{margin-left:auto;display:flex;align-items:center;gap:8px;padding:0 12px;height:42px;border-radius:13px;border:1px solid var(--sl-line);background:rgba(255,255,255,.05);color:var(--sl-dim);min-width:0;flex:0 1 240px;transition:border-color .2s,background .2s}
+.slp-q:focus-within{border-color:rgba(184,255,61,.5);background:rgba(255,255,255,.08)}
+.slp-q input{flex:1;min-width:0;border:0;background:transparent;color:#fff;font:500 14.5px/1 var(--ios);outline:0}
+.slp-q input::placeholder{color:var(--sl-dim)}
+.slp-sel{height:42px;border-radius:13px;border:1px solid var(--sl-line);background:#161920;color:#fff;font:600 13.5px/1 var(--ios);padding:0 12px;cursor:pointer}
+.slp-who{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.slp-who:empty{display:none}
+.slp-who > span{color:var(--sl-dim);font:600 12.5px/1 var(--ios)}
+.slp-wc{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--sl-line);border-radius:999px;padding:4px 12px 4px 4px;background:rgba(255,255,255,.04);color:#cfd4df;font:600 13px/1 var(--ios);cursor:pointer;transition:background .2s,border-color .2s,color .2s,transform .2s cubic-bezier(.3,1.6,.4,1)}
+.slp-wc:hover{background:rgba(255,255,255,.09)}
+.slp-wc:active{transform:scale(.95)}
+.slp-wc[aria-pressed="true"]{background:rgba(184,255,61,.14);border-color:rgba(184,255,61,.55);color:var(--sl-a)}
+.slp-grid{position:relative;display:grid;grid-template-columns:repeat(auto-fill,minmax(176px,1fr));gap:26px 20px;perspective:1400px}
+.slp-t{position:relative;display:block;border:0;padding:0;background:transparent;color:inherit;text-align:left;cursor:pointer;font-family:var(--ios);min-width:0;outline:0}
+.slp-t .slp-p{transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateZ(0);transition:transform .35s cubic-bezier(.2,.9,.25,1),box-shadow .35s;will-change:transform}
+.slp-t .slp-p::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(circle at var(--mx,50%) var(--my,0%),rgba(255,255,255,.34),transparent 46%)}
+.slp-t:hover .slp-p,.slp-t:focus-visible .slp-p{transform:translateY(-8px) scale(1.035) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));box-shadow:0 26px 50px rgba(0,0,0,.6),0 0 0 1px rgba(184,255,61,.5),0 0 44px rgba(150,255,90,.2)}
+.slp-t:hover .slp-p::after{opacity:1}
+.slp-t.tilt .slp-p{transition:transform .08s linear,box-shadow .35s}
+.slp-t:active .slp-p{transform:scale(.97)}
+.slp-t > b{display:block;margin-top:11px;font:700 15px/1.25 var(--ios);letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.slp-t > small{display:flex;align-items:center;gap:5px;margin-top:4px;color:var(--sl-dim);font:550 13px/1.2 var(--ios)}
+.slp-b{position:absolute;z-index:2;display:inline-flex;align-items:center;gap:4px;padding:5px 8px;border-radius:9px;font:800 11px/1 var(--ios);font-style:normal;letter-spacing:.02em;background:rgba(8,10,14,.78);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#fff;border:1px solid rgba(255,255,255,.14)}
+.slp-b.want{right:7px;top:7px}
+.slp-b.st{left:7px;bottom:7px}
+.slp-b.st.playing{background:rgba(48,209,88,.92);color:#04230d;border-color:transparent}
+.slp-b.st.playing::before{content:"";width:6px;height:6px;border-radius:50%;background:#04230d;animation:slpBlink 1.4s ease-in-out infinite}
+@keyframes slpBlink{50%{opacity:.25}}
+.slp-b.st.done{background:rgba(10,132,255,.92);border-color:transparent}
+.slp-b.st.dropped{background:rgba(255,69,58,.9);border-color:transparent}
+.slp-b.new{left:7px;top:7px;background:linear-gradient(135deg,var(--sl-a),var(--sl-a2));color:#0b1400;border-color:transparent;box-shadow:0 6px 16px rgba(150,255,90,.4)}
+.slp-empty{grid-column:1/-1;padding:46px 20px;text-align:center;border-radius:22px;border:1px dashed rgba(255,255,255,.14);color:var(--sl-dim);font-size:14.5px;animation:slpIn .4s ease backwards}
+.slp-empty b{display:block;color:#fff;font:750 19px/1.25 var(--ios);margin-bottom:6px}
+.slp-empty .slp-btn{margin-top:16px}
+.slp-empty svg{font-size:34px;color:var(--sl-a);margin-bottom:10px}
+.slp-sk{border-radius:14px;background:linear-gradient(100deg,rgba(255,255,255,.05) 30%,rgba(255,255,255,.11) 50%,rgba(255,255,255,.05) 70%) 0 0/300% 100%;animation:slpSk 1.3s linear infinite}
+.slp-sk.p{aspect-ratio:2/3}.slp-sk.l{height:14px;margin-top:11px;width:74%}.slp-sk.w{height:132px;border-radius:20px}
+@keyframes slpSk{to{background-position:-150% 0}}
+
+/* лента раздела */
+.slp-feed{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px}
+.slp-fe{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--sl-line);border-radius:14px;background:var(--sl-cell);color:#cfd4df;font:500 13.5px/1.3 var(--ios);text-align:left;cursor:pointer;min-width:0;transition:background .2s,transform .2s}
+.slp-fe:hover{background:rgba(255,255,255,.08);transform:translateX(2px)}
+.slp-fe > span.tx{min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.slp-fe b{color:#fff;font-weight:650}
+.slp-fe time{color:var(--sl-dim);font-size:12px;white-space:nowrap}
+.slp-fe .ic{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--sl-a),var(--sl-a2));color:#0b1400;font-size:14px}
+
+/* карточка игры */
+.slp-ov,.slp-rl{--sl-a:#b8ff3d;--sl-a2:#4dffc3;--sl-ink:#0b1400;--sl-fg:#eef1f7;--sl-dim:#8d94a6;--sl-line:rgba(255,255,255,.12);--sl-cell:rgba(255,255,255,.045)}
+.slp-rl svg{width:1em;height:1em;flex:none}
+body.slp-open{overflow:hidden}
+body.slp-open .tabbar{transform:translate(-50%,170%)}
+@media (max-width:520px){body.slp-open .tabbar{transform:translateY(170%)}}
+.slp-ov{position:fixed;inset:0;z-index:72;display:grid;place-items:center;padding:max(20px,env(safe-area-inset-top,0px)) 20px max(20px,env(safe-area-inset-bottom,0px));font-family:var(--ios);color:#eef1f7}
+.slp-ov[hidden]{display:none}
+.slp-ov-bg{position:absolute;inset:0;background:rgba(4,5,8,.62);-webkit-backdrop-filter:blur(16px) saturate(1.3);backdrop-filter:blur(16px) saturate(1.3);opacity:0;transition:opacity .3s}
+.slp-ov.on .slp-ov-bg{opacity:1}
+.slp-c{position:relative;width:min(1000px,100%);max-height:100%;overflow-y:auto;overscroll-behavior:contain;border-radius:28px;border:1px solid rgba(255,255,255,.1);background:rgba(17,19,25,.84);-webkit-backdrop-filter:blur(34px) saturate(1.5);backdrop-filter:blur(34px) saturate(1.5);box-shadow:0 40px 110px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.1);opacity:0;transition:opacity .28s;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.2) transparent}
+.slp-ov.on .slp-c{opacity:1}
+.slp-c svg{width:1em;height:1em;flex:none}
+.slp-c-x{position:sticky;top:14px;margin:14px 14px -52px auto;z-index:5;display:grid;place-items:center;width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.14);background:rgba(10,12,16,.7);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:#fff;font-size:17px;cursor:pointer;transition:transform .2s,background .2s}
+.slp-c-x:hover{transform:rotate(90deg);background:rgba(255,255,255,.16)}
+.slp-c-bg{position:absolute;left:0;right:0;top:0;height:400px;background:center/cover no-repeat;border-radius:28px 28px 0 0;-webkit-mask-image:linear-gradient(#000 20%,transparent);mask-image:linear-gradient(#000 20%,transparent);opacity:.5;pointer-events:none}
+.slp-c-top{position:relative;display:grid;grid-template-columns:250px minmax(0,1fr);gap:28px;padding:34px 34px 8px}
+.slp-c-poster .slp-p{border-radius:18px;box-shadow:0 24px 60px rgba(0,0,0,.65),inset 0 0 0 1px rgba(255,255,255,.1)}
+.slp-fly{position:fixed;z-index:74;transform-origin:0 0;border-radius:18px;overflow:hidden;pointer-events:none;box-shadow:0 30px 70px rgba(0,0,0,.6);background:#161920}
+.slp-fly img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.slp-c-h{min-width:0;display:flex;flex-direction:column;gap:12px;padding-top:6px}
+.slp-c-poster{grid-row:1/3}
+.slp-c-act{min-width:0;display:grid;gap:12px;align-content:start}
+.slp-ov.on .slp-c-act > *{animation:slpIn .5s cubic-bezier(.2,.9,.25,1) .2s backwards}
+.slp-ov.still .slp-c-act > *{animation:none}
+.slp-ov.on .slp-c-h > *,.slp-ov.on .slp-c-body > *{animation:slpIn .5s cubic-bezier(.2,.9,.25,1) backwards}
+.slp-ov.on .slp-c-h > :nth-child(2){animation-delay:.04s}.slp-ov.on .slp-c-h > :nth-child(3){animation-delay:.08s}.slp-ov.on .slp-c-h > :nth-child(4){animation-delay:.12s}.slp-ov.on .slp-c-h > :nth-child(5){animation-delay:.16s}.slp-ov.on .slp-c-h > :nth-child(n+6){animation-delay:.2s}
+.slp-ov.on .slp-c-body > *{animation-delay:.24s}
+.slp-ov.still .slp-c-h > *,.slp-ov.still .slp-c-body > *{animation:none}
+.slp-c-tags{display:flex;gap:8px;flex-wrap:wrap;min-height:0}
+.slp-c-tags:empty{display:none}
+.slp-pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;font:750 12px/1 var(--ios);background:rgba(255,255,255,.1);color:#fff}
+.slp-pill.a{background:linear-gradient(135deg,var(--sl-a,#b8ff3d),var(--sl-a2,#4dffc3));color:#0b1400}
+.slp-pill.playing{background:rgba(48,209,88,.2);color:#6ee58c}.slp-pill.done{background:rgba(10,132,255,.22);color:#74b9ff}.slp-pill.dropped{background:rgba(255,69,58,.2);color:#ff8f88}
+.slp-pill.worth{background:rgba(48,209,88,.16);color:#6ee58c}.slp-pill.meh{background:rgba(255,204,0,.16);color:#ffd95a}.slp-pill.skip{background:rgba(255,69,58,.16);color:#ff8f88}
+.slp-c-h h2{margin:0;font:850 clamp(26px,4vw,40px)/1.05 var(--ios);letter-spacing:-.03em;padding-right:44px;overflow-wrap:anywhere}
+.slp-c-meta{display:flex;flex-wrap:wrap;gap:8px 16px;color:#c3c9d6;font:600 14.5px/1.2 var(--ios)}
+.slp-c-meta span{display:inline-flex;align-items:center;gap:6px}
+.slp-c-meta span:first-child{color:var(--sl-a,#b8ff3d)}
+.slp-c-g{display:flex;flex-wrap:wrap;gap:6px}
+.slp-c-g:empty{display:none}
+.slp-c-g span{padding:5px 10px;border-radius:8px;background:rgba(255,255,255,.07);color:#c3c9d6;font:550 12.5px/1 var(--ios)}
+.slp-c-dl{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:4px}
+.slp-dl{display:inline-flex;align-items:center;gap:10px;padding:15px 22px;border-radius:16px;border:0;background:linear-gradient(135deg,#b8ff3d,#4dffc3);color:#0b1400;font:800 16px/1 var(--ios);text-decoration:none;cursor:pointer;box-shadow:0 12px 30px rgba(150,255,90,.3);transition:transform .2s cubic-bezier(.3,1.5,.4,1),box-shadow .2s}
+.slp-dl svg{font-size:19px}
+.slp-dl:hover{transform:translateY(-2px);box-shadow:0 18px 40px rgba(150,255,90,.45)}
+.slp-dl:active{transform:scale(.97)}
+.slp-dl.steam{background:linear-gradient(135deg,#1b2838,#2a475e);color:#fff;box-shadow:0 12px 30px rgba(27,40,56,.6)}
+.slp-nolink{color:#8d94a6;font-size:13.5px}
+.slp-c-want{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:14px;border-radius:18px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08)}
+.slp-want{display:inline-flex;align-items:center;gap:9px;padding:13px 18px;border-radius:14px;border:1.5px solid rgba(184,255,61,.5);background:rgba(184,255,61,.07);color:#b8ff3d;font:850 14.5px/1 var(--ios);letter-spacing:.04em;cursor:pointer;white-space:nowrap;transition:background .2s,color .2s,transform .2s cubic-bezier(.3,1.6,.4,1),box-shadow .2s}
+.slp-want svg{font-size:18px}
+.slp-want:hover{background:rgba(184,255,61,.16)}
+.slp-want:active{transform:scale(.94)}
+.slp-want.on{background:linear-gradient(135deg,#b8ff3d,#4dffc3);color:#0b1400;border-color:transparent;box-shadow:0 10px 26px rgba(150,255,90,.3)}
+.slp-ppl{display:flex;flex-wrap:wrap;gap:6px;align-items:center;min-width:0;flex:1}
+.slp-ppl > em{color:#8d94a6;font:500 13.5px/1.3 var(--ios);font-style:normal}
+.slp-pp{display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 3px;border-radius:999px;background:rgba(255,255,255,.08);font:600 13px/1 var(--ios);color:#e5e8ef;animation:slpIn .35s cubic-bezier(.3,1.5,.4,1) backwards}
+.slp-c-body{position:relative;padding:14px 34px 34px;display:grid;grid-template-columns:minmax(0,1fr);gap:22px}
+.slp-c-body > *{min-width:0}
+.slp-c-desc{margin:0;color:#c3c9d6;font:400 15px/1.6 var(--ios);white-space:pre-line;max-width:78ch}
+.slp-blk h3{margin:0 0 12px;font:750 12px/1 var(--ios);letter-spacing:.12em;text-transform:uppercase;color:#8d94a6;display:flex;align-items:center;gap:8px}
+.slp-seg{display:flex;gap:8px;flex-wrap:wrap}
+.slp-st{display:inline-flex;align-items:center;gap:8px;padding:11px 15px;border-radius:13px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#cfd4df;font:650 14px/1 var(--ios);cursor:pointer;transition:background .2s,color .2s,border-color .2s,transform .2s cubic-bezier(.3,1.6,.4,1)}
+.slp-st svg{font-size:16px}
+.slp-st:hover{background:rgba(255,255,255,.1)}
+.slp-st:active{transform:scale(.95)}
+.slp-st.on.playing{background:rgba(48,209,88,.2);border-color:rgba(48,209,88,.6);color:#6ee58c}
+.slp-st.on.done{background:rgba(10,132,255,.22);border-color:rgba(10,132,255,.65);color:#74b9ff}
+.slp-st.on.dropped{background:rgba(255,69,58,.2);border-color:rgba(255,69,58,.6);color:#ff8f88}
+.slp-vd{display:grid;gap:10px;margin-top:12px;padding:14px;border-radius:16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);animation:slpIn .35s ease backwards}
+.slp-vd > span{color:#8d94a6;font-size:13px}
+.slp-vd .slp-st.on{background:rgba(184,255,61,.16);border-color:rgba(184,255,61,.55);color:#b8ff3d}
+.slp-in{width:100%;min-width:0;border:1px solid rgba(255,255,255,.1);border-radius:12px;background:rgba(255,255,255,.06);color:#fff;font:500 14.5px/1.3 var(--ios);padding:11px 13px;outline:0;transition:border-color .2s,background .2s}
+.slp-in:focus{border-color:rgba(184,255,61,.55);background:rgba(255,255,255,.09)}
+.slp-in::placeholder{color:#7d8496}
+.slp-who-l{display:grid;gap:6px;margin-top:14px}
+.slp-wr{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:8px 10px;border-radius:12px;background:rgba(255,255,255,.035);font:550 13.5px/1.3 var(--ios)}
+.slp-wr q{quotes:"«" "»";color:#aeb5c4;font-weight:450;min-width:0;overflow-wrap:anywhere}
+.slp-media{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(260px,320px);gap:10px;overflow-x:auto;padding-bottom:8px;scroll-snap-type:x proximity;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.2) transparent}
+.slp-media > *{scroll-snap-align:start;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#0c0e12;border:0;padding:0;cursor:zoom-in;position:relative}
+.slp-media img,.slp-media video{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s cubic-bezier(.2,.9,.25,1)}
+.slp-media button:hover img{transform:scale(1.05)}
+.slp-media .vid{cursor:default}
+.slp-cm{display:grid;gap:10px;list-style:none;margin:0 0 12px;padding:0}
+.slp-cm li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:start;animation:slpIn .3s ease backwards}
+.slp-cm .bx{padding:9px 12px;border-radius:4px 14px 14px 14px;background:rgba(255,255,255,.06);font:450 14px/1.45 var(--ios);overflow-wrap:anywhere;white-space:pre-line}
+.slp-cm .bx b{font-weight:700;margin-right:8px}.slp-cm .bx time{color:#8d94a6;font-size:12px}
+.slp-cm .bx p{margin:3px 0 0}
+.slp-cm .del{border:0;background:transparent;color:#6f7686;cursor:pointer;padding:8px;border-radius:8px;font-size:14px}
+.slp-cm .del:hover{color:#ff8f88;background:rgba(255,69,58,.12)}
+.slp-cf{display:flex;gap:8px}
+.slp-cf .slp-btn{flex:none}
+.slp-c-own{display:flex;gap:8px;flex-wrap:wrap;padding-top:16px;border-top:1px solid rgba(255,255,255,.08)}
+
+/* окно добавления */
+.sh.slp-sheet{width:min(760px,100%);background:rgba(20,22,28,.82);-webkit-backdrop-filter:blur(30px) saturate(1.6);backdrop-filter:blur(30px) saturate(1.6);border:1px solid rgba(255,255,255,.1)}
+.slp-f{display:grid;grid-template-columns:200px minmax(0,1fr);gap:22px;align-items:start}
+.slp-drop{position:relative;aspect-ratio:2/3;border-radius:16px;border:1.5px dashed rgba(255,255,255,.22);background:rgba(255,255,255,.04);display:grid;place-items:center;text-align:center;padding:14px;color:#8e8e93;font:500 13px/1.4 var(--ios);cursor:pointer;overflow:hidden;transition:border-color .2s,background .2s,transform .2s}
+.slp-drop:hover,.slp-drop.drop{border-color:#b8ff3d;background:rgba(184,255,61,.07)}
+.slp-drop.drop{transform:scale(1.02)}
+.slp-drop svg{width:30px;height:30px;display:block;margin:0 auto 8px;color:#b8ff3d}
+.slp-drop img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.slp-drop.has{border-style:solid;border-color:rgba(255,255,255,.14)}
+.slp-drop.has > div{display:none}
+.slp-drop-x{margin-top:8px;width:100%}
+.slp-f .f b{color:#f2f2f7;font-weight:650}
+.slp-f .f i{font-style:normal;display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#b8ff3d;color:#0b1400;font:800 12px/1 var(--ios);margin-right:7px}
+.slp-f-row{display:flex;gap:8px}
+.slp-f-row .in{flex:1}
+.slp-f-row .ib{flex:none;padding:12px 15px;font-size:14.5px}
+.slp-f-msg{margin:-4px 0 12px;font:500 13px/1.4 var(--ios);color:#8e8e93}
+.slp-f-msg:empty{display:none}
+.slp-f-msg.ok{color:#6ee58c}.slp-f-msg.bad{color:#ff8f88}
+.slp-f-more{margin:2px 0 14px;border-radius:14px;background:rgba(255,255,255,.04);padding:0 14px}
+.slp-f-more summary{cursor:pointer;padding:13px 0;color:#c7c7cc;font:600 14px/1 var(--ios);list-style:none;display:flex;align-items:center;gap:8px}
+.slp-f-more summary::before{content:"+";font-weight:800;color:#b8ff3d;width:12px}
+.slp-f-more[open] summary::before{content:"–"}
+.slp-f-more summary::-webkit-details-marker{display:none}
+.slp-chk{display:flex;align-items:center;gap:9px;margin:-4px 0 12px;color:#c7c7cc;font:500 14px/1.3 var(--ios);cursor:pointer}
+.slp-chk input{width:18px;height:18px;accent-color:#b8ff3d}
+.slp-dup{margin-bottom:12px;padding:12px 14px;border-radius:14px;background:rgba(255,204,0,.1);border:1px solid rgba(255,204,0,.3);color:#ffd95a;font:500 13.5px/1.45 var(--ios)}
+.slp-dup b{color:#fff}
+.slp-f-act{display:flex;gap:8px}
+.slp-f-act .ib.blue{flex:1;background:linear-gradient(135deg,#b8ff3d,#4dffc3);color:#0b1400}
+
+/* рулетка */
+.slp-rl{position:fixed;inset:0;z-index:73;display:grid;place-items:center;padding:20px;font-family:var(--ios);color:#fff}
+.slp-rl[hidden]{display:none}
+.slp-rl-bg{position:absolute;inset:0;background:rgba(4,5,8,.8);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);animation:slpFade .3s ease}
+@keyframes slpFade{from{opacity:0}}
+.slp-rl-b{position:relative;width:min(960px,100%);text-align:center;animation:slpIn .4s cubic-bezier(.2,.9,.25,1)}
+.slp-rl-b h3{margin:0 0 6px;font:850 30px/1.1 var(--ios);letter-spacing:-.02em}
+.slp-rl-b > p{margin:0 0 22px;color:#8d94a6;font-size:14.5px}
+.slp-rl-win{position:relative;height:250px;overflow:hidden;border-radius:22px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);-webkit-mask-image:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent);mask-image:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent)}
+.slp-rl-strip{position:absolute;left:0;top:20px;display:flex;gap:14px;will-change:transform}
+.slp-rl-it{flex:none;width:140px;transition:transform .5s cubic-bezier(.3,1.6,.4,1),filter .5s,opacity .5s}
+.slp-rl-win.fin .slp-rl-it{opacity:.3;filter:saturate(.4)}
+.slp-rl-win.fin .slp-rl-it.win{opacity:1;filter:none;transform:scale(1.08)}
+.slp-rl-win.fin .slp-rl-it.win .slp-p{box-shadow:0 0 0 2px #b8ff3d,0 0 50px rgba(150,255,90,.55)}
+.slp-rl-mark{position:absolute;left:50%;top:0;bottom:0;width:2px;margin-left:-1px;background:linear-gradient(#b8ff3d,rgba(184,255,61,.1));z-index:2;pointer-events:none}
+.slp-rl-mark::before,.slp-rl-mark::after{content:"";position:absolute;left:-7px;border:8px solid transparent}
+.slp-rl-mark::before{top:0;border-top-color:#b8ff3d}.slp-rl-mark::after{bottom:0;border-bottom-color:#b8ff3d}
+.slp-rl-res{margin-top:22px;min-height:96px}
+.slp-rl-res b{display:block;font:850 26px/1.15 var(--ios);letter-spacing:-.02em;animation:slpIn .45s cubic-bezier(.3,1.5,.4,1)}
+.slp-rl-res small{display:block;margin:6px 0 16px;color:#b8ff3d;font:650 14.5px/1 var(--ios)}
+.slp-rl-res div{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.slp-rl-x{position:absolute;right:0;top:-6px}
+
+/* восьмая вкладка в нижней панели */
+@media (max-width:560px){.tabbar .tab span{font-size:8px;letter-spacing:-.035em}.tabbar .tab svg{width:20px;height:20px}.tabbar{gap:0;padding:5px 4px}}
+@media (max-width:380px){.tabbar .tab span{font-size:7.3px}}
+
+@media (max-width:820px){
+  .slp-main{padding-top:14px}
+  .slp-hero{grid-template-columns:1fr;padding:20px 18px;border-radius:22px}
+  .slp-hero-a{justify-content:flex-start}
+  .slp-hero-a .slp-btn{flex:1}
+  .slp-chip{min-width:0;flex:1 1 54px;height:50px;padding:0 6px;font-size:19px;border-radius:15px}
+  .slp-n-l{flex-basis:100%;margin:0 0 -2px}
+  .slp-chip small{font-size:7.6px;letter-spacing:.03em}
+  .slp-grid{grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:18px 12px}
+  .slp-t > b{font-size:14px}.slp-t > small{font-size:12px}
+  .slp-wrow{grid-auto-columns:minmax(270px,86%)}
+  .slp-q{flex:1 1 100%;margin-left:0;order:3}.slp-sel{order:2;flex:1}
+  .slp-ov{padding:0;place-items:end center}
+  .slp-c{border-radius:24px 24px 0 0;max-height:94vh;border-bottom:0}
+  .slp-c-bg{border-radius:24px 24px 0 0;height:300px}
+  .slp-c-top{grid-template-columns:118px minmax(0,1fr);gap:16px;padding:22px 16px 6px}
+  .slp-c-body{padding:10px 16px calc(26px + env(safe-area-inset-bottom,0px))}
+  .slp-c-h{gap:9px}.slp-c-h h2{font-size:23px}
+  .slp-c-poster{grid-row:auto}.slp-c-act{grid-column:1/-1}
+  .slp-dl{flex:1;justify-content:center;padding:14px 16px}
+  .slp-want{flex:1;justify-content:center}
+  .slp-f{grid-template-columns:1fr}
+  .slp-f-l{display:grid;grid-template-columns:120px minmax(0,1fr);gap:12px;align-items:end}
+  .slp-rl-win{height:200px}.slp-rl-it{width:108px}
+  .slp-feed{grid-template-columns:1fr}
+}
+@media (hover:none){.slp-t:hover .slp-p{transform:none}}
+@media (prefers-reduced-motion:reduce){
+  #wSlop *,.slp-ov *,.slp-rl *{animation:none!important;transition:none!important}
+  .slp-t:hover .slp-p{transform:none}
+}
+</style>
 <style>img{max-width:100%}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -3660,6 +3975,11 @@ html:has(body.view-open),body.view-open{overflow:hidden}
   <main class="a-main" id="aMain"></main>
 </div>
 
+<!-- ======== СЛОП: кооп с друзьями ======== -->
+<div class="world" id="wSlop" hidden>
+  <main class="slp-main" id="slMain"></main>
+</div>
+
 <aside class="fw" id="fw" hidden aria-label="Активность друзей"></aside>
 <footer class="site-ft" id="siteFt">Сайт создан <b>Claude</b><span class="sep"></span>редактировал <b>H3RO</b><span class="sep"></span>с 7 ноября 2026</footer>
 <nav class="tabbar" id="tabbar" aria-label="Разделы"></nav>
@@ -3688,12 +4008,13 @@ html:has(body.view-open),body.view-open{overflow:hidden}
   const KCOL = {playing:"#7cc4ff", done:"#9be15d", paused:"#f2d43a", dropped:"#ff8a86"};
   const kLab = it => { const n = kNorm(it); return {l: n === "done" ? (isSerT(it.type) ? "Досмотрено" : "Просмотрено") : n === "paused" ? "Отложено" : n === "dropped" ? "Брошено" : "Смотрю", c: KCOL[n]}; };
   const TIERS = [["S","#ff5f57"],["A","#ff9f0a"],["B","#ffd60a"],["C","#30d158"],["D","#64d2ff"]];
-  const TAB_ORDER = ["home","games","kino","read","calendar","people","more"];
+  const TAB_ORDER = ["home","games","kino","read","slop","calendar","people","more"];
   const ROUTES = {
     home:{w:"wApple",theme:"cal",tab:"home"}, read:{w:"wApple",theme:"cal",tab:"read"}, watch:{w:"wApple",theme:"cal",tab:"people"}, watchcal:{w:"wApple",theme:"cal",tab:"people"},
     games:{w:"wGames",theme:"games",tab:"games"}, "games-future":{w:"wGames",theme:"games",tab:"games"},
     kino:{w:"wKino",theme:"kino",tab:"kino"}, "kino-future":{w:"wKino",theme:"kino",tab:"kino"},
     calendar:{w:"wApple",theme:"cal",tab:"calendar"},
+    slop:{w:"wSlop",theme:"games",tab:"slop"},
     more:{w:"wApple",theme:"cal",tab:"more"}, recap:{w:"wApple",theme:"cal",tab:"more"}, drops:{w:"wApple",theme:"cal",tab:"more"}, money:{w:"wApple",theme:"cal",tab:"more"}, ach:{w:"wApple",theme:"cal",tab:"more"}, patch:{w:"wApple",theme:"cal",tab:"more"}, people:{w:"wApple",theme:"cal",tab:"people"}, user:{w:"wApple",theme:"cal",tab:"people"}, event:{w:"wApple",theme:"cal",tab:"people"}
   };
   const I = (d, extra = "") => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ${extra}>${d}</svg>`;
@@ -3841,7 +4162,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     const cur = FV ? "people" : (ROUTES[route] || ROUTES.games).tab, ac = activeContract();
     const invN = typeof myInvites === "function" && EV ? myInvites().length : 0;
     const tb = $("tabbar"), lens0 = tb.querySelector(".tb-lens"), x0 = lens0 ? lens0.style.transform : "";
-    tb.innerHTML = `<i class="tb-lens now" style="transform:${x0}"></i>` + [["home","Главная"],["games","Игры"],["kino","Кино"],["read","Читалка"],["calendar","Календарь"],["people","Активность"],["more","Ещё"]].map(([k,l]) =>
+    tb.innerHTML = `<i class="tb-lens now" style="transform:${x0}"></i>` + [["home","Главная"],["games","Игры"],["kino","Кино"],["read","Читалка"],["slop","СЛОП"],["calendar","Календарь"],["people","Активность"],["more","Ещё"]].map(([k,l]) =>
       `<a class="tab" href="#${k}" data-tab="${k}" ${cur === k ? 'aria-current="page"' : ""}>${ICON[k]}<span>${l}</span>${k === "games" && ac ? '<i class="dot"></i>' : ""}${k === "people" && invN ? `<i class="dot n">${invN}</i>` : ""}</a>`).join("");
     placeLens();
   }
@@ -4380,10 +4701,11 @@ html:has(body.view-open),body.view-open{overflow:hidden}
   function render(){
     const r = ROUTES[route] || ROUTES.games;
     if ($("view").hidden) document.body.dataset.theme = r.theme;
-    ["wGames","wKino","wApple"].forEach(w => $(w).hidden = w !== r.w);
+    ["wGames","wKino","wApple","wSlop"].forEach(w => $(w).hidden = w !== r.w);
     document.body.dataset.world = r.w; if (r.w !== "wApple"){ $("aCrumb").textContent = ""; $("aTopActs").innerHTML = ""; }
     if (r.w === "wGames") renderGames();
     else if (r.w === "wKino") renderKino();
+    else if (r.w === "wSlop") renderSlop();
     else ({soon:renderSoon, calendar:renderCal, more:renderMore, recap:renderRecap, drops:renderDrops, money:renderMoney, ach:renderAch, patch:renderPatch, people:renderPeople, user:() => renderProfile(viewUid), event:renderEvent, watch:renderWatch, home:() => renderProfile(null), read:renderRead, watchcal:() => renderWatchCal()})[route]();
     document.body.dataset.route = route;
     fillMeSlots(); applySecBg(); wireCarousels(); wireHScrolls(); document.querySelectorAll('[data-pile="1"]').forEach(wirePile); document.querySelectorAll('[data-stack="1"]').forEach(wireStack); syncHead(); renderFw(); syncBell();
@@ -5748,6 +6070,14 @@ html:has(body.view-open),body.view-open{overflow:hidden}
   // ================= патчноуты =================
   // Новые версии добавляются В НАЧАЛО списка. n — новое, c — изменено, f — исправлено, r — удалено.
   const PATCHES = [
+    {v: "4.4", date: "2026-11-11", title: "СЛОП — кооп-игры с друзьями", kind: "major", sec: {
+      n: ["Новый раздел «СЛОП» между Читалкой и Календарём: общий список кооп-игр. Собрались вчетвером — жмёшь «4», видишь всё на четверых, открываешь карточку и качаешь по ссылке FreeTP или Steam",
+        "Добавить игру можно ссылкой из Steam (название, постер, дата, жанры, скриншоты и трейлер подтянутся сами) или вручную. Число игроков вписываешь сам, свой постер перетаскиваешь мышкой. Игра попадает только в СЛОП — не в твою библиотеку",
+        "Календарь ожиданий: игры, которые ещё не вышли, с обратным отсчётом. Видно, кто предложил, на сколько игроков и кто ждёт. Жмёшь «Жду» — игра появляется и в твоей коллекции. В день выхода она сама переезжает в библиотеку СЛОПа с бейджем «Вышла!»",
+        "В карточке — кнопка «Хочу поиграть» и список всех желающих, чтобы было видно, с кем собираться. Можно отфильтровать игры, в которые хотят сразу несколько выбранных друзей",
+        "Статусы у каждого свои: «Играем сейчас», «Прошли», «Дропнули». После прохождения или дропа — короткий вердикт: стоит, на любителя или не стоит",
+        "«Не можем выбрать» — рулетка: крутит постеры и останавливается на случайной игре из текущего списка",
+        "Обсуждение в карточке игры, поиск, сортировка и лента событий раздела. События СЛОПа видны и в «Активности»"]}},
     {v: "4.3", date: "2026-11-10", title: "Честное «нет связи» вместо пустого профиля", kind: "minor", sec: {
       f: ["Если до базы не достучаться — а из российских сетей без VPN такое сейчас бывает, — сайт больше не показывает пустой профиль, будто всё пропало. Через 12 секунд появится окно: включи VPN и нажми «Обновить». Данные при этом никуда не деваются"],
       c: ["В мероприятиях кнопка «Не иду» теперь называется «Езжайте»"]}},
@@ -6084,7 +6414,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
 
   // ================= чип профиля и фоны разделов =================
   let SECBG = null;
-  const SEC_NAMES = {home: "Главная", games: "Игры", kino: "Кино", read: "Читалка", calendar: "Календарь", people: "Активность", more: "Ещё"};
+  const SEC_NAMES = {home: "Главная", games: "Игры", kino: "Кино", read: "Читалка", slop: "СЛОП", calendar: "Календарь", people: "Активность", more: "Ещё"};
   function fillMeSlots(){
     const html = ME ? `<button class="me-chip" data-profile="1" title="Профиль и настройки">${avaHTML(myProf(), "sm")}<span class="nm">${esc(NICK)}</span></button>` : "";
     document.querySelectorAll(".me-slot").forEach(e => { if (e.innerHTML !== html) e.innerHTML = html; });
@@ -6579,7 +6909,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     Promise.all(["backup", "autobackup"].map(x => db.doc("meta/" + x).get().then(d => d.exists ? d.data() : null).catch(() => null)))
       .then(([b, a]) => { lastBackup = b; autoBackup = a; if (route === "more") render(); });
     document.body.classList.remove("guest-tl"); if (pendingTl) setTimeout(openTlLink, 300);
-    loadFriends(); loadEvents(); subscribeEvents(); loadWall(); subscribeWall(); loadNtf(); subscribeNtf(); loadSug(); subscribeBook(); loadReads().then(() => handleInbox());
+    loadFriends(); loadEvents(); subscribeEvents(); loadWall(); subscribeWall(); loadSlop(); subscribeSlop(); loadNtf(); subscribeNtf(); loadSug(); subscribeBook(); loadReads().then(() => handleInbox());
     db.collection("items").onSnapshot(snap => {
       if (!snap.metadata.fromCache){ clearTimeout(timer); itemsLoaded = true; netOk(); }
       MYITEMS = snap.docs.map(d => ({id: d.id, ...d.data()}));
@@ -8331,10 +8661,11 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     for (const r of FR.reads || []){ if (ME && r.uid === ME.id) continue; const ts = evTs(r), st = rNorm(r.status); if (ts) evs.push({rd: r, uid: r.uid, ts, verb: st === "done" ? "прочитал" : st === "reading" ? "читает" : "хочет прочитать"}); }
     FR.profiles.filter(p => p.created_at && ME && p.user_id !== ME.id && Date.now() - Date.parse(p.created_at) < 60 * 864e5)
       .forEach(p => evs.push({join: true, uid: p.user_id, ts: p.created_at, verb: "присоединился к NEXUS"}));
+    if (SL && ME) slEvents().filter(e => e.uid && e.uid !== ME.id && Date.now() - Date.parse(e.ts) < 30 * 864e5).slice(0, 40).forEach(e => evs.push({join: true, slop: e.id, uid: e.uid, ts: new Date(e.ts).toISOString(), verb: e.verb === "добавил игру" ? "добавил в СЛОП" : e.verb, title: e.title}));
     evs.sort((x, y) => String(y.ts).localeCompare(String(x.ts)));
     const groups = [];
     for (const e of evs){ const g = groups[groups.length - 1];
-      if (g && g.uid === e.uid && !e.join && !g.ev[0].join && Date.parse(g.ev[g.ev.length - 1].ts) - Date.parse(e.ts) < 6 * 36e5) g.ev.push(e);
+      if (g && g.uid === e.uid && (!e.join || e.slop) && (!g.ev[0].join || g.ev[0].slop) && Date.parse(g.ev[g.ev.length - 1].ts) - Date.parse(e.ts) < 6 * 36e5) g.ev.push(e);
       else groups.push({uid: e.uid, ts: e.ts, d: localDate(new Date(e.ts)), ev: [e]}); }
     return groups;
   }
@@ -8345,7 +8676,7 @@ html:has(body.view-open),body.view-open{overflow:hidden}
   // строки «прошёл A, B и ещё 2» — по одному глаголу на строку
   function groupLines(g, max = 3){
     const by = new Map();
-    g.ev.forEach(e => { const verb = e.join ? e.verb : e.rd && e.verb === "прочитал" ? "прочитал " + (RNOUN[e.rd.type] || "книгу") : e.verb; const k = verb + "|" + (e.join ? "j" : evKind(e)); if (!by.has(k)) by.set(k, {verb, kind: e.join ? "" : evKind(e), ev: []}); by.get(k).ev.push(e); });
+    g.ev.forEach(e => { const verb = e.slop ? `${e.verb} «${e.title}» (СЛОП)` : e.join ? e.verb : e.rd && e.verb === "прочитал" ? "прочитал " + (RNOUN[e.rd.type] || "книгу") : e.verb; const k = verb + "|" + (e.join ? "j" : evKind(e)); if (!by.has(k)) by.set(k, {verb, kind: e.join ? "" : evKind(e), ev: []}); by.get(k).ev.push(e); });
     const lines = [...by.values()];
     return {html: lines.slice(0, max).map(l => `<li><span class="vb">${esc(l.verb)}</span>${l.ev[0].join ? "" : ` ${l.ev.slice(0, 2).map(e => `<b>${esc(evTitle(e))}</b>`).join(", ")}${l.ev.length > 2 ? ` <em>и ещё ${l.ev.length - 2}</em>` : ""}`}</li>`).join(""), more: Math.max(0, lines.length - max)};
   }
@@ -8353,7 +8684,8 @@ html:has(body.view-open),body.view-open{overflow:hidden}
   function feedGroupHTML(g, i){
     const p = profOf(g.uid), shown = g.ev.slice(0, FEED_SHOW), rest = g.ev.length - shown.length;
     const li = e => { const r = evRate(e);
-      return e.join ? `<li class="fg-e"><time>${esc(feedTime(e.ts))}</time><span class="vb">${esc(e.verb)}</span></li>`
+      return e.slop ? `<li class="fg-e"><time>${esc(feedTime(e.ts))}</time><button class="fg-t" data-slopgo="${esc(e.slop)}"><span class="vb">${esc(e.verb)}</span> <b>${esc(e.title)}</b> <em>СЛОП</em></button></li>`
+        : e.join ? `<li class="fg-e"><time>${esc(feedTime(e.ts))}</time><span class="vb">${esc(e.verb)}</span></li>`
         : `<li class="fg-e"><time>${esc(feedTime(e.ts))}</time><button class="fg-t" ${e.rd ? `data-frd="${esc(e.uid + "/" + e.rd.id)}"` : `data-fi="${esc(e.uid + "/" + e.it.id)}"`}><span class="vb">${esc(e.verb)}</span> <b>${esc(evTitle(e))}</b> <em>${esc(evKind(e))}</em>${r != null ? ` <span class="fg-r ${rateCls(r)}">${num1(r)}</span>` : ""}</button></li>`; };
     return `<article class="fg"><button class="fg-a" data-user="${esc(g.uid)}">${avaHTML(p)}</button>
       <div class="fg-b"><div class="fg-h"><button class="fg-n" data-user="${esc(g.uid)}">${esc(p.nick || "кто-то")}</button><span class="fg-d">${esc(feedAgo(g.ts))}</span>${g.ev.length > 1 ? `<span class="fg-c">${g.ev.length} ${plural(g.ev.length, "действие", "действия", "действий")}</span>` : ""}</div>
@@ -8400,6 +8732,575 @@ html:has(body.view-open),body.view-open{overflow:hidden}
     })();
     return wLoading;
   }
+
+  // ================= СЛОП: кооп-игры с друзьями =================
+  // Общий список: игры здесь ничьи, в личную полку не попадают. «Жду» — до выхода, «Хочу поиграть» — после.
+  let SL = null, slLoading = null, slErr = false, slOpenId = null, slPending = null, slSubT = 0;
+  const slS = {n: lsGet("nexus_slop_n") || "all", tab: "all", q: "", sort: lsGet("nexus_slop_sort") || "new", who: new Set()};
+  const SLI = {
+    slop: I('<path d="M12 12V7"/><circle cx="12" cy="5" r="2.4"/><rect x="3.5" y="12" width="17" height="7.5" rx="2.8"/><path d="M8 15.8h.01M16 15.8h.01"/>'),
+    users: I('<circle cx="9" cy="8" r="3.4"/><path d="M2.6 20c.6-3.5 3.2-5.4 6.4-5.4s5.8 1.9 6.4 5.4"/><path d="M16 4.9a3.4 3.4 0 0 1 0 6.3M18.4 14.9c1.7.8 2.7 2.4 3 5.1"/>'),
+    plus: I('<path d="M12 5v14M5 12h14"/>', 'stroke-width="2.6"'),
+    dice: I('<rect x="3" y="3" width="18" height="18" rx="4.5"/><circle cx="8.2" cy="8.2" r="1.2" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.2" fill="currentColor"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.2" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.2" fill="currentColor"/>'),
+    dl: I('<path d="M12 3v12M7 10.5l5 5 5-5M4.5 20.5h15"/>', 'stroke-width="2.4"'),
+    ext: I('<path d="M14 4h6v6M20 4l-9 9M18 14v4.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 18.5v-11A1.5 1.5 0 0 1 5.5 6H10"/>'),
+    hand: I('<path d="M12 21s-7.5-4.6-7.5-10.4A4.4 4.4 0 0 1 12 7.8a4.4 4.4 0 0 1 7.5 2.8C19.5 16.4 12 21 12 21Z"/>'),
+    check: I('<path d="M5 12.5l4.5 4.5L19 7.5"/>', 'stroke-width="2.8"'),
+    clock: I('<circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.3 2"/>'),
+    play: I('<path d="M7 4.8v14.4a.8.8 0 0 0 1.2.7l11.6-7.2a.8.8 0 0 0 0-1.4L8.2 4.1A.8.8 0 0 0 7 4.8Z" fill="currentColor"/>'),
+    flag: I('<path d="M5 21V4M5 4.5h11.5l-2 4 2 4H5"/>'),
+    skull: I('<path d="M12 3a8 8 0 0 0-8 8c0 2.8 1.4 4.6 3 5.6V20h10v-3.4c1.6-1 3-2.8 3-5.6a8 8 0 0 0-8-8Z"/><circle cx="9" cy="11" r="1.5" fill="currentColor"/><circle cx="15" cy="11" r="1.5" fill="currentColor"/>'),
+    search: I('<circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.6-4.6"/>', 'stroke-width="2.4"'),
+    x: I('<path d="M6 6l12 12M18 6 6 18"/>', 'stroke-width="2.6"'),
+    edit: I('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>'),
+    img: I('<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/>'),
+    chat: I('<path d="M4 5.5h16v11H9.5L5 20v-3.5H4Z"/>'),
+    spark: I('<path d="M12 3l1.9 5.6L19.5 10.5 13.9 12.4 12 18l-1.9-5.6L4.5 10.5l5.6-1.9Z"/>'),
+    send: I('<path d="M4 12 20 4l-5.5 16-3-7Z"/>')
+  };
+  ICON.slop = SLI.slop;
+  const SL_ST = {playing: {l: "Играем сейчас", s: "Играем", v: "играет в", ic: "play"}, done: {l: "Прошли", s: "Прошли", v: "прошёл", ic: "flag"}, dropped: {l: "Дропнули", s: "Дропнули", v: "дропнул", ic: "skull"}};
+  const SL_VD = {worth: "Стоит", meh: "На любителя", skip: "Не стоит"};
+  const SL_N = [["2", "двое"], ["3", "трое"], ["4", "четверо"], ["5-8", "компания"], ["8+", "толпа"], ["all", "без фильтра"]];
+  const SL_NW = {"2": "На двоих", "3": "На троих", "4": "На четверых", "5-8": "На компанию 5–8", "8+": "На толпу от 8"};
+  const slRM = () => !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+  const slUniq = a => [...new Set(a)];
+  const slHttp = u => /^https?:\/\/[^\s"'<>]+$/i.test(String(u || "").trim()) ? String(u).trim() : "";
+
+  async function loadSlop(){
+    if (!SB || !ME) return null;
+    if (slLoading) return slLoading;
+    slLoading = (async () => {
+      try {
+        const [g, m, s, c] = await Promise.all([
+          SB.from("slop_games").select("*").order("created_at", {ascending: false}),
+          SB.from("slop_marks").select("*"),
+          SB.from("slop_status").select("*"),
+          SB.from("slop_comments").select("*").order("created_at", {ascending: true})]);
+        if (g.error) throw g.error;
+        const ok = r => r && !r.error ? r.data || [] : [];
+        SL = {games: (g.data || []).map(slNorm), marks: ok(m), status: ok(s), comments: ok(c)}; slErr = false;
+      } catch(e){ slErr = true; }
+      slLoading = null; slRefresh(); return SL;
+    })();
+    return slLoading;
+  }
+  const slNorm = g => ({...g, genres: Array.isArray(g.genres) ? g.genres : [], screenshots: Array.isArray(g.screenshots) ? g.screenshots.filter(slHttp) : [], min_players: +g.min_players || 1, max_players: +g.max_players || 1});
+  function subscribeSlop(){
+    if (!SB || !ME) return;
+    const kick = () => { clearTimeout(slSubT); slSubT = setTimeout(() => loadSlop(), 300); };
+    let ch = SB.channel("nexus-slop");
+    ["slop_games", "slop_marks", "slop_status", "slop_comments"].forEach(t => { ch = ch.on("postgres_changes", {event: "*", schema: "public", table: t}, p => { kick();
+      if (t === "slop_games" && p.eventType === "INSERT" && p.new && p.new.user_id !== ME.id && route !== "slop") toast(`${frNick(p.new.user_id)} добавил в СЛОП: ${p.new.title}`); }); });
+    ch.subscribe();
+  }
+  function slRefresh(){
+    if (route === "slop") renderSlop();
+    else if (route === "people" && typeof actTab !== "undefined" && actTab === "feed" && !document.querySelector(".sh-wrap")) { try { render(); } catch(_){} }
+    if (slOpenId){ if (slGame(slOpenId)) slDrawCard(true); else slCloseCard(); }
+  }
+
+  // ---- расчёты ----
+  const slGame = id => SL && SL.games.find(g => g.id === id);
+  const slLiveDate = g => { const d = parseD(String(g.release_date).slice(0, 10)), p = g.release_prec;
+    if (p === "month") d.setMonth(d.getMonth() + 1); else if (p === "quarter") d.setMonth(d.getMonth() + 3); else if (p === "year") d.setFullYear(d.getFullYear() + 1);
+    return localDate(d); };
+  const slOut = g => !g.tba && (!g.release_date || slLiveDate(g) <= today());
+  const slMarks = (id, kind) => SL.marks.filter(m => m.game_id === id && m.kind === kind).map(m => m.user_id);
+  const slWant = g => slUniq([...slMarks(g.id, "want"), ...slMarks(g.id, "wait")]);
+  const slStats = id => SL.status.filter(s => s.game_id === id);
+  const slBadge = g => { const st = slStats(g.id).map(s => s.status); return ["playing", "done", "dropped"].find(k => st.includes(k)) || null; };
+  const slPl = g => (g.min_players === g.max_players ? g.max_players : `${g.min_players}–${g.max_players}`) + " " + plural(g.max_players, "игрок", "игрока", "игроков");
+  const slFresh = g => !!(g.release_date && !g.tba && g.release_prec === "day" && g.release_date <= today() && today() < addDays(g.release_date, 7) && String(g.created_at).slice(0, 10) <= g.release_date);
+  const slFit = g => { const n = slS.n; if (n === "all") return true; if (n === "5-8") return g.min_players <= 8 && g.max_players >= 5; if (n === "8+") return g.max_players >= 8; return g.min_players <= +n && +n <= g.max_players; };
+  const slImg = g => g.cover ? (/^https?:/i.test(g.cover) ? g.cover : publicUrl(g.cover)) : slHttp(g.header);
+  const slPosterIn = g => { const u = slImg(g); return u ? `<img alt="" loading="lazy" decoding="async" src="${esc(u)}" onerror="this.remove()">` : `<span class="slp-ph">${esc(g.title)}</span>`; };
+  const slDateLabel = g => { if (g.tba || !g.release_date) return "скоро"; const d = parseD(g.release_date), p = g.release_prec;
+    return p === "year" ? `${d.getFullYear()} год` : p === "quarter" ? `Q${Math.floor(d.getMonth() / 3) + 1} ${d.getFullYear()}` : p === "month" ? `${MONTHS_NOM[d.getMonth()]} ${d.getFullYear()}` : fmtDate(g.release_date); };
+  const slDateShort = g => { if (g.tba || !g.release_date) return "скоро"; const d = parseD(g.release_date), p = g.release_prec;
+    return p === "day" ? d.toLocaleDateString("ru-RU", {day: "numeric", month: "short"}).replace(".", "") + (d.getFullYear() !== new Date().getFullYear() ? " " + d.getFullYear() : "") : slDateLabel(g); };
+  const slCount = g => { if (g.tba || !g.release_date) return "дата неизвестна"; if (g.release_prec !== "day") return "выйдет: " + slDateLabel(g);
+    const n = Math.round((parseD(g.release_date) - parseD(today())) / 864e5); return n <= 0 ? "выходит сегодня" : n === 1 ? "выходит завтра" : `через ${n} ${plural(n, "день", "дня", "дней")}`; };
+  const slAgo = ts => { try { return feedAgo(ts); } catch(_){ return ""; } };
+  const slAvs = (uids, max = 6) => uids.length ? `<span class="slp-avs">${uids.slice(0, max).map(u => avaHTML(profOf(u), "sm")).join("")}${uids.length > max ? `<em>+${uids.length - max}</em>` : ""}</span>` : "";
+
+  function slLib(){
+    let a = SL.games.filter(g => slOut(g) && slFit(g));
+    const t = slS.tab; if (t !== "all") a = a.filter(g => { const st = slStats(g.id).map(s => s.status); return t === "fresh" ? !st.length : st.includes(t); });
+    const q = slS.q.trim().toLowerCase(); if (q) a = a.filter(g => g.title.toLowerCase().includes(q));
+    if (slS.who.size) a = a.filter(g => { const w = slWant(g); return [...slS.who].every(u => w.includes(u)); });
+    const byNew = (x, y) => String(y.created_at).localeCompare(String(x.created_at));
+    if (slS.sort === "want") a.sort((x, y) => slWant(y).length - slWant(x).length || byNew(x, y));
+    else if (slS.sort === "abc") a.sort((x, y) => x.title.localeCompare(y.title, "ru"));
+    else a.sort(byNew);
+    return a;
+  }
+  function slEvents(){
+    if (!SL) return [];
+    const ev = [], t = id => { const g = slGame(id); return g ? g.title : null; };
+    SL.games.forEach(g => { ev.push({ts: g.created_at, uid: g.user_id, id: g.id, verb: "добавил игру", title: g.title});
+      if (g.release_date && !g.tba && g.release_prec === "day" && g.release_date <= today() && g.release_date >= addDays(today(), -30) && String(g.created_at).slice(0, 10) < g.release_date) ev.push({ts: parseD(g.release_date).toISOString(), uid: null, id: g.id, verb: "вышла", title: g.title}); });
+    SL.marks.forEach(m => { const ti = t(m.game_id); if (ti) ev.push({ts: m.created_at, uid: m.user_id, id: m.game_id, verb: m.kind === "wait" ? "ждёт" : "хочет поиграть в", title: ti}); });
+    SL.status.forEach(s => { const ti = t(s.game_id); if (ti) ev.push({ts: s.updated_at, uid: s.user_id, id: s.game_id, verb: SL_ST[s.status].v, title: ti, vd: s.verdict}); });
+    SL.comments.forEach(c => { const ti = t(c.game_id); if (ti) ev.push({ts: c.created_at, uid: c.user_id, id: c.game_id, verb: "написал про", title: ti}); });
+    return ev.filter(e => e.ts).sort((x, y) => String(y.ts).localeCompare(String(x.ts)));
+  }
+
+  // ---- страница ----
+  function renderSlop(){
+    const m = $("slMain"); if (!m) return;
+    if (!ME){ m.innerHTML = `<div class="slp-empty" style="margin-top:30px"><b>Нужно войти</b>СЛОП — общий список кооп-игр для своих.</div>`; delete m.dataset.built; return; }
+    if (!m.dataset.built){
+      m.dataset.built = "1";
+      m.innerHTML = `<section class="slp-hero">
+          <div><span class="slp-kick">${SLI.users} кооп с друзьями</span><h1>СЛОП</h1><p>Собрались, выбрали, сколько вас, — и видите всё, во что можно зарубиться вместе.</p></div>
+          <div class="slp-hero-a"><button class="slp-btn" data-sl="roul" type="button">${SLI.dice} Не можем выбрать</button><button class="slp-btn pri" data-sl="add" type="button">${SLI.plus} Добавить игру</button></div>
+          <div class="slp-n" role="group" aria-label="Сколько игроков"><span class="slp-n-l">Сколько вас?</span>${SL_N.map(([k, s]) => `<button class="slp-chip" type="button" data-sl-n="${k}" aria-pressed="false">${k === "all" ? "Все" : k === "5-8" ? "5–8" : k}<small>${s}</small></button>`).join("")}</div>
+        </section>
+        <section class="slp-sec"><header><h2>Календарь ожиданий</h2><span id="slWaitN"></span></header><div id="slWait"></div></section>
+        <section class="slp-sec"><header><h2>Библиотека</h2><span id="slLibN"></span></header>
+          <div class="slp-bar"><div class="slp-tabs" id="slTabs" role="group" aria-label="Статус"></div>
+            <label class="slp-q">${SLI.search}<input id="slQ" type="search" placeholder="Найти игру" autocomplete="off" spellcheck="false" aria-label="Поиск по названию"></label>
+            <select class="slp-sel" id="slSort" aria-label="Сортировка"><option value="new">Сначала новые</option><option value="want">Больше всего желающих</option><option value="abc">По алфавиту</option></select></div>
+          <div class="slp-who" id="slWho"></div>
+          <div class="slp-grid" id="slGrid"></div>
+        </section>
+        <section class="slp-sec" id="slFeedSec"><header><h2>Что происходит</h2><span>последние события раздела</span></header><div class="slp-feed" id="slFeed"></div></section>`;
+      $("slQ").value = slS.q; $("slSort").value = slS.sort;
+      slWire(m);
+    }
+    if (!SL){
+      if (slErr){ $("slWait").innerHTML = ""; $("slGrid").innerHTML = `<div class="slp-empty"><b>Не достучался до базы</b>Проверь интернет или VPN и попробуй ещё раз.<br><button class="slp-btn" data-sl="retry" type="button">Обновить</button></div>`; return; }
+      $("slWait").innerHTML = `<div class="slp-wrow">${'<div class="slp-sk w"></div>'.repeat(3)}</div>`;
+      $("slGrid").innerHTML = '<div><div class="slp-sk p"></div><div class="slp-sk l"></div></div>'.repeat(10);
+      $("slGrid").dataset.sig = ""; loadSlop(); return;
+    }
+    slDraw();
+    if (slPending){ const id = slPending; slPending = null; if (slGame(id)) setTimeout(() => slOpenCard(id), 60); }
+  }
+  function slDraw(){
+    const m = $("slMain"); if (!m || !SL) return;
+    m.querySelectorAll("[data-sl-n]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.slN === slS.n)));
+    // календарь ожиданий
+    const waits = SL.games.filter(g => !slOut(g) && slFit(g)), dated = waits.filter(g => !g.tba && g.release_date).sort((x, y) => x.release_date.localeCompare(y.release_date)), tba = waits.filter(g => g.tba || !g.release_date);
+    const allWait = SL.games.filter(g => !slOut(g)).length;
+    $("slWaitN").textContent = waits.length ? `${waits.length} ${plural(waits.length, "игра", "игры", "игр")} впереди` : "";
+    const sigW = JSON.stringify(waits.map(g => [g.id, g.title, g.cover, g.release_date, g.tba, g.min_players, g.max_players, slMarks(g.id, "wait"), slCount(g)])) + slS.n + (FR ? FR.profiles.length : 0);
+    const we = $("slWait");
+    if (we.dataset.sig !== sigW){ we.dataset.sig = sigW;
+      we.innerHTML = waits.length ? (dated.length ? `<div class="slp-wrow">${dated.map(slWaitCard).join("")}</div>` : "") + (tba.length ? `<div class="slp-sub">Дата неизвестна</div><div class="slp-wrow">${tba.map(slWaitCard).join("")}</div>` : "")
+        : `<div class="slp-empty">${SLI.clock}<b>${allWait ? `${SL_NW[slS.n] || "Тут"} пока ничего не ждём` : "Пока никто ничего не ждёт"}</b>Добавь игру, которая ещё не вышла, — она появится здесь с обратным отсчётом.</div>`; }
+    // вкладки статусов
+    const base = SL.games.filter(g => slOut(g) && slFit(g)), cnt = k => base.filter(g => { const st = slStats(g.id).map(s => s.status); return k === "all" ? true : k === "fresh" ? !st.length : st.includes(k); }).length;
+    $("slTabs").innerHTML = [["all", "Все"], ["playing", "Играем сейчас"], ["done", "Прошли"], ["dropped", "Дропнули"], ["fresh", "Ещё не играли"]].map(([k, l]) => `<button class="slp-tab" type="button" data-sl-tab="${k}" aria-pressed="${slS.tab === k}">${l}<i>${cnt(k)}</i></button>`).join("");
+    // кто хочет
+    const fans = slUniq(SL.games.filter(slOut).flatMap(g => slWant(g))); [...slS.who].forEach(u => { if (!fans.includes(u)) slS.who.delete(u); });
+    $("slWho").innerHTML = fans.length > 1 ? `<span>Кто хочет:</span>` + fans.map(u => `<button class="slp-wc" type="button" data-sl-who="${esc(u)}" aria-pressed="${slS.who.has(u)}">${avaHTML(profOf(u), "sm")}${esc(u === ME.id ? "Я" : profOf(u).nick || "?")}</button>`).join("") : "";
+    slDrawGrid();
+    // лента раздела
+    const ev = slEvents().slice(0, 12);
+    $("slFeedSec").hidden = !ev.length;
+    $("slFeed").innerHTML = ev.map(e => `<button class="slp-fe" type="button" data-sg="${esc(e.id)}">${e.uid ? avaHTML(profOf(e.uid), "sm") : `<i class="ic">${SLI.spark}</i>`}<span class="tx">${e.uid ? `<b>${esc(e.uid === ME.id ? "Ты" : profOf(e.uid).nick || "кто-то")}</b> ${esc(e.verb)} <b>${esc(e.title)}</b>${e.vd ? ` · ${esc(SL_VD[e.vd].toLowerCase())}` : ""}` : `<b>${esc(e.title)}</b> вышла — можно играть`}</span><time>${esc(slAgo(e.ts))}</time></button>`).join("");
+  }
+  const slWaitCard = (g, i) => { const ws = slMarks(g.id, "wait"), mine = ws.includes(ME.id), p = profOf(g.user_id);
+    return `<article class="slp-w" data-sg="${esc(g.id)}" style="--i:${Math.min(i, 8)}" tabindex="0" role="button" aria-label="${esc(g.title)}">
+      <div class="slp-w-p"><span class="slp-p">${slPosterIn(g)}</span><span class="slp-w-d">${esc(slDateShort(g))}</span></div>
+      <div class="slp-w-b"><b class="t">${esc(g.title)}</b><div class="slp-cd${g.tba || !g.release_date ? " dim" : ""}">${esc(slCount(g))}</div>
+        <div class="slp-m">${SLI.users}${esc(slPl(g))}</div>
+        <div class="slp-by">${avaHTML(p, "xs")}<b>${esc(g.user_id === ME.id ? "Ты" : p.nick || "кто-то")}</b> ${g.user_id === ME.id ? "предложил" : "предлагает"}</div>
+        <div class="slp-w-f">${ws.length ? slAvs(ws, 5) : `<span class="slp-avs none">пока никого</span>`}<button class="slp-wait${mine ? " on" : ""}" type="button" data-sl-wait="${esc(g.id)}" aria-pressed="${mine}">${mine ? SLI.check : SLI.plus} Жду</button></div>
+      </div></article>`; };
+  const slTile = g => { const w = slWant(g).length, b = slBadge(g);
+    return `<button class="slp-t" type="button" data-sg="${esc(g.id)}" aria-label="${esc(g.title)}, ${esc(slPl(g))}"><span class="slp-p">${slPosterIn(g)}${slFresh(g) ? `<i class="slp-b new">Вышла!</i>` : ""}${w ? `<i class="slp-b want" title="Хотят поиграть: ${w}">${SLI.hand}${w}</i>` : ""}${b ? `<i class="slp-b st ${b}">${SL_ST[b].s}</i>` : ""}</span><b>${esc(g.title)}</b><small>${SLI.users}${esc(slPl(g))}</small></button>`; };
+  function slEmpty(){
+    const total = SL.games.filter(slOut).length, filtered = slS.tab !== "all" || slS.q.trim() || slS.who.size;
+    if (!total) return `<div class="slp-empty">${SLI.slop}<b>Библиотека пустая</b>Добавь первую кооп-игру — по ссылке из Steam это пара секунд.<br><button class="slp-btn pri" data-sl="add" type="button">${SLI.plus} Добавить игру</button></div>`;
+    if (filtered) return `<div class="slp-empty">${SLI.search}<b>Ничего не нашлось</b>Под такие фильтры игр нет.<br><button class="slp-btn" data-sl="clear" type="button">Сбросить фильтры</button></div>`;
+    return `<div class="slp-empty">${SLI.users}<b>${SL_NW[slS.n] || "Тут"} пока ничего нет, добавь игру</b>Или переключи число игроков выше.<br><button class="slp-btn pri" data-sl="add" type="button">${SLI.plus} Добавить игру</button></div>`;
+  }
+  function slDrawGrid(){
+    const el = $("slGrid"); if (!el || !SL) return;
+    const list = slLib(), total = SL.games.filter(slOut).length;
+    $("slLibN").textContent = total ? (list.length === total ? `${total} ${plural(total, "игра", "игры", "игр")}` : `${list.length} из ${total}`) : "";
+    const sig = JSON.stringify(list.map(g => [g.id, g.title, g.cover, g.header, g.min_players, g.max_players, slWant(g).length, slBadge(g), slFresh(g)])) + "|" + (list.length ? "" : slS.n + slS.tab + slS.q + slS.who.size + total);
+    if (el.dataset.sig === sig) return; el.dataset.sig = sig;
+    const rm = slRM(), olds = new Map(), base = el.getBoundingClientRect(), keep = new Set(list.map(g => g.id)), ghosts = [];
+    el.querySelectorAll(".slp-t[data-sg]").forEach(t => olds.set(t.dataset.sg, {r: t.getBoundingClientRect(), n: t}));
+    if (!rm) olds.forEach((o, id) => { if (keep.has(id) || !o.r.width) return; const c = o.n.cloneNode(true); c.removeAttribute("data-sg"); c.classList.remove("tilt"); c.setAttribute("aria-hidden", "true"); c.tabIndex = -1;
+      c.style.cssText = `position:absolute;left:${o.r.left - base.left}px;top:${o.r.top - base.top}px;width:${o.r.width}px;margin:0;pointer-events:none;z-index:0`; ghosts.push(c); });
+    el.innerHTML = list.length ? list.map(slTile).join("") : slEmpty();
+    if (rm || !el.animate) return;
+    ghosts.slice(0, 40).forEach(c => { el.appendChild(c); c.animate([{opacity: 1, transform: "scale(1)"}, {opacity: 0, transform: "scale(.8)"}], {duration: 240, easing: "ease-in", fill: "forwards"}).onfinish = () => c.remove(); });
+    let k = 0; const first = !olds.size;
+    el.querySelectorAll(".slp-t[data-sg]").forEach(t => { const o = olds.get(t.dataset.sg), r = t.getBoundingClientRect();
+      if (o){ const dx = o.r.left - r.left, dy = o.r.top - r.top; if (Math.abs(dx) > 1 || Math.abs(dy) > 1) t.animate([{transform: `translate(${dx}px,${dy}px)`}, {transform: "none"}], {duration: 460, easing: "cubic-bezier(.2,.9,.25,1)"}); }
+      else t.animate([{opacity: 0, transform: "translateY(22px) scale(.92)"}, {opacity: 1, transform: "none"}], {duration: 460, delay: Math.min(k++, 16) * (first ? 42 : 26) + (first ? 0 : 120), easing: "cubic-bezier(.2,.9,.25,1)", fill: "backwards"}); });
+  }
+  function slWire(m){
+    m.addEventListener("click", e => {
+      const q = s => e.target.closest(s); let b;
+      if ((b = q("[data-sl-n]"))){ slS.n = b.dataset.slN; lsSet("nexus_slop_n", slS.n); slDraw(); return; }
+      if ((b = q("[data-sl-tab]"))){ slS.tab = b.dataset.slTab; slDraw(); return; }
+      if ((b = q("[data-sl-who]"))){ const u = b.dataset.slWho; slS.who.has(u) ? slS.who.delete(u) : slS.who.add(u); slDraw(); return; }
+      if ((b = q("[data-sl-wait]"))){ e.stopPropagation(); slToggleWait(b.dataset.slWait, b); return; }
+      if ((b = q("[data-sl]"))){ const a = b.dataset.sl;
+        if (a === "add") slForm(); else if (a === "roul") slRoulette(); else if (a === "retry"){ slErr = false; renderSlop(); }
+        else if (a === "clear"){ slS.tab = "all"; slS.q = ""; slS.who.clear(); $("slQ").value = ""; slDraw(); }
+        return; }
+      if ((b = q("[data-sg]"))) slOpenCard(b.dataset.sg, b.querySelector(".slp-p"));
+    });
+    m.addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target.matches && e.target.matches("article.slp-w")){ e.preventDefault(); slOpenCard(e.target.dataset.sg, e.target.querySelector(".slp-p")); } });
+    $("slQ").addEventListener("input", e => { slS.q = e.target.value; slDrawGrid(); });
+    $("slSort").addEventListener("change", e => { slS.sort = e.target.value; lsSet("nexus_slop_sort", slS.sort); slDrawGrid(); });
+    // лёгкий наклон постера за курсором
+    const grid = $("slGrid"); let cur = null;
+    const reset = () => { if (cur){ cur.classList.remove("tilt"); const p = cur.querySelector(".slp-p"); if (p){ p.style.removeProperty("--rx"); p.style.removeProperty("--ry"); } cur = null; } };
+    if (window.matchMedia && matchMedia("(hover:hover) and (pointer:fine)").matches) {
+      grid.addEventListener("pointermove", e => { if (slRM()) return; const t = e.target.closest(".slp-t[data-sg]"); if (t !== cur) reset(); if (!t) return; cur = t;
+        const p = t.querySelector(".slp-p"), r = p.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+        t.classList.add("tilt"); p.style.setProperty("--ry", ((x - .5) * 13).toFixed(2) + "deg"); p.style.setProperty("--rx", ((.5 - y) * 11).toFixed(2) + "deg"); p.style.setProperty("--mx", (x * 100).toFixed(1) + "%"); p.style.setProperty("--my", (y * 100).toFixed(1) + "%"); });
+      grid.addEventListener("pointerleave", reset);
+    }
+  }
+
+  // ---- действия ----
+  const slPop = el => { if (!el || slRM()) return; el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); };
+  async function slSetMark(id, kinds, on){
+    const mine = m => m.game_id === id && m.user_id === ME.id && kinds.includes(m.kind);
+    SL.marks = SL.marks.filter(m => !mine(m));
+    if (on) SL.marks.push({game_id: id, user_id: ME.id, kind: kinds[0], created_at: now()});
+    slRefresh();
+    const r = on ? await SB.from("slop_marks").upsert({game_id: id, user_id: ME.id, kind: kinds[0]}, {onConflict: "game_id,user_id,kind", ignoreDuplicates: true})
+      : await SB.from("slop_marks").delete().eq("game_id", id).eq("user_id", ME.id).in("kind", kinds);
+    if (r.error){ toast("Не сохранилось, попробуй ещё раз"); loadSlop(); return false; }
+    return true;
+  }
+  async function slToggleWait(id){
+    const g = slGame(id); if (!g || !ME) return; const on = !slMarks(id, "wait").includes(ME.id);
+    try { SND.click("soft"); } catch(_){}
+    const ok = await slSetMark(id, ["wait"], on);
+    slPop(document.querySelector(`[data-sl-wait="${id}"]`)); slPop(document.querySelector("#slCard .slp-want"));
+    if (!ok) return;
+    if (on){ const added = await slShelfAdd(g); toast(added ? `${g.title} — ждёшь, добавил в твою коллекцию «Жду»` : `${g.title} — ждёшь`); }
+    else { const removed = await slShelfDrop(g); toast(removed ? `${g.title} — больше не ждёшь, убрал из твоей коллекции` : `${g.title} — больше не ждёшь`); }
+  }
+  async function slToggleWant(id){
+    const g = slGame(id); if (!g || !ME) return; const on = !slWant(g).includes(ME.id);
+    try { SND.click("soft"); } catch(_){}
+    await slSetMark(id, on ? ["want"] : ["want", "wait"], on);
+    slPop(document.querySelector("#slCard .slp-want"));
+  }
+  // «Жду» кладёт игру в личную полку (в «ждёт релиз», а без даты — в «на будущее»); снятие — убирает, если её не трогали
+  async function slShelfAdd(g){
+    if (!db) return false;
+    const nt = normT(g.title);
+    if (items.some(it => isGame(it) && (it.slopId === g.id || (g.steam_id && String(it.steamId || "") === g.steam_id) || normT(it.title) === nt))) return false;
+    const dated = !!(g.release_date && !g.tba), body = {type: "game", title: g.title, status: dated ? "soon" : "future", createdAt: now(), updatedAt: now(), slopId: g.id};
+    if (dated){ body.releaseDate = g.release_date; if (g.release_prec && g.release_prec !== "day") body.releasePrec = g.release_prec; }
+    if (g.descr) body.desc = g.descr; if (g.genres.length) body.genre = g.genres.join(", "); if (g.steam_id) body.steamId = g.steam_id;
+    const u = slImg(g);
+    if (u && assets){ try { const r = await fetch(u); if (!r.ok) throw 0; const bl = await r.blob(); if (bl.type.startsWith("image/")) body.cover = (await assets.upload(bl, {type: bl.type})).id; } catch(_){} }
+    try { await db.collection("items").add(body); return true; } catch(_){ return false; }
+  }
+  async function slShelfDrop(g){
+    if (!db) return false;
+    const it = items.find(x => x.slopId === g.id && (x.status === "soon" || x.status === "future")); if (!it) return false;
+    try { await db.doc("items/" + it.id).delete(); return true; } catch(_){ return false; }
+  }
+  async function slSetStatus(id, st){
+    const cur = SL.status.find(s => s.game_id === id && s.user_id === ME.id);
+    try { SND.click("soft"); } catch(_){}
+    if (cur && cur.status === st){ SL.status = SL.status.filter(s => s !== cur); slRefresh();
+      const {error} = await SB.from("slop_status").delete().eq("game_id", id).eq("user_id", ME.id); if (error){ toast("Не сохранилось"); loadSlop(); } return; }
+    const row = {game_id: id, user_id: ME.id, status: st, verdict: st === "playing" ? null : (cur && cur.verdict) || null, note: st === "playing" ? null : (cur && cur.note) || null, updated_at: now()};
+    SL.status = SL.status.filter(s => s !== cur).concat(row); slRefresh();
+    const {error} = await SB.from("slop_status").upsert(row, {onConflict: "game_id,user_id"}); if (error){ toast("Не сохранилось"); loadSlop(); }
+  }
+  async function slPatchStatus(id, patch){
+    const cur = SL.status.find(s => s.game_id === id && s.user_id === ME.id); if (!cur) return;
+    Object.assign(cur, patch); slRefresh();
+    const {error} = await SB.from("slop_status").update(patch).eq("game_id", id).eq("user_id", ME.id); if (error){ toast("Не сохранилось"); loadSlop(); }
+  }
+
+  // ---- карточка игры ----
+  function slOpenCard(id, from){
+    const g = slGame(id); if (!g) return;
+    let ov = $("slCard");
+    if (!ov){ ov = document.createElement("div"); ov.id = "slCard"; ov.className = "slp-ov"; ov.hidden = true; document.body.appendChild(ov); slWireCard(ov); }
+    clearTimeout(slOpenCard.t); slOpenId = id; ov.hidden = false; ov.classList.remove("on", "still");
+    ov.innerHTML = `<div class="slp-ov-bg" data-sl="close"></div><div class="slp-c" role="dialog" aria-modal="true" aria-label="${esc(g.title)}"></div>`;
+    slDrawCard(); document.body.classList.add("slp-open");
+    void ov.offsetWidth; ov.classList.add("on");
+    setTimeout(() => { if (slOpenId === id) ov.classList.add("still"); }, 900);
+    try { SND.click("tab"); } catch(_){}
+    const pe = ov.querySelector(".slp-c-poster");
+    if (from && pe && !slRM() && document.body.animate){
+      const a = from.getBoundingClientRect(), b = pe.getBoundingClientRect();
+      if (a.width && b.width){
+        const fly = document.createElement("div"); fly.className = "slp-fly"; fly.innerHTML = slPosterIn(g);
+        fly.style.cssText = `left:${b.left}px;top:${b.top}px;width:${b.width}px;height:${b.height}px`;
+        document.body.appendChild(fly); pe.style.visibility = "hidden";
+        const done = () => { fly.remove(); const p2 = ov.querySelector(".slp-c-poster"); if (p2) p2.style.visibility = ""; };
+        const an = fly.animate([{transform: `translate(${a.left - b.left}px,${a.top - b.top}px) scale(${a.width / b.width},${a.height / b.height})`}, {transform: "none"}], {duration: 460, easing: "cubic-bezier(.2,.9,.2,1)"});
+        an.onfinish = done; an.oncancel = done;
+      }
+    }
+    const x = ov.querySelector(".slp-c-x"); if (x) x.focus({preventScroll: true});
+  }
+  function slCloseCard(){
+    const ov = $("slCard"); if (!ov || !slOpenId) return; slOpenId = null;
+    ov.classList.remove("on"); document.body.classList.remove("slp-open");
+    document.querySelectorAll(".slp-fly").forEach(f => f.remove());
+    slOpenCard.t = setTimeout(() => { if (!slOpenId){ ov.hidden = true; ov.innerHTML = ""; } }, 300);
+  }
+  document.addEventListener("keydown", e => { if (e.key !== "Escape") return;
+    if ($("slRl") && !$("slRl").hidden){ e.stopImmediatePropagation(); slCloseRoulette(); return; }
+    if (slOpenId && !sheets.length && $("lb").hidden){ e.stopImmediatePropagation(); slCloseCard(); } }, true);
+  window.addEventListener("hashchange", () => { slCloseCard(); slCloseRoulette(); });
+  document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-slopgo]"); if (!b) return; e.preventDefault(); const id = b.dataset.slopgo;
+    if (route === "slop"){ if (slGame(id)) slOpenCard(id); } else { slPending = id; go("slop"); } });
+
+  function slDrawCard(keep){
+    const ov = $("slCard"), g = slGame(slOpenId); if (!ov || !g) return;
+    const c = ov.querySelector(".slp-c"); if (!c) return;
+    const act = document.activeElement, fid = act && c.contains(act) ? act.id : "", vals = {}; c.querySelectorAll("input[id],textarea[id]").forEach(i => vals[i.id] = i.value);
+    const sy = c.scrollTop, media = keep ? c.querySelector(".slp-media") : null, hid = keep && c.querySelector(".slp-c-poster") && c.querySelector(".slp-c-poster").style.visibility === "hidden";
+    const out = slOut(g), own = g.user_id === ME.id, p = profOf(g.user_id);
+    const want = out ? slWant(g) : slMarks(g.id, "wait"), mineW = want.includes(ME.id);
+    const sts = slStats(g.id), my = sts.find(s => s.user_id === ME.id);
+    const ftp = slHttp(g.freetp_url), steam = g.steam_id ? `https://store.steampowered.com/app/${encodeURIComponent(g.steam_id)}/` : "";
+    const ftpL = /freetp/i.test(ftp) ? "Скачать на FreeTP" : "Скачать";
+    const dl = ftp ? `<a class="slp-dl" href="${esc(ftp)}" target="_blank" rel="noopener noreferrer">${SLI.dl}${ftpL}</a>${steam ? `<a class="slp-btn" href="${esc(steam)}" target="_blank" rel="noopener noreferrer">${SLI.ext} Steam</a>` : ""}`
+      : steam ? `<a class="slp-dl steam" href="${esc(steam)}" target="_blank" rel="noopener noreferrer">${SLI.ext}${out ? "Открыть в Steam" : "Страница в Steam"}</a>`
+      : `<span class="slp-nolink">Ссылку на игру пока не добавили${own ? " — можно дописать через «Изменить»" : ""}.</span>`;
+    const bg = g.screenshots[0] || slHttp(g.header) || slImg(g);
+    const tr = g.trailer && (slHttp(g.trailer.mp4) || slHttp(g.trailer.webm)) ? g.trailer : null;
+    const cms = SL.comments.filter(x => x.game_id === g.id);
+    const cmp = (a, b) => ["playing", "done", "dropped"].indexOf(a.status) - ["playing", "done", "dropped"].indexOf(b.status);
+    c.innerHTML = `<button class="slp-c-x" type="button" data-sl="close" aria-label="Закрыть">${SLI.x}</button>
+      ${bg ? `<div class="slp-c-bg" style="background-image:url('${esc(bg).replace(/'/g, "%27")}')"></div>` : ""}
+      <div class="slp-c-top">
+        <div class="slp-c-poster"${hid ? ' style="visibility:hidden"' : ""}><span class="slp-p">${slPosterIn(g)}</span></div>
+        <div class="slp-c-h">
+          <div class="slp-c-tags">${!out ? `<span class="slp-pill a">${SLI.clock}${esc(slCount(g))}</span>` : ""}${slFresh(g) ? `<span class="slp-pill a">${SLI.spark}Вышла!</span>` : ""}${slUniq(sts.map(s => s.status)).sort((a, b) => cmp({status: a}, {status: b})).map(k => `<span class="slp-pill ${k}">${SL_ST[k].s}: ${sts.filter(s => s.status === k).length}</span>`).join("")}</div>
+          <h2>${esc(g.title)}</h2>
+          <div class="slp-c-meta"><span>${SLI.users}${esc(slPl(g))}</span>${g.release_date || g.tba ? `<span>${SLI.clock}${out ? "вышла " : "выход: "}${esc(slDateLabel(g))}</span>` : ""}</div>
+          <div class="slp-c-g">${g.genres.slice(0, 8).map(x => `<span>${esc(x)}</span>`).join("")}</div>
+          <div class="slp-by">${avaHTML(p, "sm")}<b>${esc(own ? "Ты" : p.nick || "кто-то")}</b> ${own ? "добавил" : "предлагает"} · ${esc(slAgo(g.created_at))}</div>
+        </div>
+        <div class="slp-c-act">
+          <div class="slp-c-dl">${dl}</div>
+          <div class="slp-c-want"><button class="slp-want${mineW ? " on" : ""}" type="button" data-sl="${out ? "want" : "wait"}" aria-pressed="${mineW}">${mineW ? SLI.check : out ? SLI.hand : SLI.clock}${out ? "ХОЧУ ПОИГРАТЬ" : "ЖДУ"}</button>
+            <div class="slp-ppl">${want.length ? want.map(u => `<span class="slp-pp">${avaHTML(profOf(u), "sm")}${esc(u === ME.id ? "Ты" : profOf(u).nick || "?")}</span>`).join("") : `<em>${out ? "Пока никто не отметился. Нажми — и остальные увидят, с кем собираться." : "Пока никто не ждёт. Нажми «Жду» — игра появится и в твоей коллекции."}</em>`}</div></div>
+        </div>
+      </div>
+      <div class="slp-c-body">
+        ${g.descr ? `<p class="slp-c-desc">${esc(g.descr)}</p>` : ""}
+        ${out ? `<section class="slp-blk"><h3>${SLI.flag}Как у тебя с этой игрой</h3>
+          <div class="slp-seg">${Object.entries(SL_ST).map(([k, v]) => `<button class="slp-st ${k}${my && my.status === k ? " on" : ""}" type="button" data-sl-st="${k}" aria-pressed="${!!(my && my.status === k)}">${SLI[v.ic]}${v.l}</button>`).join("")}</div>
+          ${my && my.status !== "playing" ? `<div class="slp-vd"><span>Короткий вердикт — стоит ли остальным?</span><div class="slp-seg">${Object.entries(SL_VD).map(([k, l]) => `<button class="slp-st${my.verdict === k ? " on" : ""}" type="button" data-sl-vd="${k}" aria-pressed="${my.verdict === k}">${l}</button>`).join("")}</div>
+            <input class="slp-in" id="slNote" maxlength="140" placeholder="Комментарий в одну строку (необязательно)" value="${esc(my.note || "")}"></div>` : ""}
+          ${sts.length ? `<div class="slp-who-l">${[...sts].sort(cmp).map(s => `<div class="slp-wr">${avaHTML(profOf(s.user_id), "sm")}<b>${esc(s.user_id === ME.id ? "Ты" : profOf(s.user_id).nick || "?")}</b><span class="slp-pill ${s.status}">${SL_ST[s.status].s}</span>${s.verdict ? `<span class="slp-pill ${s.verdict}">${SL_VD[s.verdict]}</span>` : ""}${s.note ? `<q>${esc(s.note)}</q>` : ""}</div>`).join("")}</div>` : ""}
+        </section>` : ""}
+        ${tr || g.screenshots.length ? `<section class="slp-blk"><h3>${SLI.img}${tr ? "Трейлер и скриншоты" : "Скриншоты"}</h3><div class="slp-media">${tr ? `<div class="vid"><video controls preload="none" playsinline ${slHttp(tr.thumb) ? `poster="${esc(tr.thumb)}"` : ""}>${slHttp(tr.webm) ? `<source src="${esc(tr.webm)}" type="video/webm">` : ""}${slHttp(tr.mp4) ? `<source src="${esc(tr.mp4)}" type="video/mp4">` : ""}</video></div>` : ""}${g.screenshots.slice(0, 10).map((u, i) => `<button type="button" data-sl-shot="${i}" aria-label="Скриншот ${i + 1}"><img alt="" loading="lazy" src="${esc(u)}" onerror="this.parentNode.remove()"></button>`).join("")}</div></section>` : ""}
+        <section class="slp-blk"><h3>${SLI.chat}Обсуждение${cms.length ? ` · ${cms.length}` : ""}</h3>
+          ${cms.length ? `<ul class="slp-cm">${cms.map(x => `<li>${avaHTML(profOf(x.user_id), "sm")}<div class="bx"><b>${esc(x.user_id === ME.id ? "Ты" : profOf(x.user_id).nick || "?")}</b><time>${esc(slAgo(x.created_at))}</time><p>${esc(x.body)}</p></div>${x.user_id === ME.id || own ? `<button class="del" type="button" data-sl-cdel="${esc(x.id)}" aria-label="Удалить комментарий">${SLI.x}</button>` : "<span></span>"}</li>`).join("")}</ul>` : ""}
+          <div class="slp-cf"><input class="slp-in" id="slCIn" maxlength="1000" placeholder="Кто сегодня в 9? Нужен ли VPN?" autocomplete="off"><button class="slp-btn" type="button" data-sl="csend" aria-label="Отправить">${SLI.send}</button></div>
+        </section>
+        ${own ? `<div class="slp-c-own"><button class="slp-btn sm" type="button" data-sl="edit">${SLI.edit} Изменить</button><button class="slp-btn sm red" type="button" data-sl="del">Удалить игру</button></div>` : ""}
+      </div>`;
+    if (keep){
+      const m2 = c.querySelector(".slp-media"); if (media && m2 && media.innerHTML.replace(/\s+/g, "").length === m2.innerHTML.replace(/\s+/g, "").length) m2.replaceWith(media);
+      Object.entries(vals).forEach(([id, v]) => { const i = c.querySelector("#" + id); if (i && id !== "slNote") i.value = v; else if (i && fid === "slNote") i.value = v; });
+      c.scrollTop = sy; if (fid){ const f = c.querySelector("#" + fid); if (f){ f.focus({preventScroll: true}); try { f.setSelectionRange(f.value.length, f.value.length); } catch(_){} } }
+    }
+  }
+  function slWireCard(ov){
+    ov.addEventListener("click", async e => {
+      const q = s => e.target.closest(s), id = slOpenId; let b; if (!id) return;
+      if ((b = q("[data-sl-st]"))) return slSetStatus(id, b.dataset.slSt);
+      if ((b = q("[data-sl-vd]"))){ const cur = SL.status.find(s => s.game_id === id && s.user_id === ME.id); return slPatchStatus(id, {verdict: cur && cur.verdict === b.dataset.slVd ? null : b.dataset.slVd}); }
+      if ((b = q("[data-sl-shot]"))) return slLightbox(slGame(id).screenshots.slice(0, 10), +b.dataset.slShot);
+      if ((b = q("[data-sl-cdel]"))){ const cid = b.dataset.slCdel; SL.comments = SL.comments.filter(x => x.id !== cid); slRefresh();
+        const {error} = await SB.from("slop_comments").delete().eq("id", cid); if (error){ toast("Не удалилось"); loadSlop(); } return; }
+      if (!(b = q("[data-sl]"))) return; const a = b.dataset.sl;
+      if (a === "close") slCloseCard();
+      else if (a === "want") slToggleWant(id);
+      else if (a === "wait") slToggleWait(id);
+      else if (a === "csend") slSendComment();
+      else if (a === "edit") slForm(slGame(id));
+      else if (a === "del"){ if (b.dataset.sure){ b.disabled = true; const g = slGame(id); const {error} = await SB.from("slop_games").delete().eq("id", id);
+          if (error){ toast("Не удалилось"); b.disabled = false; return; } SL.games = SL.games.filter(x => x.id !== id); slCloseCard(); slRefresh(); toast(`${g ? g.title : "Игра"} — удалено из СЛОПа`); }
+        else { b.dataset.sure = "1"; b.textContent = "Точно удалить? Нажми ещё раз"; setTimeout(() => { if (b.isConnected){ delete b.dataset.sure; b.textContent = "Удалить игру"; } }, 4000); } }
+    });
+    ov.addEventListener("keydown", e => { if (e.key !== "Enter" || !e.target.id) return;
+      if (e.target.id === "slCIn"){ e.preventDefault(); slSendComment(); } else if (e.target.id === "slNote"){ e.preventDefault(); e.target.blur(); } });
+    ov.addEventListener("focusout", e => { if (e.target.id !== "slNote" || !slOpenId) return; const v = e.target.value.trim().slice(0, 140) || null, cur = SL.status.find(s => s.game_id === slOpenId && s.user_id === ME.id);
+      if (cur && (cur.note || null) !== v) slPatchStatus(slOpenId, {note: v}); });
+  }
+  async function slSendComment(){
+    const i = $("slCIn"), id = slOpenId; if (!i || !id) return; const body = i.value.trim().slice(0, 1000); if (!body) return;
+    i.value = ""; const tmp = {id: "tmp-" + Date.now(), game_id: id, user_id: ME.id, body, created_at: now()};
+    SL.comments.push(tmp); slRefresh();
+    const {data, error} = await SB.from("slop_comments").insert({game_id: id, user_id: ME.id, body}).select().single();
+    if (error){ SL.comments = SL.comments.filter(x => x !== tmp); slRefresh(); toast("Не отправилось"); const j = $("slCIn"); if (j) j.value = body; return; }
+    Object.assign(tmp, data); slRefresh();
+    const c = document.querySelector("#slCard .slp-c"), f = $("slCIn"); if (f) f.focus({preventScroll: true}); if (c) c.scrollTo({top: c.scrollHeight, behavior: slRM() ? "auto" : "smooth"});
+  }
+  function slLightbox(urls, i){
+    if (!urls.length) return; let k = i; const el = $("lb"); el.hidden = false;
+    const draw = () => { el.innerHTML = `<button class="lb-x" id="lbX" aria-label="Закрыть">${ICON.x}</button><img alt="" src="${esc(urls[k])}">${urls.length > 1 ? `<button class="lb-a l" id="lbL" aria-label="Назад">‹</button><button class="lb-a r" id="lbR" aria-label="Вперёд">›</button>` : ""}<div class="lb-b"><span>${k + 1} / ${urls.length}</span></div>`;
+      $("lbX").onclick = close; if ($("lbL")) $("lbL").onclick = () => step(-1); if ($("lbR")) $("lbR").onclick = () => step(1); };
+    const step = d => { k = (k + d + urls.length) % urls.length; draw(); };
+    const key = e => { if (e.key === "Escape"){ e.stopImmediatePropagation(); close(); } else if (e.key === "ArrowLeft" && urls.length > 1) step(-1); else if (e.key === "ArrowRight" && urls.length > 1) step(1); };
+    const close = () => { el.hidden = true; el.innerHTML = ""; el.onclick = null; window.removeEventListener("keydown", key, true); };
+    el.onclick = e => { if (e.target === el) close(); };
+    window.addEventListener("keydown", key, true); draw();
+  }
+
+  // ---- добавление и правка ----
+  function slForm(g){
+    if (!ME || !SB) return;
+    const isNew = !g, st = {userFile: null, steamFile: null, cover: g ? g.cover : null, header: g ? g.header : null, shots: g ? g.screenshots : [], trailer: g ? g.trailer : null, steamId: g ? g.steam_id : null, dupOk: false, busy: false, urls: []};
+    const relText = g && g.release_date && !g.tba ? (g.release_prec === "day" ? parseD(g.release_date).toLocaleDateString("ru-RU") : slDateLabel(g)) : "";
+    const s = openSheet(`<div class="sh-grab"></div><h3>${isNew ? "Добавить в СЛОП" : "Изменить игру"}</h3>
+      <p class="sub">${isNew ? "Игра появится в общем списке. В твою личную библиотеку она не попадёт." : "Правки увидят все."}</p>
+      <div class="slp-f">
+        <div class="slp-f-l"><div class="slp-drop" id="slfDrop" tabindex="0" role="button" aria-label="Постер: перетащи картинку или нажми"><div>${SLI.img}Перетащи постер сюда,<br>вставь из буфера<br>или нажми</div></div>
+          <div><button class="ib slp-drop-x" id="slfDropX" type="button" hidden style="padding:10px;font-size:13.5px">Убрать свой постер</button><input type="file" id="slfFile" accept="image/*" hidden></div></div>
+        <div>
+          <label class="f"><span><i>1</i><b>Ссылка на Steam</b> — подтянет название, постер, дату, жанры и скриншоты</span>
+            <span class="slp-f-row"><input class="in" id="slfUrl" inputmode="url" placeholder="https://store.steampowered.com/app/…" autocomplete="off" value="${g && g.steam_id ? `https://store.steampowered.com/app/${esc(g.steam_id)}/` : ""}"><button class="ib" id="slfGo" type="button">Подтянуть</button></span></label>
+          <div class="slp-f-msg" id="slfMsg"></div>
+          <label class="f"><span><b>Название</b></span><input class="in" id="slfTitle" maxlength="200" placeholder="Если игры нет в Steam — впиши сам" value="${esc(g ? g.title : "")}"></label>
+          <div class="f" style="display:grid;gap:6px;font-size:13px;color:#8e8e93;margin-bottom:12px"><span><i>2</i><b>Сколько игроков</b> — в Steam этого нет, впиши сам</span>
+            <span class="row2"><input class="in" id="slfMin" type="number" inputmode="numeric" min="1" max="100" placeholder="от (по умолчанию 1)" aria-label="От скольки игроков" value="${g ? g.min_players : ""}"><input class="in" id="slfMax" type="number" inputmode="numeric" min="1" max="100" placeholder="до скольки *" aria-label="До скольки игроков" value="${g ? g.max_players : ""}"></span></div>
+          <label class="f"><span><i>3</i><b>Ссылка на freetp.org</b> — необязательно</span><input class="in" id="slfFtp" inputmode="url" placeholder="https://freetp.org/…" autocomplete="off" value="${esc(g ? g.freetp_url || "" : "")}"></label>
+          <details class="slp-f-more" id="slfMore"${g ? " open" : ""}><summary>Дата выхода, жанры, описание</summary>
+            <label class="f">Дата выхода<input class="in" id="slfRel" placeholder="12.03.2027 · март 2027 · Q2 2027 · 2027" autocomplete="off" value="${esc(relText)}"></label>
+            <label class="slp-chk"><input type="checkbox" id="slfTba"${g && g.tba ? " checked" : ""}> Ещё не вышла, точной даты нет («скоро»)</label>
+            <label class="f">Жанры через запятую<input class="in" id="slfGen" placeholder="Кооп, Хоррор, Выживание" value="${esc(g ? g.genres.join(", ") : "")}"></label>
+            <label class="f">Описание<textarea class="in" id="slfDesc" maxlength="4000" placeholder="Пара слов, про что игра">${esc(g ? g.descr || "" : "")}</textarea></label>
+          </details>
+          <div id="slfDup"></div>
+          <div class="slp-f-act"><button class="ib blue" id="slfSave" type="button">${isNew ? "Добавить" : "Сохранить"}</button></div>
+        </div>
+      </div>`, {wide: true, onClose: () => st.urls.forEach(u => URL.revokeObjectURL(u))});
+    s.el.classList.add("slp-sheet");
+    const q = sel => s.el.querySelector(sel), msg = (t, cls) => { const m = q("#slfMsg"); m.textContent = t || ""; m.className = "slp-f-msg" + (cls ? " " + cls : ""); };
+    const prev = () => { const f = st.userFile || st.steamFile; let u = "";
+      if (f){ u = URL.createObjectURL(f); st.urls.push(u); } else if (st.cover) u = /^https?:/i.test(st.cover) ? st.cover : publicUrl(st.cover); else if (slHttp(st.header)) u = st.header;
+      const d = q("#slfDrop"); d.querySelectorAll("img").forEach(i => i.remove()); d.classList.toggle("has", !!u);
+      if (u){ const im = document.createElement("img"); im.alt = ""; im.src = u; d.appendChild(im); }
+      q("#slfDropX").hidden = !st.userFile; };
+    const setFile = f => { if (!f || !f.type.startsWith("image/")){ toast("Нужна картинка"); return; } if (f.size > 20 * 1024 * 1024){ toast("Картинка слишком большая"); return; } st.userFile = f; prev(); };
+    bindDrop(q("#slfDrop"), setFile); pasteTarget = setFile;
+    q("#slfDrop").onclick = () => q("#slfFile").click();
+    q("#slfDrop").onkeydown = e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); q("#slfFile").click(); } };
+    q("#slfFile").onchange = e => { setFile(e.target.files[0]); e.target.value = ""; };
+    q("#slfDropX").onclick = () => { st.userFile = null; prev(); };
+    prev();
+    const appId = raw => { const m = String(raw || "").match(/store\.steampowered\.com\/app\/(\d+)/i) || String(raw || "").trim().match(/^(\d{2,10})$/); return m ? m[1] : null; };
+    const fill = async () => {
+      const id = appId(q("#slfUrl").value);
+      if (!id){ msg("Это не похоже на ссылку на игру в Steam. Можно заполнить всё вручную.", "bad"); q("#slfMore").open = true; return; }
+      const btn = q("#slfGo"); btn.disabled = true; btn.textContent = "Ищу…"; msg("Спрашиваю Steam…");
+      try {
+        const {data: d, error} = await SB.functions.invoke("steam", {body: {appid: id}});
+        if (error || !d || d.error) throw new Error((d && d.error) || "Steam не ответил");
+        st.steamId = id; const got = [];
+        if (d.name){ q("#slfTitle").value = d.name; got.push("название"); }
+        if (d.short){ q("#slfDesc").value = d.short; got.push("описание"); }
+        const gs = slUniq([...(d.genres || []), ...(d.tags || []).slice(0, 5)].map(x => String(x).trim()).filter(Boolean)).slice(0, 8);
+        if (gs.length){ q("#slfGen").value = gs.join(", "); got.push("жанры"); }
+        const rd = d.release && d.release.date, iso = rd ? toISO(rd) : null;
+        if (iso){ q("#slfRel").value = iso.prec === "day" ? parseD(iso.d).toLocaleDateString("ru-RU") : rd; q("#slfTba").checked = false; got.push("дату выхода"); }
+        else if (d.coming_soon){ q("#slfRel").value = ""; q("#slfTba").checked = true; got.push("«скоро»"); }
+        if (d.cover){ const bin = Uint8Array.from(atob(d.cover), ch => ch.charCodeAt(0)); st.steamFile = new File([bin], "steam-cover.jpg", {type: d.coverType || "image/jpeg"}); got.push("постер"); } else st.steamFile = null;
+        st.header = slHttp(d.header) || null; if (!d.cover && st.header) got.push("обложку");
+        st.shots = (d.screenshots || []).filter(slHttp).slice(0, 10); if (st.shots.length) got.push("скриншоты");
+        const mv = (d.movies || []).find(x => slHttp(x.mp4) || slHttp(x.webm)); st.trailer = mv ? {thumb: slHttp(mv.thumb) || null, mp4: slHttp(mv.mp4) || null, webm: slHttp(mv.webm) || null} : null; if (st.trailer) got.push("трейлер");
+        prev();
+        const coop = (d.categories || []).some(x => /кооп|co-?op|multi|нескольк|сетев/i.test(x));
+        msg(`Подтянул: ${got.join(", ")}. ${coop ? "Осталось вписать, на сколько игроков." : "Steam не говорит, что это кооп, — проверь и впиши число игроков."}`, "ok");
+        if (!q("#slfMax").value) q("#slfMax").focus();
+      } catch(e){ msg(`Steam не отдал данные (${e.message || e}). Заполни вручную — поля ниже.`, "bad"); q("#slfMore").open = true; q("#slfTitle").focus(); }
+      btn.disabled = false; btn.textContent = "Подтянуть";
+    };
+    q("#slfGo").onclick = fill;
+    q("#slfUrl").addEventListener("paste", () => setTimeout(() => { if (appId(q("#slfUrl").value)) fill(); }, 30));
+    q("#slfUrl").addEventListener("keydown", e => { if (e.key === "Enter"){ e.preventDefault(); fill(); } });
+    s.el.addEventListener("input", () => { if (q("#slfMsg").classList.contains("bad")) msg(""); });
+    ["#slfTitle", "#slfUrl"].forEach(k => q(k).addEventListener("input", () => { st.dupOk = false; q("#slfDup").innerHTML = ""; q("#slfSave").textContent = isNew ? "Добавить" : "Сохранить"; }));
+    q("#slfSave").onclick = async () => {
+      if (st.busy) return;
+      const title = q("#slfTitle").value.trim().slice(0, 200);
+      if (!title){ msg("Нужно название игры.", "bad"); q("#slfTitle").focus(); return; }
+      const max = parseInt(q("#slfMax").value, 10), minRaw = q("#slfMin").value.trim(), min = minRaw ? parseInt(minRaw, 10) : 1;
+      if (!(max >= 1 && max <= 100)){ msg("Впиши, до скольки игроков (от 1 до 100).", "bad"); q("#slfMax").focus(); return; }
+      if (!(min >= 1 && min <= max)){ msg("«От» должно быть не меньше 1 и не больше «до».", "bad"); q("#slfMin").focus(); return; }
+      const ftpRaw = q("#slfFtp").value.trim(), ftp = ftpRaw ? slHttp(/^https?:\/\//i.test(ftpRaw) ? ftpRaw : "https://" + ftpRaw) : "";
+      if (ftpRaw && (!ftp || ftp.length > 500)){ msg("Ссылка на FreeTP выглядит странно — скопируй адрес страницы игры целиком.", "bad"); q("#slfFtp").focus(); return; }
+      const urlId = appId(q("#slfUrl").value), steamId = urlId || (q("#slfUrl").value.trim() ? null : null);
+      if (q("#slfUrl").value.trim() && !urlId){ msg("Ссылка на Steam не распознана. Очисти поле или вставь адрес страницы игры.", "bad"); q("#slfUrl").focus(); return; }
+      const tba = q("#slfTba").checked, relRaw = q("#slfRel").value.trim(); let rel = null;
+      if (!tba && relRaw){ rel = toISO(relRaw); if (!rel){ msg("Не понял дату. Примеры: 12.03.2027, март 2027, Q2 2027, 2027.", "bad"); q("#slfMore").open = true; q("#slfRel").focus(); return; } }
+      // дубликаты: тот же Steam ID или похожее название
+      if (!st.dupOk){ const nt = normT(title), dup = SL && SL.games.find(x => (!g || x.id !== g.id) && ((steamId && x.steam_id === steamId) || normT(x.title) === nt || (nt.length > 5 && (normT(x.title).includes(nt) || (normT(x.title).length > 5 && nt.includes(normT(x.title)))))));
+        if (dup){ st.dupOk = true; q("#slfDup").innerHTML = `<div class="slp-dup">Похоже, такая игра уже есть: <b>${esc(dup.title)}</b> (${esc(slPl(dup))}, добавил ${esc(dup.user_id === ME.id ? "ты" : profOf(dup.user_id).nick || "кто-то")}). Если это другая игра — нажми кнопку ещё раз.</div>`; q("#slfSave").textContent = isNew ? "Всё равно добавить" : "Всё равно сохранить"; return; } }
+      st.busy = true; const btn = q("#slfSave"); btn.disabled = true; btn.textContent = "Сохраняю…";
+      try {
+        let cover = st.cover; const f = st.userFile || st.steamFile;
+        if (f) cover = await upload(f);
+        const row = {title, steam_id: steamId, freetp_url: ftp || null, cover: cover || null, header: slHttp(st.header) || null, descr: q("#slfDesc").value.trim().slice(0, 4000) || null,
+          genres: slUniq(q("#slfGen").value.split(/[,;]+/).map(x => x.trim()).filter(Boolean)).slice(0, 12), screenshots: st.shots || [], trailer: st.trailer || null,
+          min_players: min, max_players: max, release_date: rel ? rel.d : null, release_prec: rel ? rel.prec : "day", tba, updated_at: now()};
+        let saved;
+        if (isNew){ const r = await SB.from("slop_games").insert({...row, user_id: ME.id}).select().single(); if (r.error) throw r.error; saved = slNorm(r.data); if (SL) SL.games.unshift(saved); }
+        else { const r = await SB.from("slop_games").update(row).eq("id", g.id).select().single(); if (r.error) throw r.error; saved = slNorm(r.data); if (SL) SL.games = SL.games.map(x => x.id === g.id ? saved : x); }
+        s.close(); slRefresh();
+        toast(isNew ? (slOut(saved) ? `${saved.title} — в библиотеке СЛОПа` : `${saved.title} — в календаре ожиданий`) : "Сохранено");
+        if (isNew && route === "slop"){ const el = slOut(saved) ? document.querySelector(`.slp-t[data-sg="${saved.id}"]`) : document.querySelector(`.slp-w[data-sg="${saved.id}"]`); if (el) el.scrollIntoView({block: "center", behavior: slRM() ? "auto" : "smooth"}); }
+      } catch(e){ st.busy = false; btn.disabled = false; btn.textContent = isNew ? "Добавить" : "Сохранить"; msg(e && e.code === "too_large" ? "Постер слишком тяжёлый — нужен до 20 МБ." : "Не сохранилось. Проверь интернет и попробуй ещё раз.", "bad"); }
+    };
+    setTimeout(() => { const u = q("#slfUrl"); if (u && isNew) u.focus(); }, 320);
+  }
+
+  // ---- рулетка: «Не можем выбрать» ----
+  function slCloseRoulette(){ const el = $("slRl"); if (!el || el.hidden) return; el.hidden = true; el.innerHTML = ""; cancelAnimationFrame(slRoulette.raf); if (!slOpenId) document.body.classList.remove("slp-open"); }
+  function slRoulette(){
+    if (!SL) return; const pool = slLib();
+    if (!pool.length){ toast("Не из чего выбирать — под эти фильтры игр нет"); return; }
+    if (pool.length === 1){ toast("Тут всего одна игра — в неё и играйте"); slOpenCard(pool[0].id, document.querySelector(`.slp-t[data-sg="${pool[0].id}"] .slp-p`)); return; }
+    let el = $("slRl"); if (!el){ el = document.createElement("div"); el.id = "slRl"; el.className = "slp-rl"; document.body.appendChild(el);
+      el.addEventListener("click", e => { const b = e.target.closest("[data-rl]"); if (!b) return; const a = b.dataset.rl;
+        if (a === "close") slCloseRoulette(); else if (a === "again"){ slCloseRoulette(); slRoulette(); } else if (a === "open"){ const id = b.dataset.id; slCloseRoulette(); slOpenCard(id); } }); }
+    const N = 38, rnd = () => pool[Math.floor(Math.random() * pool.length)], win = rnd(), seq = [];
+    for (let i = 0; i < N + 5; i++){ let g = i === N ? win : rnd(), tries = 0; while (i !== N && tries++ < 6 && ((seq[i - 1] && seq[i - 1].id === g.id) || (i === N - 1 && g.id === win.id) || (i === N + 1 && g.id === win.id))) g = rnd(); seq.push(g); }
+    el.hidden = false; document.body.classList.add("slp-open");
+    el.innerHTML = `<div class="slp-rl-bg" data-rl="close"></div><div class="slp-rl-b" role="dialog" aria-modal="true" aria-label="Рулетка">
+      <button class="slp-btn sm slp-rl-x" type="button" data-rl="close" aria-label="Закрыть">${SLI.x}</button>
+      <h3>Не можете выбрать?</h3><p>Кручу ${pool.length} ${plural(pool.length, "игру", "игры", "игр")}${slS.n !== "all" ? ` · ${(SL_NW[slS.n] || "").toLowerCase()}` : ""}</p>
+      <div class="slp-rl-win"><div class="slp-rl-strip">${seq.map((g, i) => `<div class="slp-rl-it${i === N ? " win" : ""}"><span class="slp-p">${slPosterIn(g).replace('loading="lazy" ', "")}</span></div>`).join("")}</div><i class="slp-rl-mark"></i></div>
+      <div class="slp-rl-res" aria-live="polite"></div></div>`;
+    const box = el.querySelector(".slp-rl-win"), strip = el.querySelector(".slp-rl-strip"), its = strip.children, res = el.querySelector(".slp-rl-res");
+    const finish = () => { if (el.hidden || !box.isConnected) return; box.classList.add("fin");
+      res.innerHTML = `<b>${esc(win.title)}</b><small>${esc(slPl(win))}</small><div><button class="slp-btn pri" type="button" data-rl="open" data-id="${esc(win.id)}">Открыть карточку</button><button class="slp-btn" type="button" data-rl="again">${SLI.dice} Ещё раз</button></div>`;
+      const b = res.querySelector("[data-rl=open]"); if (b) b.focus({preventScroll: true}); };
+    requestAnimationFrame(() => {
+      if (!its[N]) return; const step = its[1].offsetLeft - its[0].offsetLeft, w = its[0].offsetWidth;
+      const target = its[N].offsetLeft + w / 2 - box.clientWidth / 2 + (Math.random() - .5) * w * .55, start = -box.clientWidth / 2 + w / 2;
+      if (slRM() || !strip.animate){ strip.style.transform = `translateX(${-target}px)`; finish(); return; }
+      const an = strip.animate([{transform: `translateX(${-start}px)`}, {transform: `translateX(${-target}px)`}], {duration: 5600, easing: "cubic-bezier(.1,.62,.06,1)", fill: "forwards"});
+      let last = -1; const tick = () => { if (el.hidden || !strip.isConnected) return;
+        const x = -new DOMMatrixReadOnly(getComputedStyle(strip).transform).m41, i = Math.floor((x + box.clientWidth / 2) / step);
+        if (i !== last){ last = i; try { SND.tick(.6); } catch(_){} }
+        if (an.playState !== "finished") slRoulette.raf = requestAnimationFrame(tick); };
+      slRoulette.raf = requestAnimationFrame(tick);
+      an.onfinish = finish;
+    });
+  }
+
   let wSubT = 0;
   function subscribeWall(){
     if (!SB || !ME) return;

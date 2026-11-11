@@ -1,4 +1,5 @@
 // NEXUS: данные игры из Steam по appid (название, описание, жанры, метки, дата, цена, вертикальная обложка)
+// 4.4: ещё скриншоты и трейлер — для карточек СЛОПа
 // 3.0: игры, которые не продаются в РФ (Ubisoft, Sony и т.п.), больше не дают 404 —
 // пробуем регионы ru → kz → us → без региона, а если API молчит совсем, разбираем саму страницу магазина.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
@@ -102,6 +103,10 @@ Deno.serve(async (req) => {
       developers: d.developers || [],
       header: d.header_image || null,
       cover, coverType,
+      screenshots: (d.screenshots || []).slice(0, 10).map((x: { path_full?: string; path_thumbnail?: string }) => x.path_full || x.path_thumbnail).filter(Boolean),
+      // deno-lint-ignore no-explicit-any
+      movies: (d.movies || []).slice(0, 3).map((m: any) => ({ name: m.name || "", thumb: m.thumbnail || null, mp4: m.mp4?.max || m.mp4?.["480"] || null, webm: m.webm?.max || m.webm?.["480"] || null, hls: m.hls_h264 || null })),
+      coming_soon: !!(d.release_date && d.release_date.coming_soon),
     });
   } catch (e) {
     return json({ error: String(e) });
