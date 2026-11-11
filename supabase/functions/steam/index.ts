@@ -88,6 +88,24 @@ Deno.serve(async (req) => {
       } catch (_) { /* пробуем следующий */ }
     }
 
+    // 4.5: у новых игр постер лежит по адресу с хешем — спрашиваем его у магазина
+    if (!cover) {
+      try {
+        const input = encodeURIComponent(JSON.stringify({ ids: [{ appid: Number(id) }], context: { language: "russian", country_code: "US" }, data_request: { include_assets: true } }));
+        const r = await fetch(`https://api.steampowered.com/IStoreBrowseService/GetItems/v1?input_json=${input}`, { headers: { "User-Agent": UA["User-Agent"] } });
+        if (r.ok) {
+          const a = (await r.json())?.response?.store_items?.[0]?.assets;
+          const fmt = a?.asset_url_format;
+          for (const file of [a?.library_capsule_2x, a?.library_capsule]) {
+            if (!fmt || !file || cover) continue;
+            const c = await fetch("https://shared.akamai.steamstatic.com/store_item_assets/" + String(fmt).replace("${FILENAME}", file), { headers: { "User-Agent": UA["User-Agent"] } });
+            const ct = c.headers.get("content-type") || "";
+            if (c.ok && ct.startsWith("image/")) { cover = b64(new Uint8Array(await c.arrayBuffer())); coverType = ct; }
+          }
+        }
+      } catch (_) { /* постер не обязателен */ }
+    }
+
     return json({
       appid: id,
       region,

@@ -3894,7 +3894,20 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
 .slp-drop img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .slp-drop.has{border-style:solid;border-color:rgba(255,255,255,.14)}
 .slp-drop.has > div{display:none}
-.slp-drop-x{margin-top:8px;width:100%}
+.slp-drop.has{padding:0;cursor:default}
+.slp-drop canvas{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab;touch-action:none}
+.slp-drop canvas.grab{cursor:grabbing}
+.slp-drop canvas[hidden]{display:none}
+.slp-adj-w{display:grid;gap:8px;margin-top:10px}
+.slp-adj{display:grid;gap:8px;padding:10px;border-radius:12px;background:rgba(255,255,255,.05)}
+.slp-adj[hidden]{display:none}
+.slp-adj label{display:grid;gap:6px;color:#c7c7cc;font:600 12.5px/1 var(--ios)}
+.slp-adj input[type=range]{width:100%;accent-color:#b8ff3d}
+.slp-adj-b{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.slp-adj-b .ib,.slp-adj-w > .ib{padding:9px 8px;font-size:13px;border-radius:10px}
+.slp-adj small{color:#8e8e93;font:500 11.5px/1.3 var(--ios);text-align:center}
+.slp-drop-x{width:100%}
+.slp-drop-x[hidden]{display:none}
 .slp-f .f b{color:#f2f2f7;font-weight:650}
 .slp-f .f i{font-style:normal;display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#b8ff3d;color:#0b1400;font:800 12px/1 var(--ios);margin-right:7px}
 .slp-f-row{display:flex;gap:8px}
@@ -6118,6 +6131,8 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     {v: "4.5", date: "2026-11-11", title: "Лайки на тир-листы и книга жалоб в новом стиле", kind: "minor", sec: {
       n: ["В СЛОП можно добавить игру прямо из своей коллекции или из ожидаемых: ищешь по названию или просто тыкаешь в обложку — название, постер, дата и жанры подставятся сами",
         "Лайки на тир-листы: сердечко в окне тир-листа, рядом видно, кто лайкнул. Счётчик лайков виден и в списке тир-листов"],
+      f: ["СЛОП: постер при добавлении можно двигать мышкой и менять его размер ползунком или колесом. Кнопка «Целиком» показывает картинку полностью, «Заполнить» — растягивает на весь постер",
+        "СЛОП: если у игры в Steam нет вертикального постера, широкая картинка больше не обрезается по бокам — показывается целиком, а вертикальные постеры новых игр находятся чаще"],
       c: ["«Ответить своей версией» на чужой тир-лист теперь даёт чистые тиры: все картинки лежат в «Не распределено», расставляешь с нуля, а не правишь то, что сделал друг",
         "Книга жалоб и предложений выглядит как фотолента начала 2010-х: синяя шапка, квадратные фото и аватарки, сердечки и комментарии под записью. Записи, лайки и комментарии остались на месте"]}},
     {v: "4.4", date: "2026-11-11", title: "СЛОП — кооп-игры с друзьями", kind: "major", sec: {
@@ -9216,8 +9231,10 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     const s = openSheet(`<div class="sh-grab"></div><h3>${isNew ? "Добавить в СЛОП" : "Изменить игру"}</h3>
       <p class="sub">${isNew ? "Игра появится в общем списке. В твою личную библиотеку она не попадёт." : "Правки увидят все."}</p>
       <div class="slp-f">
-        <div class="slp-f-l"><div class="slp-drop" id="slfDrop" tabindex="0" role="button" aria-label="Постер: перетащи картинку или нажми"><div>${SLI.img}Перетащи постер сюда,<br>вставь из буфера<br>или нажми</div></div>
-          <div><button class="ib slp-drop-x" id="slfDropX" type="button" hidden style="padding:10px;font-size:13.5px">Убрать свой постер</button><input type="file" id="slfFile" accept="image/*" hidden></div></div>
+        <div class="slp-f-l"><div class="slp-drop" id="slfDrop" tabindex="0" role="button" aria-label="Постер: перетащи картинку или нажми"><canvas id="slfCv" width="400" height="600" hidden aria-label="Постер: тяни, чтобы подвинуть"></canvas><div>${SLI.img}Перетащи постер сюда,<br>вставь из буфера<br>или нажми</div></div>
+          <div class="slp-adj-w"><div class="slp-adj" id="slfAdj" hidden><label><span>Размер</span><input type="range" id="slfZoom" min="0.3" max="3" step="0.01" value="1" aria-label="Размер постера"></label>
+              <div class="slp-adj-b"><button class="ib" id="slfFit" type="button" title="Показать картинку целиком">Целиком</button><button class="ib" id="slfFill" type="button" title="Заполнить весь постер">Заполнить</button></div><small>Тяни постер мышкой, колесо — размер</small></div>
+            <button class="ib slp-drop-x" id="slfOwn" type="button">Свой постер</button><button class="ib slp-drop-x" id="slfDropX" type="button" hidden>Убрать свой постер</button><input type="file" id="slfFile" accept="image/*" hidden></div></div>
         <div>
           ${isNew && MYITEMS.some(it => isGame(it) && it.title) ? `<button class="slp-pickb" id="slfPick" type="button">${SLI.img}Взять из моей коллекции или из ожидаемых</button><div class="slp-or">или добавить по ссылке</div>` : ""}
           <label class="f"><span><i>1</i><b>Ссылка на Steam</b> — подтянет название, постер, дату, жанры и скриншоты</span>
@@ -9239,17 +9256,37 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
       </div>`, {wide: true, onClose: () => st.urls.forEach(u => URL.revokeObjectURL(u))});
     s.el.classList.add("slp-sheet");
     const q = sel => s.el.querySelector(sel), msg = (t, cls) => { const m = q("#slfMsg"); m.textContent = t || ""; m.className = "slp-f-msg" + (cls ? " " + cls : ""); };
-    const prev = () => { const f = st.userFile || st.steamFile; let u = "";
-      if (f){ u = URL.createObjectURL(f); st.urls.push(u); } else if (st.cover) u = /^https?:/i.test(st.cover) ? st.cover : publicUrl(st.cover); else if (slHttp(st.header)) u = st.header;
-      const d = q("#slfDrop"); d.querySelectorAll("img").forEach(i => i.remove()); d.classList.toggle("has", !!u);
-      if (u){ const im = document.createElement("img"); im.alt = ""; im.src = u; d.appendChild(im); }
-      q("#slfDropX").hidden = !st.userFile; };
+    // постер: предпросмотр на холсте — можно двигать мышкой и менять масштаб, при сохранении запекается в 2:3
+    const cv = q("#slfCv"), pos = st.pos = {s: 1, x: 0, y: 0}; let fitS = 1, srcKey = "";
+    const paint = () => { if (!st.img) return; const r = slPaint(cv, st.img, pos); pos.x = r.x; pos.y = r.y; q("#slfZoom").value = String(pos.s); };
+    const prev = () => { const f = st.userFile || st.steamFile; let u = "", key = "";
+      if (f){ key = "f:" + f.name + f.size + f.lastModified; if (key !== srcKey){ u = URL.createObjectURL(f); st.urls.push(u); } } else if (st.cover){ u = /^https?:/i.test(st.cover) ? st.cover : publicUrl(st.cover); key = u; } else if (slHttp(st.header)){ u = st.header; key = u; }
+      const d = q("#slfDrop"); d.classList.toggle("has", !!key); q("#slfDropX").hidden = !st.userFile; q("#slfAdj").hidden = !key || !st.img;
+      if (key === srcKey) return; srcKey = key; st.img = null; q("#slfAdj").hidden = true; cv.hidden = true; d.querySelectorAll("img").forEach(i => i.remove());
+      if (!key) return;
+      const im = new Image(); im.crossOrigin = "anonymous";
+      im.onload = () => { if (srcKey !== key) return; st.img = im; st.fresh = !!f || !st.cover;
+        const W = cv.width, H = cv.height, iw = im.naturalWidth, ih = im.naturalHeight; fitS = Math.min(W / iw, H / ih) / Math.max(W / iw, H / ih);
+        // широкую картинку (шапку из Steam) по умолчанию показываем целиком, а не обрезаем по бокам
+        pos.s = st.fresh && iw / ih > 0.85 ? fitS : 1; pos.x = pos.y = 0;
+        q("#slfZoom").min = String(Math.min(.3, fitS).toFixed(2)); cv.hidden = false; q("#slfAdj").hidden = false; paint(); };
+      im.onerror = () => { if (srcKey !== key) return; const pl = document.createElement("img"); pl.alt = ""; pl.src = u; d.appendChild(pl); };
+      im.src = u; };
     const setFile = f => { if (!f || !f.type.startsWith("image/")){ toast("Нужна картинка"); return; } if (f.size > 20 * 1024 * 1024){ toast("Картинка слишком большая"); return; } st.userFile = f; prev(); };
     bindDrop(q("#slfDrop"), setFile); pasteTarget = setFile;
-    q("#slfDrop").onclick = () => q("#slfFile").click();
+    q("#slfDrop").onclick = () => { if (!st.img) q("#slfFile").click(); };
     q("#slfDrop").onkeydown = e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); q("#slfFile").click(); } };
     q("#slfFile").onchange = e => { setFile(e.target.files[0]); e.target.value = ""; };
+    q("#slfOwn").onclick = () => q("#slfFile").click();
     q("#slfDropX").onclick = () => { st.userFile = null; prev(); };
+    q("#slfZoom").oninput = e => { pos.s = +e.target.value; paint(); };
+    q("#slfFit").onclick = () => { pos.s = fitS; pos.x = pos.y = 0; paint(); };
+    q("#slfFill").onclick = () => { pos.s = 1; pos.x = pos.y = 0; paint(); };
+    let drag = null;
+    cv.addEventListener("pointerdown", e => { if (!st.img || e.button) return; e.preventDefault(); drag = {x: e.clientX, y: e.clientY, px: pos.x, py: pos.y}; cv.setPointerCapture(e.pointerId); cv.classList.add("grab"); });
+    cv.addEventListener("pointermove", e => { if (!drag) return; const r = cv.getBoundingClientRect(); pos.x = drag.px + (e.clientX - drag.x) / r.width; pos.y = drag.py + (e.clientY - drag.y) / r.height; paint(); });
+    const dragEnd = () => { drag = null; cv.classList.remove("grab"); }; cv.addEventListener("pointerup", dragEnd); cv.addEventListener("pointercancel", dragEnd);
+    cv.addEventListener("wheel", e => { if (!st.img) return; e.preventDefault(); pos.s = Math.min(3, Math.max(+q("#slfZoom").min, pos.s * (e.deltaY < 0 ? 1.06 : 1 / 1.06))); paint(); }, {passive: false});
     prev();
     const appId = raw => { const m = String(raw || "").match(/store\.steampowered\.com\/app\/(\d+)/i) || String(raw || "").trim().match(/^(\d{2,10})$/); return m ? m[1] : null; };
     const fill = async () => {
@@ -9314,8 +9351,11 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
         if (dup){ st.dupOk = true; q("#slfDup").innerHTML = `<div class="slp-dup">Похоже, такая игра уже есть: <b>${esc(dup.title)}</b> (${esc(slPl(dup))}, добавил ${esc(dup.user_id === ME.id ? "ты" : profOf(dup.user_id).nick || "кто-то")}). Если это другая игра — нажми кнопку ещё раз.</div>`; q("#slfSave").textContent = isNew ? "Всё равно добавить" : "Всё равно сохранить"; return; } }
       st.busy = true; const btn = q("#slfSave"); btn.disabled = true; btn.textContent = "Сохраняю…";
       try {
-        let cover = st.cover; const f = st.userFile || st.steamFile;
-        if (f) cover = await upload(f);
+        let cover = st.cover; const f = st.userFile || st.steamFile, moved = st.img && st.pos && (Math.abs(st.pos.s - 1) > .004 || Math.abs(st.pos.x) > .002 || Math.abs(st.pos.y) > .002);
+        let baked = null;
+        if (moved){ try { const c2 = document.createElement("canvas"); c2.width = 600; c2.height = 900; slPaint(c2, st.img, {...st.pos}); baked = await new Promise(ok => c2.toBlob(ok, "image/jpeg", .9)); } catch(_){ baked = null; } }
+        if (baked) cover = (await assets.upload(baked, {type: "image/jpeg"})).id;
+        else if (f) cover = await upload(f);
         const row = {title, steam_id: steamId, freetp_url: ftp || null, cover: cover || null, header: slHttp(st.header) || null, descr: q("#slfDesc").value.trim().slice(0, 4000) || null,
           genres: slUniq(q("#slfGen").value.split(/[,;]+/).map(x => x.trim()).filter(Boolean)).slice(0, 12), screenshots: st.shots || [], trailer: st.trailer || null,
           min_players: min, max_players: max, release_date: rel ? rel.d : null, release_prec: rel ? rel.prec : "day", tba, updated_at: now()};
@@ -9328,6 +9368,17 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
       } catch(e){ st.busy = false; btn.disabled = false; btn.textContent = isNew ? "Добавить" : "Сохранить"; msg(e && e.code === "too_large" ? "Постер слишком тяжёлый — нужен до 20 МБ." : "Не сохранилось. Проверь интернет и попробуй ещё раз.", "bad"); }
     };
     setTimeout(() => { const u = q("#slfUrl"); if (u && isNew) u.focus(); }, 320);
+  }
+
+  // рисует постер в рамку 2:3: масштаб 1 — заполнить, меньше — картинка целиком на размытой подложке
+  function slPaint(cv, im, pos){
+    const W = cv.width, H = cv.height, c = cv.getContext("2d"), iw = im.naturalWidth, ih = im.naturalHeight, cov = Math.max(W / iw, H / ih), k = cov * pos.s, w = iw * k, h = ih * k;
+    c.fillStyle = "#12141a"; c.fillRect(0, 0, W, H);
+    if (w < W - .5 || h < H - .5){ c.save(); try { c.filter = `blur(${Math.round(W / 20)}px) brightness(.5) saturate(1.25)`; } catch(_){} const m = 1.2; c.drawImage(im, (W - iw * cov * m) / 2, (H - ih * cov * m) / 2, iw * cov * m, ih * cov * m); c.restore(); }
+    const cl = (v, span, size) => size >= span ? Math.min(0, Math.max(span - size, v)) : Math.min(span - size, Math.max(0, v));
+    const x = cl((W - w) / 2 + pos.x * W, W, w), y = cl((H - h) / 2 + pos.y * H, H, h);
+    c.imageSmoothingQuality = "high"; c.drawImage(im, x, y, w, h);
+    return {x: (x - (W - w) / 2) / W, y: (y - (H - h) / 2) / H};
   }
 
   // ---- выбор игры из своей полки: по названию или по обложке ----
