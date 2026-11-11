@@ -609,3 +609,23 @@ do $$ begin alter publication supabase_realtime add table public.slop_games; exc
 do $$ begin alter publication supabase_realtime add table public.slop_marks; exception when duplicate_object then null; end $$;
 do $$ begin alter publication supabase_realtime add table public.slop_status; exception when duplicate_object then null; end $$;
 do $$ begin alter publication supabase_realtime add table public.slop_comments; exception when duplicate_object then null; end $$;
+
+-- ===== 4.5: лайки на тир-листы (все видят, кто лайкнул) =====
+create table if not exists public.tierlist_likes (
+  tierlist_id uuid not null references public.tierlists (id) on delete cascade,
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (tierlist_id, user_id)
+);
+create index if not exists tierlist_likes_user_idx on public.tierlist_likes (user_id);
+alter table public.tierlist_likes enable row level security;
+drop policy if exists tll_select on public.tierlist_likes;
+drop policy if exists tll_insert on public.tierlist_likes;
+drop policy if exists tll_delete on public.tierlist_likes;
+create policy tll_select on public.tierlist_likes for select to authenticated using (true);
+create policy tll_insert on public.tierlist_likes for insert to authenticated with check ((select auth.uid()) = user_id);
+create policy tll_delete on public.tierlist_likes for delete to authenticated using ((select auth.uid()) = user_id);
+revoke all on public.tierlist_likes from anon;
+grant select, insert, delete on public.tierlist_likes to authenticated;
+alter table public.tierlist_likes replica identity full;
+do $$ begin alter publication supabase_realtime add table public.tierlist_likes; exception when duplicate_object then null; end $$;
