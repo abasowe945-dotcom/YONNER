@@ -3747,6 +3747,10 @@ body[data-world="wSlop"]{color:#e9ecf3}
 .slp-q input::placeholder{color:var(--sl-dim)}
 .slp-sel{height:42px;border-radius:13px;border:1px solid var(--sl-line);background:#161920;color:#fff;font:600 13.5px/1 var(--ios);padding:0 12px;cursor:pointer}
 .slp-who{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.slp-gen{gap:6px;margin-top:-6px}
+.slp-gen .slp-wc{padding:7px 12px}
+.slp-gen .slp-wc i{font-style:normal;opacity:.55;font-weight:500}
+.slp-gen .slp-wc.more{border-style:dashed;color:var(--sl-dim)}
 .slp-who:empty{display:none}
 .slp-who > span{color:var(--sl-dim);font:600 12.5px/1 var(--ios)}
 .slp-wc{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--sl-line);border-radius:999px;padding:4px 12px 4px 4px;background:rgba(255,255,255,.04);color:#cfd4df;font:600 13px/1 var(--ios);cursor:pointer;transition:background .2s,border-color .2s,color .2s,transform .2s cubic-bezier(.3,1.6,.4,1)}
@@ -4499,12 +4503,12 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
   function renderGames(){
     const fut = route === "games-future";
     const all = items.filter(isGame), lib = all.filter(inLib), futs = all.filter(i => isFuture(i) || isSoon(i));
-    $("gSeg").innerHTML = `<a href="${rh("games")}" ${!fut ? 'aria-current="page"' : ""}>Библиотека<small>${lib.length}</small></a><a href="${rh("games-future")}" ${fut ? 'aria-current="page"' : ""}>На будущее<small>${futs.length}</small></a>`;
+    $("gSeg").innerHTML = `<a href="${rh("games")}" ${!fut ? 'aria-current="page"' : ""}>Библиотека<small>${lib.length}</small></a><a href="${rh("games-future")}" ${fut ? 'aria-current="page"' : ""}>Список желаемого<small>${futs.length}</small></a>`;
     const q = qv();
     const match = i => !q || [i.title,i.genre,i.desc,i.note].join(" ").toLowerCase().includes(q);
     if (fut){
       const list = futs.filter(match).sort(sorter("recent"));
-      $("sMain").innerHTML = `${fvBanner("games")}<div class="s-head"><h1 class="s-h1">На будущее</h1></div>
+      $("sMain").innerHTML = `${fvBanner("games")}<div class="s-head"><h1 class="s-h1">Список желаемого</h1></div>
         <div class="fut-head"><p>Что когда-нибудь пройду. Отсюда крутится рулетка.</p><span style="flex:1"></span>
           <button class="s-btn hot" id="rlS">${ICON.dice}Крутить рулетку</button><button class="s-btn dark" id="btS">${ICON.sword}Битва</button>${canWrite ? `<button class="s-btn dark" id="addFutS">${ICON.plus}Добавить</button>` : ""}</div>
         <section class="s-grid">${list.length ? list.map(gCard).join("") : `<div class="s-empty"><b>Пока пусто</b>Добавь игры с постером и жанром, потом рулетка выберет следующую.</div>`}</section>`;
@@ -5001,11 +5005,11 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
       <p class="sub">${esc([g ? "Игра" : KTYPES[it.type], it.genre].filter(Boolean).join(" · "))}</p>
       <div style="font-size:44px;font-weight:800;letter-spacing:-.03em;line-height:1">${relCount(it).big}</div>
       <div style="color:#8e8e93;margin-top:4px">${relCount(it).small} · ${relLabel(it)}</div></div></div>
-      ${canWrite ? `${isFuture(it) ? `<p class="sub" style="margin:0 0 10px">Лежит в «На будущее» и остаётся в календаре до выхода.</p>${d <= 0 ? `<button class="ib blue full" id="soTake">${g ? "Начать играть" : "Начать смотреть"}</button>` : ""}` : `<button class="ib blue full" id="soMove">${d <= 0 ? "Вышло, перенести в «На будущее»" : g ? "Буду играть — в «На будущее»" : "Буду смотреть — в «На будущее»"}</button>`}
+      ${canWrite ? `${isFuture(it) ? `<p class="sub" style="margin:0 0 10px">Лежит в «${g ? "Список желаемого" : "На будущее"}» и остаётся в календаре до выхода.</p>${d <= 0 ? `<button class="ib blue full" id="soTake">${g ? "Начать играть" : "Начать смотреть"}</button>` : ""}` : `<button class="ib blue full" id="soMove">${d <= 0 ? `Вышло, перенести в «${g ? "Список желаемого" : "На будущее"}»` : g ? "Буду играть — в «Список желаемого»" : "Буду смотреть — в «На будущее»"}</button>`}
       <div class="acts" style="margin-top:10px"><button class="ib" id="soEd">Изменить</button><button class="ib red" id="soDel">Удалить</button></div><div class="delbox"></div>` : ""}`);
     s.el.querySelector(".qa-top .poster").classList.add("qa-poster");
     if (!canWrite) return;
-    if (s.el.querySelector("#soMove")) s.el.querySelector("#soMove").onclick = async () => { await write(it.id, {status:"future"}); s.close(); toast(d > 0 ? "В «На будущее», в календаре тоже остаётся" : "Перенесено в «На будущее»"); };
+    if (s.el.querySelector("#soMove")) s.el.querySelector("#soMove").onclick = async () => { await write(it.id, {status:"future"}); s.close(); const fn = g ? "Список желаемого" : "На будущее"; toast(d > 0 ? `В «${fn}», в календаре тоже остаётся` : `Перенесено в «${fn}»`); };
     if (s.el.querySelector("#soTake")) s.el.querySelector("#soTake").onclick = () => { s.close(); takeItem(it); };
     s.el.querySelector("#soEd").onclick = () => { s.close(); openForm(it, g ? "games" : "kino", {lock: "soon"}); };
     s.el.querySelector("#soDel").onclick = () => delConfirm(s, it);
@@ -5430,8 +5434,8 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
       const rub0 = typeof it.priceRub === "number" ? it.priceRub : (/₽|руб/i.test(it.price || "") ? +(it.price.replace(/\D/g, "")) || null : null);
       showView(`
         <div class="s-crumb"><a id="crumb">Все игры</a> &gt; ${isNew ? "Новая игра" : esc(it.title)}</div>
-        <h2 class="s-title">${lock === "future" ? (isNew ? "На будущее" : "Изменить: на будущее") : lock === "soon" ? (isNew ? "Ждать релиз" : "Изменить релиз") : isNew ? "Добавить игру" : "Изменить игру"}</h2>
-        ${lock ? `<p style="margin:-8px 0 18px;color:var(--s-dim)">${lock === "future" ? "Попадёт в «На будущее» и в пул рулетки. Оценка, дата начала, цена и Лицензия/Пиратка — когда начнёшь играть." : "Попадёт в календарь выходов с обратным отсчётом."}</p>` : ""}
+        <h2 class="s-title">${lock === "future" ? (isNew ? "В список желаемого" : "Изменить: список желаемого") : lock === "soon" ? (isNew ? "Ждать релиз" : "Изменить релиз") : isNew ? "Добавить игру" : "Изменить игру"}</h2>
+        ${lock ? `<p style="margin:-8px 0 18px;color:var(--s-dim)">${lock === "future" ? "Попадёт в «Список желаемого» и в пул рулетки. Оценка, дата начала, цена и Лицензия/Пиратка — когда начнёшь играть." : "Попадёт в календарь выходов с обратным отсчётом."}</p>` : ""}
         <div class="s-form">
           <div>${posterBox()}</div>
           <form class="s-fields" id="editForm" novalidate>
@@ -5462,7 +5466,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
               </div>
               <label>Мои заметки<textarea class="s-in" id="f_note" style="min-height:80px">${esc(it.note||"")}</textarea></label>
             </div></div>
-            <div class="s-acts"><button class="s-btn green" type="submit">${isNew ? (lock === "future" ? "Добавить на будущее" : lock === "soon" ? "Ждать релиз" : "Добавить в библиотеку") : "Сохранить"}</button>${ME ? `<button class="s-btn dark sg-fb" type="button" id="sugFormBtn" title="Отправить эту карточку другу — без твоего статуса и заметок">${ICON.send}Предложить другу</button>` : ""}<button class="s-btn dark" type="button" id="cancelBtn">Отмена</button>${isNew ? "" : `<button class="s-btn red" type="button" id="delBtn">Удалить</button>`}</div>
+            <div class="s-acts"><button class="s-btn green" type="submit">${isNew ? (lock === "future" ? "Добавить в список желаемого" : lock === "soon" ? "Ждать релиз" : "Добавить в библиотеку") : "Сохранить"}</button>${ME ? `<button class="s-btn dark sg-fb" type="button" id="sugFormBtn" title="Отправить эту карточку другу — без твоего статуса и заметок">${ICON.send}Предложить другу</button>` : ""}<button class="s-btn dark" type="button" id="cancelBtn">Отмена</button>${isNew ? "" : `<button class="s-btn red" type="button" id="delBtn">Удалить</button>`}</div>
             <div id="confirmBox"></div>
           </form>
         </div>`, it.cover ? it : null);
@@ -5837,7 +5841,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
         <div class="rl-acts" id="rlActs"><button class="rl-go" id="rlGo">Крутить</button></div>
         ${canWrite ? `<div class="rl-add" id="rlAdd"><form id="rlForm"><input class="in" id="rlT" placeholder="Свой вариант: название" autocomplete="off"><input class="in" id="rlG" placeholder="жанр" autocomplete="off">
           ${kind === "kino" ? `<select class="in" id="rlK">${Object.entries(KTYPES).map(([k,l]) => `<option value="${k}">${l}</option>`).join("")}</select>` : ""}<button class="ib blue" type="submit" aria-label="Добавить вариант">${ICON.plus}</button></form>
-          <div class="rl-chips" id="rlChips"></div><div class="rl-note">Свои варианты крутятся вместе с «На будущее». Если такой выпадет, он сам попадёт в «На будущее».</div></div>` : ""}
+          <div class="rl-chips" id="rlChips"></div><div class="rl-note">Свои варианты крутятся вместе с «${kind === "games" ? "Список желаемого" : "На будущее"}». Если такой выпадет, он сам попадёт в «На будущее».</div></div>` : ""}
         <div style="margin-top:14px"><button class="ib" id="rlSnd" style="background:rgba(255,255,255,.1);font-size:13px;padding:8px 14px">Звук: вкл</button></div></div>
       <canvas class="rl-cf" id="rlCf"></canvas>`;
     $("rlX").onclick = closeRoulette;
@@ -5855,7 +5859,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     $("rlSub").textContent = `${base} в «На будущее»${S.temps.length ? ` + ${S.temps.length} своих` : ""} · один рерол · без нытья`;
     if ($("rlChips")) $("rlChips").innerHTML = S.temps.map(x => `<span>${esc(x.title)}<button type="button" data-rm="${esc(x.id)}" aria-label="Убрать">×</button></span>`).join("");
     const strip = $("rlStrip"); strip.classList.remove("done"); strip.style.filter = "";
-    if (!pool.length){ strip.innerHTML = ""; $("rlRes").innerHTML = `<p>Пусто. Добавь варианты ниже или в «На будущее».</p>`; $("rlGo").disabled = true; return; }
+    if (!pool.length){ strip.innerHTML = ""; $("rlRes").innerHTML = `<p>Пусто. Добавь варианты ниже или в «${S.kind === "games" ? "Список желаемого" : "На будущее"}».</p>`; $("rlGo").disabled = true; return; }
     const idle = []; while (idle.length < 24) idle.push(...pool);
     strip.innerHTML = idle.slice(0, 24).map(rlTile).join("");
     const t0 = strip.children[0], t1 = strip.children[1];
@@ -6128,6 +6132,9 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
   // ================= патчноуты =================
   // Новые версии добавляются В НАЧАЛО списка. n — новое, c — изменено, f — исправлено, r — удалено.
   const PATCHES = [
+    {v: "4.6", date: "2026-11-11", title: "Жанры в СЛОПе и «Список желаемого»", kind: "minor", sec: {
+      n: ["СЛОП: фильтр по жанрам над плиткой. Жмёшь «Хоррор» — остаются только хорроры, жмёшь ещё «Выживание» — только те, где есть оба. Работает вместе с числом игроков и рулеткой"],
+      c: ["В Играх раздел «На будущее» теперь называется «Список желаемого». В Кино название прежнее"]}},
     {v: "4.5", date: "2026-11-11", title: "Лайки на тир-листы и книга жалоб в новом стиле", kind: "minor", sec: {
       n: ["В СЛОП можно добавить игру прямо из своей коллекции или из ожидаемых: ищешь по названию или просто тыкаешь в обложку — название, постер, дата и жанры подставятся сами",
         "Лайки на тир-листы: сердечко в окне тир-листа, рядом видно, кто лайкнул. Счётчик лайков виден и в списке тир-листов"],
@@ -6711,7 +6718,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     if (it.cover && assets){
       try { const r = await fetch(publicUrl(it.cover)); if (!r.ok) throw 0; const bl = await r.blob(); body.cover = (await assets.upload(bl, {type: bl.type || "image/jpeg"})).id; } catch(e){ delete body.coverPos; }
     }
-    try { const {id} = await db.collection("items").add(body); toast(soon ? `${it.title} — ждёшь вместе` : st === "done" ? `${it.title} — ${isGame(it) ? "в пройденных" : "в просмотренных"}` : st === "dropped" ? `${it.title} — в дропе` : st === "playing" ? `${it.title} — ${isGame(it) ? "играешь" : "смотришь"}` : `${it.title} — в «На будущее»`); return id; } catch(e){ toast("Не сохранилось"); return false; }
+    try { const {id} = await db.collection("items").add(body); toast(soon ? `${it.title} — ждёшь вместе` : st === "done" ? `${it.title} — ${isGame(it) ? "в пройденных" : "в просмотренных"}` : st === "dropped" ? `${it.title} — в дропе` : st === "playing" ? `${it.title} — ${isGame(it) ? "играешь" : "смотришь"}` : `${it.title} — в «${isGame(it) ? "Список желаемого" : "На будущее"}»`); return id; } catch(e){ toast("Не сохранилось"); return false; }
   }
 
   function coopRoulette(kind){
@@ -6721,8 +6728,8 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     const both = mineL.filter(i => frKeys(i).some(k => tk.has(k))).map(i => ({it: i, who: "оба хотите", uids: [ME.id, p.user_id]}));
     const pool = both.length ? both : [...mineL.map(i => ({it: i, who: "из твоего списка", uids: [ME.id]})), ...theirL.map(i => ({it: i, who: `из списка ${p.nick}`, uids: [p.user_id]}))];
     const title = g ? "Во что поиграть вместе" : "Что посмотреть вместе";
-    if (!pool.length){ openSheet(`<h3>${title}</h3><p class="sub">У вас обоих пусто в «На будущее»${g ? " для игр" : " для кино"}. Добавьте что-нибудь, и будет из чего крутить.</p>`); return; }
-    const s = openSheet(`<h3>${title}</h3><div style="display:flex;justify-content:center;margin:4px 0 8px"><span class="ava-stack" style="--av-ring:#1c1c1e">${avaHTML(myProf(), "md")}${avaHTML(p, "md")}</span></div><p class="sub">${both.length ? `Крутим из общего: ${both.length} ${plural(both.length, "позиция", "позиции", "позиций")} есть в «На будущее» у обоих.` : `Общего нет, крутим из обоих списков: ${pool.length} ${plural(pool.length, "позиция", "позиции", "позиций")}.`}</p>
+    if (!pool.length){ openSheet(`<h3>${title}</h3><p class="sub">У вас обоих пусто в «${g ? "Список желаемого" : "На будущее"}»${g ? "" : " для кино"}. Добавьте что-нибудь, и будет из чего крутить.</p>`); return; }
+    const s = openSheet(`<h3>${title}</h3><div style="display:flex;justify-content:center;margin:4px 0 8px"><span class="ava-stack" style="--av-ring:#1c1c1e">${avaHTML(myProf(), "md")}${avaHTML(p, "md")}</span></div><p class="sub">${both.length ? `Крутим из общего: ${both.length} ${plural(both.length, "позиция", "позиции", "позиций")} есть в «${g ? "Список желаемого" : "На будущее"}» у обоих.` : `Общего нет, крутим из обоих списков: ${pool.length} ${plural(pool.length, "позиция", "позиции", "позиций")}.`}</p>
       <div class="cr-box" id="crBox"><div id="crP"></div><div class="t" id="crT"></div><div class="w" id="crW"></div></div>
       <div class="acts" style="margin-top:14px"><button class="ib blue" id="crGo">Крутить</button><span id="crX"></span></div>`);
     const show = x => { s.el.querySelector("#crP").innerHTML = posterHTML(x.it, {rate:false, tgt:false, badge:false}); s.el.querySelector("#crT").textContent = x.it.title; s.el.querySelector("#crW").innerHTML = `${avaStack(x.uids)} ${esc(x.who)}`; };
@@ -7012,7 +7019,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     const hits = items.map(i => [score(i), i]).filter(x => x[0] < 9).sort((a, b) => a[0] - b[0] || (b[1].updatedAt || "").localeCompare(a[1].updatedAt || "")).map(x => x[1]);
     const gs = hits.filter(isGame).slice(0, 6), ks = hits.filter(i => !isGame(i)).slice(0, 6);
     const ppl = FR && ME ? FR.profiles.filter(p => p.user_id !== ME.id && (p.nick || "").toLowerCase().includes(q)).slice(0, 4) : [];
-    const sub = it => isGame(it) ? ["Игра", isFuture(it) ? "на будущее" : isSoon(it) ? "ждёт релиз" : GSTATUS[gStatus(it.status)].toLowerCase(), genres(it).slice(0, 2).join(", ")]
+    const sub = it => isGame(it) ? ["Игра", isFuture(it) ? "в списке желаемого" : isSoon(it) ? "ждёт релиз" : GSTATUS[gStatus(it.status)].toLowerCase(), genres(it).slice(0, 2).join(", ")]
       : [KTYPES[it.type] || "Кино", isFuture(it) ? "на будущее" : isSoon(it) ? "ждёт премьеру" : kLab(it).l.toLowerCase(), it.year];
     const row = it => `<button class="sr-i" data-sr="${esc(it.id)}" role="option">${posterHTML(it, {rate:false, tgt:false, badge:false})}<span class="t"><b>${hlq(it.title || "", q)}</b><small>${esc(sub(it).filter(Boolean).join(" · "))}</small></span>${typeof it.rating === "number" ? `<span class="r ${rateCls(it.rating)}">${num1(it.rating)}</span>` : ""}</button>`;
     let h = "";
@@ -7411,7 +7418,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
   }, true);
 
   // ================= 2.2: плашка «На будущее» у названия =================
-  const futPill = (kind, n) => `<a class="fut-pill" href="${rh(kind + "-future")}" title="Отложенное на потом, отсюда крутится рулетка">На будущее<b>${n}</b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></a>`;
+  const futPill = (kind, n) => `<a class="fut-pill" href="${rh(kind + "-future")}" title="Отложенное на потом, отсюда крутится рулетка">${kind === "games" ? "Список желаемого" : "На будущее"}<b>${n}</b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></a>`;
 
   // ================= 2.2: день рождения, год по желанию =================
   // без года храним как 0004-ММ-ДД: год показывать не нужно
@@ -8801,7 +8808,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
   // ================= СЛОП: кооп-игры с друзьями =================
   // Общий список: игры здесь ничьи, в личную полку не попадают. «Жду» — до выхода, «Хочу поиграть» — после.
   let SL = null, slLoading = null, slErr = false, slOpenId = null, slPending = null, slSubT = 0;
-  const slS = {n: lsGet("nexus_slop_n") || "all", tab: "all", q: "", sort: lsGet("nexus_slop_sort") || "new", who: new Set()};
+  const slS = {n: lsGet("nexus_slop_n") || "all", tab: "all", q: "", sort: lsGet("nexus_slop_sort") || "new", who: new Set(), gen: new Set(), genAll: false};
   const SLI = {
     slop: I('<path d="M12 12V7"/><circle cx="12" cy="5" r="2.4"/><rect x="3.5" y="12" width="17" height="7.5" rx="2.8"/><path d="M8 15.8h.01M16 15.8h.01"/>'),
     users: I('<circle cx="9" cy="8" r="3.4"/><path d="M2.6 20c.6-3.5 3.2-5.4 6.4-5.4s5.8 1.9 6.4 5.4"/><path d="M16 4.9a3.4 3.4 0 0 1 0 6.3M18.4 14.9c1.7.8 2.7 2.4 3 5.1"/>'),
@@ -8889,11 +8896,13 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
   const slAgo = ts => { try { return feedAgo(ts); } catch(_){ return ""; } };
   const slAvs = (uids, max = 6) => uids.length ? `<span class="slp-avs">${uids.slice(0, max).map(u => avaHTML(profOf(u), "sm")).join("")}${uids.length > max ? `<em>+${uids.length - max}</em>` : ""}</span>` : "";
 
+  const slGK = x => String(x || "").trim().toLowerCase().replace(/ё/g, "е");
   function slLib(){
     let a = SL.games.filter(g => slOut(g) && slFit(g));
     const t = slS.tab; if (t !== "all") a = a.filter(g => { const st = slStats(g.id).map(s => s.status); return t === "fresh" ? !st.length : st.includes(t); });
     const q = slS.q.trim().toLowerCase(); if (q) a = a.filter(g => g.title.toLowerCase().includes(q));
     if (slS.who.size) a = a.filter(g => { const w = slWant(g); return [...slS.who].every(u => w.includes(u)); });
+    if (slS.gen.size) a = a.filter(g => { const ks = g.genres.map(slGK); return [...slS.gen].every(k => ks.includes(k)); });
     const byNew = (x, y) => String(y.created_at).localeCompare(String(x.created_at));
     if (slS.sort === "want") a.sort((x, y) => slWant(y).length - slWant(x).length || byNew(x, y));
     else if (slS.sort === "abc") a.sort((x, y) => x.title.localeCompare(y.title, "ru"));
@@ -8928,6 +8937,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
             <label class="slp-q">${SLI.search}<input id="slQ" type="search" placeholder="Найти игру" autocomplete="off" spellcheck="false" aria-label="Поиск по названию"></label>
             <select class="slp-sel" id="slSort" aria-label="Сортировка"><option value="new">Сначала новые</option><option value="want">Больше всего желающих</option><option value="abc">По алфавиту</option></select></div>
           <div class="slp-who" id="slWho"></div>
+          <div class="slp-who slp-gen" id="slGen"></div>
           <div class="slp-grid" id="slGrid"></div>
         </section>
         <section class="slp-sec" id="slFeedSec"><header><h2>Что происходит</h2><span>последние события раздела</span></header><div class="slp-feed" id="slFeed"></div></section>`;
@@ -8961,6 +8971,11 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     // кто хочет
     const fans = slUniq(SL.games.filter(slOut).flatMap(g => slWant(g))); [...slS.who].forEach(u => { if (!fans.includes(u)) slS.who.delete(u); });
     $("slWho").innerHTML = fans.length > 1 ? `<span>Кто хочет:</span>` + fans.map(u => `<button class="slp-wc" type="button" data-sl-who="${esc(u)}" aria-pressed="${slS.who.has(u)}">${avaHTML(profOf(u), "sm")}${esc(u === ME.id ? "Я" : profOf(u).nick || "?")}</button>`).join("") : "";
+    // жанры: самые частые сверху, выбранные должны совпасть все
+    const gm = new Map(); base.forEach(g => slUniq(g.genres.map(slGK)).forEach(k => { if (!k) return; const e = gm.get(k) || {k, l: g.genres.find(x => slGK(x) === k), n: 0}; e.n++; gm.set(k, e); }));
+    [...slS.gen].forEach(k => { if (!gm.has(k)) slS.gen.delete(k); });
+    const gl = [...gm.values()].sort((a, b) => b.n - a.n || a.l.localeCompare(b.l, "ru")), GMAX = 10, gshow = slS.genAll ? gl : gl.filter((e, i) => i < GMAX || slS.gen.has(e.k));
+    $("slGen").innerHTML = gl.length ? `<span>Жанры:</span>` + gshow.map(e => `<button class="slp-wc" type="button" data-sl-gen="${esc(e.k)}" aria-pressed="${slS.gen.has(e.k)}">${esc(e.l)}<i>${e.n}</i></button>`).join("") + (gl.length > gshow.length ? `<button class="slp-wc more" type="button" data-sl="genall">Ещё ${gl.length - gshow.length}</button>` : slS.genAll && gl.length > GMAX ? `<button class="slp-wc more" type="button" data-sl="genall">Свернуть</button>` : "") + (slS.gen.size ? `<button class="slp-wc more" type="button" data-sl="genclr">Сбросить</button>` : "") : "";
     slDrawGrid();
     // лента раздела
     const ev = slEvents().slice(0, 12);
@@ -8978,7 +8993,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
   const slTile = g => { const w = slWant(g).length, b = slBadge(g);
     return `<button class="slp-t" type="button" data-sg="${esc(g.id)}" aria-label="${esc(g.title)}, ${esc(slPl(g))}"><span class="slp-p">${slPosterIn(g)}${slFresh(g) ? `<i class="slp-b new">Вышла!</i>` : ""}${w ? `<i class="slp-b want" title="Хотят поиграть: ${w}">${SLI.hand}${w}</i>` : ""}${b ? `<i class="slp-b st ${b}">${SL_ST[b].s}</i>` : ""}</span><b>${esc(g.title)}</b><small>${SLI.users}${esc(slPl(g))}</small></button>`; };
   function slEmpty(){
-    const total = SL.games.filter(slOut).length, filtered = slS.tab !== "all" || slS.q.trim() || slS.who.size;
+    const total = SL.games.filter(slOut).length, filtered = slS.tab !== "all" || slS.q.trim() || slS.who.size || slS.gen.size;
     if (!total) return `<div class="slp-empty">${SLI.slop}<b>Библиотека пустая</b>Добавь первую кооп-игру — по ссылке из Steam это пара секунд.<br><button class="slp-btn pri" data-sl="add" type="button">${SLI.plus} Добавить игру</button></div>`;
     if (filtered) return `<div class="slp-empty">${SLI.search}<b>Ничего не нашлось</b>Под такие фильтры игр нет.<br><button class="slp-btn" data-sl="clear" type="button">Сбросить фильтры</button></div>`;
     return `<div class="slp-empty">${SLI.users}<b>${SL_NW[slS.n] || "Тут"} пока ничего нет, добавь игру</b>Или переключи число игроков выше.<br><button class="slp-btn pri" data-sl="add" type="button">${SLI.plus} Добавить игру</button></div>`;
@@ -8987,7 +9002,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     const el = $("slGrid"); if (!el || !SL) return;
     const list = slLib(), total = SL.games.filter(slOut).length;
     $("slLibN").textContent = total ? (list.length === total ? `${total} ${plural(total, "игра", "игры", "игр")}` : `${list.length} из ${total}`) : "";
-    const sig = JSON.stringify(list.map(g => [g.id, g.title, g.cover, g.header, g.min_players, g.max_players, slWant(g).length, slBadge(g), slFresh(g)])) + "|" + (list.length ? "" : slS.n + slS.tab + slS.q + slS.who.size + total);
+    const sig = JSON.stringify(list.map(g => [g.id, g.title, g.cover, g.header, g.min_players, g.max_players, slWant(g).length, slBadge(g), slFresh(g)])) + "|" + (list.length ? "" : slS.n + slS.tab + slS.q + slS.who.size + slS.gen.size + total);
     if (el.dataset.sig === sig) return; el.dataset.sig = sig;
     const rm = slRM(), olds = new Map(), base = el.getBoundingClientRect(), keep = new Set(list.map(g => g.id)), ghosts = [];
     el.querySelectorAll(".slp-t[data-sg]").forEach(t => olds.set(t.dataset.sg, {r: t.getBoundingClientRect(), n: t}));
@@ -9007,10 +9022,13 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
       if ((b = q("[data-sl-n]"))){ slS.n = b.dataset.slN; lsSet("nexus_slop_n", slS.n); slDraw(); return; }
       if ((b = q("[data-sl-tab]"))){ slS.tab = b.dataset.slTab; slDraw(); return; }
       if ((b = q("[data-sl-who]"))){ const u = b.dataset.slWho; slS.who.has(u) ? slS.who.delete(u) : slS.who.add(u); slDraw(); return; }
+      if ((b = q("[data-sl-gen]"))){ const k = b.dataset.slGen; slS.gen.has(k) ? slS.gen.delete(k) : slS.gen.add(k); slDraw(); return; }
       if ((b = q("[data-sl-wait]"))){ e.stopPropagation(); slToggleWait(b.dataset.slWait, b); return; }
       if ((b = q("[data-sl]"))){ const a = b.dataset.sl;
         if (a === "add") slForm(); else if (a === "roul") slRoulette(); else if (a === "retry"){ slErr = false; renderSlop(); }
-        else if (a === "clear"){ slS.tab = "all"; slS.q = ""; slS.who.clear(); $("slQ").value = ""; slDraw(); }
+        else if (a === "genall"){ slS.genAll = !slS.genAll; slDraw(); }
+        else if (a === "genclr"){ slS.gen.clear(); slDraw(); }
+        else if (a === "clear"){ slS.tab = "all"; slS.q = ""; slS.who.clear(); slS.gen.clear(); $("slQ").value = ""; slDraw(); }
         return; }
       if ((b = q("[data-sg]"))) slOpenCard(b.dataset.sg, b.querySelector(".slp-p"));
     });
@@ -9055,7 +9073,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     await slSetMark(id, on ? ["want"] : ["want", "wait"], on);
     slPop(document.querySelector("#slCard .slp-want"));
   }
-  // «Жду» кладёт игру в личную полку (в «ждёт релиз», а без даты — в «на будущее»); снятие — убирает, если её не трогали
+  // «Жду» кладёт игру в личную полку (в «ждёт релиз», а без даты — в «список желаемого»); снятие — убирает, если её не трогали
   async function slShelfAdd(g){
     if (!db) return false;
     const nt = normT(g.title);
@@ -10288,7 +10306,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     try { const {id} = await db.collection("items").add(body); return {id}; } catch(_){ toast("Не сохранилось, попробуй ещё раз"); return null; }
   }
   const sTookMsg = (f, st) => { const k = sKind(f);
-    return st === "future" || st === "plan" ? `${f.title} — ${k === "read" ? "в планах" : "в «На будущее»"}` : st === "done" ? `${f.title} — ${k === "game" ? "в пройденных" : k === "read" ? "в прочитанных" : "в просмотренных"}` : `${f.title} — сохранено`; };
+    return st === "future" || st === "plan" ? `${f.title} — ${k === "read" ? "в планах" : k === "game" ? "в «Список желаемого»" : "в «На будущее»"}` : st === "done" ? `${f.title} — ${k === "game" ? "в пройденных" : k === "read" ? "в прочитанных" : "в просмотренных"}` : `${f.title} — сохранено`; };
   const sAfter = (res, st) => { if (!res) return; if (res.read){ if (route === "read") render(); return; } if (st !== "future") setTimeout(() => openItem(res.id), 150); };
 
   // полоска в разделе
@@ -10373,7 +10391,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
   function recSheet(key){
     const g = recGroups().find(x => x.key === key || x.recs.some(r => r.id === key)); if (!g){ toast("Совет не найден"); return; }
     const f = g.item, k = g.kind, m = sMine(f), opts = sOpts(f), mr = sMyRating(m, k);
-    const take = k === "read" ? [["plan", "В планы"], ["done", "Уже прочитал"]] : k === "game" ? [["future", "На будущее"], ["done", "Уже прошёл"]] : [["future", "Забрать на будущее"], ["done", "Уже смотрел"]];
+    const take = k === "read" ? [["plan", "В планы"], ["done", "Уже прочитал"]] : k === "game" ? [["future", "В список желаемого"], ["done", "Уже прошёл"]] : [["future", "Забрать на будущее"], ["done", "Уже смотрел"]];
     const s = openSheet(`<div class="qa-top">${sPoster(f)}<div><h3>${esc(f.title)}</h3><p class="sub">${esc(sMeta(f))}</p>
         ${m ? `<p class="sub" style="margin-top:8px">У тебя: <b style="color:inherit">${esc(sMyLab(m, k))}</b>${mr != null ? ` · твоя оценка <b class="${rateCls(mr)}">${num1(mr)}</b>` : ""}</p>` : ""}</div></div>
       <div class="av-lb" style="margin-top:14px">Советуют</div>
