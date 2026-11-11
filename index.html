@@ -3995,6 +3995,103 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
   #wSlop *,.slp-ov *,.slp-rl *{animation:none!important;transition:none!important}
   .slp-t:hover .slp-p{transform:none}
 }
+/* ===== 4.7: планы, общий тир-лист, голосование ===== */
+.slp-t.drop .slp-p img{filter:grayscale(1) brightness(.55) contrast(1.05)}
+.slp-t.drop > b,.slp-t.drop > small{opacity:.55}
+.slp-t.drop:hover .slp-p{box-shadow:0 26px 50px rgba(0,0,0,.6),0 0 0 1px rgba(255,59,48,.55)}
+.slp-stamp{position:absolute;left:50%;top:50%;z-index:2;transform:translate(-50%,-50%) rotate(-14deg);padding:7px 14px 6px;border:3px solid #ff3b30;border-radius:8px;background:rgba(40,0,0,.35);color:#ff3b30;font:900 clamp(18px,2.1vw,26px)/1 var(--ios);font-style:normal;letter-spacing:.14em;text-shadow:0 0 14px rgba(255,59,48,.55);box-shadow:0 0 0 1px rgba(255,59,48,.25),inset 0 0 12px rgba(255,59,48,.25);pointer-events:none}
+.slp-up{grid-column:1/-1;position:relative;z-index:1;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.slp-up:empty{display:none}
+.slp-upc{display:inline-flex;align-items:center;gap:9px;padding:5px 12px 5px 5px;border:1px solid var(--sl-line);border-radius:12px;background:rgba(255,255,255,.05);color:#fff;text-align:left;cursor:pointer;font-family:var(--ios);min-width:0;transition:background .2s,transform .2s}
+.slp-upc:hover{background:rgba(255,255,255,.11);transform:translateY(-1px)}
+.slp-upc img{flex:none;width:28px;height:40px;border-radius:5px;object-fit:cover}
+.slp-upc span{display:grid;gap:2px;min-width:0}.slp-upc b{font:650 13px/1.2 var(--ios);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:190px}.slp-upc small{color:var(--sl-dim);font:500 11.5px/1.2 var(--ios);white-space:nowrap}
+.sh.slcal-sheet{width:min(440px,100%);--sl-a:#b8ff3d;--sl-a2:#4dffc3;--sl-ink:#0b1400;--sl-dim:#8d94a6;--sl-line:rgba(255,255,255,.12)}
+.slcal-sheet svg,.sltl-sheet svg{width:1em;height:1em;flex:none}
+.slcal-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 34px 12px 0}
+.slcal-h h3{margin:0;font:750 19px/1 var(--ios);text-transform:capitalize}
+.slcal-h .slp-btn{width:36px;height:36px;padding:0;font-size:20px}
+.slcal-w,.slcal-g{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.slcal-w{margin-bottom:5px}.slcal-w span{text-align:center;color:#8e8e93;font:600 11px/1 var(--ios);text-transform:uppercase;letter-spacing:.06em}
+.slcal-d{position:relative;aspect-ratio:1;border:0;border-radius:10px;background:rgba(255,255,255,.045);color:#d6d6dc;font:600 13px/1 var(--ios);cursor:pointer;overflow:hidden;padding:0;transition:transform .15s,box-shadow .15s,background .15s}
+.slcal-d.off{background:none;cursor:default}
+.slcal-d:not(.off):hover{background:rgba(255,255,255,.1);transform:scale(1.05)}
+.slcal-d img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.72)}
+.slcal-d b{position:relative;display:block;font-weight:650}
+.slcal-d.has b{position:absolute;left:4px;top:4px;padding:2px 4px;border-radius:5px;background:rgba(0,0,0,.6);color:#fff;font-size:11px}
+.slcal-d em{position:absolute;right:3px;bottom:3px;padding:2px 4px;border-radius:5px;background:#b8ff3d;color:#0b1400;font:800 10px/1 var(--ios);font-style:normal}
+.slcal-d.past{opacity:.5}
+.slcal-d.today{box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.55)}
+.slcal-d.sel{box-shadow:inset 0 0 0 2px #b8ff3d,0 0 14px rgba(150,255,90,.3);opacity:1}
+.slcal-day{margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.1)}
+.slcal-day h4{margin:0 0 10px;font:700 15px/1.2 var(--ios)}
+.slcal-day h4::first-letter{text-transform:uppercase}
+.slcal-p{display:grid;grid-template-columns:64px minmax(0,1fr);gap:12px;padding:10px;margin-bottom:10px;border-radius:14px;background:rgba(255,255,255,.05)}
+.slcal-pp{padding:0;border:0;background:none;cursor:pointer;align-self:start}
+.slcal-pp .slp-p{border-radius:8px}
+.slcal-pb{min-width:0;display:grid;gap:6px;align-content:start}
+.slcal-pb > b{font:700 15px/1.2 var(--ios)}.slcal-pb > small{color:#8e8e93;font:500 12.5px/1.3 var(--ios)}
+.slcal-pb q{quotes:"«" "»";color:#c7c7cc;font:450 13px/1.35 var(--ios)}
+.slcal-go{display:flex;flex-wrap:wrap;gap:5px}.slcal-go em{color:#8e8e93;font:500 12.5px/1.3 var(--ios);font-style:normal}
+.slcal-pa{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.slcal-f{margin-top:4px;padding:12px;border-radius:14px;background:rgba(255,255,255,.05)}
+.slcal-f select.in{appearance:auto;background:#2c2c2e}
+.slp-c-more{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.slp-btn.ok{color:#6ee58c;border-color:rgba(48,209,88,.35);background:rgba(48,209,88,.1);cursor:default}
+.slp-libp{flex:1 1 100%;display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:10px;border-radius:14px;background:rgba(255,255,255,.05);animation:slpIn .3s ease backwards}
+.slp-libp > span{color:#8d94a6;font:500 13px/1 var(--ios)}
+.slp-st.sltr{border-color:color-mix(in srgb,var(--tc) 45%,transparent)}
+.slp-st.sltr::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--tc)}
+.slp-st.sltr.on{background:var(--tc);border-color:var(--tc);color:#111}
+.slp-st.sltr.on::before{background:#111}
+.slp-tby{display:block;margin-top:9px;color:#8d94a6;font:500 12.5px/1.3 var(--ios)}
+.sh.sltl-sheet{width:min(900px,100%)}
+.sltl{display:grid;gap:4px;user-select:none;-webkit-user-select:none}
+.sltl-r{display:grid;grid-template-columns:104px minmax(0,1fr);gap:4px;min-height:96px}
+.sltl-l{display:grid;place-content:center;gap:4px;text-align:center;padding:6px;border-radius:10px 4px 4px 10px;background:var(--c);color:#141414}
+.sltl-l b{font:900 22px/1 var(--ios)}.sltl-l span{font:750 12.5px/1.15 var(--ios)}
+.sltl-z{display:flex;flex-wrap:wrap;gap:6px;align-content:flex-start;padding:7px;border-radius:4px 10px 10px 4px;background:rgba(255,255,255,.05);min-height:96px;transition:background .15s,box-shadow .15s}
+.sltl-z.over{background:rgba(184,255,61,.12);box-shadow:inset 0 0 0 2px rgba(184,255,61,.6)}
+.sltl-z em{align-self:center;padding:0 8px;color:#8e8e93;font:500 13px/1.4 var(--ios);font-style:normal}
+.sltl-i{flex:none;width:55px;cursor:grab;touch-action:none;transition:transform .15s}
+.sltl-i .slp-p{border-radius:6px;box-shadow:0 4px 10px rgba(0,0,0,.45)}
+.sltl-i .slp-ph{font-size:8px;padding:3px}
+.sltl-i:hover{transform:translateY(-3px) scale(1.06)}
+.sltl-i.lift{opacity:.25}
+.sltl-i.ghost{position:fixed;z-index:95;margin:-41px 0 0 -27px;pointer-events:none;transform:scale(1.18) rotate(4deg);cursor:grabbing}
+.sltl-pool{margin-top:12px}
+.sltl-ph{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:6px}.sltl-ph b{font:700 14px/1 var(--ios)}.sltl-ph small{color:#8e8e93;font:500 12px/1.3 var(--ios)}
+.sltl-pool .sltl-z{border-radius:10px;border:1px dashed rgba(255,255,255,.14);background:none}
+.sltl-last{margin:10px 0 0!important;font-size:12.5px!important}
+.slp-ch{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.slp-chb{display:grid;gap:8px;justify-items:start;padding:16px;border:1px solid rgba(255,255,255,.12);border-radius:16px;background:rgba(255,255,255,.05);color:#f2f2f7;text-align:left;cursor:pointer;font-family:var(--ios);transition:transform .2s cubic-bezier(.3,1.5,.4,1),background .2s,border-color .2s}
+.slp-chb svg{width:28px;height:28px;color:#b8ff3d}
+.slp-chb b{font:750 17px/1.1 var(--ios)}.slp-chb small{color:#8e8e93;font:500 12.5px/1.35 var(--ios)}
+.slp-chb:hover{transform:translateY(-3px);background:rgba(184,255,61,.08);border-color:rgba(184,255,61,.45)}
+.slp-pk-i.on .slp-p{box-shadow:0 0 0 3px #b8ff3d,0 10px 22px rgba(0,0,0,.5)}
+.slp-pk-i[aria-pressed="false"] .slp-p{opacity:.45}
+.slp-po{width:min(1040px,100%);max-height:100%;overflow-y:auto;padding:6px 4px 10px;scrollbar-width:none}
+.slp-po > p b{color:#b8ff3d;font-size:1.25em}
+.slp-po-t{height:6px;border-radius:3px;background:rgba(255,255,255,.1);overflow:hidden;margin:0 auto 20px;max-width:560px}
+.slp-po-t i{display:block;height:100%;background:linear-gradient(90deg,#b8ff3d,#4dffc3);transform-origin:0 50%;transition:transform .2s linear}
+.slp-po-t i.hot{background:linear-gradient(90deg,#ff5f57,#ff9f0a)}
+.slp-po-g{display:flex;flex-wrap:wrap;justify-content:center;gap:16px}
+.slp-po-i{width:136px;padding:0;border:0;background:none;color:#fff;cursor:pointer;font-family:var(--ios);text-align:center;transition:transform .35s cubic-bezier(.3,1.5,.4,1),opacity .4s,filter .4s}
+.slp-po-i .slp-p{transition:box-shadow .25s,transform .25s}
+.slp-po-i:hover:not([disabled]) .slp-p{transform:translateY(-5px)}
+.slp-po-i.mine .slp-p{box-shadow:0 0 0 3px #b8ff3d,0 0 34px rgba(150,255,90,.4)}
+.slp-po-i > b{display:block;margin-top:8px;font:650 13px/1.2 var(--ios);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.slp-po-w{display:flex;justify-content:center;align-items:center;min-height:28px;margin-top:4px}.slp-po-w small{color:#8d94a6;font:500 11.5px/1 var(--ios)}
+.slp-po-w .slp-avs .fr-ava{box-shadow:0 0 0 2px #06070a}
+.slp-po-n{position:absolute;right:6px;top:6px;z-index:2;min-width:28px;height:28px;padding:0 7px;border-radius:14px;display:grid;place-items:center;background:rgba(8,10,14,.8);color:#8d94a6;font:800 14px/1 var(--ios);font-style:normal;border:1px solid rgba(255,255,255,.16)}
+.slp-po-n.on{background:linear-gradient(135deg,#b8ff3d,#4dffc3);color:#0b1400;border-color:transparent}
+.slp-po-g.fin .slp-po-i{opacity:.28;filter:saturate(.3);cursor:default}
+.slp-po-g.fin .slp-po-i.win{opacity:1;filter:none;transform:scale(1.14);z-index:1;animation:slpWin 1.1s cubic-bezier(.3,1.6,.4,1)}
+.slp-po-g.fin .slp-po-i.win .slp-p{box-shadow:0 0 0 3px #b8ff3d,0 0 60px rgba(150,255,90,.6)}
+@keyframes slpWin{0%{transform:scale(.8) rotate(-6deg)}35%{transform:scale(1.28) rotate(5deg)}60%{transform:scale(1.08) rotate(-3deg)}100%{transform:scale(1.14) rotate(0)}}
+.slp-conf{position:fixed;inset:0;z-index:96;pointer-events:none;overflow:hidden}
+.slp-conf i{position:absolute;top:-20px;display:block}
+@media (max-width:820px){.sltl-r{grid-template-columns:70px minmax(0,1fr);min-height:78px}.sltl-z{min-height:78px}.sltl-i{width:44px}.sltl-i.ghost{margin:-33px 0 0 -22px}.sltl-l b{font-size:17px}.sltl-l span{font-size:10.5px}.slp-ch{grid-template-columns:1fr}.slp-po-i{width:104px}.slp-po-g{gap:12px}.slp-upc b{max-width:130px}}
 </style>
 <style>img{max-width:100%}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 <script src="config.js"></script>
@@ -6137,6 +6234,12 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
   // ================= патчноуты =================
   // Новые версии добавляются В НАЧАЛО списка. n — новое, c — изменено, f — исправлено, r — удалено.
   const PATCHES = [
+    {v: "4.7", date: "2026-11-11", title: "СЛОП: календарь каток, общий тир-лист и голосование", kind: "major", sec: {
+      n: ["Календарь каток в СЛОПе: выбираешь день и игру — всем приходит уведомление. В окошке календарь по месяцам, на днях стоят картинки игр, по нажатию видно, кто будет играть, и можно отметиться «Я буду». Ближайшие катки видны прямо на странице",
+        "Общий тир-лист пройденного — один на всех, двигать может любой: Имба, Пойдёт, Еле прошли, Кал, Дропнули. Открывается отдельным окном, постеры перетаскиваются. Тир можно поставить и прямо из карточки игры",
+        "«Не можем выбрать» теперь на выбор: рулетка или голосование. В голосовании отмечаешь игры, у всех минута на голоса, видно, кто за что, а победителя объявляют с фанфарами и конфетти",
+        "В карточке игры СЛОПа — «В мою библиотеку»: сразу выбираешь статус (играю, пройдено, дроп, список желаемого), и игра ложится к тебе, как все остальные"],
+      c: ["Дропнутые игры в СЛОПе уезжают в самый низ: постер становится серым, поверх — красный штамп «ДРОП»"]}},
     {v: "4.6", date: "2026-11-11", title: "Жанры в СЛОПе и «Список желаемого»", kind: "minor", sec: {
       n: ["СЛОП: фильтр по жанрам над плиткой. Жмёшь «Хоррор» — остаются только хорроры, жмёшь ещё «Выживание» — только те, где есть оба. Работает вместе с числом игроков и рулеткой"],
       c: ["В Играх раздел «На будущее» теперь называется «Список желаемого». В Кино название прежнее",
@@ -8850,14 +8953,16 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     if (slLoading) return slLoading;
     slLoading = (async () => {
       try {
-        const [g, m, s, c] = await Promise.all([
+        const [g, m, s, c, pl, pm, tr, po, pv] = await Promise.all([
           SB.from("slop_games").select("*").order("created_at", {ascending: false}),
           SB.from("slop_marks").select("*"),
           SB.from("slop_status").select("*"),
-          SB.from("slop_comments").select("*").order("created_at", {ascending: true})]);
+          SB.from("slop_comments").select("*").order("created_at", {ascending: true}),
+          SB.from("slop_plans").select("*"), SB.from("slop_plan_members").select("plan_id,user_id"), SB.from("slop_tiers").select("*"),
+          SB.from("slop_polls").select("*").order("created_at", {ascending: false}).limit(5), SB.from("slop_poll_votes").select("poll_id,user_id,game_id").order("created_at", {ascending: false}).limit(400)]);
         if (g.error) throw g.error;
         const ok = r => r && !r.error ? r.data || [] : [];
-        SL = {games: (g.data || []).map(slNorm), marks: ok(m), status: ok(s), comments: ok(c)}; slErr = false;
+        SL = {games: (g.data || []).map(slNorm), marks: ok(m), status: ok(s), comments: ok(c), plans: ok(pl), pmembers: ok(pm), tiers: ok(tr), polls: ok(po).map(x => ({...x, game_ids: Array.isArray(x.game_ids) ? x.game_ids : []})), pvotes: ok(pv)}; slErr = false;
       } catch(e){ slErr = true; }
       slLoading = null; slRefresh(); return SL;
     })();
@@ -8868,7 +8973,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     if (!SB || !ME) return;
     const kick = () => { clearTimeout(slSubT); slSubT = setTimeout(() => loadSlop(), 300); };
     let ch = SB.channel("nexus-slop");
-    ["slop_games", "slop_marks", "slop_status", "slop_comments"].forEach(t => { ch = ch.on("postgres_changes", {event: "*", schema: "public", table: t}, p => { kick();
+    ["slop_games", "slop_marks", "slop_status", "slop_comments", "slop_plans", "slop_plan_members", "slop_tiers", "slop_polls", "slop_poll_votes"].forEach(t => { ch = ch.on("postgres_changes", {event: "*", schema: "public", table: t}, p => { kick();
       if (t === "slop_games" && p.eventType === "INSERT" && p.new && p.new.user_id !== ME.id && route !== "slop") toast(`${frNick(p.new.user_id)} добавил в СЛОП: ${p.new.title}`); }); });
     ch.subscribe();
   }
@@ -8876,6 +8981,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     if (route === "slop") renderSlop();
     else if (route === "people" && typeof actTab !== "undefined" && actTab === "feed" && !document.querySelector(".sh-wrap")) { try { render(); } catch(_){} }
     if (slOpenId){ if (slGame(slOpenId)) slDrawCard(true); else slCloseCard(); }
+    if (SL && ME) slRefresh2();
   }
 
   // ---- расчёты ----
@@ -8913,6 +9019,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     if (slS.sort === "want") a.sort((x, y) => slWant(y).length - slWant(x).length || byNew(x, y));
     else if (slS.sort === "abc") a.sort((x, y) => x.title.localeCompare(y.title, "ru"));
     else a.sort(byNew);
+    a = [...a.filter(g => !slDropped(g)), ...a.filter(slDropped)]; // дропнутое — в самый низ
     return a;
   }
   function slEvents(){
@@ -8934,8 +9041,9 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
       m.dataset.built = "1";
       m.innerHTML = `<section class="slp-hero">
           <div><span class="slp-kick">${SLI.users} кооп с друзьями</span><h1>СЛОП</h1><p>Собрались, выбрали, сколько вас, — и видите всё, во что можно зарубиться вместе.</p></div>
-          <div class="slp-hero-a"><button class="slp-btn" data-sl="roul" type="button">${SLI.dice} Не можем выбрать</button><button class="slp-btn pri" data-sl="add" type="button">${SLI.plus} Добавить игру</button></div>
+          <div class="slp-hero-a"><button class="slp-btn" data-sl="cal" type="button">${SLI.cal} Календарь</button><button class="slp-btn" data-sl="tiers" type="button">${SLI.tiers} Тир-лист</button><button class="slp-btn" data-sl="roul" type="button">${SLI.dice} Не можем выбрать</button><button class="slp-btn pri" data-sl="add" type="button">${SLI.plus} Добавить игру</button></div>
           <div class="slp-n" role="group" aria-label="Сколько игроков"><span class="slp-n-l">Сколько вас?</span>${SL_N.map(([k, s]) => `<button class="slp-chip" type="button" data-sl-n="${k}" aria-pressed="false">${k === "all" ? "Все" : k === "5-8" ? "5–8" : k}<small>${s}</small></button>`).join("")}</div>
+        <div class="slp-up" id="slUp"></div>
         </section>
         <section class="slp-sec"><header><h2>Календарь ожиданий</h2><span id="slWaitN"></span></header><div id="slWait"></div></section>
         <section class="slp-sec"><header><h2>Библиотека</h2><span id="slLibN"></span></header>
@@ -8962,6 +9070,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
   function slDraw(){
     const m = $("slMain"); if (!m || !SL) return;
     m.querySelectorAll("[data-sl-n]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.slN === slS.n)));
+    slDrawUp();
     // календарь ожиданий
     const waits = SL.games.filter(g => !slOut(g) && slFit(g)), dated = waits.filter(g => !g.tba && g.release_date).sort((x, y) => x.release_date.localeCompare(y.release_date)), tba = waits.filter(g => g.tba || !g.release_date);
     const allWait = SL.games.filter(g => !slOut(g)).length;
@@ -8996,8 +9105,8 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
         <div class="slp-by">${avaHTML(p, "xs")}<b>${esc(g.user_id === ME.id ? "Ты" : p.nick || "кто-то")}</b> ${g.user_id === ME.id ? "предложил" : "предлагает"}</div>
         <div class="slp-w-f">${ws.length ? slAvs(ws, 5) : `<span class="slp-avs none">пока никого</span>`}<button class="slp-wait${mine ? " on" : ""}" type="button" data-sl-wait="${esc(g.id)}" aria-pressed="${mine}">${mine ? SLI.check : SLI.plus} Жду</button></div>
       </div></article>`; };
-  const slTile = g => { const w = slWant(g).length, b = slBadge(g);
-    return `<button class="slp-t" type="button" data-sg="${esc(g.id)}" aria-label="${esc(g.title)}, ${esc(slPl(g))}"><span class="slp-p">${slPosterIn(g)}${slFresh(g) ? `<i class="slp-b new">Вышла!</i>` : ""}${w ? `<i class="slp-b want" title="Хотят поиграть: ${w}">${SLI.hand}${w}</i>` : ""}${b ? `<i class="slp-b st ${b}">${SL_ST[b].s}</i>` : ""}</span><b>${esc(g.title)}</b><small>${SLI.users}${esc(slPl(g))}</small></button>`; };
+  const slTile = g => { const w = slWant(g).length, b = slBadge(g), dr = slDropped(g);
+    return `<button class="slp-t${dr ? " drop" : ""}" type="button" data-sg="${esc(g.id)}" aria-label="${esc(g.title)}, ${esc(slPl(g))}${dr ? ", дропнули" : ""}"><span class="slp-p">${slPosterIn(g)}${slFresh(g) ? `<i class="slp-b new">Вышла!</i>` : ""}${w ? `<i class="slp-b want" title="Хотят поиграть: ${w}">${SLI.hand}${w}</i>` : ""}${dr ? `<i class="slp-stamp">ДРОП</i>` : b ? `<i class="slp-b st ${b}">${SL_ST[b].s}</i>` : ""}</span><b>${esc(g.title)}</b><small>${SLI.users}${esc(slPl(g))}</small></button>`; };
   function slEmpty(){
     const total = SL.games.filter(slOut).length, filtered = slS.tab !== "all" || slS.q.trim() || slS.who.size || slS.gen.size;
     if (!total) return `<div class="slp-empty">${SLI.slop}<b>Библиотека пустая</b>Добавь первую кооп-игру — по ссылке из Steam это пара секунд.<br><button class="slp-btn pri" data-sl="add" type="button">${SLI.plus} Добавить игру</button></div>`;
@@ -9008,7 +9117,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     const el = $("slGrid"); if (!el || !SL) return;
     const list = slLib(), total = SL.games.filter(slOut).length;
     $("slLibN").textContent = total ? (list.length === total ? `${total} ${plural(total, "игра", "игры", "игр")}` : `${list.length} из ${total}`) : "";
-    const sig = JSON.stringify(list.map(g => [g.id, g.title, g.cover, g.header, g.min_players, g.max_players, slWant(g).length, slBadge(g), slFresh(g)])) + "|" + (list.length ? "" : slS.n + slS.tab + slS.q + slS.who.size + slS.gen.size + total);
+    const sig = JSON.stringify(list.map(g => [g.id, g.title, g.cover, g.header, g.min_players, g.max_players, slWant(g).length, slBadge(g), slFresh(g), slDropped(g)])) + "|" + (list.length ? "" : slS.n + slS.tab + slS.q + slS.who.size + slS.gen.size + total);
     if (el.dataset.sig === sig) return; el.dataset.sig = sig;
     const rm = slRM(), olds = new Map(), base = el.getBoundingClientRect(), keep = new Set(list.map(g => g.id)), ghosts = [];
     el.querySelectorAll(".slp-t[data-sg]").forEach(t => olds.set(t.dataset.sg, {r: t.getBoundingClientRect(), n: t}));
@@ -9028,10 +9137,11 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
       if ((b = q("[data-sl-n]"))){ slS.n = b.dataset.slN; lsSet("nexus_slop_n", slS.n); slDraw(); return; }
       if ((b = q("[data-sl-tab]"))){ slS.tab = b.dataset.slTab; slDraw(); return; }
       if ((b = q("[data-sl-who]"))){ const u = b.dataset.slWho; slS.who.has(u) ? slS.who.delete(u) : slS.who.add(u); slDraw(); return; }
+      if ((b = q("[data-sl-day]"))){ slCalendar({day: b.dataset.slDay}); return; }
       if ((b = q("[data-sl-gen]"))){ const k = b.dataset.slGen; slS.gen.has(k) ? slS.gen.delete(k) : slS.gen.add(k); slDraw(); return; }
       if ((b = q("[data-sl-wait]"))){ e.stopPropagation(); slToggleWait(b.dataset.slWait, b); return; }
       if ((b = q("[data-sl]"))){ const a = b.dataset.sl;
-        if (a === "add") slForm(); else if (a === "roul") slRoulette(); else if (a === "retry"){ slErr = false; renderSlop(); }
+        if (a === "add") slForm(); else if (a === "roul") slChoose(); else if (a === "cal") slCalendar(); else if (a === "tiers") slTierSheet(); else if (a === "retry"){ slErr = false; renderSlop(); }
         else if (a === "genall"){ slS.genAll = !slS.genAll; slDraw(); }
         else if (a === "genclr"){ slS.gen.clear(); slDraw(); }
         else if (a === "clear"){ slS.tab = "all"; slS.q = ""; slS.who.clear(); slS.gen.clear(); $("slQ").value = ""; slDraw(); }
@@ -9137,15 +9247,16 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     const x = ov.querySelector(".slp-c-x"); if (x) x.focus({preventScroll: true});
   }
   function slCloseCard(){
-    const ov = $("slCard"); if (!ov || !slOpenId) return; slOpenId = null; slFtpEdit = null;
+    const ov = $("slCard"); if (!ov || !slOpenId) return; slOpenId = null; slFtpEdit = null; slLibPick = null;
     ov.classList.remove("on"); document.body.classList.remove("slp-open");
     document.querySelectorAll(".slp-fly").forEach(f => f.remove());
     slOpenCard.t = setTimeout(() => { if (!slOpenId){ ov.hidden = true; ov.innerHTML = ""; } }, 300);
   }
   document.addEventListener("keydown", e => { if (e.key !== "Escape") return;
+    if ($("slPoll") && !$("slPoll").hidden && !sheets.length){ e.stopImmediatePropagation(); slPollClose(); return; }
     if ($("slRl") && !$("slRl").hidden){ e.stopImmediatePropagation(); slCloseRoulette(); return; }
     if (slOpenId && !sheets.length && $("lb").hidden){ e.stopImmediatePropagation(); slCloseCard(); } }, true);
-  window.addEventListener("hashchange", () => { slCloseCard(); slCloseRoulette(); });
+  window.addEventListener("hashchange", () => { slCloseCard(); slCloseRoulette(); slPollClose(); });
   document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-slopgo]"); if (!b) return; e.preventDefault(); const id = b.dataset.slopgo;
     if (route === "slop"){ if (slGame(id)) slOpenCard(id); } else { slPending = id; go("slop"); } });
 
@@ -9184,6 +9295,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
           <div class="slp-c-dl">${dl}${ftpAdd}</div>
           <div class="slp-c-want"><button class="slp-want${mineW ? " on" : ""}" type="button" data-sl="${out ? "want" : "wait"}" aria-pressed="${mineW}">${mineW ? SLI.check : out ? SLI.hand : SLI.clock}${out ? "ХОЧУ ПОИГРАТЬ" : "ЖДУ"}</button>
             <div class="slp-ppl">${want.length ? want.map(u => `<span class="slp-pp">${avaHTML(profOf(u), "sm")}${esc(u === ME.id ? "Ты" : profOf(u).nick || "?")}</span>`).join("") : `<em>${out ? "Пока никто не отметился. Нажми — и остальные увидят, с кем собираться." : "Пока никто не ждёт. Нажми «Жду» — игра появится и в твоей коллекции."}</em>`}</div></div>
+          ${slCardExtra(g, out)}
         </div>
       </div>
       <div class="slp-c-body">
@@ -9194,6 +9306,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
             <input class="slp-in" id="slNote" maxlength="140" placeholder="Комментарий в одну строку (необязательно)" value="${esc(my.note || "")}"></div>` : ""}
           ${sts.length ? `<div class="slp-who-l">${[...sts].sort(cmp).map(s => `<div class="slp-wr">${avaHTML(profOf(s.user_id), "sm")}<b>${esc(s.user_id === ME.id ? "Ты" : profOf(s.user_id).nick || "?")}</b><span class="slp-pill ${s.status}">${SL_ST[s.status].s}</span>${s.verdict ? `<span class="slp-pill ${s.verdict}">${SL_VD[s.verdict]}</span>` : ""}${s.note ? `<q>${esc(s.note)}</q>` : ""}</div>`).join("")}</div>` : ""}
         </section>` : ""}
+        ${out ? slCardTier(g) : ""}
         ${tr || g.screenshots.length ? `<section class="slp-blk"><h3>${SLI.img}${tr ? "Трейлер и скриншоты" : "Скриншоты"}</h3><div class="slp-media">${tr ? `<div class="vid"><video controls preload="none" playsinline ${slHttp(tr.thumb) ? `poster="${esc(tr.thumb)}"` : ""}>${slHttp(tr.webm) ? `<source src="${esc(tr.webm)}" type="video/webm">` : ""}${slHttp(tr.mp4) ? `<source src="${esc(tr.mp4)}" type="video/mp4">` : ""}</video></div>` : ""}${g.screenshots.slice(0, 10).map((u, i) => `<button type="button" data-sl-shot="${i}" aria-label="Скриншот ${i + 1}"><img alt="" loading="lazy" src="${esc(u)}" onerror="this.parentNode.remove()"></button>`).join("")}</div></section>` : ""}
         <section class="slp-blk"><h3>${SLI.chat}Обсуждение${cms.length ? ` · ${cms.length}` : ""}</h3>
           ${cms.length ? `<ul class="slp-cm">${cms.map(x => `<li>${avaHTML(profOf(x.user_id), "sm")}<div class="bx"><b>${esc(x.user_id === ME.id ? "Ты" : profOf(x.user_id).nick || "?")}</b><time>${esc(slAgo(x.created_at))}</time><p>${esc(x.body)}</p></div>${x.user_id === ME.id || own ? `<button class="del" type="button" data-sl-cdel="${esc(x.id)}" aria-label="Удалить комментарий">${SLI.x}</button>` : "<span></span>"}</li>`).join("")}</ul>` : ""}
@@ -9215,8 +9328,13 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
       if ((b = q("[data-sl-shot]"))) return slLightbox(slGame(id).screenshots.slice(0, 10), +b.dataset.slShot);
       if ((b = q("[data-sl-cdel]"))){ const cid = b.dataset.slCdel; SL.comments = SL.comments.filter(x => x.id !== cid); slRefresh();
         const {error} = await SB.from("slop_comments").delete().eq("id", cid); if (error){ toast("Не удалилось"); loadSlop(); } return; }
+      if ((b = q("[data-sl-tier]"))){ const ti = +b.dataset.slTier, cur = slTier(id); return slSetTier(id, cur && cur.tier === ti ? null : ti); }
+      if ((b = q("[data-sl-lib]"))) return slToLib(id, b.dataset.slLib);
       if (!(b = q("[data-sl]"))) return; const a = b.dataset.sl;
       if (a === "close") slCloseCard();
+      else if (a === "plan") slCalendar({gameId: id, form: true});
+      else if (a === "tolib"){ slLibPick = slLibPick === id ? null : id; slDrawCard(true); }
+      else if (a === "tiers") slTierSheet();
       else if (a === "want") slToggleWant(id);
       else if (a === "wait") slToggleWait(id);
       else if (a === "csend") slSendComment();
@@ -9455,6 +9573,246 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
       if (t){ tab = t.dataset.pkt; draw(); return; }
       if (b && !b.disabled){ const it = list[+b.dataset.pk]; if (!it) return; try { SND.click("soft"); } catch(_){} s.close(); apply(it); } });
     draw(); setTimeout(() => q("#slpkQ").focus(), 320);
+  }
+
+  // ================= СЛОП 4.7: планы на игру, общий тир-лист, голосование, «в мою библиотеку» =================
+  const SL_TIERS = [["Имба", "#ff5f57"], ["Пойдёт", "#ff9f0a"], ["Еле прошли", "#ffd60a"], ["Кал", "#b08a5a"], ["Дропнули", "#8e8e93"]];
+  SLI.cal = I('<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/>');
+  SLI.tiers = I('<path d="M4 6h16M4 12h11M4 18h6"/>', 'stroke-width="2.6"');
+  SLI.vote = I('<path d="M4 20h16M7 20v-7M12 20V5M17 20v-10"/>', 'stroke-width="2.6"');
+  let slCal = null, slTl = null, slLibPick = null, slPollId = null, slPollTm = 0;
+  const slPollSeen = new Set();
+  const slTier = id => SL.tiers.find(t => t.game_id === id);
+  const slDropped = g => { const t = slTier(g.id); return t ? t.tier === 4 : slBadge(g) === "dropped"; };
+  const slGoing = pid => SL.pmembers.filter(m => m.plan_id === pid).map(m => m.user_id);
+  const slDayL = d => parseD(d).toLocaleDateString("ru-RU", {weekday: "short", day: "numeric", month: "short"}).replace(/\./g, "");
+  const slEveryone = () => FR ? FR.profiles.map(p => p.user_id) : [];
+  const slInMyLib = g => { const nt = normT(g.title); return MYITEMS.some(it => isGame(it) && ((g.steam_id && String(it.steamId || "") === g.steam_id) || normT(it.title) === nt)); };
+  function slRefresh2(){
+    if (slCal) slCalDraw(); if (slTl) slTlDraw(); if (slPollId) slPollDraw();
+    const ap = SL && SL.polls.find(p => Date.parse(p.ends_at) > Date.now());
+    if (ap && !slPollSeen.has(ap.id)){ slPollSeen.add(ap.id);
+      if (ap.user_id === ME.id || route === "slop") slPollShow(ap.id); else toast(`${frNick(ap.user_id)} запустил голосование в СЛОПе — минута на выбор`); }
+  }
+  function slNtf(k, id){
+    const run = () => { if (!SL){ loadSlop().then(() => { if (SL) run(); }); return; }
+      if (k === "slopplan"){ const p = SL.plans.find(x => x.id === id); slCalendar(p ? {day: p.day} : {}); }
+      else { const p = SL.polls.find(x => x.id === id); if (p){ slPollSeen.add(p.id); slPollShow(p.id); } else toast("Это голосование уже закончилось"); } };
+    if (route !== "slop"){ go("slop"); setTimeout(run, 400); } else run();
+  }
+
+  // ---- ближайшие катки на странице ----
+  function slDrawUp(){
+    const el = $("slUp"); if (!el || !SL) return; const td = today();
+    const up = SL.plans.filter(p => p.day >= td && slGame(p.game_id)).sort((a, b) => (a.day + (a.at_time || "99")).localeCompare(b.day + (b.at_time || "99"))).slice(0, 4);
+    el.innerHTML = up.length ? `<span class="slp-n-l">Ближайшие катки:</span>` + up.map(p => { const g = slGame(p.game_id), n = slGoing(p.id).length, u = slImg(g);
+      return `<button class="slp-upc" type="button" data-sl-day="${esc(p.day)}">${u ? `<img alt="" src="${esc(u)}" loading="lazy">` : ""}<span><b>${esc(g.title)}</b><small>${esc(p.day === td ? "сегодня" : p.day === addDays(td, 1) ? "завтра" : slDayL(p.day))}${p.at_time ? " · " + esc(p.at_time) : ""} · идут: ${n}</small></span></button>`; }).join("") : "";
+  }
+
+  // ---- мини-календарь каток ----
+  function slCalendar(o = {}){
+    if (!SL || !ME) return; const day = o.day || today();
+    if (slCal){ Object.assign(slCal, {day, ym: day.slice(0, 7), form: !!o.form, gameId: o.gameId || slCal.gameId, fresh: !!o.gameId}); slCalDraw(); return; }
+    const s = openSheet(`<div class="sh-grab"></div><div id="slCalB"></div>`, {onClose: () => { slCal = null; }});
+    s.el.classList.add("slp-sheet", "slcal-sheet");
+    slCal = {s, day, ym: day.slice(0, 7), form: !!o.form, gameId: o.gameId || null};
+    s.el.addEventListener("click", slCalClick);
+    slCalDraw();
+  }
+  function slCalDraw(){
+    const c = slCal; if (!c || !SL) return; const box = c.s.el.querySelector("#slCalB"); if (!box) return;
+    const keep = {}; box.querySelectorAll("select[id],input[id]").forEach(i => { keep[i.id] = i.value; });
+    const [y, m] = c.ym.split("-").map(Number), lead = (new Date(y, m - 1, 1).getDay() + 6) % 7, dim = new Date(y, m, 0).getDate(), td = today();
+    const by = {}; SL.plans.forEach(p => { if (slGame(p.game_id)) (by[p.day] = by[p.day] || []).push(p); });
+    Object.values(by).forEach(a => a.sort((x, z) => String(x.at_time || "99").localeCompare(String(z.at_time || "99"))));
+    let cells = '<span class="slcal-d off"></span>'.repeat(lead);
+    for (let d = 1; d <= dim; d++){ const k = `${y}-${pad(m)}-${pad(d)}`, ps = by[k] || [], g = ps[0] && slGame(ps[0].game_id), u = g && slImg(g);
+      cells += `<button type="button" class="slcal-d${k === td ? " today" : ""}${k === c.day ? " sel" : ""}${ps.length ? " has" : ""}${k < td ? " past" : ""}" data-cd="${k}" aria-label="${d}${ps.length ? ", запланировано игр: " + ps.length : ""}" title="${ps.map(p => slGame(p.game_id).title).join(", ").replace(/"/g, "&quot;")}">${u ? `<img alt="" src="${esc(u)}" loading="lazy">` : ""}<b>${d}</b>${ps.length > 1 ? `<em>+${ps.length - 1}</em>` : ""}</button>`; }
+    const dps = by[c.day] || [];
+    const plan = p => { const g = slGame(p.game_id), gg = slGoing(p.id), me = gg.includes(ME.id), own = p.user_id === ME.id;
+      return `<article class="slcal-p"><button type="button" class="slcal-pp" data-cgo="${esc(g.id)}" title="Открыть карточку игры"><span class="slp-p">${slPosterIn(g)}</span></button><div class="slcal-pb"><b>${esc(g.title)}</b><small>${p.at_time ? esc(p.at_time) + " · " : ""}${esc(slPl(g))} · зовёт ${esc(own ? "ты" : profOf(p.user_id).nick || "кто-то")}</small>${p.note ? `<q>${esc(p.note)}</q>` : ""}
+        <div class="slcal-go">${gg.length ? gg.map(u => `<span class="slp-pp">${avaHTML(profOf(u), "sm")}${esc(u === ME.id ? "Ты" : profOf(u).nick || "?")}</span>`).join("") : `<em>Пока никто не отметился</em>`}</div>
+        <div class="slcal-pa"><button type="button" class="slp-wait${me ? " on" : ""}" data-cjoin="${esc(p.id)}" aria-pressed="${me}">${me ? SLI.check : SLI.plus} Я буду</button>${own ? `<button type="button" class="slp-btn sm red" data-cdel="${esc(p.id)}">Отменить катку</button>` : ""}</div></div></article>`; };
+    const games = [...SL.games].sort((a, b) => (slOut(b) - slOut(a)) || a.title.localeCompare(b.title, "ru"));
+    const form = `<div class="slcal-f"><label class="f">Во что играем<select class="in" id="slcG">${games.map(g => `<option value="${esc(g.id)}"${g.id === c.gameId ? " selected" : ""}>${esc(g.title)}${slOut(g) ? "" : " (ещё не вышла)"}</option>`).join("")}</select></label>
+      <div class="row2"><label class="f">Во сколько<input class="in" type="time" id="slcT"></label><label class="f">Заметка<input class="in" id="slcN" maxlength="200" placeholder="Сбор в дискорде" autocomplete="off"></label></div>
+      <div class="slp-f-act"><button type="button" class="ib blue" data-csave="1">Запланировать и позвать всех</button><button type="button" class="ib" data-cno="1">Отмена</button></div></div>`;
+    box.innerHTML = `<div class="slcal-h"><button type="button" class="slp-btn sm" data-cm="-1" aria-label="Предыдущий месяц">‹</button><h3>${MONTHS_NOM[m - 1]} ${y}</h3><button type="button" class="slp-btn sm" data-cm="1" aria-label="Следующий месяц">›</button></div>
+      <div class="slcal-w">${["пн", "вт", "ср", "чт", "пт", "сб", "вс"].map(x => `<span>${x}</span>`).join("")}</div><div class="slcal-g">${cells}</div>
+      <div class="slcal-day"><h4>${parseD(c.day).toLocaleDateString("ru-RU", {day: "numeric", month: "long", weekday: "long"})}</h4>
+        ${dps.length ? dps.map(plan).join("") : `<p class="sub" style="margin:0 0 12px">На этот день ничего не запланировано.</p>`}
+        ${c.day < td ? "" : !games.length ? `<p class="sub" style="margin:0">Сначала добавь в СЛОП хотя бы одну игру.</p>` : c.form ? form : `<button type="button" class="slp-btn pri" data-cnew="1" style="width:100%">${SLI.plus} Запланировать игру на этот день</button>`}</div>`;
+    Object.entries(keep).forEach(([id, v]) => { const i = box.querySelector("#" + id); if (i && v && !(id === "slcG" && c.fresh)) i.value = v; }); c.fresh = false;
+  }
+  async function slCalClick(e){
+    const c = slCal; if (!c) return; const q = s => e.target.closest(s); let b;
+    if ((b = q("[data-cm]"))){ const [y, m] = c.ym.split("-").map(Number), d = new Date(y, m - 1 + +b.dataset.cm, 1); c.ym = `${d.getFullYear()}-${pad(d.getMonth() + 1)}`; slCalDraw(); return; }
+    if ((b = q("[data-cd]"))){ c.day = b.dataset.cd; c.form = false; slCalDraw(); return; }
+    if (q("[data-cnew]")){ c.form = true; slCalDraw(); return; }
+    if (q("[data-cno]")){ c.form = false; slCalDraw(); return; }
+    if ((b = q("[data-cgo]"))){ const id = b.dataset.cgo; c.s.close(); if (route === "slop") setTimeout(() => slOpenCard(id), 120); else { slPending = id; go("slop"); } return; }
+    if ((b = q("[data-cjoin]"))){ const pid = b.dataset.cjoin, on = !slGoing(pid).includes(ME.id);
+      SL.pmembers = SL.pmembers.filter(m => !(m.plan_id === pid && m.user_id === ME.id)); if (on) SL.pmembers.push({plan_id: pid, user_id: ME.id});
+      try { SND.click("soft"); } catch(_){} slRefresh(); slPop(c.s.el.querySelector(`[data-cjoin="${pid}"]`));
+      const r = on ? await SB.from("slop_plan_members").upsert({plan_id: pid, user_id: ME.id}, {onConflict: "plan_id,user_id", ignoreDuplicates: true}) : await SB.from("slop_plan_members").delete().eq("plan_id", pid).eq("user_id", ME.id);
+      if (r.error){ toast("Не сохранилось"); loadSlop(); } return; }
+    if ((b = q("[data-cdel]"))){ const pid = b.dataset.cdel; if (!b.dataset.sure){ b.dataset.sure = "1"; b.textContent = "Точно? Нажми ещё раз"; return; }
+      SL.plans = SL.plans.filter(p => p.id !== pid); slRefresh(); const {error} = await SB.from("slop_plans").delete().eq("id", pid); if (error){ toast("Не удалилось"); loadSlop(); } else toast("Катка отменена"); return; }
+    if ((b = q("[data-csave]"))){ const box = c.s.el, gid = box.querySelector("#slcG").value, g = slGame(gid); if (!g) return;
+      const tm = box.querySelector("#slcT").value || null, note = box.querySelector("#slcN").value.trim().slice(0, 200) || null, day = c.day;
+      b.disabled = true; b.textContent = "Сохраняю…";
+      const {data, error} = await SB.from("slop_plans").insert({game_id: gid, user_id: ME.id, day, at_time: tm && /^\d{2}:\d{2}/.test(tm) ? tm.slice(0, 5) : null, note}).select().single();
+      if (error || !data){ toast("Не сохранилось, попробуй ещё раз"); b.disabled = false; b.textContent = "Запланировать и позвать всех"; return; }
+      SL.plans.push(data); SL.pmembers.push({plan_id: data.id, user_id: ME.id});
+      SB.from("slop_plan_members").upsert({plan_id: data.id, user_id: ME.id}, {onConflict: "plan_id,user_id", ignoreDuplicates: true}).then(() => {});
+      notify(slEveryone(), "slop_plan", "slopplan:" + data.id, `${g.title} — ${slDayL(day)}${data.at_time ? ", " + data.at_time : ""}`);
+      c.form = false; c.gameId = null; slRefresh(); toast("Запланировано — всем ушло уведомление"); }
+  }
+
+  // ---- общий тир-лист пройденного: один на всех ----
+  async function slSetTier(id, tier, pos){
+    const cur = slTier(id); SL.tiers = SL.tiers.filter(t => t.game_id !== id);
+    if (tier != null){ if (pos == null){ const a = SL.tiers.filter(t => t.tier === tier).map(t => t.pos); pos = a.length ? Math.max(...a) + 1 : 0; }
+      SL.tiers.push({game_id: id, tier, pos, updated_by: ME.id, updated_at: now()}); }
+    else if (!cur) return;
+    slRefresh();
+    const r = tier == null ? await SB.from("slop_tiers").delete().eq("game_id", id) : await SB.from("slop_tiers").upsert({game_id: id, tier, pos, updated_by: ME.id, updated_at: now()}, {onConflict: "game_id"});
+    if (r.error){ toast("Тир не сохранился"); loadSlop(); }
+  }
+  function slTierSheet(){
+    if (!SL || !ME || slTl) return;
+    const s = openSheet(`<div class="sh-grab"></div><h3>Тир-лист пройденного</h3><p class="sub">Один на всех. Перетаскивай постеры между тирами — двигать может любой.</p><div class="sltl" id="slTlB"></div>`, {wide: true, onClose: () => { removeEventListener("pointermove", mv); removeEventListener("pointerup", up); removeEventListener("pointercancel", up); if (slTl && slTl.dr && slTl.dr.g) slTl.dr.g.remove(); slTl = null; }});
+    s.el.classList.add("slp-sheet", "sltl-sheet"); slTl = {s, dr: null};
+    s.el.addEventListener("pointerdown", e => { const it = e.target.closest(".sltl-i"); if (!it || e.button) return; e.preventDefault(); slTl.dr = {it, x: e.clientX, y: e.clientY, on: false, g: null}; });
+    const mv = e => { const d = slTl && slTl.dr; if (!d) return;
+      if (!d.on){ if (Math.hypot(e.clientX - d.x, e.clientY - d.y) < 6) return; d.on = true; d.g = d.it.cloneNode(true); d.g.classList.add("ghost"); document.body.appendChild(d.g); d.it.classList.add("lift"); }
+      d.g.style.left = e.clientX + "px"; d.g.style.top = e.clientY + "px";
+      s.el.querySelectorAll(".sltl-z.over").forEach(z => z.classList.remove("over")); const el = document.elementFromPoint(e.clientX, e.clientY), z = el && el.closest && el.closest(".sltl-z"); if (z) z.classList.add("over"); };
+    const up = e => { const d = slTl && slTl.dr; if (!d) return; slTl.dr = null; s.el.querySelectorAll(".sltl-z.over").forEach(z => z.classList.remove("over"));
+      if (!d.on) return; d.g.remove(); d.it.classList.remove("lift");
+      const el = document.elementFromPoint(e.clientX, e.clientY), z = el && el.closest && el.closest(".sltl-z"); if (!z){ slTlDraw(); return; }
+      const id = d.it.dataset.tg; if (z.dataset.tz === "pool"){ slSetTier(id, null); try { SND.tick(.7); } catch(_){} return; }
+      const tier = +z.dataset.tz, dest = SL.tiers.filter(t => t.tier === tier && t.game_id !== id && slGame(t.game_id)).sort((a, b) => a.pos - b.pos);
+      const before = el.closest(".sltl-i"), bi = before && before.dataset.tg !== id ? dest.findIndex(t => t.game_id === before.dataset.tg) : -1;
+      const i = bi >= 0 ? bi : dest.length, pv = dest[i - 1], nx = dest[i], pos = !pv && !nx ? 0 : !pv ? nx.pos - 1 : !nx ? pv.pos + 1 : (pv.pos + nx.pos) / 2;
+      try { SND.tick(.7); } catch(_){} slSetTier(id, tier, pos); };
+    addEventListener("pointermove", mv); addEventListener("pointerup", up); addEventListener("pointercancel", up);
+    slTlDraw();
+  }
+  function slTlDraw(){
+    if (!slTl || slTl.dr || !SL) return; const b = slTl.s.el.querySelector("#slTlB"); if (!b) return;
+    const it = g => `<span class="sltl-i" data-tg="${esc(g.id)}" title="${esc(g.title)}"><span class="slp-p">${slPosterIn(g)}</span></span>`;
+    const tiered = SL.tiers.filter(t => slGame(t.game_id)), pool = SL.games.filter(g => slOut(g) && !slTier(g.id) && slStats(g.id).some(s => s.status !== "playing"));
+    const last = [...tiered].sort((a, c) => String(c.updated_at).localeCompare(String(a.updated_at)))[0];
+    b.innerHTML = SL_TIERS.map(([n, c], i) => `<div class="sltl-r"><div class="sltl-l" style="--c:${c}"><b>${i + 1}</b><span>${n}</span></div><div class="sltl-z" data-tz="${i}">${tiered.filter(t => t.tier === i).sort((a, c2) => a.pos - c2.pos).map(t => it(slGame(t.game_id))).join("")}</div></div>`).join("")
+      + `<div class="sltl-pool"><div class="sltl-ph"><b>Ещё не оценили</b><small>сюда попадают игры, которые кто-то прошёл или дропнул</small></div><div class="sltl-z" data-tz="pool">${pool.length ? pool.map(it).join("") : `<em>${tiered.length ? "Всё пройденное уже расставлено." : "Пока пусто: отметь в карточке игры «Прошли» или «Дропнули» — и она появится здесь."}</em>`}</div></div>`
+      + (last ? `<p class="sub sltl-last">Последним двигал ${esc(last.updated_by === ME.id ? "ты" : profOf(last.updated_by).nick || "кто-то")} · ${esc(slAgo(last.updated_at))}</p>` : "");
+  }
+
+  // ---- блок в карточке: запланировать, в мою библиотеку, тир ----
+  function slCardExtra(g, out){
+    const mine = slInMyLib(g), td = today(), nx = SL.plans.filter(p => p.game_id === g.id && p.day >= td).sort((a, b) => a.day.localeCompare(b.day))[0];
+    return `<div class="slp-c-more"><button class="slp-btn sm" type="button" data-sl="plan">${SLI.cal} ${nx ? `Играем ${esc(nx.day === td ? "сегодня" : slDayL(nx.day))}${nx.at_time ? " в " + esc(nx.at_time) : ""}` : "Запланировать катку"}</button>
+      ${!out ? "" : mine ? `<span class="slp-btn sm ok">${SLI.check} В твоей библиотеке</span>` : `<button class="slp-btn sm" type="button" data-sl="tolib" aria-expanded="${slLibPick === g.id}">${SLI.plus} В мою библиотеку</button>`}
+      ${out && !mine && slLibPick === g.id ? `<div class="slp-libp"><span>В какой статус?</span>${[["playing", "Играю"], ["done", "Пройдено"], ["dropped", "Дроп"], ["future", "Список желаемого"]].map(([k, l]) => `<button class="slp-st" type="button" data-sl-lib="${k}">${l}</button>`).join("")}</div>` : ""}</div>`;
+  }
+  function slCardTier(g){
+    const cur = slTier(g.id);
+    return `<section class="slp-blk"><h3>${SLI.tiers}Общий тир-лист</h3><div class="slp-seg">${SL_TIERS.map(([n, c], i) => `<button class="slp-st sltr${cur && cur.tier === i ? " on" : ""}" type="button" style="--tc:${c}" data-sl-tier="${i}" aria-pressed="${!!(cur && cur.tier === i)}">${n}</button>`).join("")}<button class="slp-btn sm" type="button" data-sl="tiers">Весь тир-лист</button></div>${cur ? `<small class="slp-tby">поставил ${esc(cur.updated_by === ME.id ? "ты" : profOf(cur.updated_by).nick || "кто-то")} · нажми на тир ещё раз, чтобы убрать</small>` : `<small class="slp-tby">Один тир-лист на всех — ставить и менять может любой.</small>`}</section>`;
+  }
+  async function slToLib(id, mode){
+    const g = slGame(id); if (!g) return; slLibPick = null;
+    const it = {type: "game", title: g.title, uid: g.user_id, status: "done", genre: g.genres.join(", ") || null, desc: g.descr || null, steamId: g.steam_id || null, cover: g.cover && !/^https?:/i.test(g.cover) ? g.cover : null};
+    await takeFromFriend(it, mode, null); if (slOpenId === id) slDrawCard(true);
+  }
+
+  // ---- «Не можем выбрать»: рулетка или голосование ----
+  function slChoose(){
+    if (!SL) return; const ap = SL.polls.find(p => Date.parse(p.ends_at) > Date.now());
+    if (ap){ slPollShow(ap.id); return; }
+    const s = openSheet(`<div class="sh-grab"></div><h3>Не можете выбрать?</h3><p class="sub">Пусть решит случай или большинство.</p>
+      <div class="slp-ch"><button type="button" class="slp-chb" data-ch="roul">${SLI.dice}<b>Рулетка</b><small>Крутим постеры — на чём остановится, в то и играем</small></button>
+        <button type="button" class="slp-chb" data-ch="poll">${SLI.vote}<b>Голосование</b><small>Минута на голоса, все видят, кто за что. Побеждает большинство</small></button></div>`);
+    s.el.classList.add("slp-sheet");
+    s.el.addEventListener("click", e => { const b = e.target.closest("[data-ch]"); if (!b) return; s.close(); setTimeout(() => b.dataset.ch === "roul" ? slRoulette() : slPollSetup(), 160); });
+  }
+  function slPollSetup(){
+    const pool = slLib().filter(g => !slDropped(g));
+    if (pool.length < 2){ toast("Для голосования нужно хотя бы две игры под текущие фильтры"); return; }
+    const pick = new Set([...pool].sort((a, b) => slWant(b).length - slWant(a).length).slice(0, 6).map(g => g.id));
+    const s = openSheet(`<div class="sh-grab"></div><h3>Голосование</h3><p class="sub">Отметь от 2 до 12 игр. У всех будет минута, чтобы проголосовать.</p><div class="slp-pk" id="slpoG"></div>
+      <div class="slp-f-act" style="margin-top:14px"><button type="button" class="ib blue" id="slpoGo"></button></div>`, {wide: true});
+    s.el.classList.add("slp-sheet");
+    const q = x => s.el.querySelector(x);
+    const draw = () => { q("#slpoG").innerHTML = pool.map(g => `<button class="slp-pk-i${pick.has(g.id) ? " on" : ""}" type="button" data-po="${esc(g.id)}" aria-pressed="${pick.has(g.id)}" title="${esc(g.title)}"><span class="slp-p">${slPosterIn(g)}</span><b>${esc(g.title)}</b><small>${esc(slPl(g))}</small></button>`).join("");
+      const b = q("#slpoGo"); b.disabled = pick.size < 2 || pick.size > 12; b.textContent = pick.size < 2 ? "Выбери хотя бы две игры" : pick.size > 12 ? "Не больше 12 игр" : `Запустить на минуту · игр: ${pick.size}`; };
+    s.el.addEventListener("click", e => { const b = e.target.closest("[data-po]"); if (!b) return; const id = b.dataset.po; pick.has(id) ? pick.delete(id) : pick.add(id); const y = q("#slpoG").scrollTop; draw(); q("#slpoG").scrollTop = y; });
+    q("#slpoGo").onclick = async () => { const b = q("#slpoGo"); b.disabled = true; b.textContent = "Запускаю…";
+      const {data, error} = await SB.from("slop_polls").insert({user_id: ME.id, game_ids: [...pick], ends_at: new Date(Date.now() + 62000).toISOString()}).select().single();
+      if (error || !data){ toast("Не запустилось, попробуй ещё раз"); draw(); return; }
+      SL.polls.unshift(data); slPollSeen.add(data.id); s.close();
+      notify(slEveryone(), "slop_poll", "sloppoll:" + data.id, "Минута на выбор, во что играем");
+      setTimeout(() => slPollShow(data.id), 200); };
+    draw();
+  }
+  const slPollTally = p => { const ids = p.game_ids.filter(slGame), vs = SL.pvotes.filter(v => v.poll_id === p.id && ids.includes(v.game_id)), cnt = id => vs.filter(v => v.game_id === id).length;
+    const max = Math.max(0, ...ids.map(cnt)), top = ids.filter(id => cnt(id) === max).sort(); let h = 0; for (const ch of p.id) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+    return {ids, vs, cnt, max, tie: top.length > 1, win: top.length ? top[h % top.length] : null}; };
+  function slPollClose(){ const el = $("slPoll"); clearInterval(slPollTm); slPollId = null; if (!el || el.hidden) return; el.hidden = true; el.innerHTML = ""; if (!slOpenId) document.body.classList.remove("slp-open"); }
+  function slPollShow(id){
+    const p = SL && SL.polls.find(x => x.id === id); if (!p) return;
+    slCloseRoulette(); let el = $("slPoll");
+    if (!el){ el = document.createElement("div"); el.id = "slPoll"; el.className = "slp-rl slp-poll"; document.body.appendChild(el);
+      el.addEventListener("click", async e => { const q = s => e.target.closest(s), pid = slPollId; let b;
+        if ((b = q("[data-pv]")) && pid){ const pp = SL.polls.find(x => x.id === pid); if (!pp || Date.parse(pp.ends_at) <= Date.now()) return; const gid = b.dataset.pv;
+          SL.pvotes = SL.pvotes.filter(v => !(v.poll_id === pid && v.user_id === ME.id)); SL.pvotes.push({poll_id: pid, user_id: ME.id, game_id: gid}); try { SND.click("soft"); } catch(_){} slPollDraw();
+          const {error} = await SB.from("slop_poll_votes").upsert({poll_id: pid, user_id: ME.id, game_id: gid, created_at: now()}, {onConflict: "poll_id,user_id"}); if (error) toast("Голос не засчитался, нажми ещё раз"); return; }
+        if (!(b = q("[data-pl]"))) return; const a = b.dataset.pl, gid = b.dataset.id;
+        if (a === "close") slPollClose(); else if (a === "open"){ slPollClose(); slOpenCard(gid); } else if (a === "plan"){ slPollClose(); slCalendar({gameId: gid, form: true}); } }); }
+    clearInterval(slPollTm); slPollId = id; el.hidden = false; document.body.classList.add("slp-open");
+    const live = Date.parse(p.ends_at) > Date.now();
+    el.innerHTML = `<div class="slp-rl-bg"></div><div class="slp-rl-b slp-po" role="dialog" aria-modal="true" aria-label="Голосование"><button class="slp-btn sm slp-rl-x" type="button" data-pl="close" aria-label="Закрыть">${SLI.x}</button>
+      <h3 id="slpoH">Во что играем?</h3><p id="slpoS"></p><div class="slp-po-t"><i id="slpoBar"></i></div><div class="slp-po-g" id="slpoGrid"></div><div class="slp-rl-res" id="slpoRes" aria-live="polite"></div></div>`;
+    el.dataset.fin = live ? "" : "1"; slPollDraw();
+    if (!live){ slPollFinish(p, true); return; }
+    let lastS = -1;
+    slPollTm = setInterval(() => { if (slPollId !== id){ clearInterval(slPollTm); return; }
+      const left = Date.parse(p.ends_at) - Date.now(), sec = Math.max(0, Math.ceil(left / 1000)), bar = $("slpoBar"), sub = $("slpoS"); if (!bar || !sub) return;
+      bar.style.transform = `scaleX(${Math.max(0, Math.min(1, left / 60000))})`; bar.classList.toggle("hot", sec <= 10);
+      sub.innerHTML = `Запустил ${esc(p.user_id === ME.id ? "ты" : profOf(p.user_id).nick || "кто-то")} · осталось <b>${sec}</b> сек · жми на игру, голос можно менять`;
+      if (sec !== lastS){ lastS = sec; if (sec <= 5 && sec > 0) try { SND.tick(1); } catch(_){} }
+      if (left <= 0){ clearInterval(slPollTm); slPollFinish(p, false); } }, 200);
+  }
+  function slPollDraw(){
+    const p = SL && SL.polls.find(x => x.id === slPollId), grid = $("slpoGrid"); if (!p || !grid) return;
+    const t = slPollTally(p), my = t.vs.find(v => v.user_id === ME.id), fin = $("slPoll").dataset.fin === "1";
+    grid.innerHTML = t.ids.map(id => { const g = slGame(id), who = t.vs.filter(v => v.game_id === id).map(v => v.user_id), n = who.length;
+      return `<button type="button" class="slp-po-i${my && my.game_id === id ? " mine" : ""}${fin && t.win === id ? " win" : ""}" data-pv="${esc(id)}" ${fin ? "disabled" : ""} aria-pressed="${!!(my && my.game_id === id)}"><span class="slp-p">${slPosterIn(g).replace('loading="lazy" ', "")}<i class="slp-po-n${n ? " on" : ""}">${n}</i></span><b>${esc(g.title)}</b><span class="slp-po-w">${n ? slAvs(who, 6) : `<small>${esc(slPl(g))}</small>`}</span></button>`; }).join("");
+    grid.classList.toggle("fin", fin);
+  }
+  function slPollFinish(p, quiet){
+    const el = $("slPoll"); if (!el || slPollId !== p.id) return; el.dataset.fin = "1";
+    const t = slPollTally(p), g = t.win && slGame(t.win), bar = $("slpoBar"), sub = $("slpoS"), h = $("slpoH"), res = $("slpoRes"); if (bar) bar.style.transform = "scaleX(0)";
+    slPollDraw();
+    if (!g){ if (h) h.textContent = "Голосование закончилось"; if (sub) sub.textContent = "Игры из этого голосования уже удалены."; return; }
+    if (h) h.textContent = "Играем!"; if (sub) sub.textContent = !t.vs.length ? "Никто не проголосовал — выбрал случай." : t.tie ? `Ничья по голосам (${t.max}) — решил жребий.` : `Голосов: ${t.max} из ${t.vs.length}.`;
+    if (res) res.innerHTML = `<b>${esc(g.title)}</b><small>${esc(slPl(g))}</small><div><button class="slp-btn pri" type="button" data-pl="open" data-id="${esc(g.id)}">Открыть карточку</button><button class="slp-btn" type="button" data-pl="plan" data-id="${esc(g.id)}">${SLI.cal} Запланировать</button><button class="slp-btn" type="button" data-pl="close">Закрыть</button></div>`;
+    const w = el.querySelector(".slp-po-i.win"); if (w && !slRM()) w.scrollIntoView({block: "nearest", behavior: "smooth"});
+    if (!quiet){ slFanfare(); slConfetti(); }
+  }
+  function slFanfare(){
+    try { if (!SND.on) return; const A = window.AudioContext || window.webkitAudioContext; if (!A) return; const c = slFanfare.c || (slFanfare.c = new A()); if (c.state === "suspended") c.resume(); const t0 = c.currentTime + .02;
+      [[523.25, 0, .16], [659.25, .14, .16], [783.99, .28, .16], [1046.5, .42, .7], [783.99, .42, .7], [659.25, .42, .7], [1318.5, .62, .7]].forEach(([f, d, l]) => { const o = c.createOscillator(), g = c.createGain(); o.type = "triangle"; o.frequency.value = f;
+        g.gain.setValueAtTime(.0001, t0 + d); g.gain.exponentialRampToValueAtTime(.13, t0 + d + .02); g.gain.exponentialRampToValueAtTime(.0001, t0 + d + l); o.connect(g).connect(c.destination); o.start(t0 + d); o.stop(t0 + d + l + .05); });
+    } catch(_){}
+  }
+  function slConfetti(){
+    if (slRM() || !document.body.animate) return; const box = document.createElement("div"); box.className = "slp-conf"; document.body.appendChild(box);
+    const cols = ["#b8ff3d", "#4dffc3", "#ff5f57", "#ffd60a", "#0a84ff", "#ff7ad9", "#fff"];
+    for (let i = 0; i < 90; i++){ const s = document.createElement("i"), x = Math.random() * 100, dx = (Math.random() - .5) * 260, r = (Math.random() - .5) * 1400, d = 1700 + Math.random() * 1500;
+      s.style.cssText = `left:${x}%;background:${cols[i % cols.length]};width:${6 + Math.random() * 7}px;height:${9 + Math.random() * 9}px;border-radius:${Math.random() < .3 ? "50%" : "2px"}`; box.appendChild(s);
+      s.animate([{transform: "translate(0,-20px) rotate(0)", opacity: 1}, {transform: `translate(${dx}px,${innerHeight + 40}px) rotate(${r}deg)`, opacity: .9}], {duration: d, delay: Math.random() * 500, easing: "cubic-bezier(.2,.6,.4,1)", fill: "forwards"}); }
+    setTimeout(() => box.remove(), 4200);
   }
 
   // ---- рулетка: «Не можем выбрать» ----
@@ -11010,6 +11368,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     }).subscribe();
   }
   const ntfText = n => { const who = `<b>${esc(profOf(n.actor).nick || "кто-то")}</b>`;
+    if (n.kind === "slop_plan") return `${who} зовёт играть в СЛОПе`; if (n.kind === "slop_poll") return `${who} запустил голосование в СЛОПе`;
     return n.kind === "mention_post" ? `${who} отметил тебя в посте` : n.kind === "mention_comment" ? `${who} отметил тебя в комментарии` : n.kind === "comment" ? `${who} ответил на твой пост` : n.kind === "mention_event" ? `${who} отметил тебя на стене ${String(n.ref || "").startsWith("watch:") ? "кинопоказа" : "мероприятия"}` : n.kind === "tier_reply" ? `${who} ответил своей версией на твой тир-лист` : n.kind === "book_comment" ? `${who} ответил в книге жалоб` : n.kind === "suggest" ? `${who} предлагает тебе` : n.kind === "suggest_ok" ? `${who} сохранил себе то, что ты предложил` : `${who} зовёт тебя`; };
   const bellInv = () => (EV && ME ? myInvites() : []).map(m => ({inv: true, m, e: evById(m.event_id), ts: m.updated_at || (evById(m.event_id) || {}).created_at || ""})).filter(x => x.e);
   const ntfUnread = () => NTF.filter(n => !n.read).length + bellInv().length;
@@ -11018,6 +11377,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     const [k, id] = String(n.ref || "").split(":"); if (!id) return;
     if (k === "event" || k === "watch"){ go(n.ref); return; }
     if (k === "sug"){ sugSheet(id); return; }
+    if (k === "slopplan" || k === "sloppoll"){ slNtf(k, id); return; }
     if (k === "user"){ go(n.ref); return; }
     if (k === "book"){ bkOpen.add(id); const jb = () => { const el = document.querySelector(`[data-bkc="${CSS.escape(id)}"]`); if (el){ const a = el.closest(".bk-e"); a.scrollIntoView({behavior: "smooth", block: "center"}); a.classList.remove("flash"); void a.offsetWidth; a.classList.add("flash"); } else if (bookN < 500){ bookN = 500; renderPeople(); } };
       if (route === "people") renderPeople(); else go("people"); setTimeout(jb, 400); setTimeout(jb, 1300); return; }

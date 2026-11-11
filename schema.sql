@@ -629,3 +629,104 @@ revoke all on public.tierlist_likes from anon;
 grant select, insert, delete on public.tierlist_likes to authenticated;
 alter table public.tierlist_likes replica identity full;
 do $$ begin alter publication supabase_realtime add table public.tierlist_likes; exception when duplicate_object then null; end $$;
+
+-- ===== 4.7: СЛОП — планы на игру, общий тир-лист, голосования =====
+alter table public.notifications drop constraint if exists notifications_kind_check;
+alter table public.notifications add constraint notifications_kind_check check (kind in ('mention_post','mention_comment','comment','invite','mention_event','tier_reply','book_comment','suggest','suggest_ok','slop_plan','slop_poll'));
+-- запланированные катки: игра + день, кто идёт
+create table if not exists public.slop_plans (
+  id uuid primary key default gen_random_uuid(),
+  game_id uuid not null references public.slop_games (id) on delete cascade,
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  day date not null,
+  at_time text check (at_time is null or at_time ~ '^\d{2}:\d{2}$'),
+  note text check (note is null or char_length(note) <= 200),
+  created_at timestamptz not null default now()
+);
+create table if not exists public.slop_plan_members (
+  plan_id uuid not null references public.slop_plans (id) on delete cascade,
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (plan_id, user_id)
+);
+-- общий тир-лист пройденного: одна таблица на всех, двигать может любой
+create table if not exists public.slop_tiers (
+  game_id uuid primary key references public.slop_games (id) on delete cascade,
+  tier smallint not null check (tier between 0 and 4),
+  pos double precision not null default 0,
+  updated_by uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  updated_at timestamptz not null default now()
+);
+-- голосование «во что играем»: минута на голоса
+create table if not exists public.slop_polls (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  game_ids uuid[] not null check (array_length(game_ids, 1) between 2 and 12),
+  ends_at timestamptz not null,
+  created_at timestamptz not null default now()
+);
+create table if not exists public.slop_poll_votes (
+  poll_id uuid not null references public.slop_polls (id) on delete cascade,
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  game_id uuid not null,
+  created_at timestamptz not null default now(),
+  primary key (poll_id, user_id)
+);
+create index if not exists slop_plans_day_idx on public.slop_plans (day);
+create index if not exists slop_plans_game_idx on public.slop_plans (game_id);
+create index if not exists slop_plans_user_idx on public.slop_plans (user_id);
+create index if not exists slop_plan_members_user_idx on public.slop_plan_members (user_id);
+create index if not exists slop_tiers_by_idx on public.slop_tiers (updated_by);
+create index if not exists slop_polls_user_idx on public.slop_polls (user_id);
+create index if not exists slop_polls_created_idx on public.slop_polls (created_at desc);
+create index if not exists slop_poll_votes_user_idx on public.slop_poll_votes (user_id);
+alter table public.slop_plans enable row level security;
+alter table public.slop_plan_members enable row level security;
+alter table public.slop_tiers enable row level security;
+alter table public.slop_polls enable row level security;
+alter table public.slop_poll_votes enable row level security;
+drop policy if exists slpl_select on public.slop_plans;
+drop policy if exists slpl_insert on public.slop_plans;
+drop policy if exists slpl_update on public.slop_plans;
+drop policy if exists slpl_delete on public.slop_plans;
+create policy slpl_select on public.slop_plans for select to authenticated using (true);
+create policy slpl_insert on public.slop_plans for insert to authenticated with check ((select auth.uid()) = user_id);
+create policy slpl_update on public.slop_plans for update to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy slpl_delete on public.slop_plans for delete to authenticated using ((select auth.uid()) = user_id);
+drop policy if exists slpm_select on public.slop_plan_members;
+drop policy if exists slpm_insert on public.slop_plan_members;
+drop policy if exists slpm_delete on public.slop_plan_members;
+create policy slpm_select on public.slop_plan_members for select to authenticated using (true);
+create policy slpm_insert on public.slop_plan_members for insert to authenticated with check ((select auth.uid()) = user_id);
+create policy slpm_delete on public.slop_plan_members for delete to authenticated using ((select auth.uid()) = user_id);
+drop policy if exists slt_select on public.slop_tiers;
+drop policy if exists slt_insert on public.slop_tiers;
+drop policy if exists slt_update on public.slop_tiers;
+drop policy if exists slt_delete on public.slop_tiers;
+create policy slt_select on public.slop_tiers for select to authenticated using (true);
+create policy slt_insert on public.slop_tiers for insert to authenticated with check ((select auth.uid()) = updated_by);
+create policy slt_update on public.slop_tiers for update to authenticated using (true) with check ((select auth.uid()) = updated_by);
+create policy slt_delete on public.slop_tiers for delete to authenticated using (true);
+drop policy if exists slpo_select on public.slop_polls;
+drop policy if exists slpo_insert on public.slop_polls;
+drop policy if exists slpo_delete on public.slop_polls;
+create policy slpo_select on public.slop_polls for select to authenticated using (true);
+create policy slpo_insert on public.slop_polls for insert to authenticated with check ((select auth.uid()) = user_id);
+create policy slpo_delete on public.slop_polls for delete to authenticated using ((select auth.uid()) = user_id);
+drop policy if exists slpv_select on public.slop_poll_votes;
+drop policy if exists slpv_insert on public.slop_poll_votes;
+drop policy if exists slpv_update on public.slop_poll_votes;
+drop policy if exists slpv_delete on public.slop_poll_votes;
+create policy slpv_select on public.slop_poll_votes for select to authenticated using (true);
+create policy slpv_insert on public.slop_poll_votes for insert to authenticated with check ((select auth.uid()) = user_id);
+create policy slpv_update on public.slop_poll_votes for update to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy slpv_delete on public.slop_poll_votes for delete to authenticated using ((select auth.uid()) = user_id);
+revoke all on public.slop_plans, public.slop_plan_members, public.slop_tiers, public.slop_polls, public.slop_poll_votes from anon;
+grant select, insert, update, delete on public.slop_plans, public.slop_plan_members, public.slop_tiers, public.slop_polls, public.slop_poll_votes to authenticated;
+alter table public.slop_plan_members replica identity full;
+alter table public.slop_poll_votes replica identity full;
+do $$ begin alter publication supabase_realtime add table public.slop_plans; exception when duplicate_object then null; end $$;
+do $$ begin alter publication supabase_realtime add table public.slop_plan_members; exception when duplicate_object then null; end $$;
+do $$ begin alter publication supabase_realtime add table public.slop_tiers; exception when duplicate_object then null; end $$;
+do $$ begin alter publication supabase_realtime add table public.slop_polls; exception when duplicate_object then null; end $$;
+do $$ begin alter publication supabase_realtime add table public.slop_poll_votes; exception when duplicate_object then null; end $$;
