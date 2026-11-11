@@ -3551,6 +3551,115 @@ html:has(body.view-open),body.view-open{overflow:hidden}
 @media (max-width:760px){.pf-shelf .rx-hs .rx-rack{margin:0 -12px;padding-left:12px;padding-right:12px}}
 .rx-sh{flex-wrap:wrap;row-gap:6px}.rx-sh .pf-mini{margin-left:auto;align-self:center;font-size:12px}
 </style>
+<style id="vacCss">
+/* ===== 4.8: график отпусков ===== */
+.vc{--vc-a:#30b85a;--vc-red:#ff453a;max-width:1180px;margin:0 auto;padding-bottom:30px}
+.vc svg{width:1em;height:1em;flex:none}
+.vc-top{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:18px}
+.vc-top .a-sub{max-width:62ch}
+.vc-year{display:inline-flex;align-items:center;gap:4px;padding:4px;border-radius:14px;background:var(--c-cell);box-shadow:var(--c-shadow)}
+.vc-year b{min-width:74px;text-align:center;font:750 22px/1 var(--ios);letter-spacing:-.02em}
+.vc-year button{width:38px;height:38px;border:0;border-radius:10px;background:none;color:var(--c-fg);font:500 22px/1 var(--ios);cursor:pointer}
+.vc-year button:hover{background:var(--c-cell-out)}
+.vc-card{padding:18px;border-radius:20px;background:var(--c-cell);box-shadow:var(--c-shadow);margin-bottom:14px}
+.vc-sum{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 18px;align-items:end}
+.vc-st small{display:block;color:var(--c-dim);font:500 12.5px/1.25 var(--ios);margin-bottom:6px}
+.vc-st b{display:block;font:750 34px/1 var(--ios);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.vc-st.bad b{color:var(--vc-red)}.vc-st.ok b{color:var(--vc-a)}.vc-st.dim b{color:var(--c-dim)}
+.vc-st input{width:100%;max-width:130px;border:0;border-radius:12px;background:var(--c-cell-out);color:var(--c-fg);font:750 30px/1 var(--ios);letter-spacing:-.03em;padding:6px 10px;outline:0;font-variant-numeric:tabular-nums}
+.vc-st input:focus{box-shadow:0 0 0 2px var(--c-ring)}
+.vc-bar{grid-column:1/-1;height:8px;border-radius:4px;background:var(--c-cell-out);overflow:hidden}
+.vc-bar i{display:block;height:100%;border-radius:4px;background:var(--vc-a);transition:width .35s cubic-bezier(.2,.9,.25,1)}
+.vc-bar.bad i{background:var(--vc-red)}
+.vc-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.vc-row + .vc-row,.vc-hint + .vc-row{margin-top:12px}
+.vc-seg button{padding:9px 13px}.vc-seg button svg{width:15px;height:15px}
+.vc-chip{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--c-line);border-radius:999px;padding:8px 13px;background:none;color:var(--c-fg);font:600 13px/1 var(--ios);cursor:pointer;transition:background .15s,border-color .15s,color .15s}
+.vc-chip:hover{background:var(--c-cell-out)}
+.vc-chip[aria-pressed="true"]{background:color-mix(in srgb,var(--c-ring) 14%,transparent);border-color:var(--c-ring);color:var(--c-ring)}
+.vc-chip.dng{margin-left:auto;color:var(--c-dim)}.vc-chip.dng:hover{color:var(--vc-red);border-color:var(--vc-red)}
+.vc-chip.who{padding:4px 12px 4px 4px}.vc-chip.who[aria-pressed="true"]{background:color-mix(in srgb,var(--cc) 18%,transparent);border-color:var(--cc);color:var(--c-fg)}
+.vc-chip.who .fr-ava{width:22px;height:22px;font-size:10px}
+.vc-hint{margin:10px 0 0;color:var(--c-dim);font:500 13px/1.4 var(--ios)}
+.vc-pub{padding-top:12px;border-top:1px solid var(--c-line)}
+.vc-pub small,.vc-cmp small{color:var(--c-dim);font:500 12.5px/1.35 var(--ios);flex:1 1 240px}
+.vc-btn{border:0;border-radius:12px;padding:10px 15px;background:var(--c-cell-out);color:var(--c-fg);font:650 14px/1 var(--ios);cursor:pointer;transition:transform .15s,filter .15s}
+.vc-btn:hover{filter:brightness(1.08)}.vc-btn:active{transform:scale(.96)}.vc-btn:disabled{opacity:.5}
+.vc-btn.pri{background:var(--vc-a);color:#fff}
+.vc-ok{display:inline-flex;align-items:center;gap:6px;color:var(--vc-a);font:650 14px/1.2 var(--ios)}
+.vc-lb{color:var(--c-dim);font:600 13px/1 var(--ios)}
+.vc-ovl{margin-top:10px;display:grid;gap:5px}
+.vc-ovl p{margin:0;font:500 13.5px/1.4 var(--ios);color:var(--c-dim)}.vc-ovl b{color:var(--c-fg)}
+.vc-ovl i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px}
+.vc-note{margin:10px 2px 0;color:var(--c-dim);font:500 12.5px/1.45 var(--ios)}
+.vc-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:12px;user-select:none;-webkit-user-select:none}
+.vc-m{padding:14px 12px 12px;border-radius:18px;background:var(--c-cell);box-shadow:var(--c-shadow)}
+.vc-m h3{margin:0 4px 10px;font:700 15px/1 var(--ios);text-transform:capitalize}
+.vc-w,.vc-d{display:grid;grid-template-columns:repeat(7,1fr)}
+.vc-w span{text-align:center;color:var(--c-dim);font:600 10px/1 var(--ios);text-transform:uppercase;letter-spacing:.04em;padding-bottom:6px}
+.vc-w span:nth-child(n+6){color:color-mix(in srgb,var(--vc-red) 70%,var(--c-dim))}
+.vc-d{row-gap:3px}
+.vc-c{position:relative;display:grid;place-items:center;aspect-ratio:1;min-width:0;border:0;padding:0;border-radius:9px;background:none;color:var(--c-fg);font:550 13px/1 var(--ios);font-style:normal;font-variant-numeric:tabular-nums;cursor:pointer;transition:background .12s,color .12s,transform .12s}
+button.vc-c:hover{background:var(--c-cell-out)}
+.vc-c.off{color:color-mix(in srgb,var(--vc-red) 62%,var(--c-dim))}
+.vc-c.hol,.vc-c.rhol{color:var(--vc-red);font-weight:800}
+.vc-c.hol::after,.vc-c.rhol::after{content:"";position:absolute;left:50%;bottom:3px;width:4px;height:4px;margin-left:-2px;border-radius:50%;background:var(--vc-red)}
+.vc-c.rhol::after{width:10px;margin-left:-5px;border-radius:2px;height:3px}
+.vc-c.t{box-shadow:inset 0 0 0 1.5px var(--c-fg)}
+.vc-c.v{background:var(--vc-a);color:#fff;border-radius:0}
+.vc-c.v.vs{border-top-left-radius:9px;border-bottom-left-radius:9px}.vc-c.v.ve{border-top-right-radius:9px;border-bottom-right-radius:9px}
+button.vc-c.v:hover{background:color-mix(in srgb,var(--vc-a) 82%,#000)}
+.vc-c.v.hol,.vc-c.v.rhol{background:color-mix(in srgb,var(--vc-a) 34%,transparent);color:var(--vc-red)}
+.vc-c.v.hol::after,.vc-c.v.rhol::after{background:var(--vc-red)}
+.vc-c.b{color:var(--c-dim);background:repeating-linear-gradient(135deg,color-mix(in srgb,var(--c-dim) 26%,transparent) 0 3px,transparent 3px 7px);text-decoration:line-through}
+.vc-c.pv{background:color-mix(in srgb,var(--c-ring) 30%,transparent)!important;color:var(--c-fg)!important;border-radius:0}
+.vc-c.anc{box-shadow:inset 0 0 0 2px var(--c-ring);animation:vcAnc 1s ease-in-out infinite}
+@keyframes vcAnc{50%{transform:scale(1.14)}}
+.vc-c.both{box-shadow:inset 0 0 0 2px #fff}
+.vc-c em{position:absolute;left:0;right:0;top:2px;display:flex;justify-content:center;gap:2px;font-style:normal}
+.vc-c em i{width:5px;height:5px;border-radius:50%;box-shadow:0 0 0 1px var(--c-cell)}
+.vc-leg{display:flex;flex-wrap:wrap;gap:8px 18px;margin:0 4px 16px;color:var(--c-dim);font:500 12.5px/1 var(--ios)}
+.vc-leg span{display:inline-flex;align-items:center;gap:7px}
+.vc-leg .vc-c{width:26px;height:26px;aspect-ratio:auto;font-size:11.5px;cursor:default}
+.vc-h2{margin:0 0 12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font:750 19px/1.1 var(--ios);letter-spacing:-.01em}
+.vc-h2 span{display:inline-flex;align-items:center;gap:5px;color:var(--c-dim);font:500 13px/1 var(--ios)}
+.vc-rl{display:grid;gap:6px}
+.vc-r{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;background:var(--c-cell-out)}
+.vc-r b{font:650 14.5px/1.2 var(--ios)}.vc-r span{color:var(--c-dim);font:500 13px/1.2 var(--ios);margin-left:auto;text-align:right}
+.vc-r button{flex:none;width:28px;height:28px;border:0;border-radius:8px;background:none;color:var(--c-dim);cursor:pointer;display:grid;place-items:center}
+.vc-r button:hover{color:var(--vc-red);background:color-mix(in srgb,var(--vc-red) 14%,transparent)}
+.vc-r.past{opacity:.5}
+.vc-empty{margin:0;color:var(--c-dim);font:500 14px/1.4 var(--ios)}
+.vc-warn{margin:10px 0 0;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,#ff9f0a 16%,transparent);color:color-mix(in srgb,#ff9f0a 78%,var(--c-fg));font:600 13px/1.4 var(--ios)}
+.vc-f{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 18px;margin-top:12px}
+.vc-f label,.vc-part label{display:grid;gap:6px;align-content:start;min-width:0}
+.vc-f small,.vc-parts > small,.vc-part label{color:var(--c-dim);font:600 12.5px/1.25 var(--ios)}
+.vc-f em{color:var(--c-dim);font:400 12px/1.35 var(--ios);font-style:normal}
+.vc-in{width:100%;min-width:0;border:0;border-radius:12px;background:var(--c-cell-out);color:var(--c-fg);font:600 16px/1.2 var(--ios);padding:11px 13px;outline:0}
+.vc-in:focus{box-shadow:0 0 0 2px var(--c-ring)}
+.vc-qd{display:flex;flex-wrap:wrap;gap:5px}
+.vc-qd button{border:1px solid var(--c-line);border-radius:999px;padding:5px 10px;background:none;color:var(--c-ring);font:600 12px/1 var(--ios);cursor:pointer}
+.vc-qd button:hover{background:var(--c-cell-out)}
+.vc-parts{margin-top:16px;display:grid;gap:8px;justify-items:start}
+.vc-part{display:grid;grid-template-columns:minmax(0,150px) minmax(0,230px) auto;gap:10px;align-items:end;width:100%}
+.vc-part button{width:40px;height:42px;border:0;border-radius:12px;background:var(--c-cell-out);color:var(--c-dim);cursor:pointer;display:grid;place-items:center}
+.vc-res{margin-top:16px}
+.vc-rs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.vc-rs div{padding:12px;border-radius:14px;background:var(--c-cell-out);min-width:0}
+.vc-rs small{display:block;color:var(--c-dim);font:500 12px/1.25 var(--ios);margin-bottom:6px}
+.vc-rs b{display:block;font:700 17px/1.15 var(--ios);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.vc-rs .big{background:var(--vc-a);color:#fff}.vc-rs .big small{color:rgba(255,255,255,.82)}.vc-rs .big b{font-size:20px}
+.sh.vc-sheet{--c-fg:#f2f2f7;--c-dim:#8e8e93;--c-cell:#242426;--c-cell-out:#2c2c2e;--c-line:#3a3a3c;--c-ring:#0a84ff;--c-shadow:none;--vc-a:#30b85a;--vc-red:#ff453a}
+.vc-sheet svg{width:1em;height:1em}
+.vc-sheet .vc-note{margin:10px 0 0}
+.vc-grid.ro{grid-template-columns:repeat(3,minmax(0,1fr));margin:14px 0 0;gap:8px}
+.vc-grid.ro .vc-m{padding:10px 8px 8px;border-radius:14px}
+.vc-grid.ro .vc-c{cursor:default;font-size:12px}
+@media (max-width:1100px){.vc-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.vc-rs{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:760px){.vc-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.vc-m{padding:10px 6px 8px;border-radius:14px}.vc-c{font-size:12px;border-radius:7px}.vc-sum{grid-template-columns:repeat(2,minmax(0,1fr))}.vc-st b{font-size:28px}.vc-f{grid-template-columns:1fr}.vc-rs{grid-template-columns:repeat(2,minmax(0,1fr))}.vc-rs .big{grid-column:1/-1}.vc-chip.dng{margin-left:0}.vc-part{grid-template-columns:1fr 1fr auto}.vc-grid.ro{grid-template-columns:repeat(2,minmax(0,1fr))}.vc-card{padding:14px;border-radius:16px}}
+@media (max-width:380px){.vc-grid{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.vc-c.anc{animation:none}.vc *{transition:none!important}}
+</style>
 <style id="bookCss">
 /* ===== 4.5: книга жалоб — как фотолента начала 2010-х ===== */
 .fb-card.book{padding:0;overflow:hidden;background:#efefef;color:#262626;border-radius:8px;border:1px solid #1f4666;box-shadow:0 14px 30px rgba(0,0,0,.3);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;--av-ring:#fff}
@@ -4179,7 +4288,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     kino:{w:"wKino",theme:"kino",tab:"kino"}, "kino-future":{w:"wKino",theme:"kino",tab:"kino"},
     calendar:{w:"wApple",theme:"cal",tab:"calendar"},
     slop:{w:"wSlop",theme:"games",tab:"slop"},
-    more:{w:"wApple",theme:"cal",tab:"more"}, recap:{w:"wApple",theme:"cal",tab:"more"}, drops:{w:"wApple",theme:"cal",tab:"more"}, money:{w:"wApple",theme:"cal",tab:"more"}, ach:{w:"wApple",theme:"cal",tab:"more"}, patch:{w:"wApple",theme:"cal",tab:"more"}, people:{w:"wApple",theme:"cal",tab:"people"}, user:{w:"wApple",theme:"cal",tab:"people"}, event:{w:"wApple",theme:"cal",tab:"people"}
+    more:{w:"wApple",theme:"cal",tab:"more"}, vacation:{w:"wApple",theme:"cal",tab:"more"}, recap:{w:"wApple",theme:"cal",tab:"more"}, drops:{w:"wApple",theme:"cal",tab:"more"}, money:{w:"wApple",theme:"cal",tab:"more"}, ach:{w:"wApple",theme:"cal",tab:"more"}, patch:{w:"wApple",theme:"cal",tab:"more"}, people:{w:"wApple",theme:"cal",tab:"people"}, user:{w:"wApple",theme:"cal",tab:"people"}, event:{w:"wApple",theme:"cal",tab:"people"}
   };
   const I = (d, extra = "") => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ${extra}>${d}</svg>`;
   const ICON = {
@@ -4870,7 +4979,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     if (r.w === "wGames") renderGames();
     else if (r.w === "wKino") renderKino();
     else if (r.w === "wSlop") renderSlop();
-    else ({soon:renderSoon, calendar:renderCal, more:renderMore, recap:renderRecap, drops:renderDrops, money:renderMoney, ach:renderAch, patch:renderPatch, people:renderPeople, user:() => renderProfile(viewUid), event:renderEvent, watch:renderWatch, home:() => renderProfile(null), read:renderRead, watchcal:() => renderWatchCal()})[route]();
+    else ({soon:renderSoon, calendar:renderCal, more:renderMore, vacation:renderVac, recap:renderRecap, drops:renderDrops, money:renderMoney, ach:renderAch, patch:renderPatch, people:renderPeople, user:() => renderProfile(viewUid), event:renderEvent, watch:renderWatch, home:() => renderProfile(null), read:renderRead, watchcal:() => renderWatchCal()})[route]();
     document.body.dataset.route = route;
     fillMeSlots(); applySecBg(); wireCarousels(); wireHScrolls(); document.querySelectorAll('[data-pile="1"]').forEach(wirePile); document.querySelectorAll('[data-stack="1"]').forEach(wireStack); syncHead(); renderFw(); syncBell();
     renderTabbar();
@@ -6234,6 +6343,13 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
   // ================= патчноуты =================
   // Новые версии добавляются В НАЧАЛО списка. n — новое, c — изменено, f — исправлено, r — удалено.
   const PATCHES = [
+    {v: "4.8", date: "2026-11-11", title: "График отпусков", kind: "major", sec: {
+      n: ["Новый раздел в «Ещё» → «Инструменты» → «График отпусков». Вписываешь, сколько дней отпуска в году, и отмечаешь их в календаре: мышкой по дням или двумя нажатиями — начало и конец. Сразу видно, сколько запланировано и сколько осталось",
+        "В календаре красным отмечены праздники России и Якутии (27 апреля и Ысыах 21 июня) с переносами на 2026 и 2027 годы. Праздники внутри отпуска не считаются — как и положено по Трудовому кодексу",
+        "Дни, которые нельзя брать, можно заблокировать: отпуск на них потом не встанет",
+        "График можно показать в профиле — появится кнопка «Отпуск», и друзья увидят, когда ты отдыхаешь. Видны только дни",
+        "Сверка с друзьями: выбираешь тех, кто тоже показал отпуск, — их дни появляются точками в твоём календаре, а ниже написано, сколько дней вы отдыхаете вместе",
+        "Калькулятор отпускных: заработок за год, неполные месяцы и ставка налога — на выходе средний дневной заработок и сумма на руки. Эти цифры видишь только ты, в профиль и в базу они не попадают"]}},
     {v: "4.7", date: "2026-11-11", title: "СЛОП: календарь каток, общий тир-лист и голосование", kind: "major", sec: {
       n: ["Календарь каток в СЛОПе: выбираешь день и игру — всем приходит уведомление. В окошке календарь по месяцам, на днях стоят картинки игр, по нажатию видно, кто будет играть, и можно отметиться «Я буду». Ближайшие катки видны прямо на странице",
         "Общий тир-лист пройденного — один на всех, двигать может любой: Имба, Пойдёт, Еле прошли, Кал, Дропнули. Открывается отдельным окном, постеры перетаскиваются. Тир можно поставить и прямо из карточки игры",
@@ -7090,7 +7206,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     Promise.all(["backup", "autobackup"].map(x => db.doc("meta/" + x).get().then(d => d.exists ? d.data() : null).catch(() => null)))
       .then(([b, a]) => { lastBackup = b; autoBackup = a; if (route === "more") render(); });
     document.body.classList.remove("guest-tl"); if (pendingTl) setTimeout(openTlLink, 300);
-    loadFriends(); loadEvents(); subscribeEvents(); loadWall(); subscribeWall(); loadSlop(); subscribeSlop(); loadTlLikes(); loadNtf(); subscribeNtf(); loadSug(); subscribeBook(); loadReads().then(() => handleInbox());
+    loadFriends(); loadEvents(); subscribeEvents(); loadWall(); subscribeWall(); loadSlop(); subscribeSlop(); loadTlLikes(); loadVac(); subscribeVac(); loadNtf(); subscribeNtf(); loadSug(); subscribeBook(); loadReads().then(() => handleInbox());
     db.collection("items").onSnapshot(snap => {
       if (!snap.metadata.fromCache){ clearTimeout(timer); itemsLoaded = true; netOk(); }
       MYITEMS = snap.docs.map(d => ({id: d.id, ...d.data()}));
@@ -7336,6 +7452,8 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
         {t: "Деньги", s: fmtRub(moneyStats(null).spent), g: GRAD.gold, i: ICON.coin, a: 'data-go="money"'},
         {t: "Ачивки", s: `${achList().filter(a => a.got).length} из ${ACH.length}`, g: GRAD.mint, i: ICON.star, a: 'data-go="ach"'},
         {t: "Стена дропов", s: `${drops} ${plural(drops, "дроп", "дропа", "дропов")}`, g: GRAD.red, i: ICON.skull, a: 'data-go="drops"'}]},
+      tools: {t: "Инструменты", apps: [
+        {t: "График отпусков", s: (() => { const r = ME && vacOf(ME.id, new Date().getFullYear()) || ME && vacOf(ME.id, new Date().getFullYear() + 1); return r ? "в профиле: " + vcDn(r.days.length) : "календарь и расчёт"; })(), g: GRAD.mint, i: VC_I.palm, a: 'data-go="vacation"'}]},
       site: {t: "Сайт и данные", apps: [
         {t: "Патчноуты", s: "версия " + PATCHES[0].v, g: GRAD.blue, i: ICON.scroll, a: 'data-go="patch"', b: patchUnseen() ? "NEW" : ""},
         {t: "Скачать бэкап", s: bdays == null ? "ещё не было" : bdays === 0 ? "сегодня" : `${bdays} дн. назад`, g: GRAD.green, i: ICON.down, a: 'data-backup="1"', b: bdays == null || bdays >= 30 ? "!" : ""},
@@ -8649,8 +8767,8 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
           <div class="pf-on${!mine && lastEv && agoTxt(lastEv.d) === "сегодня" ? " live" : ""}">${mine ? "Это ты" : lastEv ? `был ${agoTxt(lastEv.d)}` : "пока ничего не добавил"}${c.pct != null ? ` · совпадение вкусов <b class="${pctCls(c.pct)}">${c.pct}%</b>` : ""}</div>
         </div>
         <div class="pf-lvl" title="Уровень растёт за каждые 5 записей на полках"><span>Уровень</span><b style="--p:${L.pct}">${L.lv}</b></div>
-        <div class="pf-acts">${mine ? `<button class="pf-btn" type="button" data-pfbg="1">${ICON.wall}Фон профиля</button><button class="pf-btn" type="button" data-profile="1">${ICON.edit}Редактировать профиль</button>`
-          : `<a class="pf-btn" href="#fv:${esc(uid)}:games">${ICON.games}Полка игр</a><a class="pf-btn" href="#fv:${esc(uid)}:kino">${ICON.kino}Полка кино</a>`}</div>
+        <div class="pf-acts">${mine ? `<button class="pf-btn" type="button" data-pfbg="1">${ICON.wall}Фон профиля</button><button class="pf-btn" type="button" data-profile="1">${ICON.edit}Редактировать профиль</button>${vacHas(ME.id) ? `<button class="pf-btn" type="button" data-vacof="${esc(ME.id)}">${VC_I.palm}Отпуск</button>` : ""}`
+          : `<a class="pf-btn" href="#fv:${esc(uid)}:games">${ICON.games}Полка игр</a><a class="pf-btn" href="#fv:${esc(uid)}:kino">${ICON.kino}Полка кино</a>${vacHas(uid) ? `<button class="pf-btn" type="button" data-vacof="${esc(uid)}">${VC_I.palm}Отпуск</button>` : ""}`}</div>
         <div class="pf-stats">${stats.map(([v, l]) => `<span><b>${v}</b>${l}</span>`).join("")}</div>
       </section>`;
     const games = `<section class="pf-floor fl-g">${fh(ICON.games, "Игры", mine ? "#games" : `#fv:${esc(uid)}:games`, "games")}
@@ -11009,6 +11127,227 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
       if (b.dataset.tp === "copy"){ try { await navigator.clipboard.write([new ClipboardItem({"image/png": blob})]); toast("Картинка в буфере — вставь в Telegram через Ctrl+V"); } catch(_){ toast("Браузер не дал скопировать — скачай PNG"); } return; }
       if (b.dataset.tp === "share"){ try { await navigator.share({files: [file], title: tl.title}); } catch(_){} } };
   }
+
+
+  // ================= 4.8: график отпусков =================
+  // Черновик лежит в личных настройках (meta/vacation) — его видишь только ты. В профиль уходят только дни (таблица vacations).
+  // Калькулятор отпускных живёт в браузере (localStorage) и в базу не попадает вовсе.
+  let VAC = null, vacLoading = null;
+  const vc = {year: new Date().getFullYear() + (new Date().getMonth() >= 9 ? 1 : 0), tool: "vac", range: !!(window.matchMedia && matchMedia("(pointer:coarse)").matches), anchor: null, last: null, cmp: new Set(), doc: null, loaded: false, loading: false, saveT: 0, drag: null, skip: false};
+  const VC_FED = ["01-01", "01-02", "01-03", "01-04", "01-05", "01-06", "01-07", "01-08", "02-23", "03-08", "05-01", "05-09", "06-12", "11-04"];
+  const VC_FEDN = {"01-01": "Новый год", "01-07": "Рождество Христово", "02-23": "День защитника Отечества", "03-08": "Международный женский день", "05-01": "Праздник Весны и Труда", "05-09": "День Победы", "06-12": "День России", "11-04": "День народного единства"};
+  const VC_SAKHA = {"04-27": "День Республики Саха (Якутия)", "06-21": "Ысыах"};
+  // переносы выходных по постановлениям Правительства РФ: 2026 — № 1466 от 24.09.2025, 2027 — № 1187 от 17.09.2026
+  const VC_OFF = {2026: ["01-09", "03-09", "05-11", "12-31"], 2027: ["02-22", "05-03", "05-10", "06-14", "11-05", "12-31"]};
+  const VC_WORK = {2027: ["02-20"]};
+  const VC_COLS = ["#ff9f0a", "#bf5af2", "#64d2ff", "#ff375f", "#ffd60a", "#5e5ce6", "#ac8e68", "#00c7be"];
+  const VC_I = {
+    sun: I('<circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/>'),
+    lock: I('<rect x="5" y="11" width="14" height="9" rx="2.2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'),
+    erase: I('<path d="M20 20H9.5L4 14.5a2 2 0 0 1 0-2.8l8-8a2 2 0 0 1 2.8 0l5.5 5.5a2 2 0 0 1 0 2.8L12.5 20"/><path d="m8.5 8.5 7 7"/>'),
+    range: I('<path d="M4 12h16M4 12l4-4M4 12l4 4M20 12l-4-4M20 12l-4 4"/>'),
+    palm: I('<path d="M12 21V11M12 11c-1-4-4-6-8-5 3 0 5 2 6 5M12 11c1-4 4-6 8-5-3 0-5 2-6 5M12 11c-3-3-7-2-9 1 3-2 6-1 9 0M12 11c3-3 7-2 9 1-3-2-6-1-9 0"/><path d="M6 21h12"/>')
+  };
+  const vcSakha = () => !vc.doc || vc.doc.sakha !== false;
+  function vcKind(ds, sakha){
+    const y = +ds.slice(0, 4), md = ds.slice(5), d = parseD(ds), dow = d.getDay();
+    if (VC_FED.includes(md)) return {k: "hol", n: VC_FEDN[md] || "Новогодние каникулы"};
+    if (sakha && VC_SAKHA[md]) return {k: "rhol", n: VC_SAKHA[md]};
+    if (VC_WORK[y] && VC_WORK[y].includes(md)) return {k: "work", n: "Рабочая суббота (перенос)"};
+    if (VC_OFF[y]){ if (VC_OFF[y].includes(md)) return {k: "off", n: "Выходной (перенос)"}; }
+    else if (dow === 1 || dow === 2){ // переносов на этот год ещё нет: праздник на выходных — выходной в ближайший рабочий день
+      for (const h of ["02-23", "03-08", "05-01", "05-09", "06-12", "11-04"]){ const hd = parseD(`${y}-${h}`).getDay(), sh = hd === 6 ? 2 : hd === 0 ? 1 : 0; if (sh && addDays(`${y}-${h}`, sh) === ds) return {k: "off", n: "Выходной за праздник"}; } }
+    if (sakha) for (const h in VC_SAKHA){ const hd = parseD(`${y}-${h}`).getDay(), sh = hd === 6 ? 2 : hd === 0 ? 1 : 0; if (sh && addDays(`${y}-${h}`, sh) === ds) return {k: "off", n: `Выходной за ${VC_SAKHA[h]}`}; }
+    return dow === 0 || dow === 6 ? {k: "off", n: ""} : {k: "work", n: ""};
+  }
+  const vcIsHol = (ds, sakha) => { const k = vcKind(ds, sakha).k; return k === "hol" || k === "rhol"; };
+  const vcCount = (days, sakha) => days.filter(d => !vcIsHol(d, sakha)).length;
+  const vcRanges = (days, sakha) => { const out = []; [...days].sort().forEach(d => { const l = out[out.length - 1]; if (l && addDays(l.b, 1) === d){ l.b = d; l.all++; } else out.push({a: d, b: d, all: 1}); }); out.forEach(r => { let n = 0; for (let d = r.a; d <= r.b; d = addDays(d, 1)) if (!vcIsHol(d, sakha)) n++; r.n = n; }); return out; };
+  const vcSpan = r => { const a = parseD(r.a), b = parseD(r.b), f = (d, y) => d.toLocaleDateString("ru-RU", {day: "numeric", month: "long", ...(y ? {year: "numeric"} : {})}).replace(/\s*г\.$/, "");
+    return r.a === r.b ? f(a) : a.getMonth() === b.getMonth() ? `${a.getDate()}–${f(b)}` : `${f(a)} — ${f(b)}`; };
+  const vcDn = n => `${n} ${plural(n, "день", "дня", "дней")}`;
+  const vcY = () => { const ys = vc.doc.years || (vc.doc.years = {}); if (!ys[vc.year]){ const prev = ys[vc.year - 1] || ys[vc.year + 1]; ys[vc.year] = {total: prev ? prev.total : 28, vac: [], block: []}; } const Y = ys[vc.year]; Y.vac = Array.isArray(Y.vac) ? Y.vac : []; Y.block = Array.isArray(Y.block) ? Y.block : []; return Y; };
+  const vacOf = (uid, year) => (VAC || []).find(r => r.user_id === uid && r.year === year);
+  const vacHas = uid => { const y = new Date().getFullYear(); return (VAC || []).some(r => r.user_id === uid && r.year >= y && r.days.length); };
+
+  async function loadVac(force){
+    if (!SB || !ME) return null; if (VAC && !force) return VAC; if (vacLoading) return vacLoading;
+    vacLoading = (async () => { const {data, error} = await SB.from("vacations").select("*");
+      if (!error) VAC = (data || []).map(r => ({...r, days: Array.isArray(r.days) ? r.days.filter(x => /^\d{4}-\d{2}-\d{2}$/.test(x)).sort() : []}));
+      vacLoading = null; if (!error && (route === "vacation" ? vc.loaded : route === "home" || route === "user")) { try { render(); } catch(_){} } return VAC; })();
+    return vacLoading;
+  }
+  function subscribeVac(){ if (!SB || !ME) return; let t = 0; SB.channel("nexus-vac").on("postgres_changes", {event: "*", schema: "public", table: "vacations"}, () => { clearTimeout(t); t = setTimeout(() => loadVac(true), 400); }).subscribe(); }
+  async function vcLoad(){
+    if (vc.loading || !db) return; vc.loading = true;
+    try { const d = await db.doc("meta/vacation").get(); vc.doc = d.exists ? d.data() : {}; } catch(_){ vc.doc = vc.doc || {}; }
+    if (!vc.doc || typeof vc.doc !== "object") vc.doc = {}; vc.doc.v = 1;
+    await loadVac(); vc.loaded = true; vc.loading = false; if (route === "vacation") renderVac();
+  }
+  function vcSave(){ clearTimeout(vc.saveT); vc.saveT = setTimeout(async () => { try { await db.doc("meta/vacation").set(vc.doc); } catch(_){ toast("График не сохранился — проверь интернет"); } }, 600); }
+
+  const vcMonth = (y, m, o) => {
+    const lead = (new Date(y, m, 1).getDay() + 6) % 7, dim = new Date(y, m + 1, 0).getDate(), td = today(), tag = o.ro ? "span" : "button";
+    let h = `<div class="vc-m"><h3>${MONTHS_NOM[m]}</h3><div class="vc-w">${["пн", "вт", "ср", "чт", "пт", "сб", "вс"].map(x => `<span>${x}</span>`).join("")}</div><div class="vc-d">` + "<i></i>".repeat(lead);
+    for (let d = 1; d <= dim; d++){ const ds = `${y}-${pad(m + 1)}-${pad(d)}`, k = vcKind(ds, o.sakha), v = o.vac.has(ds), b = o.block.has(ds);
+      const who = (o.others || []).filter(x => x.set.has(ds));
+      const cls = ["vc-c", k.k, v ? "v" : "", v && !o.vac.has(addDays(ds, -1)) ? "vs" : "", v && !o.vac.has(addDays(ds, 1)) ? "ve" : "", b ? "b" : "", ds === td ? "t" : "", v && who.length ? "both" : ""].filter(Boolean).join(" ");
+      const tip = [parseD(ds).toLocaleDateString("ru-RU", {day: "numeric", month: "long", weekday: "short"}), k.n, v ? (k.k === "hol" || k.k === "rhol" ? "в отпуске, но день не считается" : "отпуск") : "", b ? "нельзя брать" : "", who.length ? "отдыхают: " + who.map(x => x.nick).join(", ") : ""].filter(Boolean).join(" · ");
+      h += `<${tag} ${o.ro ? "" : 'type="button" '}class="${cls}" data-vd="${ds}" title="${esc(tip)}">${d}${who.length ? `<em>${who.slice(0, 4).map(x => `<i style="background:${x.c}"></i>`).join("")}</em>` : ""}</${tag}>`; }
+    return h + "</div></div>";
+  };
+  const vcOthers = year => [...vc.cmp].map((u, i) => { const r = vacOf(u, year); return r ? {uid: u, nick: profOf(u).nick || "?", c: VC_COLS[i % VC_COLS.length], set: new Set(r.days), days: r.days} : null; }).filter(Boolean);
+
+  function renderVac(){
+    appleHead("График отпусков", `<a class="a-link" href="#more">‹ Ещё</a>`);
+    const m = $("aMain");
+    if (!ME){ m.innerHTML = `<div class="a-empty" style="margin-top:20px"><b>Нужно войти</b></div>`; return; }
+    if (!vc.loaded){ m.innerHTML = `<p class="a-sub" style="text-align:center;margin-top:40px">Открываю календарь…</p>`; vcLoad(); return; }
+    const built = m.querySelector(".vc"); if (built && built.dataset.y === String(vc.year)){ vcDraw(); return; }
+    const noData = !VC_OFF[vc.year];
+    m.innerHTML = `<div class="vc" data-y="${vc.year}"><header class="vc-top"><div><h1 class="a-h1">График отпусков</h1><p class="a-sub">Отмечай дни в календаре — посчитаю, сколько потратил и сколько осталось. График видишь только ты, пока сам не покажешь его в профиле.</p></div>
+        <div class="vc-year"><button type="button" data-vy="-1" aria-label="Предыдущий год">‹</button><b>${vc.year}</b><button type="button" data-vy="1" aria-label="Следующий год">›</button></div></header>
+      <section class="vc-card vc-sum" id="vcSum"></section>
+      <section class="vc-card vc-tools" id="vcTools"></section>
+      ${noData ? `<p class="vc-note">Переносы выходных на ${vc.year} год правительство ещё не утвердило — праздники показаны по Трудовому кодексу, переносы примерные.</p>` : ""}
+      <div class="vc-grid" id="vcGrid"></div>
+      <div class="vc-leg"><span><i class="vc-c v vs ve">7</i>отпуск</span><span><i class="vc-c b">7</i>нельзя брать</span><span><i class="vc-c hol">7</i>праздник России</span><span><i class="vc-c rhol">7</i>праздник Якутии</span><span><i class="vc-c off">7</i>выходной</span><span><i class="vc-c work t">7</i>сегодня</span></div>
+      <section class="vc-card" id="vcRng"></section>
+      <section class="vc-card vc-calc" id="vcCalc"></section></div>`;
+    vcDraw(); vcCalcDraw(); vcWire(m);
+  }
+  function vcDraw(){
+    if (!$("vcGrid")) return;
+    const Y = vcY(), sk = vcSakha(), vac = new Set(Y.vac), block = new Set(Y.block), used = vcCount(Y.vac, sk), hol = Y.vac.length - used, total = Math.max(0, +Y.total || 0), left = total - used;
+    const others = vcOthers(vc.year), pub = vacOf(ME.id, vc.year), same = pub && pub.days.join() === [...Y.vac].sort().join();
+    $("vcSum").innerHTML = `<label class="vc-st in"><small>Дней отпуска в году</small><input type="number" id="vcTotal" min="0" max="366" inputmode="numeric" value="${total}" aria-label="Сколько дней отпуска в году"></label>
+      <div class="vc-st"><small>Запланировано</small><b>${used}</b></div>
+      <div class="vc-st${left < 0 ? " bad" : left === 0 && total ? " ok" : ""}"><small>${left < 0 ? "Перебор" : "Осталось"}</small><b>${Math.abs(left)}</b></div>
+      <div class="vc-st dim"><small>Праздников внутри отпуска</small><b>${hol}</b></div>
+      <div class="vc-bar${left < 0 ? " bad" : ""}"><i style="width:${total ? Math.min(100, used / total * 100) : 0}%"></i></div>`;
+    const pool = (VAC || []).filter(r => r.year === vc.year && r.user_id !== ME.id && r.days.length);
+    $("vcTools").innerHTML = `<div class="vc-row"><div class="ios-seg vc-seg" role="group" aria-label="Инструмент">${[["vac", VC_I.palm, "Отпуск"], ["block", VC_I.lock, "Нельзя брать"], ["erase", VC_I.erase, "Ластик"]].map(([k, ic, l]) => `<button type="button" data-vt="${k}" aria-pressed="${vc.tool === k}">${ic}${l}</button>`).join("")}</div>
+        <button type="button" class="vc-chip" data-vrange="1" aria-pressed="${vc.range}" title="Первое нажатие — начало периода, второе — конец">${VC_I.range}Период в два нажатия</button>
+        <button type="button" class="vc-chip" data-vsakha="1" aria-pressed="${sk}" title="27 апреля и 21 июня. По закону республики обязательны для бюджетных организаций">${VC_I.sun}Праздники Якутии</button>
+        <button type="button" class="vc-chip dng" data-vclear="1">Очистить год</button></div>
+      <p class="vc-hint">${vc.anchor ? `Начало периода — ${esc(vcSpan({a: vc.anchor, b: vc.anchor}))}. Нажми на последний день.` : vc.tool === "block" ? "Отмечай дни, которые нельзя брать, — отпуск на них потом не встанет." : vc.tool === "erase" ? "Ластик снимает и отпуск, и запрет." : vc.range ? "Нажми на первый и на последний день отпуска." : "Тяни мышкой по дням, чтобы отметить период, или нажимай на дни по одному. Shift+клик — период от прошлого нажатия."}</p>
+      <div class="vc-row vc-pub">${pub ? (same ? `<span class="vc-ok">${ICON.check || "✓"} В профиле: друзья видят эти дни</span>` : `<button type="button" class="vc-btn pri" data-vpub="1">Обновить в профиле</button>`) + `<button type="button" class="vc-btn" data-vpub="0">Убрать из профиля</button>` : `<button type="button" class="vc-btn pri" data-vpub="1">Показать в профиле</button><small>Друзья увидят только дни — по кнопке «Отпуск» в твоём профиле. Запреты, остаток и расчёты остаются у тебя.</small>`}</div>
+      <div class="vc-row vc-cmp"><span class="vc-lb">Сверить с друзьями:</span>${pool.length ? pool.map(r => { const i = [...vc.cmp].indexOf(r.user_id), on = i >= 0; return `<button type="button" class="vc-chip who" data-vcmp="${esc(r.user_id)}" aria-pressed="${on}" style="${on ? `--cc:${VC_COLS[i % VC_COLS.length]}` : ""}">${avaHTML(profOf(r.user_id), "xs")}${esc(profOf(r.user_id).nick || "?")}</button>`; }).join("") : `<small>На ${vc.year} год пока никто не показал свой отпуск в профиле.</small>`}</div>
+      ${others.length ? `<div class="vc-ovl">${others.map(o => { const common = o.days.filter(d => vac.has(d)), rs = vcRanges(common, sk); return `<p><i style="background:${o.c}"></i><b>${esc(o.nick)}</b> — ${common.length ? `вместе отдыхаете ${vcDn(common.length)}: ${rs.map(vcSpan).map(esc).join(", ")}` : "пока ни одного общего дня"}</p>`; }).join("")}</div>` : ""}`;
+    $("vcGrid").innerHTML = Array.from({length: 12}, (_, i) => vcMonth(vc.year, i, {vac, block, sakha: sk, others})).join("");
+    if (vc.anchor){ const a = $("vcGrid").querySelector(`[data-vd="${vc.anchor}"]`); if (a) a.classList.add("anc"); }
+    const rs = vcRanges(Y.vac, sk), long = rs.some(r => r.n >= 14), warn = [];
+    if (left < 0) warn.push(`Запланировано на ${vcDn(-left)} больше, чем есть.`);
+    if (rs.length && !long) warn.push("По Трудовому кодексу хотя бы одна часть отпуска должна быть не короче 14 календарных дней.");
+    $("vcRng").innerHTML = `<h2 class="vc-h2">Мои периоды<span>${rs.length || ""}</span></h2>${rs.length ? `<div class="vc-rl">${rs.map(r => `<div class="vc-r"><b>${esc(vcSpan(r))}</b><span>${vcDn(r.n)}${r.all !== r.n ? ` · праздников: ${r.all - r.n}, не считаются` : ""}</span><button type="button" data-vdel="${r.a}:${r.b}" aria-label="Убрать период">${ICON.x}</button></div>`).join("")}</div>` : `<p class="vc-empty">Пока пусто. Отметь первый период в календаре выше.</p>`}
+      ${warn.map(w => `<p class="vc-warn">${esc(w)}</p>`).join("")}
+      <p class="vc-note">Праздничные дни в отпуск не входят и его продлевают (ст. 120 ТК РФ), поэтому не считаются. Обычные выходные — считаются.</p>`;
+    vcCalcSync();
+  }
+  function vcApply(a, b){
+    const Y = vcY(), [from, to] = a <= b ? [a, b] : [b, a], days = []; for (let d = from; d <= to && days.length < 370; d = addDays(d, 1)) days.push(d);
+    const vs = new Set(Y.vac), bs = new Set(Y.block);
+    if (vc.tool === "vac"){ const cand = days.filter(d => !bs.has(d)), allOn = cand.length && cand.every(d => vs.has(d)); cand.forEach(d => allOn ? vs.delete(d) : vs.add(d));
+      if (!cand.length) toast("Эти дни заблокированы — сними запрет ластиком"); else if (cand.length !== days.length) toast(`Пропустил заблокированные дни: ${days.length - cand.length}`); }
+    else if (vc.tool === "block"){ const allOn = days.every(d => bs.has(d)); days.forEach(d => { if (allOn) bs.delete(d); else { bs.add(d); vs.delete(d); } }); }
+    else days.forEach(d => { vs.delete(d); bs.delete(d); });
+    Y.vac = [...vs].sort(); Y.block = [...bs].sort(); vc.last = b; try { SND.click("soft"); } catch(_){} vcSave(); vcDraw();
+  }
+  function vcTap(ds, shift){
+    if (shift && vc.last){ vc.anchor = null; vcApply(vc.last, ds); return; }
+    if (!vc.range){ vcApply(ds, ds); return; }
+    if (!vc.anchor){ vc.anchor = ds; vcDraw(); return; }
+    const a = vc.anchor; vc.anchor = null; vcApply(a, ds);
+  }
+  function vcWire(m){
+    const grid = $("vcGrid"), box = m.querySelector(".vc");
+    const pv = () => { const d = vc.drag, [a, b] = d.a <= d.b ? [d.a, d.b] : [d.b, d.a]; grid.querySelectorAll(".vc-c").forEach(c => c.classList.toggle("pv", c.dataset.vd >= a && c.dataset.vd <= b)); };
+    grid.addEventListener("pointerdown", e => { const c = e.target.closest(".vc-c"); if (!c || e.pointerType !== "mouse" || e.button || e.shiftKey || vc.range) return; e.preventDefault(); vc.drag = {a: c.dataset.vd, b: c.dataset.vd}; });
+    grid.addEventListener("pointerover", e => { if (!vc.drag) return; const c = e.target.closest(".vc-c"); if (!c || c.dataset.vd === vc.drag.b) return; vc.drag.b = c.dataset.vd; pv(); });
+    const up = () => { const d = vc.drag; if (!d) return; vc.drag = null; if (!document.body.contains(grid)){ removeEventListener("pointerup", up); return; } if (d.a === d.b) return; vc.skip = true; setTimeout(() => { vc.skip = false; }, 60); vcApply(d.a, d.b); };
+    if (vc.up) removeEventListener("pointerup", vc.up); vc.up = up; addEventListener("pointerup", up);
+    grid.addEventListener("click", e => { const c = e.target.closest(".vc-c"); if (!c) return; if (vc.skip){ vc.skip = false; return; } vcTap(c.dataset.vd, e.shiftKey); });
+    box.addEventListener("click", async e => { const q = s => e.target.closest(s); let b;
+      if ((b = q("[data-vy]"))){ vc.year = Math.min(2100, Math.max(2020, vc.year + +b.dataset.vy)); vc.anchor = null; renderVac(); return; }
+      if ((b = q("[data-vt]"))){ vc.tool = b.dataset.vt; vc.anchor = null; vcDraw(); return; }
+      if (q("[data-vrange]")){ vc.range = !vc.range; vc.anchor = null; vcDraw(); return; }
+      if (q("[data-vsakha]")){ vc.doc.sakha = !vcSakha(); vcSave(); vcDraw(); return; }
+      if ((b = q("[data-vclear]"))){ if (!b.dataset.sure){ b.dataset.sure = "1"; b.textContent = "Точно очистить? Нажми ещё раз"; return; } const Y = vcY(); Y.vac = []; Y.block = []; vc.anchor = null; vcSave(); vcDraw(); toast(`${vc.year} год очищен`); return; }
+      if ((b = q("[data-vcmp]"))){ const u = b.dataset.vcmp; vc.cmp.has(u) ? vc.cmp.delete(u) : vc.cmp.add(u); vcDraw(); return; }
+      if ((b = q("[data-vdel]"))){ const [a, z] = b.dataset.vdel.split(":"), Y = vcY(); Y.vac = Y.vac.filter(d => d < a || d > z); vcSave(); vcDraw(); return; }
+      if ((b = q("[data-vpub]"))){ const on = b.dataset.vpub === "1", Y = vcY(); if (on && !Y.vac.length){ toast("Сначала отметь хотя бы один день отпуска"); return; }
+        b.disabled = true; const days = [...Y.vac].sort();
+        const r = on ? await SB.from("vacations").upsert({user_id: ME.id, year: vc.year, days, updated_at: now()}, {onConflict: "user_id,year"}) : await SB.from("vacations").delete().eq("user_id", ME.id).eq("year", vc.year);
+        if (r.error){ toast("Не получилось, попробуй ещё раз"); b.disabled = false; return; }
+        VAC = (VAC || []).filter(x => !(x.user_id === ME.id && x.year === vc.year)); if (on) VAC.push({user_id: ME.id, year: vc.year, days, updated_at: now()});
+        toast(on ? "Готово — в твоём профиле появилась кнопка «Отпуск»" : "Убрал из профиля"); vcDraw(); return; }
+      if ((b = q("[data-vcd]"))){ const i = $("vcDays"); if (i){ i.value = b.dataset.vcd; vcCalcRun(); } return; }
+      if (q("[data-vcadd]")){ const C = vcCalcGet(); C.parts.push({dim: 30, cnt: 15}); vcCalcSet(C); vcCalcDraw(); return; }
+      if ((b = q("[data-vcrm]"))){ const C = vcCalcGet(); C.parts.splice(+b.dataset.vcrm, 1); vcCalcSet(C); vcCalcDraw(); return; }
+    });
+    box.addEventListener("input", e => { const t = e.target;
+      if (t.id === "vcTotal"){ const Y = vcY(); Y.total = Math.min(366, Math.max(0, parseInt(t.value, 10) || 0)); vcSave(); clearTimeout(vc.totT); vc.totT = setTimeout(() => { if (document.activeElement !== $("vcTotal")) vcDraw(); }, 50); vcSumLive(); return; }
+      if (t.closest && t.closest("#vcCalc")) vcCalcRun(true); });
+    box.addEventListener("change", e => { if (e.target.id === "vcTotal") vcDraw(); });
+  }
+  function vcSumLive(){ const Y = vcY(), used = vcCount(Y.vac, vcSakha()), st = $("vcSum") && $("vcSum").querySelectorAll(".vc-st"); if (!st || st.length < 3) return; const left = (+Y.total || 0) - used;
+    st[2].className = "vc-st" + (left < 0 ? " bad" : ""); st[2].innerHTML = `<small>${left < 0 ? "Перебор" : "Осталось"}</small><b>${Math.abs(left)}</b>`; }
+
+  // ---- калькулятор отпускных: всё считается и хранится только в этом браузере ----
+  const vcCalcGet = () => { let c = null; try { c = JSON.parse(lsGet("nexus_vac_calc") || "null"); } catch(_){} c = c && typeof c === "object" ? c : {}; return {earn: c.earn || "", full: c.full == null ? 12 : c.full, parts: Array.isArray(c.parts) ? c.parts : [], days: c.days || "", rate: c.rate || 13}; };
+  const vcCalcSet = c => lsSet("nexus_vac_calc", JSON.stringify(c));
+  const vcNum = v => { const n = parseFloat(String(v == null ? "" : v).replace(/\s/g, "").replace(",", ".")); return isFinite(n) ? n : 0; };
+  function vcCalcDraw(){
+    const el = $("vcCalc"); if (!el) return; const C = vcCalcGet();
+    el.innerHTML = `<h2 class="vc-h2">Калькулятор отпускных<span>${VC_I.lock}видишь только ты</span></h2>
+      <p class="vc-note" style="margin-top:0">Цифры никуда не отправляются и в профиль не попадают — они хранятся только в этом браузере.</p>
+      <div class="vc-f">
+        <label><small>Начислено за 12 месяцев до отпуска, ₽</small><input class="vc-in" id="vcEarn" inputmode="decimal" placeholder="например 960 000" value="${esc(C.earn)}"><em>Зарплата, премии, районный коэффициент и северные надбавки — до вычета налога. Без больничных, отпускных и матпомощи.</em></label>
+        <label><small>Полностью отработанных месяцев</small><input class="vc-in" id="vcFull" type="number" min="0" max="12" inputmode="numeric" value="${esc(C.full)}"><em>Месяцы без больничных, отпусков и прогулов. Обычно 12 минус неполные.</em></label>
+        <label><small>Дней отпуска</small><input class="vc-in" id="vcDays" type="number" min="0" max="366" inputmode="numeric" placeholder="14" value="${esc(C.days)}"><span class="vc-qd" id="vcQd"></span></label>
+        <label><small>Ставка НДФЛ</small><select class="vc-in" id="vcRate">${[13, 15, 18, 20, 22].map(r => `<option value="${r}"${+C.rate === r ? " selected" : ""}>${r}%</option>`).join("")}</select><em>13% — если доход за год до 2,4 млн ₽. Выше — 15% и дальше по шкале.</em></label>
+      </div>
+      <div class="vc-parts"><small>Неполные месяцы (болел, был в отпуске, устроился не с первого числа)</small>
+        ${C.parts.map((p, i) => `<div class="vc-part"><label>дней в месяце<input class="vc-in" data-vp="${i}:dim" type="number" min="28" max="31" value="${esc(p.dim)}"></label><label>из них отработано, календарных<input class="vc-in" data-vp="${i}:cnt" type="number" min="0" max="31" value="${esc(p.cnt)}"></label><button type="button" data-vcrm="${i}" aria-label="Убрать месяц">${ICON.x}</button></div>`).join("")}
+        <button type="button" class="vc-btn" data-vcadd="1">+ Добавить неполный месяц</button></div>
+      <div class="vc-res" id="vcRes" aria-live="polite"></div>
+      <p class="vc-note">Это прикидка по правилам из Положения о среднем заработке (постановление № 922): средний дневной заработок = начислено ÷ (29,3 × полные месяцы + дни по неполным). Точную сумму считает бухгалтерия — у неё могут быть индексации, премии по особым правилам и другая ставка налога.</p>`;
+    vcCalcSync(); vcCalcRun();
+  }
+  function vcCalcSync(){ const el = $("vcQd"); if (!el || !vc.doc) return; const Y = vcY(), sk = vcSakha(), rs = vcRanges(Y.vac, sk), all = vcCount(Y.vac, sk);
+    el.innerHTML = all ? `<button type="button" data-vcd="${all}">весь год: ${all}</button>` + rs.slice(0, 6).map(r => `<button type="button" data-vcd="${r.n}" title="${esc(vcSpan(r))}">${esc(vcSpan(r))}: ${r.n}</button>`).join("") : ""; }
+  function vcCalcRun(save){
+    const g = id => $(id), res = g("vcRes"); if (!res) return;
+    const C = {earn: g("vcEarn").value, full: g("vcFull").value, days: g("vcDays").value, rate: +g("vcRate").value || 13, parts: []};
+    document.querySelectorAll("#vcCalc [data-vp]").forEach(i => { const [k, f] = i.dataset.vp.split(":"); (C.parts[+k] = C.parts[+k] || {})[f] = i.value; });
+    if (save) vcCalcSet(C);
+    const earn = vcNum(C.earn), full = Math.min(12, Math.max(0, vcNum(C.full))), days = Math.max(0, vcNum(C.days));
+    const pd = C.parts.reduce((s, p) => { const dim = Math.min(31, Math.max(28, vcNum(p.dim) || 30)), cnt = Math.min(dim, Math.max(0, vcNum(p.cnt))); return s + 29.3 / dim * cnt; }, 0), base = 29.3 * full + pd;
+    if (!(earn > 0) || !(base > 0)){ res.innerHTML = `<p class="vc-empty">Впиши заработок за год — посчитаю средний дневной и отпускные.</p>`; return; }
+    const avg = earn / base, gross = avg * days, tax = Math.round(gross * C.rate / 100), f2 = n => n.toLocaleString("ru-RU", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " ₽";
+    res.innerHTML = `<div class="vc-rs"><div><small>Расчётных дней</small><b>${base.toLocaleString("ru-RU", {maximumFractionDigits: 2})}</b></div><div><small>Средний дневной заработок</small><b>${f2(avg)}</b></div>
+      <div><small>Начислят за ${vcDn(days)}</small><b>${f2(gross)}</b></div><div><small>НДФЛ ${C.rate}%</small><b>− ${fmtRub(tax)}</b></div><div class="big"><small>На руки</small><b>${f2(gross - tax)}</b></div></div>
+      ${days ? "" : `<p class="vc-empty" style="margin-top:8px">Укажи, на сколько дней отпуск, — или нажми на период выше.</p>`}`;
+  }
+
+  // ---- «Отпуск» в профиле: только дни ----
+  function vacSheet(uid){
+    const mine = uid === ME.id, p = profOf(uid), rows = (VAC || []).filter(r => r.user_id === uid && r.days.length).sort((a, b) => a.year - b.year); if (!rows.length){ toast("Отпуск в профиле не показан"); return; }
+    const cy = new Date().getFullYear(); let year = (rows.find(r => r.year >= cy && r.days.some(d => d >= today())) || rows.find(r => r.year >= cy) || rows[rows.length - 1]).year;
+    const s = openSheet(`<div class="sh-grab"></div><div id="vacSh"></div>`, {wide: true}); s.el.classList.add("vc-sheet");
+    const draw = () => { const r = rows.find(x => x.year === year), sk = vcSakha(), rs = vcRanges(r.days, sk), td = today(), now_ = rs.find(x => x.a <= td && td <= x.b), next = rs.find(x => x.a > td);
+      const my = !mine && vc.doc && vc.doc.years && vc.doc.years[year] ? new Set(vc.doc.years[year].vac || []) : null, common = my ? r.days.filter(d => my.has(d)) : [];
+      s.el.querySelector("#vacSh").innerHTML = `<div class="tlv-h">${avaHTML(p, "md")}<div><h3>Отпуск${mine ? "" : " — " + esc(p.nick || "")}</h3><p class="sub">${now_ ? `Сейчас в отпуске — до ${esc(vcSpan({a: now_.b, b: now_.b}))}` : next ? `Ближайший — с ${esc(vcSpan({a: next.a, b: next.a}))}, через ${vcDn(Math.round((parseD(next.a) - parseD(td)) / 864e5))}` : "В этом году отпуск уже позади"}</p></div></div>
+        ${rows.length > 1 ? `<div class="ios-seg" style="margin-bottom:12px">${rows.map(x => `<button type="button" data-vsy="${x.year}" aria-pressed="${x.year === year}">${x.year}</button>`).join("")}</div>` : ""}
+        <div class="vc-rl">${rs.map(x => `<div class="vc-r${x.b < td ? " past" : ""}"><b>${esc(vcSpan(x))}${rows.length > 1 ? "" : " " + year}</b><span>${vcDn(x.n)}</span></div>`).join("")}</div>
+        ${my ? `<p class="vc-note">${common.length ? `С твоим графиком совпадает ${vcDn(common.length)}: ${vcRanges(common, sk).map(vcSpan).map(esc).join(", ")}.` : "С твоим графиком на этот год общих дней нет."}</p>` : ""}
+        <div class="vc-grid ro">${Array.from({length: 12}, (_, i) => i).filter(i => r.days.some(d => +d.slice(5, 7) === i + 1)).map(i => vcMonth(year, i, {ro: true, vac: new Set(r.days), block: new Set(), sakha: sk})).join("")}</div>
+        <div class="acts" style="margin-top:14px">${mine ? `<button class="ib blue" type="button" data-vgo="1">Изменить график</button>` : `<button class="ib blue" type="button" data-vgo="1">Сверить в календаре</button>`}</div>`; };
+    s.el.addEventListener("click", e => { const b = e.target.closest("[data-vsy]"); if (b){ year = +b.dataset.vsy; draw(); return; }
+      if (e.target.closest("[data-vgo]")){ s.close(); if (!mine) vc.cmp.add(uid); vc.year = year; go("vacation"); if (route === "vacation") renderVac(); } });
+    draw();
+  }
+  document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-vacof]"); if (!b || !ME) return; e.preventDefault(); const u = b.dataset.vacof; if (VAC) vacSheet(u); else loadVac().then(() => VAC && vacSheet(u)); });
 
   // ================= 3.4: книга жалоб и предложений =================
   let BOOK = null, bookLoading = null, bookDraft = {text: "", file: null}, bookN = 5;

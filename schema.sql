@@ -730,3 +730,24 @@ do $$ begin alter publication supabase_realtime add table public.slop_plan_membe
 do $$ begin alter publication supabase_realtime add table public.slop_tiers; exception when duplicate_object then null; end $$;
 do $$ begin alter publication supabase_realtime add table public.slop_polls; exception when duplicate_object then null; end $$;
 do $$ begin alter publication supabase_realtime add table public.slop_poll_votes; exception when duplicate_object then null; end $$;
+
+-- ===== 4.8: график отпусков — в профиле видны только дни (расчёты и суммы в базу не попадают) =====
+create table if not exists public.vacations (
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  year smallint not null check (year between 2020 and 2100),
+  days jsonb not null default '[]'::jsonb check (jsonb_typeof(days) = 'array' and jsonb_array_length(days) <= 366),
+  updated_at timestamptz not null default now(),
+  primary key (user_id, year)
+);
+alter table public.vacations enable row level security;
+drop policy if exists vac_select on public.vacations;
+drop policy if exists vac_insert on public.vacations;
+drop policy if exists vac_update on public.vacations;
+drop policy if exists vac_delete on public.vacations;
+create policy vac_select on public.vacations for select to authenticated using (true);
+create policy vac_insert on public.vacations for insert to authenticated with check ((select auth.uid()) = user_id);
+create policy vac_update on public.vacations for update to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy vac_delete on public.vacations for delete to authenticated using ((select auth.uid()) = user_id);
+revoke all on public.vacations from anon;
+grant select, insert, update, delete on public.vacations to authenticated;
+do $$ begin alter publication supabase_realtime add table public.vacations; exception when duplicate_object then null; end $$;
