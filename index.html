@@ -1440,7 +1440,7 @@ body[data-route="user"] .a-main{max-width:none;padding:0}
 .rcs-r .rt{flex:none;font:800 20px/1 var(--ios)}.rcs-r .rt.none{font:500 12px/1 var(--ios);color:#8e8e93}
 .rcs-x{flex:none;width:26px;height:26px;border-radius:50%;border:0;background:rgba(255,255,255,.08);color:#8e8e93;font:500 16px/1 var(--ios);cursor:pointer}
 .rcs-x:hover{background:rgba(255,69,58,.2);color:#ff6961}
-.rcs-take{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+.rcs-take{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:16px}
 .rcs-take .ib{display:inline-flex;align-items:center;justify-content:center;gap:7px}.rcs-take .ib svg{width:17px;height:17px}
 .sg-all{display:flex;align-items:center;gap:12px;width:100%;padding:11px 12px;border-radius:14px;border:1.5px solid transparent;background:#2c2c2e;color:#f2f2f7;text-align:left;cursor:pointer;font-family:var(--ios)}
 .sg-all .ic{flex:none;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,#ff9f0a,#ff375f);color:#fff}.sg-all .ic svg{width:19px;height:19px}
@@ -2930,7 +2930,7 @@ body{overflow-x:clip}
 .sc-got{display:flex;align-items:center;gap:12px;padding:8px;border-radius:12px;background:#2c2c2e}
 .sc-got img{width:54px;aspect-ratio:2/3;object-fit:cover;border-radius:6px}
 .sc-got b{display:block;color:#fff;font:700 15px/1.25 var(--ios)}.sc-got small{color:#8e8e93}
-.fi-take{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:8px}
+.fi-take{display:grid;grid-template-columns:repeat(auto-fit,minmax(86px,1fr));gap:8px}
 .fi-t{display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 8px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:#2c2c2e;color:#e5e5ea;font:700 13.5px/1.2 var(--ios);cursor:pointer;transition:transform .15s,background .15s}
 .fi-t svg{width:24px;height:24px}
 .fi-t:hover{transform:translateY(-2px);background:#3a3a3c}
@@ -3477,6 +3477,10 @@ html:has(body.view-open),body.view-open{overflow:hidden}
 .rx-cv .ln{right:auto}
 .tv-c .ln{top:8px;right:auto;left:8px}
 .tv-c .poster:has(.tv-r) .ln{left:8px}
+/* 4.9: галочка «Без даты» спрятана — её ставит только статус «давно» */
+.nd-row .nd-tog{display:none!important}
+.rs-st{display:grid!important;grid-template-columns:1fr 1fr}
+.nd-hint{display:none}
 /* «ОЦЕНИТЬ» */
 .rate-cta{position:relative;display:flex;align-items:center;gap:14px;width:100%;margin:22px 0 0;padding:14px 18px;border:0;border-radius:16px;cursor:pointer;color:#1b1200;text-align:left;background:linear-gradient(110deg,#ffd60a,#ff9f0a 55%,#ff6b00);box-shadow:0 14px 34px rgba(255,159,10,.32),inset 0 1px 0 rgba(255,255,255,.5);overflow:hidden;transition:transform .25s cubic-bezier(.3,1.5,.4,1)}
 .rate-cta::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.55) 50%,transparent 65%);background-size:250% 100%;animation:ctaShine 3.2s ease-in-out infinite}
@@ -5591,6 +5595,8 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
       if (i >= 0) list.splice(i, 1); else list.push(b.dataset.g); inp.value = list.join(", "); sync(); };
     inp.addEventListener("input", sync); sync();
   }
+  // 4.9: «давно» — единственный способ получить запись без даты
+  const ndSet = on => { const nd = $("f_nodate"); if (!nd || nd.checked === !!on) return; nd.checked = !!on; nd.dispatchEvent(new Event("change", {bubbles: true})); };
   document.addEventListener("change", e => { if (e.target && e.target.id === "f_nodate" && $("f_date")){ $("f_date").disabled = e.target.checked; if (e.target.checked) $("f_date").value = ""; else if (!$("f_date").value) $("f_date").value = today(); } });
   const CHEV_I = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
   const LINK_I = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3.2-3.2a4.5 4.5 0 0 0-6.4-6.4L12 5.6"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3.2 3.2a4.5 4.5 0 0 0 6.4 6.4l1.2-1.2"/></svg>';
@@ -5642,6 +5648,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     if (g){
       let st = gStatus(it.status), srcSel = srcOf(it) || (isNew && !lock ? (gSrc || "steam") : null), free = !!it.priceFree;
       if (it.status === "future") st = "future";
+      let gOld = !!it.noDate && st === "done";
       const rub0 = typeof it.priceRub === "number" ? it.priceRub : (/₽|руб/i.test(it.price || "") ? +(it.price.replace(/\D/g, "")) || null : null);
       showView(`
         <div class="s-crumb"><a id="crumb">Все игры</a> &gt; ${isNew ? "Новая игра" : esc(it.title)}</div>
@@ -5654,7 +5661,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
               <div class="af-link"><span class="lk">${LINK_I}<input class="s-in" id="f_url" inputmode="url" autocomplete="off" placeholder="store.steampowered.com/app/1245620"></span><button type="button" class="s-btn" id="f_urlGo">Заполнить</button></div>
               <div class="af-sum" id="afSum"></div></div>${isNew ? frFindHTML(g ? "s-in" : "k-in") : ""}
             ${lock === "soon" ? releaseFields(it, "s-in") : ""}
-            ${lock ? "" : `<label>Статус<div class="chips" id="f_st">${Object.entries(GSTATUS).map(([k,l]) => `<button type="button" class="${k}" data-v="${k}" aria-pressed="${k===st}">${l}</button>`).join("")}<button type="button" data-v="future" aria-pressed="${st === "future"}">На будущее</button></div></label>`}
+            ${lock ? "" : `<label>Статус<div class="chips" id="f_st">${Object.entries(GSTATUS).flatMap(e => e[0] === "done" ? [e, ["old", "Играл давно"]] : [e]).map(([k,l]) => `<button type="button" class="${k === "old" ? "done old" : k}" data-v="${k}" aria-pressed="${k === "old" ? gOld : k === st && !(k === "done" && gOld)}">${l}</button>`).join("")}<button type="button" data-v="future" aria-pressed="${st === "future"}">На будущее</button></div></label>`}
             <label id="srcWrap" ${lock || st === "future" || st === "youtube" ? "hidden" : ""}>Где взял<div class="chips" id="f_src">${["steam","pirate"].map(k => `<button type="button" class="${k}" data-v="${k}" aria-pressed="${k===srcSel}">${SRC_ICON[k]}${SRC_NAME[k]}</button>`).join("")}</div></label>
             <label id="dropWrap" ${st === "dropped" ? "" : "hidden"}>Причина дропа<textarea class="s-in" id="f_drop" style="min-height:70px" placeholder="Почему бросил">${esc(it.dropReason||"")}</textarea></label>
             ${togBtn(lock ? "название, описание, жанры, заметки" : "название, описание, жанры, даты, цена, оценка, заметки")}
@@ -5685,8 +5692,10 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
       const kit = formKit(isNew, "Steam");
       const chips = (id, fn) => $(id).onclick = e => { const b = e.target.closest("[data-v]"); if (!b) return; $(id).querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); fn(b.dataset.v); };
       chips("f_src", v => srcSel = v);
-      if (!lock) chips("f_st", v => { st = v; $("dropWrap").hidden = st !== "dropped"; $("buyWrap").hidden = $("srcWrap").hidden = st === "future" || st === "youtube"; });
+      if (!lock) chips("f_st", v => { gOld = v === "old"; st = gOld ? "done" : v; ndSet(gOld); $("dropWrap").hidden = st !== "dropped"; $("buyWrap").hidden = $("srcWrap").hidden = st === "future" || st === "youtube"; });
       genreChips("f_genre");
+      if (!lock && $("f_nodate")) $("f_nodate").addEventListener("change", () => { if ($("f_nodate").checked || !gOld) return; gOld = false;
+        $("f_st").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x.dataset.v === "done")); });
       const rel = lock === "soon" ? wireRelease() : null;
       const setFree = v => { free = v; $("f_free").setAttribute("aria-pressed", v); $("f_rub").disabled = $("f_kzt").disabled = v; };
       setFree(free);
@@ -5767,6 +5776,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     } else {
       let st = it.status === "wish" ? "future" : (it.status || "done");
       const watchedSt = x => x === "done" || x === "played";
+      let kOld = !!it.noDate && watchedSt(st);
       const kDate = watchedSt(st) ? (it.date || itemDate(it) || today()) : "";
       const KPF = [["country","Страна"],["director","Режиссёр"],["writer","Сценарий"],["producer","Продюсер"],["operator","Оператор"],["composer","Композитор"],["duration","Время"],["age","Возраст"],
         ["tagline","Слоган"],["budget","Бюджет"],["boxWorld","Сборы в мире"],["premiereWorld","Премьера в мире"],["premiereRu","Премьера в России"],["kpRating","Рейтинг Кинопоиска"]];
@@ -5824,12 +5834,13 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
       const rel = lock === "soon" ? wireRelease() : null;
       // статусы под тип: фильм — Просмотрено/Отложено, сериал — Смотрю/Брошено
       const okSt = t => isSerT(t) ? ["playing","dropped","done","future"] : ["done","played","paused","future"];
-      const drawSt = () => { if (lock) return; const t = $("f_type").value, cur = st === "future" ? "future" : kNorm({type: t, status: st});
-        const opts = [...kOpts(t), ["future","На будущее"]];
+      const drawSt = () => { if (lock) return; const t = $("f_type").value, cur = st === "future" ? "future" : kOld && watchedSt(st) ? "old" : kNorm({type: t, status: st});
+        const opts = [...kOpts(t).flatMap(e => e[0] === "done" ? [e, ["old", "Смотрел давно"]] : [e]), ["future","На будущее"]];
         $("f_stc").innerHTML = opts.map(([k,l]) => `<button type="button" data-v="${k}" class="${k === "future" ? "fut" : ""}" style="--c:${KCOL[k] || "#c7c7d6"}" aria-pressed="${k === cur}">${l}</button>`).join(""); };
-      const setSt = v => { st = v; $("f_status").value = v; $("f_status").dispatchEvent(new Event("change")); drawSt(); };
+      const setSt = v => { kOld = v === "old"; if (kOld) v = "done"; ndSet(kOld); st = v; $("f_status").value = v; $("f_status").dispatchEvent(new Event("change")); drawSt(); };
       let stTouched = false;
       if (!lock) $("f_stc").onclick = e => { const b = e.target.closest("[data-v]"); if (b){ stTouched = true; setSt(b.dataset.v); } };
+      if (!lock && $("f_nodate")) $("f_nodate").addEventListener("change", () => { if (!$("f_nodate").checked && kOld){ kOld = false; drawSt(); } });
       if (!lock) $("f_status").onchange = e => { st = e.target.value; $("dropWrap").hidden = st !== "dropped"; if (watchedSt(st) && !$("f_date").value && !$("f_nodate").checked) $("f_date").value = today(); };
       // сезоны
       const seSum = () => seArr.length && seArr.every(n => n > 0) ? seArr.reduce((s, n) => s + n, 0) : null;
@@ -5852,7 +5863,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
       const serToggle = () => { const t = $("f_type").value, on = isSerT(t);
         $("f_typeSeg").querySelectorAll("[data-t]").forEach(b => b.setAttribute("aria-pressed", b.dataset.t === t));
         $("seEd").hidden = !on;
-        if (!lock && st !== "future" && (!okSt(t).includes(st) || (isNew && !stTouched))) { st = on ? "playing" : "done"; $("f_status").value = st; $("f_status").dispatchEvent(new Event("change")); }
+        if (!lock && st !== "future" && (!okSt(t).includes(st) || (isNew && !stTouched))) { if (kOld){ kOld = false; ndSet(false); } st = on ? "playing" : "done"; $("f_status").value = st; $("f_status").dispatchEvent(new Event("change")); }
         drawSt(); };
       $("f_typeSeg").onclick = e => { const b = e.target.closest("[data-t]"); if (!b) return; $("f_type").value = b.dataset.t; $("f_type").dataset.touched = "1"; serToggle(); };
       serToggle();
@@ -6343,6 +6354,12 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
   // ================= патчноуты =================
   // Новые версии добавляются В НАЧАЛО списка. n — новое, c — изменено, f — исправлено, r — удалено.
   const PATCHES = [
+    {v: "4.9", date: "2026-11-13", title: "«Играл давно» и «Смотрел давно»", kind: "minor", sec: {
+      n: ["Новый статус при добавлении: <b>«Играл давно»</b> у игр, <b>«Смотрел давно»</b> у фильмов и сериалов, <b>«Читал давно»</b> в Читалке. Такие записи встают без даты и не забивают календарь и итоги года",
+        "То же самое — когда берёшь игру или фильм у друга, из СЛОПа, из предложений и из «Друзья советуют»"],
+      c: ["Все остальные статусы теперь сами ставят <b>сегодняшнюю дату</b>: прошёл или посмотрел только что — добавил, и оно сразу в календаре",
+        "Галочки «Без даты» больше нет: «давно» выбирается статусом. Если у записи «давно», а дату вспомнил — нажми на поле даты и выбери день"],
+      f: ["Фильмы, сериалы и игры со статусом «Посмотрел» или «Пройдено» больше не добавляются без даты сами по себе"]}},
     {v: "4.8", date: "2026-11-11", title: "График отпусков", kind: "major", sec: {
       n: ["Новый раздел в «Ещё» → «Инструменты» → «График отпусков». Вписываешь, сколько дней отпуска в году, и отмечаешь их в календаре: мышкой по дням или двумя нажатиями — начало и конец. Сразу видно, сколько запланировано и сколько осталось",
         "В календаре красным отмечены праздники России и Якутии (27 апреля и Ысыах 21 июня) с переносами на 2026 и 2027 годы. Праздники внутри отпуска не считаются — как и положено по Трудовому кодексу",
@@ -6918,7 +6935,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
       ${it.desc ? `<p class="sub" style="margin:14px 0 0;max-height:150px;overflow:auto;white-space:pre-line">${esc(it.desc.slice(0, 900))}</p>` : ""}
       ${have ? `<div class="acts" style="margin-top:16px"><button class="ib full" disabled>Уже есть у тебя</button></div>`
         : isSoon(it) ? `<div class="acts" style="margin-top:16px"><button class="ib blue full" data-take="soon">Жду вместе</button></div>`
-        : `<div class="av-lb" style="margin-top:16px">Взять к себе как</div><div class="fi-take">${(g ? [["done", "Прошёл", ICON.medal], ["playing", "Играю", ICON.pad], ["dropped", "Дропнул", ICON.blood], ["future", "Буду проходить", ICON.clock]] : [["done", "Посмотрел", ICON.film], ...(isSerT(it.type) ? [["playing", "Смотрю", ICON.kino]] : []), ["future", "Буду смотреть", ICON.clock]]).map(([k, l, ic]) => `<button class="fi-t ${k}" data-take="${k}">${ic}<span>${l}</span></button>`).join("")}</div>
+        : `<div class="av-lb" style="margin-top:16px">Взять к себе как</div><div class="fi-take">${(g ? [["done", "Прошёл", ICON.medal], ["old", "Играл давно", ICON.medal], ["playing", "Играю", ICON.pad], ["dropped", "Дропнул", ICON.blood], ["future", "Буду проходить", ICON.clock]] : [["done", "Посмотрел", ICON.film], ["old", "Смотрел давно", ICON.film], ...(isSerT(it.type) ? [["playing", "Смотрю", ICON.kino]] : []), ["future", "Буду смотреть", ICON.clock]]).map(([k, l, ic]) => `<button class="fi-t ${k}" data-take="${k}">${ic}<span>${l}</span></button>`).join("")}</div>
         <div class="fi-drop" id="fiDrop" hidden><label class="f">Почему дропнул <small style="text-transform:none;letter-spacing:0;opacity:.7">по желанию</small><textarea class="in" id="fiDR" rows="2" maxlength="300" placeholder="Надоел гринд, сломался сюжет…"></textarea></label><div class="acts"><button class="ib red" data-take="dropped!">Дропнул</button><button class="ib" id="fiDN">Отмена</button></div></div>`}`);
     s.el.querySelector(".qa-top .poster").classList.add("qa-poster");
     const fdN = s.el.querySelector("#fiDN"); if (fdN) fdN.onclick = () => { s.el.querySelector("#fiDrop").hidden = true; s.el.querySelector(".fi-take").hidden = false; };
@@ -6926,16 +6943,18 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
       if (b.dataset.take === "dropped"){ s.el.querySelector(".fi-take").hidden = true; s.el.querySelector("#fiDrop").hidden = false; setTimeout(() => s.el.querySelector("#fiDR").focus(), 30); return; }
       s.el.querySelectorAll("[data-take]").forEach(x => x.disabled = true); b.classList.add("busy");
       const mode = b.dataset.take === "dropped!" ? "dropped" : b.dataset.take, reason = mode === "dropped" ? s.el.querySelector("#fiDR").value.trim() : "";
-      const id = await takeFromFriend(it, mode, reason); if (id){ s.close(); if (b.dataset.take === "done") setTimeout(() => { if (!FV) openItem(id); else toast("Оценку поставишь в своей карточке"); }, 120); } else s.el.querySelectorAll("[data-take]").forEach(x => x.disabled = false); });
+      const id = await takeFromFriend(it, mode, reason); if (id){ s.close(); if (b.dataset.take === "done" || b.dataset.take === "old") setTimeout(() => { if (!FV) openItem(id); else toast("Оценку поставишь в своей карточке"); }, 120); } else s.el.querySelectorAll("[data-take]").forEach(x => x.disabled = false); });
   }
   async function takeFromFriend(it, mode, reason){
     if (!db) return false;
     if (myKeys().hasIt(it)){ toast("Уже есть у тебя"); return false; }
     const keep = ["title", "type", "genre", "desc", "year", "release", "coverPos", "epTotal", "seasons", "seasonEps", "originalTitle", "director", "country", "duration", "steamId", "kpId"];
     const soon = isSoon(it) && it.releaseDate;
+    const old = mode === "old"; if (old) mode = "done";
     const st = soon ? "soon" : mode === "done" ? "done" : mode === "playing" ? "playing" : mode === "dropped" && isGame(it) ? "dropped" : "future";
     const body = {status: st, createdAt: now(), updatedAt: now(), via: "friend:" + frNick(it.uid)};
-    if (st === "done" || st === "dropped"){ body.noDate = true; if (isGame(it)) body.addedDone = true; }
+    if (st === "done" || st === "dropped"){ if (isGame(it)) body.addedDone = true;
+      if (old) body.noDate = true; else { body.date = today(); if (isGame(it)) body.finishedAt = today(); } }
     if (st === "dropped") body.dropReason = reason || null;
     if (st === "playing") body.date = today();
     if (soon){ body.releaseDate = it.releaseDate; if (it.releasePrec) body.releasePrec = it.releasePrec; }
@@ -7323,7 +7342,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     const sync = () => { const v = dv.get.call(inp), s = btn.querySelector(".v");
       s.textContent = v ? fmtDP(v) : (inp.getAttribute("placeholder") || "Выбрать дату"); s.classList.toggle("ph", !v);
       const off = dd.get.call(inp), nd = off && btn.closest(".nd-row");
-      if (nd){ s.textContent = "Нажми, чтобы указать"; s.classList.add("ph"); }
+      if (nd){ s.textContent = "Давно · нажми, чтобы указать дату"; s.classList.add("ph"); }
       btn.disabled = off && !nd; btn.classList.toggle("off", !!nd); btn.hidden = dh.get.call(inp); };
     Object.defineProperty(inp, "value", {configurable: true, get(){ return dv.get.call(inp); }, set(v){ dv.set.call(inp, v); sync(); }});
     Object.defineProperty(inp, "disabled", {configurable: true, get(){ return dd.get.call(inp); }, set(v){ dd.set.call(inp, v); sync(); }});
@@ -8286,7 +8305,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
         <label class="f">Название<span class="rs-q"><input class="in" id="rsTi" value="${esc(r.title || "")}" placeholder="Как называется" autocomplete="off"><button type="button" class="rs-find" id="rsFind" title="Поискать обложку и данные по названию">${ICON.search}</button></span></label>
         <div class="rs-sug" id="rsSug" hidden></div>
         <div class="rs-seg" id="rsT">${Object.entries(RTYPE).map(([k, l]) => `<button type="button" data-v="${k}" aria-pressed="${r.type === k}">${l}</button>`).join("")}</div>
-        <div class="rs-st" id="rsS">${RSTAT3.map(([k, l]) => `<button type="button" data-v="${k}" class="st-${k}" aria-pressed="${r.status === k}">${k === "done" ? CHECK_I : ""}${l}</button>`).join("")}</div>
+        <div class="rs-st" id="rsS">${[...RSTAT3, ["old", "Читал давно"]].map(([k, l]) => `<button type="button" data-v="${k}" class="st-${k === "old" ? "done st-old" : k}" aria-pressed="${k === "old" ? !!(r.noDate && r.status === "done") : r.status === k && !(k === "done" && r.noDate)}">${k === "done" ? CHECK_I : ""}${l}</button>`).join("")}</div>
         <button type="button" class="rs-fav${r.fav ? " on" : ""}" id="rsFav" aria-pressed="${!!r.fav}">${HEART_O}<span>${r.fav ? "В любимых — стоит на витрине" : "Добавить в любимые"}</span></button>
       </div></div>
       <div class="av-lb">Оценка</div>${wheelHTML("rsMy", r.myRating)}
@@ -8301,6 +8320,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     const q = x => s.el.querySelector(x);
     const seg = (id, key) => q(id).onclick = e => { const b = e.target.closest("[data-v]"); if (!b) return; r[key] = b.dataset.v; q(id).querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); SND.tick(.5); };
     seg("#rsT", "type"); seg("#rsS", "status"); wireWheel("rsMy");
+    q("#rsS").addEventListener("click", e => { const b = e.target.closest("[data-v]"); if (!b) return; if (b.dataset.v === "old"){ r.status = "done"; r.noDate = true; } else r.noDate = null; });
     q("#rsFav").onclick = () => { r.fav = !r.fav; const b = q("#rsFav"); b.classList.toggle("on", r.fav); b.setAttribute("aria-pressed", r.fav); b.querySelector("span").textContent = r.fav ? "В любимых — стоит на витрине" : "Добавить в любимые"; if (r.fav) SND.paper("soft"); };
     // поиск по каталогам — только по кнопке-лупе
     let sugQ = "", sugList = [];
@@ -8347,6 +8367,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
       r.chRead = n("#rsR") || 0; r.chTotal = n("#rsTot"); r.publisher = q("#rsPub").value.trim() || null; r.year = n("#rsY"); r.myRating = wheelVal("rsMy"); r.url = q("#rsU").value.trim() || null;
       r.desc = q("#rsDs").value.trim() || null;
       if (r.chTotal && r.chRead >= r.chTotal && r.status === "reading") r.status = "done";
+      if (r.status !== "done"){ r.noDate = null; r.doneAt = null; } else if (r.noDate) r.doneAt = null; else if (!r.doneAt) r.doneAt = today();
       if (r.fav && !r.favAt) r.favAt = now(); if (!r.fav){ r.fav = null; r.favAt = null; }
       const b = q("#rsOk"); b.disabled = true;
       try { if (file && assets) r.cover = await upload(file); } catch(_){}
@@ -9832,7 +9853,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     const mine = slInMyLib(g), td = today(), nx = SL.plans.filter(p => p.game_id === g.id && p.day >= td).sort((a, b) => a.day.localeCompare(b.day))[0];
     return `<div class="slp-c-more"><button class="slp-btn sm" type="button" data-sl="plan">${SLI.cal} ${nx ? `Играем ${esc(nx.day === td ? "сегодня" : slDayL(nx.day))}${nx.at_time ? " в " + esc(nx.at_time) : ""}` : "Запланировать катку"}</button>
       ${!out ? "" : mine ? `<span class="slp-btn sm ok">${SLI.check} В твоей библиотеке</span>` : `<button class="slp-btn sm" type="button" data-sl="tolib" aria-expanded="${slLibPick === g.id}">${SLI.plus} В мою библиотеку</button>`}
-      ${out && !mine && slLibPick === g.id ? `<div class="slp-libp"><span>В какой статус?</span>${[["playing", "Играю"], ["done", "Пройдено"], ["dropped", "Дроп"], ["future", "Список желаемого"]].map(([k, l]) => `<button class="slp-st" type="button" data-sl-lib="${k}">${l}</button>`).join("")}</div>` : ""}</div>`;
+      ${out && !mine && slLibPick === g.id ? `<div class="slp-libp"><span>В какой статус?</span>${[["playing", "Играю"], ["done", "Пройдено"], ["old", "Играл давно"], ["dropped", "Дроп"], ["future", "Список желаемого"]].map(([k, l]) => `<button class="slp-st" type="button" data-sl-lib="${k}">${l}</button>`).join("")}</div>` : ""}</div>`;
   }
   function slCardTier(g){
     const cur = slTier(g.id);
@@ -10262,6 +10283,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
   // ================= 3.2: давно пройденное — «Без даты», чтобы не попадало в календарь =================
   let FORM_NEW = false, fdTouched = false, FORM_IDS = {};
   function ndAuto(){
+    return; // 4.9: без даты — только через статус «давно», автогалочки больше нет
     if (!FORM_NEW || fdTouched) return; const nd = $("f_nodate"); if (!nd) return;
     const chip = document.querySelector('#f_st [aria-pressed="true"]'), cur = chip ? chip.dataset.v : ($("f_status") ? $("f_status").value : "");
     const old = ["done", "played", "dropped"].includes(cur);
@@ -10710,10 +10732,10 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     const src = sCoverSrc(f); return `<div class="poster">${src ? `<img alt="" src="${esc(src)}" referrerpolicy="no-referrer" style="${posStyle(f.coverPos)}" onerror="this.remove()">` : `<div class="ph">${esc(f.title || "")}</div>`}</div>`; };
   // статусы, с которыми можно сохранить к себе
   const sOpts = f => { const k = sKind(f);
-    return k === "read" ? [["plan", "В планах", ICON.clock], ["reading", "Читаю", BOOK_I], ["done", "Прочитано", CHECK_I]]
-      : k === "game" ? [["future", "Буду проходить", ICON.clock], ["playing", "Играю", ICON.pad], ["done", "Прошёл", ICON.medal], ["dropped", "Дропнул", ICON.blood]]
-      : [["future", "На будущее", ICON.clock], ...kOpts(f.type || "movie").map(([s, l]) => [s, l, s === "done" ? ICON.film : s === "playing" ? ICON.kino : s === "dropped" ? ICON.blood : ICON.clock])]; };
-  const sCol = s => ({future: "#c7c7d6", plan: "#c7c7d6", reading: "#7cc4ff", playing: "#7cc4ff", done: "#9be15d", paused: "#f2d43a", dropped: "#ff8a86"})[s] || "#c7c7d6";
+    return k === "read" ? [["plan", "В планах", ICON.clock], ["reading", "Читаю", BOOK_I], ["done", "Прочитано", CHECK_I], ["old", "Читал давно", CHECK_I]]
+      : k === "game" ? [["future", "Буду проходить", ICON.clock], ["playing", "Играю", ICON.pad], ["done", "Прошёл", ICON.medal], ["old", "Играл давно", ICON.medal], ["dropped", "Дропнул", ICON.blood]]
+      : [["future", "На будущее", ICON.clock], ...kOpts(f.type || "movie").flatMap(e => e[0] === "done" ? [e, ["old", "Смотрел давно"]] : [e]).map(([s, l]) => [s, l, s === "done" || s === "old" ? ICON.film : s === "playing" ? ICON.kino : s === "dropped" ? ICON.blood : ICON.clock])]; };
+  const sCol = s => ({old: "#c9c9d8", future: "#c7c7d6", plan: "#c7c7d6", reading: "#7cc4ff", playing: "#7cc4ff", done: "#9be15d", paused: "#f2d43a", dropped: "#ff8a86"})[s] || "#c7c7d6";
 
   let SUG = [], kSugNext = false;
   const sugIn = () => SUG.filter(x => ME && x.to_user === ME.id && x.status === "pending");
@@ -10797,11 +10819,13 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
   }
   // сохранить тайтл к себе (из личного предложения или из «Друзья советуют»)
   async function sTake(f, st, rating, via){
+    const old = st === "old"; if (old) st = "done";
     const k = sKind(f), body = {}; SK[k].keep.forEach(x => { if (f[x] != null) body[x] = f[x]; });
     let cover = null;
     if (f.cover && assets){ try { const rs = await fetch(publicUrl(f.cover)); if (!rs.ok) throw 0; cover = await upload(await rs.blob()); } catch(_){} }
     if (k === "read"){
       const r = {...body, status: st, myRating: rating ?? null, chRead: st === "done" ? (+body.chTotal || 0) : 0, via, createdAt: now()};
+      if (st === "done"){ if (old) r.noDate = true; else r.doneAt = today(); }
       if (cover){ r.cover = cover; delete r.coverUrl; }
       const row = await saveRead(r); if (!row) return null;
       return {id: row.id, read: true};
@@ -10809,11 +10833,11 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     Object.assign(body, {status: st, createdAt: now(), updatedAt: now(), via});
     if (rating != null) body.rating = rating;
     if (cover){ body.cover = cover; if (f.coverPos) body.coverPos = f.coverPos; }
-    if (k === "game"){ if (st === "done" || st === "dropped"){ body.noDate = true; body.addedDone = true; } if (st === "playing") body.date = today(); }
-    else { if (st === "done"){ body.noDate = true; if (isSerT(body.type) && body.epTotal) body.epWatched = body.epTotal; } if (st === "playing") body.date = today(); }
+    if (k === "game"){ if (st === "done" || st === "dropped"){ body.addedDone = true; if (old) body.noDate = true; else { body.date = today(); body.finishedAt = today(); } } if (st === "playing") body.date = today(); }
+    else { if (st === "done"){ if (old) body.noDate = true; else body.date = today(); if (isSerT(body.type) && body.epTotal) body.epWatched = body.epTotal; } if (st === "playing") body.date = today(); }
     try { const {id} = await db.collection("items").add(body); return {id}; } catch(_){ toast("Не сохранилось, попробуй ещё раз"); return null; }
   }
-  const sTookMsg = (f, st) => { const k = sKind(f);
+  const sTookMsg = (f, st) => { const k = sKind(f); if (st === "old") st = "done";
     return st === "future" || st === "plan" ? `${f.title} — ${k === "read" ? "в планах" : k === "game" ? "в «Список желаемого»" : "в «На будущее»"}` : st === "done" ? `${f.title} — ${k === "game" ? "в пройденных" : k === "read" ? "в прочитанных" : "в просмотренных"}` : `${f.title} — сохранено`; };
   const sAfter = (res, st) => { if (!res) return; if (res.read){ if (route === "read") render(); return; } if (st !== "future") setTimeout(() => openItem(res.id), 150); };
 
@@ -10858,7 +10882,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
       if (!res){ btn.disabled = false; btn.textContent = "Сохранить"; return; }
       await SB.from("suggestions").update({status: "taken", updated_at: now()}).eq("id", x.id);
       SB.from("notifications").insert({user_id: x.from_user, actor: ME.id, kind: "suggest_ok", ref: "user:" + ME.id, body: String(f.title || "").slice(0, 140)}).then(() => {});
-      SUG = SUG.filter(y => y.id !== x.id); s.close(); toast(sTookMsg(f, st)); render(); sAfter(res, st === "plan" ? "future" : st);
+      SUG = SUG.filter(y => y.id !== x.id); s.close(); toast(sTookMsg(f, st)); render(); sAfter(res, st === "plan" ? "future" : st === "old" ? "done" : st);
     };
   }
   document.addEventListener("click", e => { const el = e.target.closest && e.target.closest("[data-sug]"); if (!el || !ME) return; e.preventDefault(); sugSheet(el.dataset.sug); });
@@ -10899,7 +10923,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
   function recSheet(key){
     const g = recGroups().find(x => x.key === key || x.recs.some(r => r.id === key)); if (!g){ toast("Совет не найден"); return; }
     const f = g.item, k = g.kind, m = sMine(f), opts = sOpts(f), mr = sMyRating(m, k);
-    const take = k === "read" ? [["plan", "В планы"], ["done", "Уже прочитал"]] : k === "game" ? [["future", "В список желаемого"], ["done", "Уже прошёл"]] : [["future", "Забрать на будущее"], ["done", "Уже смотрел"]];
+    const take = k === "read" ? [["plan", "В планы"], ["done", "Только что дочитал"], ["old", "Читал давно"]] : k === "game" ? [["future", "В список желаемого"], ["done", "Только что прошёл"], ["old", "Играл давно"]] : [["future", "Забрать на будущее"], ["done", "Только что посмотрел"], ["old", "Смотрел давно"]];
     const s = openSheet(`<div class="qa-top">${sPoster(f)}<div><h3>${esc(f.title)}</h3><p class="sub">${esc(sMeta(f))}</p>
         ${m ? `<p class="sub" style="margin-top:8px">У тебя: <b style="color:inherit">${esc(sMyLab(m, k))}</b>${mr != null ? ` · твоя оценка <b class="${rateCls(mr)}">${num1(mr)}</b>` : ""}</p>` : ""}</div></div>
       <div class="av-lb" style="margin-top:14px">Советуют</div>
@@ -10917,9 +10941,10 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
       const who = g.recs.filter(r => r.user_id !== ME.id).map(r => nickOf(r.user_id)).slice(0, 3).join(", "), st = t.dataset.rectake;
       const res = await sTake(f, st, null, "recs:" + who);
       if (!res){ s.el.querySelectorAll("[data-rectake]").forEach(x => x.disabled = false); return; }
-      s.close(); toast(sTookMsg(f, st) + (st === "done" ? ", поставь оценку" : "")); if (route === "people") renderPeople();
-      if (res.read){ if (st === "done"){ const row = (READS || []).find(r => r.id === res.id); if (row) setTimeout(() => readSheet(row), 150); } }
-      else if (st === "done") setTimeout(() => openItem(res.id), 150);
+      const dn = st === "done" || st === "old";
+      s.close(); toast(sTookMsg(f, st) + (dn ? ", поставь оценку" : "")); if (route === "people") renderPeople();
+      if (res.read){ if (dn){ const row = (READS || []).find(r => r.id === res.id); if (row) setTimeout(() => readSheet(row), 150); } }
+      else if (dn) setTimeout(() => openItem(res.id), 150);
     });
   }
   // «+»: выбрать со своей полки и посоветовать всем
