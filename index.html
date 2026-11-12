@@ -4717,7 +4717,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
   }
   function renderGames(){
     const fut = route === "games-future";
-    const all = items.filter(isGame), lib = all.filter(inLib), futs = all.filter(i => isFuture(i) || isSoon(i));
+    const all = items.filter(isGame), lib = all.filter(inLib), futs = all.filter(isFuture); // 4.9: «Жду» сам в список желаемого не попадает
     $("gSeg").innerHTML = `<a href="${rh("games")}" ${!fut ? 'aria-current="page"' : ""}>Библиотека<small>${lib.length}</small></a><a href="${rh("games-future")}" ${fut ? 'aria-current="page"' : ""}>Список желаемого<small>${futs.length}</small></a>`;
     const q = qv();
     const match = i => !q || [i.title,i.genre,i.desc,i.note].join(" ").toLowerCase().includes(q);
@@ -4758,7 +4758,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
   // ================= КИНО =================
   function renderKino(){
     const fut = route === "kino-future";
-    const all = items.filter(i => !isGame(i)), lib = all.filter(inLib), futs = all.filter(i => isFuture(i) || isSoon(i));
+    const all = items.filter(i => !isGame(i)), lib = all.filter(inLib), futs = all.filter(isFuture);
     $("kSeg").innerHTML = `<a href="${rh("kino")}" ${!fut ? 'aria-current="page"' : ""}>Библиотека<small>${lib.length}</small></a><a href="${rh("kino-future")}" ${fut ? 'aria-current="page"' : ""}>На будущее<small>${futs.length}</small></a>`;
     const q = qv();
     const match = i => !q || [i.title,i.genre,i.note].join(" ").toLowerCase().includes(q);
@@ -6354,11 +6354,13 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
   // ================= патчноуты =================
   // Новые версии добавляются В НАЧАЛО списка. n — новое, c — изменено, f — исправлено, r — удалено.
   const PATCHES = [
-    {v: "4.9", date: "2026-11-13", title: "«Играл давно» и «Смотрел давно»", kind: "minor", sec: {
+    {v: "4.9", date: "2026-11-13", title: "«Играл давно», «Смотрел давно» и чистый список желаемого", kind: "minor", sec: {
       n: ["Новый статус при добавлении: <b>«Играл давно»</b> у игр, <b>«Смотрел давно»</b> у фильмов и сериалов, <b>«Читал давно»</b> в Читалке. Такие записи встают без даты и не забивают календарь и итоги года",
         "То же самое — когда берёшь игру или фильм у друга, из СЛОПа, из предложений и из «Друзья советуют»"],
       c: ["Все остальные статусы теперь сами ставят <b>сегодняшнюю дату</b>: прошёл или посмотрел только что — добавил, и оно сразу в календаре",
-        "Галочки «Без даты» больше нет: «давно» выбирается статусом. Если у записи «давно», а дату вспомнил — нажми на поле даты и выбери день"],
+        "Галочки «Без даты» больше нет: «давно» выбирается статусом. Если у записи «давно», а дату вспомнил — нажми на поле даты и выбери день",
+        "Игры и кино из календаря ожиданий больше не попадают в «Список желаемого» и «На будущее» сами. Хочешь — открой карточку в календаре и нажми «Буду играть» или «Буду смотреть»",
+        "«Жду» в СЛОПе у игры без даты выхода больше ничего не кладёт к тебе в коллекцию — отметка остаётся только в СЛОПе. Снятие «Жду» не удаляет игру, если ты уже сам перенёс её в «Список желаемого»"],
       f: ["Фильмы, сериалы и игры со статусом «Посмотрел» или «Пройдено» больше не добавляются без даты сами по себе"]}},
     {v: "4.8", date: "2026-11-11", title: "График отпусков", kind: "major", sec: {
       n: ["Новый раздел в «Ещё» → «Инструменты» → «График отпусков». Вписываешь, сколько дней отпуска в году, и отмечаешь их в календаре: мышкой по дням или двумя нажатиями — начало и конец. Сразу видно, сколько запланировано и сколько осталось",
@@ -9328,12 +9330,13 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     await slSetMark(id, on ? ["want"] : ["want", "wait"], on);
     slPop(document.querySelector("#slCard .slp-want"));
   }
-  // «Жду» кладёт игру в личную полку (в «ждёт релиз», а без даты — в «список желаемого»); снятие — убирает, если её не трогали
+  // «Жду» кладёт игру с датой в личный календарь ожиданий; без даты — только отметка в СЛОПе. В «Список желаемого» — только вручную
   async function slShelfAdd(g){
     if (!db) return false;
     const nt = normT(g.title);
     if (MYITEMS.some(it => isGame(it) && (it.slopId === g.id || (g.steam_id && String(it.steamId || "") === g.steam_id) || normT(it.title) === nt))) return false;
-    const dated = !!(g.release_date && !g.tba), body = {type: "game", title: g.title, status: dated ? "soon" : "future", createdAt: now(), updatedAt: now(), slopId: g.id};
+    const dated = !!(g.release_date && !g.tba); if (!dated) return false; // без даты ждём только в СЛОПе, в «Список желаемого» — вручную
+    const body = {type: "game", title: g.title, status: "soon", createdAt: now(), updatedAt: now(), slopId: g.id};
     if (dated){ body.releaseDate = g.release_date; if (g.release_prec && g.release_prec !== "day") body.releasePrec = g.release_prec; }
     if (g.descr) body.desc = g.descr; if (g.genres.length) body.genre = g.genres.join(", "); if (g.steam_id) body.steamId = g.steam_id;
     const u = slImg(g);
@@ -9342,7 +9345,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
   }
   async function slShelfDrop(g){
     if (!db) return false;
-    const it = MYITEMS.find(x => x.slopId === g.id && (x.status === "soon" || x.status === "future")); if (!it) return false;
+    const it = MYITEMS.find(x => x.slopId === g.id && x.status === "soon"); if (!it) return false;
     try { await db.doc("items/" + it.id).delete(); return true; } catch(_){ return false; }
   }
   async function slSetStatus(id, st){
@@ -10459,7 +10462,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     kfav: {t: "Любимые фильмы и сериалы", f: i => !isGame(i) && i.fav, fb: (a, b) => byAt("favAt")(a, b)},
     know: {t: "Смотрю", f: i => !isGame(i) && i.now && kNorm(i) !== "done", fb: (a, b) => byAt("nowAt")(a, b)},
     kseen: {t: "Просмотренные", f: i => !isGame(i) && inLib(i) && kNorm(i) === "done", fb: (a, b) => String(b.date || "").localeCompare(String(a.date || "")) || byAt("createdAt")(a, b)},
-    kplan: {t: "Буду смотреть", f: i => !isGame(i) && (isFuture(i) || isSoon(i)), fb: (a, b) => byAt("createdAt")(a, b)},
+    kplan: {t: "Буду смотреть", f: i => !isGame(i) && isFuture(i), fb: (a, b) => byAt("createdAt")(a, b)},
     rfav: {t: "Любимые тайтлы", rd: 1, f: r => r.fav, fb: (a, b) => byAt("favAt")(a, b)},
     rnow: {t: "Сейчас читаю", rd: 1, f: r => r.now, fb: (a, b) => byAt("nowAt")(a, b)},
     rdone: {t: "Прочитанные", rd: 1, f: r => rNorm(r.status) === "done", fb: (a, b) => byAt("updatedAt")(a, b)},
