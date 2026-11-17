@@ -4206,6 +4206,18 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
 .slp-conf i{position:absolute;top:-20px;display:block}
 @media (max-width:820px){.sltl-r{grid-template-columns:70px minmax(0,1fr);min-height:78px}.sltl-z{min-height:78px}.sltl-i{width:44px}.sltl-i.ghost{margin:-33px 0 0 -22px}.sltl-l b{font-size:17px}.sltl-l span{font-size:10.5px}.slp-ch{grid-template-columns:1fr}.slp-po-i{width:104px}.slp-po-g{gap:12px}.slp-upc b{max-width:130px}}
 </style>
+<style id="p51Css">
+/* ===== 5.1: guilty pleasure, дроп манги ===== */
+.gp-st{position:absolute;left:50%;bottom:12%;z-index:3;transform:translateX(-50%) rotate(-9deg);padding:4px 7px 3px;border:2px solid #ff5fa2;border-radius:4px;background:rgba(30,4,18,.72);color:#ff8cc0;font:900 9.5px/1.05 var(--ios);letter-spacing:.08em;text-transform:uppercase;text-align:center;white-space:nowrap;box-shadow:0 0 0 1px rgba(0,0,0,.35),0 0 14px rgba(255,95,162,.45);pointer-events:none}
+.view .poster .gp-st{font-size:13px;padding:6px 10px 5px;border-width:3px}
+.pv-gp.on{background:rgba(255,95,162,.22)!important;color:#ff9fcb!important;border-color:rgba(255,95,162,.45)!important}
+.k-chipb.k-gp{display:inline-flex;align-items:center;gap:6px}.k-chipb.k-gp svg{width:15px;height:15px}.k-chipb.k-gp small{opacity:.6;font-weight:600}
+.k-chipb.k-gp[aria-pressed="true"]{background:#ff5fa2!important;color:#2a0616!important;border-color:#ff5fa2!important}
+.rx-cv.dr img,.rx-cv.dr .ph{filter:grayscale(1) brightness(.62)}
+.rx-drp{position:absolute;left:50%;top:50%;z-index:3;transform:translate(-50%,-50%) rotate(-14deg);padding:4px 8px 3px;border:3px solid #ff3b30;border-radius:4px;color:#ff3b30;font:900 15px/1 var(--ios);letter-spacing:.14em;text-transform:uppercase;background:rgba(20,0,0,.35);pointer-events:none}
+.rs-st button[aria-pressed="true"].st-dropped{background:#ff453a;border-color:#ff453a;color:#2b0300}
+.s-drop .rx-sh small{color:#ff6961}
+</style>
 <style id="plCss">
 /* ===== 5.0: заведения Якутска — карта в стиле игр с открытым миром ===== */
 body[data-world="wPlaces"]:not(.has-secbg){background:#050b15!important}
@@ -4727,6 +4739,7 @@ textarea.pld-in{resize:vertical;min-height:60px}
     if (gs0 === "done" && o.badge !== false) b += `<span class="medal" title="Пройдено">${ICON.medal}</span>`;
     if (gs0 === "dropped" && o.badge !== false) b += `<span class="blood" title="Дроп">${ICON.blood}</span>`;
     if (gs0 === "endless" && o.badge !== false) b += `<span class="medal inf" title="Онлайн-игра">∞</span>`;
+    if (!isGame(it) && it.gp && o.badge !== false) b += `<span class="gp-st" title="Guilty pleasure — стыдно признаться, но кайфую">Guilty<br>pleasure</span>`;
     if (o.rate !== false && typeof it.rating === "number") b += `<span class="rb ${rateCls(it.rating)}${isGame(it) ? " bl" : ""}">${num1(it.rating)}</span>`;
     if (isGame(it) && hasActive(it) && o.tgt !== false) b += `<span class="tgt" title="Активный контракт">${ICON.target}</span>`;
     const s = isGame(it) && o.src ? srcOf(it) : null;
@@ -5093,13 +5106,14 @@ textarea.pld-in{resize:vertical;min-height:60px}
     const rated = lib.filter(i => typeof i.rating === "number");
     const avg = rated.length ? num1(rated.reduce((s,i)=>s+i.rating,0)/rated.length) : "—";
     const nowW = lib.filter(i => isSerT(i.type) && kNorm(i) === "playing");
-    let list = lib.filter(i => (!kF || kNorm(i) === kF) && (!kT || i.type === kT) && match(i));
+    if (kF === "gp" && !lib.some(i => i.gp)) kF = "";
+    let list = lib.filter(i => (!kF || (kF === "gp" ? !!i.gp : kNorm(i) === kF)) && (!kT || i.type === kT) && match(i));
     list.sort((a,b) => sorter(kSort)(a,b) || (a.title||"").localeCompare(b.title||"","ru"));
     $("kMain").innerHTML = `${fvBanner("kino")}<div class="t-row"><h1 class="k-h1">Кино и сериалы</h1>${futPill("kino", futs.length)}</div>
       <div class="k-stats">${[[lib.length,"всего"],[lib.filter(i=>kNorm(i)==="done").length,"просмотрено"],[nowW.length,"смотрю"],[avg,"средняя оценка"]].map(([v,l]) => `<span><b>${esc(v)}</b>${l}</span>`).join("")}</div>
       ${FV ? "" : sugStrip("kino") + releasesPanel("kino") + ctaRow("kino")}
       ${nowW.length ? `<div class="k-label">Смотрю сейчас</div><div class="k-row">${nowW.map(kCard).join("")}</div>` : ""}
-      <div class="k-filters"><button class="k-chipb" data-kf="" aria-pressed="${kF===""}">Все</button>${[["done","Просмотрено"],["paused","Отложено"],["playing","Смотрю"],["dropped","Брошено"]].filter(([s]) => lib.some(i => kNorm(i) === s)).map(([s,l]) => `<button class="k-chipb" data-kf="${s}" aria-pressed="${kF===s}">${l}</button>`).join("")}
+      <div class="k-filters"><button class="k-chipb" data-kf="" aria-pressed="${kF===""}">Все</button>${[["done","Просмотрено"],["paused","Отложено"],["playing","Смотрю"],["dropped","Брошено"]].filter(([s]) => lib.some(i => kNorm(i) === s)).map(([s,l]) => `<button class="k-chipb" data-kf="${s}" aria-pressed="${kF===s}">${l}</button>`).join("")}${lib.some(i => i.gp) ? `<button class="k-chipb k-gp" data-kf="gp" aria-pressed="${kF==="gp"}">${GP_I}Guilty pleasure<small>${lib.filter(i => i.gp).length}</small></button>` : ""}
         <span class="k-sepv"></span><button class="k-chipb" data-kt="" aria-pressed="${kT===""}">Всё кино</button>${[["movie","Фильмы"],["series","Сериалы"],["anime","Аниме"]].map(([k,l]) => `<button class="k-chipb" data-kt="${k}" aria-pressed="${kT===k}">${l}</button>`).join("")}
         <span class="k-sepv"></span><select class="k-sel" id="kSort" aria-label="Сортировка">${[["watched","По дате просмотра"],["mine","Мой порядок"],["recent","Недавние"],["rating","По оценке"],["year","По дате выхода"],["title","По названию"]].map(([v,l]) => `<option value="${v}"${v===kSort?" selected":""}>${l}</option>`).join("")}</select>${canWrite ? `<button class="k-btn sm" data-reord="lib:kino" title="Расставить вручную" style="margin-left:8px">${ICON.drag}</button>` : ""}<span class="k-count">${lib.length ? `${list.length} из ${lib.length}` : ""}</span>${canWrite ? `<button class="k-btn white sm" data-addk="kino" style="margin-left:10px">${ICON.plus}Добавить</button>` : ""}</div>
       ${list.length ? (kSort === "watched" ? kTimeline(list) : [["movie","Фильмы"],["series","Сериалы"],["anime","Аниме"]].map(([t,l]) => { const part = list.filter(i => (i.type || "movie") === t); return part.length ? `<div class="k-sec"><h2>${l}</h2><span>${part.length}</span><i></i></div><section class="k-grid dvd-grid">${part.map((x, i) => kCard(x, {i})).join("")}</section>` : ""; }).join(""))
@@ -5983,7 +5997,8 @@ textarea.pld-in{resize:vertical;min-height:60px}
             ${lock ? "" : `<label>Статус<div class="chips" id="f_st">${Object.entries(GSTATUS).flatMap(e => e[0] === "done" ? [e, ["old", "Играл давно"]] : [e]).map(([k,l]) => `<button type="button" class="${k === "old" ? "done old" : k}" data-v="${k}" aria-pressed="${k === "old" ? gOld : k === st && !(k === "done" && gOld)}">${l}</button>`).join("")}<button type="button" data-v="future" aria-pressed="${st === "future"}">На будущее</button></div></label>`}
             <label id="srcWrap" ${lock || st === "future" || st === "youtube" ? "hidden" : ""}>Где взял<div class="chips" id="f_src">${["steam","pirate"].map(k => `<button type="button" class="${k}" data-v="${k}" aria-pressed="${k===srcSel}">${SRC_ICON[k]}${SRC_NAME[k]}</button>`).join("")}</div></label>
             <label id="dropWrap" ${st === "dropped" ? "" : "hidden"}>Причина дропа<textarea class="s-in" id="f_drop" style="min-height:70px" placeholder="Почему бросил">${esc(it.dropReason||"")}</textarea></label>
-            ${togBtn(lock ? "название, описание, жанры, заметки" : "название, описание, жанры, даты, цена, оценка, заметки")}
+            ${lock ? "" : `<label id="rateWrap" ${st === "future" ? "hidden" : ""}>Моя оценка${wheelHTML("f_rating", it.rating)}</label>`}
+            ${togBtn(lock ? "название, описание, жанры, заметки" : "название, описание, жанры, даты, цена, заметки")}
             <div class="af-dr" id="afDr"><div class="af-in">
               <div class="s-quick"><p><b>Без ссылки.</b> Выдели на странице игры текст с названием, жанром и датой, скопируй и вставь сюда — разложу по полям.</p>
                 <textarea class="s-in" id="f_quick" placeholder="Вставь сюда текст со страницы Steam"></textarea></div>
@@ -5999,7 +6014,6 @@ textarea.pld-in{resize:vertical;min-height:60px}
                 <div class="cur"><input class="s-in" id="f_kzt" inputmode="numeric" placeholder="10 915" value="${rub0 != null ? Math.round(rub0 * KZT_PER_RUB) : ""}"><span>₸</span></div>
                 <button type="button" class="free" id="f_free" aria-pressed="${!!it.priceFree}">Бесплатно</button></div>
                 <span class="rate-note">Пиши в любом поле, второе посчитается само по курсу 1 ₽ = ${String(KZT_PER_RUB).replace(".", ",")} ₸. На странице игры цена в рублях.</span></label>
-              ${lock ? "" : `<label>Моя оценка${wheelHTML("f_rating", it.rating)}</label>`}
               </div>
               <label>Мои заметки<textarea class="s-in" id="f_note" style="min-height:80px">${esc(it.note||"")}</textarea></label>
             </div></div>
@@ -6011,7 +6025,7 @@ textarea.pld-in{resize:vertical;min-height:60px}
       const kit = formKit(isNew, "Steam");
       const chips = (id, fn) => $(id).onclick = e => { const b = e.target.closest("[data-v]"); if (!b) return; $(id).querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); fn(b.dataset.v); };
       chips("f_src", v => srcSel = v);
-      if (!lock) chips("f_st", v => { gOld = v === "old"; st = gOld ? "done" : v; ndSet(gOld); $("dropWrap").hidden = st !== "dropped"; $("buyWrap").hidden = $("srcWrap").hidden = st === "future" || st === "youtube"; });
+      if (!lock) chips("f_st", v => { gOld = v === "old"; st = gOld ? "done" : v; ndSet(gOld); $("dropWrap").hidden = st !== "dropped"; $("rateWrap").hidden = st === "future"; $("buyWrap").hidden = $("srcWrap").hidden = st === "future" || st === "youtube"; });
       genreChips("f_genre");
       if (!lock && $("f_nodate")) $("f_nodate").addEventListener("change", () => { if ($("f_nodate").checked || !gOld) return; gOld = false;
         $("f_st").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x.dataset.v === "done")); });
@@ -6086,7 +6100,7 @@ textarea.pld-in{resize:vertical;min-height:60px}
         const nd = $("f_nodate") && $("f_nodate").checked;
         const body = {type:"game", title:$("f_title").value.trim(), desc:$("f_desc").value.trim() || null, genre:$("f_genre").value.trim() || null,
           release: relTxt || null, year: ym ? +ym[0] : (it.year || null), price: later ? (it.price ?? null) : null, priceFree: later ? !!it.priceFree : yt ? false : free, priceRub: later ? (it.priceRub ?? null) : (free || yt ? null : (digits($("f_rub").value) ? +digits($("f_rub").value) : null)),
-          rating: lock ? (it.rating ?? null) : wheelVal("f_rating"), date: lock || nd ? null : (($("f_date") && $("f_date").value) || null), noDate: !lock && !!nd, source: later ? (it.source || null) : yt ? null : srcSel, status: st,
+          rating: lock ? (it.rating ?? null) : st === "future" ? (it.rating ?? null) : wheelVal("f_rating"), date: lock || nd ? null : (($("f_date") && $("f_date").value) || null), noDate: !lock && !!nd, source: later ? (it.source || null) : yt ? null : srcSel, status: st,
           finishedAt: nd ? null : (st === "done" || st === "dropped" || st === "youtube") ? (it.finishedAt && gStatus(it.status) === st ? it.finishedAt : today()) : null, dropReason: st === "dropped" ? ($("f_drop").value.trim() || null) : null, note:$("f_note").value.trim() || null};
         if (relD) Object.assign(body, relD);
         if (kSugNext){ kSugNext = false; suggestFromForm(it, body, cover); return; }
@@ -6122,7 +6136,8 @@ textarea.pld-in{resize:vertical;min-height:60px}
               <input type="hidden" id="f_seasons" value="${it.seasons ?? ""}"><input type="hidden" id="f_epTotal" value="${it.epTotal ?? ""}">
             </div>
             <label id="dropWrap" ${st === "dropped" ? "" : "hidden"}>Почему бросил<textarea class="k-in" id="f_drop" style="min-height:70px">${esc(it.dropReason||"")}</textarea></label>
-            ${togBtn("название, год, дата, оценка, жанры, описание, режиссёр и актёры")}
+            ${lock ? "" : `<label id="rateWrap" ${st === "future" ? "hidden" : ""}>Моя оценка${wheelHTML("f_rating", it.rating)}</label>`}
+            ${togBtn("название, год, дата, жанры, описание, режиссёр и актёры")}
             <div class="af-dr" id="afDr"><div class="af-in">
               <div class="k-quick"><p><b>Без ссылки.</b> Выдели на Кинопоиске всё от названия до блока «О фильме», скопируй и вставь сюда — разложу по полям.</p>
                 <textarea class="k-in" id="f_quick" style="min-height:70px" placeholder="Вставь сюда текст со страницы Кинопоиска"></textarea></div>
@@ -6134,7 +6149,6 @@ textarea.pld-in{resize:vertical;min-height:60px}
                 <label>Год выхода<input class="k-in" id="f_year" type="number" min="1900" max="2100" value="${it.year ?? ""}"></label>
                 ${lock ? "" : `<label>Дата просмотра<span class="nd-row"><input class="k-in" id="f_date" type="date" value="${it.noDate ? "" : esc(kDate)}" placeholder="когда досмотришь" ${it.noDate ? "disabled" : ""}><label class="nd-tog"><input type="checkbox" id="f_nodate" ${it.noDate ? "checked" : ""}><span>Без даты</span></label></span></label>`}
               </div>
-              ${lock ? "" : `<label>Моя оценка${wheelHTML("f_rating", it.rating)}</label>`}
               <label>Жанры через запятую<input class="k-in" id="f_genre" value="${esc(it.genre||"")}"></label>
               <label>Коротко<input class="k-in" id="f_short" value="${esc(it.short||"")}"></label>
               <label>Описание<textarea class="k-in" id="f_desc">${esc(it.desc||"")}</textarea></label>
@@ -6160,7 +6174,7 @@ textarea.pld-in{resize:vertical;min-height:60px}
       let stTouched = false;
       if (!lock) $("f_stc").onclick = e => { const b = e.target.closest("[data-v]"); if (b){ stTouched = true; setSt(b.dataset.v); } };
       if (!lock && $("f_nodate")) $("f_nodate").addEventListener("change", () => { if (!$("f_nodate").checked && kOld){ kOld = false; drawSt(); } });
-      if (!lock) $("f_status").onchange = e => { st = e.target.value; $("dropWrap").hidden = st !== "dropped"; if (watchedSt(st) && !$("f_date").value && !$("f_nodate").checked) $("f_date").value = today(); };
+      if (!lock) $("f_status").onchange = e => { st = e.target.value; $("dropWrap").hidden = st !== "dropped"; $("rateWrap").hidden = st === "future"; if (watchedSt(st) && !$("f_date").value && !$("f_nodate").checked) $("f_date").value = today(); };
       // сезоны
       const seSum = () => seArr.length && seArr.every(n => n > 0) ? seArr.reduce((s, n) => s + n, 0) : null;
       const seTot = () => { const s = seSum(), tot = s ?? seKnown; $("f_seasons").value = seArr.length || ""; $("f_epTotal").value = tot ?? "";
@@ -6673,6 +6687,11 @@ textarea.pld-in{resize:vertical;min-height:60px}
   // ================= патчноуты =================
   // Новые версии добавляются В НАЧАЛО списка. n — новое, c — изменено, f — исправлено, r — удалено.
   const PATCHES = [
+    {v: "5.1", date: "2026-11-17", title: "Guilty pleasure, дроп манги и оценка сразу", kind: "minor", sec: {
+      n: ["В карточке аниме кнопка <b>«Guilty pleasure»</b> — для тайтлов, в которых стыдно признаться, но кайфуешь. На обложке появляется розовый штамп, его видят друзья. В Кино — фильтр, чтобы собрать весь позор разом",
+        "В Читалке можно <b>бросить мангу</b>: статус «Брошено». Брошенное стоит на своей полке внизу — серые обложки с красным штампом «Дроп»"],
+      c: ["<b>Оценка при добавлении</b> игры и фильма теперь сразу под статусом — больше не нужно искать её в «Подробнее»"],
+      f: ["Брошенная раньше манга, которая по ошибке пряталась в «В планах», вернулась на полку «Брошено»"]}},
     {v: "5.0", date: "2026-11-17", title: "Заведения: карта Якутска, походы и оценки", kind: "major", sec: {
       n: ["В «Активности» новое окошко <b>«Заведения»</b>: последний поход, кто ходил и оценка. По нажатию открывается карта",
         "<b>Карта Якутска</b> в стиле игр с открытым миром: тяни, крути колесо или щипай двумя пальцами. Метка заведения окрашена по оценке, голубые шестиугольники — куда хотим сходить",
@@ -8453,13 +8472,13 @@ textarea.pld-in{resize:vertical;min-height:60px}
   }
   const rHue = t => { let h = 0; for (const c of String(t || "")) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
   const rCover = r => { const src = r.cover ? publicUrl(r.cover) : r.coverUrl, h = rHue(r.title);
-    return `<span class="rx-cv">${r.type ? `<span class="tp">${RTYPE[r.type] || ""}</span>` : ""}${linkBadge(r)}${r.myRating != null ? `<span class="rb ${rateCls(r.myRating)}">${num1(r.myRating)}</span>` : ""}${r.status === "done" ? `<span class="ok" title="Прочитано"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>` : ""}${r.status === "reading" && r.chTotal > (r.chRead || 0) ? `<span class="new">+${r.chTotal - (r.chRead || 0)}</span>` : ""}${src ? `<img src="${esc(src)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : ""}<span class="ph" style="--h:${h}"><b>${esc(r.title || "Без обложки")}</b>${r.year ? `<small>${esc(r.year)}</small>` : ""}</span></span>`; };
+    return `<span class="rx-cv${r.status === "dropped" ? " dr" : ""}">${r.type ? `<span class="tp">${RTYPE[r.type] || ""}</span>` : ""}${linkBadge(r)}${r.myRating != null ? `<span class="rb ${rateCls(r.myRating)}">${num1(r.myRating)}</span>` : ""}${r.status === "done" ? `<span class="ok" title="Прочитано"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>` : ""}${r.status === "reading" && r.chTotal > (r.chRead || 0) ? `<span class="new">+${r.chTotal - (r.chRead || 0)}</span>` : ""}${src ? `<img src="${esc(src)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : ""}<span class="ph" style="--h:${h}"><b>${esc(r.title || "Без обложки")}</b>${r.year ? `<small>${esc(r.year)}</small>` : ""}</span>${r.status === "dropped" ? `<span class="rx-drp">Дроп</span>` : ""}</span>`; };
   function renderRead(){
     appleHead("Читалка", `<button class="a-link" data-radd="1">+ Добавить</button>`);
     if (!ME){ $("aMain").innerHTML = `<div class="a-empty" style="margin-top:20px"><b>Нужно войти</b></div>`; return; }
     if (!READS){ $("aMain").innerHTML = `<p class="a-sub" style="text-align:center;margin-top:40px">Загружаю…</p>`; loadReads(); return; }
     const pool = READS.filter(r => !rType || r.type === rType), by = st => pool.filter(r => rNorm(r.status) === st);
-    const fav = shelfOf("rfav", pool), done = shelfOf("rdone", pool), reading = shelfOf("rread", pool), plan = by("plan").sort(byAt("createdAt"));
+    const fav = shelfOf("rfav", pool), done = shelfOf("rdone", pool), reading = shelfOf("rread", pool), plan = by("plan").sort(byAt("createdAt")), dropped = by("dropped").sort(byAt("updatedAt"));
     const chRead = pool.reduce((s, r) => s + (+r.chRead || 0), 0), waiting = reading.filter(r => r.chTotal > (r.chRead || 0)).reduce((s, r) => s + (r.chTotal - (r.chRead || 0)), 0);
     const mag = (r, i, pg) => `<button class="rx-mag" data-rd="${esc(r.id)}" style="--i:${i};--tilt:${(((i * 7) % 5) - 2) * 1.1}deg">${rCover(r)}${pg ? `<span class="sc-x" role="button" data-unread="${esc(r.id)}" title="Убрать из «Читаю» — останется в библиотеке">${ICON.x}</span>` : ""}${pg && r.chTotal ? `<span class="pg"><i style="width:${Math.min(100, (r.chRead || 0) / r.chTotal * 100)}%"></i></span>` : ""}</button>`;
     const addMag = (n, st, fv) => `<button class="rx-mag rx-addm" type="button" data-radd2="${st}${fv ? ":fav" : ""}" style="--i:${n}"><span class="rx-cv"><span class="ph"><b>+</b><small>${fv ? "Любимое" : "Добавить"}</small></span></span></button>`;
@@ -8489,6 +8508,8 @@ textarea.pld-in{resize:vertical;min-height:60px}
       ${shelf("done", "Прочитано", done, "Дочитанное встанет сюда с зелёной галочкой.")}
       ${shelf("reading", "Читаю", reading, "То, что читаешь сейчас. Прогресс по главам — полоской снизу.", true)}
       ${crate}
+      ${dropped.length ? `<section class="rx-shelf rx3-s s-drop"><h2 class="rx-sh">Брошено<small>${dropped.length}</small></h2>
+        ${railHTML("rx-hs", dropped.map((r, i) => mag(r, i)).join("")).replace('class="hs-in"', 'class="hs-in rx-rack"')}<div class="rx-plank"></div></section>` : ""}
     </div>`;
     $("rxGo").onclick = () => readerFromUrl($("rxUrl").value.trim());
     $("rxUrl").addEventListener("keydown", e => { if (e.key === "Enter") readerFromUrl($("rxUrl").value.trim()); });
@@ -9023,8 +9044,8 @@ textarea.pld-in{resize:vertical;min-height:60px}
   const PF_COLS = "user_id,nick,avatar,ava_animal,ava_color,birthday,created_at,pid,bg,bg_m,bg_dim";
   let pfPend = null, PF_BG = null; // «добавить новую и сразу в любимые / сейчас играю»; фон открытого профиля
   const frReads = uid => FR && FR.reads ? FR.reads.filter(r => r.uid === uid) : [];
-  const rNorm = s => s === "reading" ? "reading" : s === "done" ? "done" : "plan";
-  const RSTAT3 = [["plan", "В планах"], ["reading", "Читаю"], ["done", "Прочитано"]];
+  const rNorm = s => s === "reading" ? "reading" : s === "done" ? "done" : s === "dropped" ? "dropped" : "plan";
+  const RSTAT3 = [["plan", "В планах"], ["reading", "Читаю"], ["done", "Прочитано"], ["dropped", "Брошено"]];
   const byAt = k => (a, b) => String(b[k] || "").localeCompare(String(a[k] || ""));
   function pfLevel(n){ const lv = 1 + Math.floor(n / 5); return {lv, pct: (n % 5) / 5 * 100}; }
   function pfEvents(uid, withMe){
@@ -9046,7 +9067,7 @@ textarea.pld-in{resize:vertical;min-height:60px}
     for (const r of FR.reads || []){
       if ((!withMe && ME && r.uid === ME.id) || (uid && r.uid !== uid)) continue;
       const st = rNorm(r.status), d = isoDay(st === "plan" ? r.createdAt : r.updatedAt || r.createdAt);
-      if (d) ev.push({rd: r, uid: r.uid, d, ts: r._upd || "", verb: st === "done" ? "прочитал" : st === "reading" ? "читает" : "хочет прочитать"});
+      if (d) ev.push({rd: r, uid: r.uid, d, ts: r._upd || "", verb: st === "done" ? "прочитал" : st === "reading" ? "читает" : st === "dropped" ? "бросил" : "хочет прочитать"});
     }
     const td = today();
     return ev.filter(e => e.d <= td).sort((a, b) => b.d.localeCompare(a.d) || b.ts.localeCompare(a.ts));
@@ -9249,6 +9270,8 @@ textarea.pld-in{resize:vertical;min-height:60px}
       const keep = {title: r.title, type: r.type, publisher: r.publisher || null, year: r.year || null, chTotal: r.chTotal || null, url: r.url || null, coverUrl: r.cover ? publicUrl(r.cover) : r.coverUrl || null, desc: r.desc || null, status: "plan", chRead: 0, via: "friend:" + frNick(uid)};
       if (await saveRead(keep)){ toast("Добавлено в Читалку"); s.close(); } else b.disabled = false; };
   }
+  // 5.1: guilty pleasure — маска, за которой прячут лицо
+  const GP_I = I('<path d="M3 7.5c3-1.4 6-1.4 9 0 3-1.4 6-1.4 9 0 0 5-2.2 9-5 9-1.8 0-3-1.6-4-3.2-1 1.6-2.2 3.2-4 3.2-2.8 0-5-4-5-9Z"/><path d="M6.5 10.5c.8-.6 1.8-.6 2.6 0M14.9 10.5c.8-.6 1.8-.6 2.6 0"/>');
   // кнопка «в любимые» в карточке игры или фильма
   function pfViewExtras(it){
     if (!canWrite || FV || isFuture(it) || isSoon(it)) return;
@@ -9257,6 +9280,10 @@ textarea.pld-in{resize:vertical;min-height:60px}
     const paint = () => { b.innerHTML = `${HEART_O}${it.fav ? "В любимых" : "В любимые"}`; b.classList.toggle("on", !!it.fav); };
     b.onclick = async () => { const on = !it.fav; try { await db.doc("items/" + it.id).update({fav: on || null, favAt: on ? now() : null}); it.fav = on || null; paint(); toast(on ? "На витрине в профиле" : "Убрано из любимых"); } catch(_){ toast("Не сохранилось"); } };
     paint(); acts.appendChild(b);
+    if (it.type === "anime" && inLib(it)){ const gp = document.createElement("button"); gp.className = "pv-btn pv-gp" + (it.gp ? " on" : ""); gp.type = "button"; gp.title = "Стыдно признаться, но кайфую. Друзья увидят штамп на обложке";
+      const p3 = () => { gp.innerHTML = `${GP_I}${it.gp ? "Guilty pleasure ✓" : "Guilty pleasure"}`; gp.classList.toggle("on", !!it.gp); };
+      gp.onclick = async () => { const on = !it.gp; try { await db.doc("items/" + it.id).update({gp: on || null, gpAt: on ? now() : null}); it.gp = on || null; p3(); SND.click(); toast(on ? "Признался. Теперь все знают" : "Штамп снят, репутация спасена"); } catch(_){ toast("Не сохранилось"); } };
+      p3(); acts.appendChild(gp); }
     if (isGame(it) && inLib(it)){ const n = document.createElement("button"); n.className = "pv-btn pv-now" + (it.now ? " on" : ""); n.type = "button";
       const p2 = () => { n.innerHTML = `${ICON.pad}${it.now ? "Играю сейчас ✓" : "Играю сейчас"}`; n.classList.toggle("on", !!it.now); };
       n.onclick = async () => { const on = !it.now; try { await db.doc("items/" + it.id).update({now: on || null, nowAt: on ? now() : null}); it.now = on || null; p2(); } catch(_){ toast("Не сохранилось"); } };
@@ -9308,7 +9335,7 @@ textarea.pld-in{resize:vertical;min-height:60px}
   function feedGroups(){
     const evs = [];
     for (const it of FR.items){ if (ME && it.uid === ME.id) continue; const ts = evTs(it); if (ts) evs.push({it, uid: it.uid, ts, verb: verbOf(it)}); }
-    for (const r of FR.reads || []){ if (ME && r.uid === ME.id) continue; const ts = evTs(r), st = rNorm(r.status); if (ts) evs.push({rd: r, uid: r.uid, ts, verb: st === "done" ? "прочитал" : st === "reading" ? "читает" : "хочет прочитать"}); }
+    for (const r of FR.reads || []){ if (ME && r.uid === ME.id) continue; const ts = evTs(r), st = rNorm(r.status); if (ts) evs.push({rd: r, uid: r.uid, ts, verb: st === "done" ? "прочитал" : st === "reading" ? "читает" : st === "dropped" ? "бросил" : "хочет прочитать"}); }
     FR.profiles.filter(p => p.created_at && ME && p.user_id !== ME.id && Date.now() - Date.parse(p.created_at) < 60 * 864e5)
       .forEach(p => evs.push({join: true, uid: p.user_id, ts: p.created_at, verb: "присоединился к NEXUS"}));
     if (SL && ME) slEvents().filter(e => e.uid && e.uid !== ME.id && Date.now() - Date.parse(e.ts) < 30 * 864e5).slice(0, 40).forEach(e => evs.push({join: true, slop: e.id, uid: e.uid, ts: new Date(e.ts).toISOString(), verb: e.verb === "добавил игру" ? "добавил в СЛОП" : e.verb, title: e.title}));
@@ -11961,7 +11988,7 @@ textarea.pld-in{resize:vertical;min-height:60px}
       const one = async x => {
         const cover = x.cover ? await impCoverId(x.cover) : null, via = "import:" + IMP[src].n;
         if (kind === "read"){
-          const r = {title: x.title, origTitle: x.orig || null, type: x.type || "manga", status: x.status === "dropped" ? "plan" : rNorm(x.status), fav: x.fav || null, favAt: x.fav ? now() : null,
+          const r = {title: x.title, origTitle: x.orig || null, type: x.type || "manga", status: rNorm(x.status), fav: x.fav || null, favAt: x.fav ? now() : null,
             myRating: x.rating ?? null, chRead: x.chRead || 0, chTotal: x.chTotal || null, url: x.url || null, cover: cover || null, coverUrl: null, via};
           if (!(await saveRead(r))) throw 0;
         } else {
