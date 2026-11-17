@@ -4529,7 +4529,7 @@ textarea.pld-in{resize:vertical;min-height:60px}
 }
 /*5.2*/
 /* 5.2: живая карта */
-.pl-gl{position:absolute;inset:0;z-index:0;background:#0b1a2e}
+.pl-gl,#plGL.maplibregl-map{position:absolute!important;inset:0;width:100%;height:100%;z-index:0;background:#0b1a2e}
 .pl-gl .maplibregl-canvas{outline:none}
 .pl-ld{position:absolute;inset:0;z-index:1;display:grid;place-content:center;text-align:center;gap:6px;color:var(--pl-dim);font:500 13px/1.4 var(--ios);pointer-events:none}
 .pl-ld b{color:var(--pl-gold2);font:800 13px/1 var(--pl-mono);letter-spacing:.16em;text-transform:uppercase}
@@ -6710,7 +6710,8 @@ textarea.pld-in{resize:vertical;min-height:60px}
     {v: "5.2", date: "2026-11-17", title: "Живая карта Якутска", kind: "major", sec: {
       n: ["Карта в «Заведениях» теперь <b>живая</b>, как в Terraink: чёткая на любом приближении — от всего города до отдельного дома, с названиями улиц и районов",
         "Карта ограничена <b>Якутском и окрестностями</b>: Маган, Жатай, Табага, Хатассы, Нижний Бестях — дальше не уедешь"],
-      c: ["Старые точки сами переехали на настоящие координаты — ничего переставлять не нужно"]}},
+      c: ["Старые точки сами переехали на настоящие координаты — ничего переставлять не нужно"],
+      f: ["Карта открывалась пустым синим окном — теперь рисуется сразу"]}},
     {v: "5.1", date: "2026-11-17", title: "Guilty pleasure, дроп манги и оценка сразу", kind: "minor", sec: {
       n: ["В карточке аниме кнопка <b>«Guilty pleasure»</b> — для тайтлов, в которых стыдно признаться, но кайфуешь. На обложке появляется розовый штамп, его видят друзья. В Кино — фильтр, чтобы собрать весь позор разом",
         "В Читалке можно <b>бросить мангу</b>: статус «Брошено». Брошенное стоит на своей полке внизу — серые обложки с красным штампом «Дроп»"],
@@ -12483,7 +12484,8 @@ textarea.pld-in{resize:vertical;min-height:60px}
           dragRotate: false, pitchWithRotate: false, touchPitch: false, attributionControl: {compact: true}, fadeDuration: 120});
       } catch(e){ plMap = null; if (ld) ld.innerHTML = `<b>Карта не запустилась</b>Похоже, браузер не умеет WebGL. Обнови его или открой с другого устройства.`; return; }
       m.touchZoomRotate.disableRotation(); if (m.keyboard && m.keyboard.disableRotation) m.keyboard.disableRotation();
-      m.on("load", () => { el.classList.add("ready"); if (!plCam) plFit(false); plDrawMarkers(); });
+      m.on("load", () => { m.resize(); el.classList.add("ready"); if (!plCam) plFit(false); plDrawMarkers(); });
+      if (window.ResizeObserver) new ResizeObserver(() => { if (plMap === m && host.clientHeight) m.resize(); }).observe(host);
       m.on("moveend", () => { plCam = {c: m.getCenter().toArray(), z: m.getZoom()}; });
       m.on("zoom", () => el.classList.toggle("z2", m.getZoom() >= 14));
       m.on("mousemove", e => { clearTimeout(plGeoT); plGeoT = setTimeout(() => plSetGeo(e.lngLat), 16); });
