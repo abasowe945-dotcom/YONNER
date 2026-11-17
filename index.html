@@ -4527,6 +4527,26 @@ textarea.pld-in{resize:vertical;min-height:60px}
   .pld-ten button{height:36px}
   .pld-crit{grid-template-columns:70px minmax(0,1fr) 36px}
 }
+/*5.2*/
+/* 5.2: живая карта */
+.pl-gl{position:absolute;inset:0;z-index:0;background:#0b1a2e}
+.pl-gl .maplibregl-canvas{outline:none}
+.pl-ld{position:absolute;inset:0;z-index:1;display:grid;place-content:center;text-align:center;gap:6px;color:var(--pl-dim);font:500 13px/1.4 var(--ios);pointer-events:none}
+.pl-ld b{color:var(--pl-gold2);font:800 13px/1 var(--pl-mono);letter-spacing:.16em;text-transform:uppercase}
+.pl-ld .pl-btn{pointer-events:auto;justify-self:center}
+.pl-mapw.ready .pl-ld{display:none}
+.pl-mapw{cursor:auto}
+.pl-mapw.placing .maplibregl-canvas-container.maplibregl-interactive{cursor:crosshair}
+.pl-fx,.pl-crn,.pl-tag,.pl-geo,.pl-comp,.pl-leg{z-index:4}
+.pl-mk{position:absolute;left:0;top:0;width:0;height:0}
+.pl-mk-i{transform:translate(-50%,-50%)}
+.pl-leg{right:46px;bottom:12px}
+.pl-mapw .maplibregl-ctrl-bottom-right{z-index:5}
+.pl-mapw .maplibregl-ctrl-attrib{background:rgba(5,12,24,.8)!important;color:var(--pl-dim)}
+.pl-mapw .maplibregl-ctrl-attrib a{color:var(--pl-gold2)}
+.pl-mapw .maplibregl-ctrl-attrib-button{filter:invert(1) sepia(1) saturate(3) hue-rotate(5deg);background-color:transparent}
+.pl-mapw .maplibregl-ctrl-attrib.maplibregl-compact{background:rgba(5,12,24,.8)!important}
+@media (max-width:560px){.pl-mapw .maplibregl-ctrl-bottom-right{bottom:0}}
 @media (prefers-reduced-motion:reduce){#wPlaces *,.pl-sh *{animation:none!important;transition:none!important}.pl-world.anim{transition:none!important}}
 </style>
 <style>img{max-width:100%}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
@@ -6687,6 +6707,10 @@ textarea.pld-in{resize:vertical;min-height:60px}
   // ================= патчноуты =================
   // Новые версии добавляются В НАЧАЛО списка. n — новое, c — изменено, f — исправлено, r — удалено.
   const PATCHES = [
+    {v: "5.2", date: "2026-11-17", title: "Живая карта Якутска", kind: "major", sec: {
+      n: ["Карта в «Заведениях» теперь <b>живая</b>, как в Terraink: чёткая на любом приближении — от всего города до отдельного дома, с названиями улиц и районов",
+        "Карта ограничена <b>Якутском и окрестностями</b>: Маган, Жатай, Табага, Хатассы, Нижний Бестях — дальше не уедешь"],
+      c: ["Старые точки сами переехали на настоящие координаты — ничего переставлять не нужно"]}},
     {v: "5.1", date: "2026-11-17", title: "Guilty pleasure, дроп манги и оценка сразу", kind: "minor", sec: {
       n: ["В карточке аниме кнопка <b>«Guilty pleasure»</b> — для тайтлов, в которых стыдно признаться, но кайфуешь. На обложке появляется розовый штамп, его видят друзья. В Кино — фильтр, чтобы собрать весь позор разом",
         "В Читалке можно <b>бросить мангу</b>: статус «Брошено». Брошенное стоит на своей полке внизу — серые обложки с красным штампом «Дроп»"],
@@ -12204,7 +12228,52 @@ textarea.pld-in{resize:vertical;min-height:60px}
 
 
   // ================= 5.0: заведения Якутска — карта, походы, оценки, блюда =================
-  const PL_W = 904, PL_H = 1280, PL_MAP = "yakutsk-map.webp";
+  // тёмно-синяя карта с золотыми дорогами — своя тема поверх OpenFreeMap (данные OpenStreetMap)
+  const PL_BOUNDS = [[129.22, 61.78], [130.32, 62.22]], PL_CENTER = [129.732, 62.0274];
+  function plStyle(){
+    const C = {bg: "#0b1a2e", water: "#050e1c", wline: "#163052", land: "#0d1f37", park: "#0f2438", bld: "#13284a", bldL: "#1d3a63", gold: "#f0c24b", gold2: "#d9a93c", dim: "#8a7440", rail: "#5d6e88", txt: "#e8c56a", halo: "#081424"};
+    const roadW = (a, b) => ["interpolate", ["exponential", 1.6], ["zoom"], 10, a, 18, b];
+    const road = (id, f, w0, w1, color, op = 1, extra = {}) => ({id, type: "line", source: "omt", "source-layer": "transportation", filter: f,
+      layout: {"line-cap": "round", "line-join": "round"}, paint: {"line-color": color, "line-width": roadW(w0, w1), "line-opacity": op, ...extra}});
+    const cls = list => ["match", ["get", "class"], list, true, false];
+    return {
+      version: 8, glyphs: "https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf",
+      sources: {omt: {type: "vector", url: "https://tiles.openfreemap.org/planet", attribution: '<a href="https://openfreemap.org" target="_blank" rel="noopener">OpenFreeMap</a> · © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'}},
+      layers: [
+        {id: "bg", type: "background", paint: {"background-color": C.bg}},
+        {id: "landcover", type: "fill", source: "omt", "source-layer": "landcover", paint: {"fill-color": C.land, "fill-opacity": .7}},
+        {id: "park", type: "fill", source: "omt", "source-layer": "park", paint: {"fill-color": C.park, "fill-opacity": .8}},
+        {id: "landuse", type: "fill", source: "omt", "source-layer": "landuse", filter: cls(["residential", "suburb", "neighbourhood"]), paint: {"fill-color": "#0e2140", "fill-opacity": .55}},
+        {id: "water", type: "fill", source: "omt", "source-layer": "water", paint: {"fill-color": C.water}},
+        {id: "water-edge", type: "line", source: "omt", "source-layer": "water", paint: {"line-color": C.wline, "line-width": ["interpolate", ["linear"], ["zoom"], 10, .6, 16, 1.6]}},
+        {id: "waterway", type: "line", source: "omt", "source-layer": "waterway", paint: {"line-color": C.wline, "line-width": ["interpolate", ["linear"], ["zoom"], 10, .5, 16, 2.5]}},
+        {id: "aeroway", type: "line", source: "omt", "source-layer": "aeroway", filter: ["==", ["geometry-type"], "LineString"], paint: {"line-color": "#2a4468", "line-width": ["interpolate", ["linear"], ["zoom"], 10, 1, 16, 14]}},
+        {id: "building", type: "fill", source: "omt", "source-layer": "building", minzoom: 13, paint: {"fill-color": C.bld, "fill-outline-color": C.bldL, "fill-opacity": ["interpolate", ["linear"], ["zoom"], 13, 0, 14.5, .9]}},
+        road("path", cls(["path", "track"]), .2, 1.4, C.dim, .35, {"line-dasharray": [2, 2]}),
+        road("service", cls(["service"]), .2, 3, C.dim, .5),
+        road("minor", cls(["minor"]), .35, 6, C.gold2, .55),
+        road("rail", cls(["rail", "transit"]), .5, 2.2, C.rail, .8, {"line-dasharray": [3, 2]}),
+        road("tertiary", cls(["tertiary"]), .6, 9, C.gold2, .8),
+        road("main-glow", cls(["motorway", "trunk", "primary", "secondary"]), 3, 26, C.gold, .16, {"line-blur": 6}),
+        road("secondary", cls(["secondary"]), .9, 11, C.gold, .95),
+        road("main", cls(["motorway", "trunk", "primary"]), 1.3, 14, C.gold, 1),
+        {id: "road-names", type: "symbol", source: "omt", "source-layer": "transportation_name", minzoom: 14,
+          layout: {"symbol-placement": "line", "text-field": ["coalesce", ["get", "name:ru"], ["get", "name"]], "text-font": ["Noto Sans Regular"], "text-size": ["interpolate", ["linear"], ["zoom"], 14, 10, 18, 13], "text-letter-spacing": .04},
+          paint: {"text-color": C.txt, "text-halo-color": C.halo, "text-halo-width": 1.6, "text-opacity": .85}},
+        {id: "places", type: "symbol", source: "omt", "source-layer": "place", filter: ["match", ["get", "class"], ["suburb", "village", "hamlet", "town", "neighbourhood", "quarter"], true, false],
+          layout: {"text-field": ["upcase", ["coalesce", ["get", "name:ru"], ["get", "name"]]], "text-font": ["Noto Sans Bold"], "text-size": ["interpolate", ["linear"], ["zoom"], 10, 10, 15, 13], "text-letter-spacing": .18, "text-max-width": 8},
+          paint: {"text-color": "#9fb3cf", "text-halo-color": C.halo, "text-halo-width": 1.8}}
+      ]
+    };
+  }
+  // старые точки ставились на картинку-постер (904×1280, зум 13.02 вокруг центра) — пересчитываем их в координаты
+  const PL_OLD = {z: 13.02, c: [129.732, 62.0274], w: 904, h: 1280};
+  const plMercX = (lng, ws) => (lng + 180) / 360 * ws, plMercY = (lat, ws) => (1 - Math.log(Math.tan(Math.PI / 4 + lat * Math.PI / 360)) / Math.PI) / 2 * ws;
+  const plLegacy = (x, y) => { const ws = 512 * Math.pow(2, PL_OLD.z), X = plMercX(PL_OLD.c[0], ws) + (x - .5) * PL_OLD.w, Y = plMercY(PL_OLD.c[1], ws) + (y - .5) * PL_OLD.h;
+    return [+(X / ws * 360 - 180).toFixed(6), +(Math.atan(Math.sinh(Math.PI * (1 - 2 * Y / ws))) * 180 / Math.PI).toFixed(6)]; };
+  const plLL = p => !p ? null : p.lat != null && p.lng != null ? [+p.lng, +p.lat] : p.x != null && p.y != null ? plLegacy(+p.x, +p.y) : null;
+  // запись координат; пока база не обновлена (нет колонок lat/lng) — понятная подсказка
+  const plGeoErr = e => /lat|lng|column|PGRST204/i.test(((e && e.message) || "") + ((e && e.code) || "")) ? "Нужно обновить базу: блок 5.2 из schema.sql в Supabase" : null;
   const PLI = {
     bar: I('<path d="M6 5h10v14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2Z"/><path d="M16 9h2a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-2M9.5 9v8M12.5 9v8M6 5c0-1.2 1-2 2.2-2 .6-.6 1.6-1 2.8-1s2.2.4 2.8 1C15 3 16 3.8 16 5"/>'),
     rest: I('<path d="M7 3v7M4.5 3v4.5a2.5 2.5 0 0 0 5 0V3M7 10v11M17.5 3C15.5 5 15 8 15 11h2.5v10"/>'),
@@ -12226,13 +12295,13 @@ textarea.pld-in{resize:vertical;min-height:60px}
   const plKindI = k => PLI[k] || PLI.other;
   const PL_CRIT = [["interior", "Интерьер"], ["price", "Цены"], ["taste", "Вкус"], ["beer", "Пиво"]];
   const PL_TABLES = ["places", "place_visits", "place_visit_members", "place_ratings", "place_dishes", "place_dish_rates", "place_wants"];
-  let PL = null, plLoading = null, plAgain = false, plErr = null, plSubT = 0, plCam = null, plApi = null, plPlacing = null, plPending = null, plSheet = null, plSeen = null, plLastTap = 0;
+  let PL = null, plLoading = null, plAgain = false, plErr = null, plSubT = 0, plCam = null, plPlacing = null, plPending = null, plSheet = null, plSeen = null, plLastTap = 0;
   let plCalY = new Date().getFullYear(), plCalM = new Date().getMonth();
   const plS = {q: "", st: "all", r: "all", k: "all", sort: "visit", view: lsGet("nexus_pl_view") === "cal" ? "cal" : "map", sel: null, panel: null};
   const plDraft = {};
 
   // ---- данные ----
-  const plNorm = p => ({...p, menu: Array.isArray(p.menu) ? p.menu.filter(x => typeof x === "string" && x) : [], x: p.x == null ? null : +p.x, y: p.y == null ? null : +p.y});
+  const plNorm = p => ({...p, menu: Array.isArray(p.menu) ? p.menu.filter(x => typeof x === "string" && x) : [], x: p.x == null ? null : +p.x, y: p.y == null ? null : +p.y, lat: p.lat == null ? null : +p.lat, lng: p.lng == null ? null : +p.lng});
   const plMissing = () => !!(plErr && (/PGRST205|42P01/.test(plErr.code || "") || /schema cache|does not exist|relation/i.test(plErr.message || "")));
   async function loadPlaces(force){
     if (!SB || !ME) return null;
@@ -12321,17 +12390,17 @@ textarea.pld-in{resize:vertical;min-height:60px}
   function renderPlaces(){
     const m = $("plMain"); if (!m) return;
     if (!ME){ m.innerHTML = `<div class="pl-empty" style="margin-top:40px"><b>Нужно войти</b></div>`; delete m.dataset.v; return; }
-    if (!PL){ m.innerHTML = plErr ? plErrHTML() : `<div class="pl-empty" style="margin-top:60px"><b>Загружаю карту…</b></div>`; delete m.dataset.v; plApi = null; if (!plErr) loadPlaces(); return; }
+    if (!PL){ m.innerHTML = plErr ? plErrHTML() : `<div class="pl-empty" style="margin-top:60px"><b>Загружаю карту…</b></div>`; delete m.dataset.v; plKill(); if (!plErr) loadPlaces(); return; }
     if (m.dataset.v !== plS.view){
-      m.dataset.v = plS.view; plApi = null;
+      m.dataset.v = plS.view; plKill();
       m.innerHTML = `<div class="pl-hud">
           <div class="pl-tt"><small><a href="#people" style="color:inherit;text-decoration:none">‹ Активность</a> // Якутск // карта походов</small><h1 data-t="Заведения">Заведения</h1></div>
           <div class="pl-stats" id="plStats"></div>
           <div class="pl-acts"><div class="pl-seg"><button type="button" data-plview="map" aria-pressed="${plS.view === "map"}" aria-label="Карта">${PLI.map}<span>Карта</span></button><button type="button" data-plview="cal" aria-pressed="${plS.view === "cal"}" aria-label="Календарь">${ICON.calendar}<span>Календарь</span></button></div><button type="button" class="pl-btn" data-pladd="1">${ICON.plus}Новое место</button></div>
         </div>
         <div class="pl-body">
-          ${plS.view === "map" ? `<section class="pl-mapw" id="plMap" tabindex="0" aria-label="Карта Якутска: тяни, чтобы двигать, колесо или два пальца — зум">
-            <div class="pl-world" id="plWorld"><img alt="" src="${PL_MAP}" draggable="false" decoding="async"><div class="pl-grid"></div><div id="plMks"></div></div>
+          ${plS.view === "map" ? `<section class="pl-mapw" id="plMap" aria-label="Карта Якутска: тяни, чтобы двигать, колесо или два пальца — зум">
+            <div class="pl-gl" id="plGL"></div><div class="pl-ld" id="plLd"><b>Загружаю карту…</b>Якутск и окрестности</div>
             <div class="pl-fx"></div><i class="pl-crn a"></i><i class="pl-crn b"></i><i class="pl-crn c"></i><i class="pl-crn d"></i>
             <div class="pl-tag">Сектор 14<b>ЯКУТСК</b></div><div class="pl-comp">N</div>
             <div class="pl-zoom"><button type="button" data-plz="in" aria-label="Приблизить">+</button><button type="button" data-plz="out" aria-label="Отдалить">−</button><button type="button" data-plz="fit" aria-label="Показать все места">${PLI.fit}</button></div>
@@ -12382,86 +12451,96 @@ textarea.pld-in{resize:vertical;min-height:60px}
   function plLi(p){
     const w = plIsWant(p), s = plScore(p.id), last = plLast(p.id), who = w ? plWants(p.id) : plWho(p.id);
     return `<button type="button" class="pl-li${plS.sel === p.id ? " sel" : ""}" data-plo="${esc(p.id)}"><span class="pl-th">${p.photo ? `<img alt="" loading="lazy" src="${esc(plImg(p))}" onerror="this.remove()">` : ""}${plKindI(p.kind)}</span>
-      <span class="t"><b>${esc(p.name)}</b><small>${esc(plKindL(p.kind))} · ${w ? (who.length ? `хотят ${who.length}` : "хотим сходить") : esc(plAgo(last))}${p.x == null ? " · без точки" : ""}</small>${who.length ? avaStack(who, 4) : ""}</span>
+      <span class="t"><b>${esc(p.name)}</b><small>${esc(plKindL(p.kind))} · ${w ? (who.length ? `хотят ${who.length}` : "хотим сходить") : esc(plAgo(last))}${!plLL(p) ? " · без точки" : ""}</small>${who.length ? avaStack(who, 4) : ""}</span>
       <span class="pl-sc ${w ? "w" : plCls(s)}">${w ? "ХОТИМ" : s == null ? "—" : num1(s)}</span></button>`;
   }
-  function plDrawMarkers(){
-    const el = $("plMks"); if (!el) return;
-    const vis = new Set(plFiltered().map(p => p.id)), fresh = plSeen ? null : new Set();
-    const html = PL.places.filter(p => p.x != null && p.y != null && vis.has(p.id)).sort((a, b) => a.y - b.y).map(p => {
-      const w = plIsWant(p), s = plScore(p.id), isNew = plSeen && !plSeen.has(p.id);
-      return `<button type="button" class="pl-mk ${w ? "w" + (plWants(p.id).length > 1 ? " hot" : "") : plCls(s)}${plS.sel === p.id ? " sel" : ""}${isNew ? " nw" : ""}" data-plm="${esc(p.id)}" style="left:${(p.x * 100).toFixed(3)}%;top:${(p.y * 100).toFixed(3)}%" aria-label="${esc(p.name)}">
-        <span class="pl-mk-i"><span class="pl-mk-d">${w ? PLI.want : plKindI(p.kind)}</span>${w ? "" : `<span class="pl-mk-s">${s == null ? "?" : num1(s)}</span>`}<span class="pl-mk-n">${esc(p.name)}</span></span></button>`; }).join("")
-      + (plPlacing && plPlacing.u != null ? `<span class="pl-mk tmp" style="left:${plPlacing.u * 100}%;top:${plPlacing.v * 100}%"><span class="pl-mk-i"><span class="pl-mk-d">${PLI.fly}</span></span></span>` : "");
-    if (el.innerHTML !== html) el.innerHTML = html;
-    plSeen = new Set(PL.places.map(p => p.id)); void fresh;
+  // ---- живая карта: MapLibre + тайлы OpenFreeMap, только Якутск и окрестности ----
+  const PL_LIB = "https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.1/dist/maplibre-gl";
+  let plLibP = null, plMap = null, plTmp = null, plGeoT = 0;
+  const plMks = new Map();
+  function plLib(){
+    if (window.maplibregl) return Promise.resolve();
+    if (plLibP) return plLibP;
+    plLibP = new Promise((ok, no) => {
+      if (!document.querySelector('link[data-ml]')){ const l = document.createElement("link"); l.rel = "stylesheet"; l.href = PL_LIB + ".css"; l.dataset.ml = 1; document.head.appendChild(l); }
+      const s = document.createElement("script"); s.src = PL_LIB + ".js"; s.async = true;
+      s.onload = () => window.maplibregl ? ok() : no(new Error("lib")); s.onerror = () => { plLibP = null; s.remove(); no(new Error("lib")); }; document.head.appendChild(s);
+    });
+    return plLibP;
   }
-  // ---- камера карты: тянуть, колесо, два пальца, двойной тап ----
+  function plKill(){ if (plMap){ try { plMap.remove(); } catch(_){} } plMap = null; plTmp = null; plMks.clear(); }
   function plMapInit(){
-    const el = $("plMap"), w = $("plWorld"); if (!el || !w || plApi) return;
-    const box = () => ({w: el.clientWidth, h: el.clientHeight});
-    const minK = () => { const b = box(); return Math.max(b.w / PL_W, b.h / PL_H); };
-    const clampK = k => Math.min(4, Math.max(minK(), k));
-    const clamp = () => { const b = box(); plCam.k = clampK(plCam.k); plCam.x = Math.min(0, Math.max(b.w - PL_W * plCam.k, plCam.x)); plCam.y = Math.min(0, Math.max(b.h - PL_H * plCam.k, plCam.y)); };
-    const apply = anim => { if (!el.clientWidth) return; clamp(); w.classList.toggle("anim", !!anim && !plRM());
-      w.style.transform = `translate3d(${plCam.x.toFixed(2)}px,${plCam.y.toFixed(2)}px,0) scale(${plCam.k.toFixed(4)})`; w.style.setProperty("--k", plCam.k.toFixed(4));
-      el.classList.toggle("z2", plCam.k >= 1.25); if (anim){ clearTimeout(w._t); w._t = setTimeout(() => w.classList.remove("anim"), 600); } };
-    const center = (u, v, k, anim) => { const b = box(); plCam.k = clampK(k); plCam.x = b.w / 2 - u * PL_W * plCam.k; plCam.y = b.h / 2 - v * PL_H * plCam.k; apply(anim); };
-    const zoomAt = (f, px, py, anim) => { const k0 = plCam.k, k1 = clampK(k0 * f); plCam.x = px - (px - plCam.x) * k1 / k0; plCam.y = py - (py - plCam.y) * k1 / k0; plCam.k = k1; apply(anim); };
-    const toWorld = (cx, cy) => { const r = el.getBoundingClientRect(); return {u: (cx - r.left - plCam.x) / (PL_W * plCam.k), v: (cy - r.top - plCam.y) / (PL_H * plCam.k)}; };
-    const fit = anim => { const pts = PL.places.filter(p => p.x != null && plFiltered().includes(p)); const b = box();
-      if (!pts.length){ center(.47, .5, Math.max(minK(), Math.min(1.4, b.w / (PL_W * .75))), anim); return; }
-      const xs = pts.map(p => p.x), ys = pts.map(p => p.y), x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
-      const k = Math.min(2.4, (b.w * .7) / Math.max(.08, (x1 - x0)) / PL_W, (b.h * .7) / Math.max(.08, (y1 - y0)) / PL_H);
-      center((x0 + x1) / 2, (y0 + y1) / 2, k, anim); };
-    plApi = {apply, center, zoomAt, toWorld, fit, box};
-    if (!plCam){ plCam = {k: 1, x: 0, y: 0}; fit(false); } else apply();
-    const geo = $("plGeo"), pts = new Map(); let g = null;
-    const setGeo = (cx, cy) => { const {u, v} = toWorld(cx, cy); if (u < 0 || u > 1 || v < 0 || v > 1) return;
-      geo.innerHTML = `<b>${(62.0274 + (.5 - v) * .173).toFixed(4)}° N</b> / <b>${(129.732 + (u - .5) * .26).toFixed(4)}° E</b> · ×${plCam.k.toFixed(1)}`; };
-    el.addEventListener("pointerdown", e => {
-      if (e.button > 0 || e.target.closest(".pl-zoom,#plBan")) return;
-      try { el.setPointerCapture(e.pointerId); } catch(_){}
-      pts.set(e.pointerId, {x: e.clientX, y: e.clientY});
-      if (pts.size === 1) g = {sx: e.clientX, sy: e.clientY, cx: plCam.x, cy: plCam.y, moved: 0, tgt: e.target.closest(".pl-mk")};
-      else if (pts.size === 2){ const [a, b] = [...pts.values()], r = el.getBoundingClientRect(); g = {pinch: true, d: Math.hypot(a.x - b.x, a.y - b.y) || 1, k: plCam.k, cx: plCam.x, cy: plCam.y, mx: (a.x + b.x) / 2 - r.left, my: (a.y + b.y) / 2 - r.top, moved: 99}; }
-    });
-    el.addEventListener("pointermove", e => {
-      if (!pts.has(e.pointerId)){ if (e.pointerType === "mouse") setGeo(e.clientX, e.clientY); return; }
-      pts.set(e.pointerId, {x: e.clientX, y: e.clientY});
-      if (g && g.pinch && pts.size >= 2){ const [a, b] = [...pts.values()], r = el.getBoundingClientRect(), mx = (a.x + b.x) / 2 - r.left, my = (a.y + b.y) / 2 - r.top;
-        const k1 = clampK(g.k * Math.hypot(a.x - b.x, a.y - b.y) / g.d); plCam.k = k1; plCam.x = mx - (g.mx - g.cx) * k1 / g.k; plCam.y = my - (g.my - g.cy) * k1 / g.k; apply(); }
-      else if (g && !g.pinch){ const dx = e.clientX - g.sx, dy = e.clientY - g.sy; g.moved = Math.max(g.moved, Math.hypot(dx, dy));
-        if (g.moved > 5){ el.classList.add("drag"); plCam.x = g.cx + dx; plCam.y = g.cy + dy; apply(); } }
-      setGeo(e.clientX, e.clientY);
-    });
-    const end = e => {
-      if (!pts.has(e.pointerId)) return; pts.delete(e.pointerId); el.classList.remove("drag");
-      if (!pts.size){ const tap = g && !g.pinch && g.moved <= 6 && e.type === "pointerup"; const tg = g && g.tgt; g = null;
-        // после тапа браузер шлёт ещё и click — он попал бы в фон только что открытого листа и закрыл его
-        if (tap){ const kill = ev => { ev.stopPropagation(); ev.preventDefault(); }; document.addEventListener("click", kill, {capture: true, once: true}); setTimeout(() => document.removeEventListener("click", kill, true), 400); plTap(tg, e); } }
-      else if (pts.size === 1 && g && g.pinch){ const [p] = [...pts.values()]; g = {sx: p.x, sy: p.y, cx: plCam.x, cy: plCam.y, moved: 99}; }
-    };
-    el.addEventListener("pointerup", end); el.addEventListener("pointercancel", end); el.addEventListener("lostpointercapture", end);
-    el.addEventListener("wheel", e => { e.preventDefault(); const r = el.getBoundingClientRect(); zoomAt(Math.exp(-Math.max(-120, Math.min(120, e.deltaY)) * .0022), e.clientX - r.left, e.clientY - r.top); setGeo(e.clientX, e.clientY); }, {passive: false});
-    el.addEventListener("keydown", e => { const st = 70, m = {ArrowLeft: [st, 0], ArrowRight: [-st, 0], ArrowUp: [0, st], ArrowDown: [0, -st]}[e.key];
-      if (m){ e.preventDefault(); plCam.x += m[0]; plCam.y += m[1]; apply(true); } else if (e.key === "+" || e.key === "="){ const b = box(); zoomAt(1.5, b.w / 2, b.h / 2, true); } else if (e.key === "-"){ const b = box(); zoomAt(1 / 1.5, b.w / 2, b.h / 2, true); } });
-    el.addEventListener("click", e => { const z = e.target.closest("[data-plz]"); if (!z) return; const b = box();
-      if (z.dataset.plz === "fit") fit(true); else zoomAt(z.dataset.plz === "in" ? 1.6 : 1 / 1.6, b.w / 2, b.h / 2, true); });
-    if (window.ResizeObserver) new ResizeObserver(() => apply()).observe(el); else addEventListener("resize", () => apply());
+    const el = $("plMap"), host = $("plGL"); if (!el || !host || el.dataset.ml) return; el.dataset.ml = 1;
+    const ld = $("plLd");
+    plLib().then(() => {
+      if (!host.isConnected || plMap) return;
+      let m;
+      try {
+        m = plMap = new maplibregl.Map({container: host, style: plStyle(), center: plCam ? plCam.c : PL_CENTER, zoom: plCam ? plCam.z : 12.4, minZoom: 10, maxZoom: 18.5, maxBounds: PL_BOUNDS,
+          dragRotate: false, pitchWithRotate: false, touchPitch: false, attributionControl: {compact: true}, fadeDuration: 120});
+      } catch(e){ plMap = null; if (ld) ld.innerHTML = `<b>Карта не запустилась</b>Похоже, браузер не умеет WebGL. Обнови его или открой с другого устройства.`; return; }
+      m.touchZoomRotate.disableRotation(); if (m.keyboard && m.keyboard.disableRotation) m.keyboard.disableRotation();
+      m.on("load", () => { el.classList.add("ready"); if (!plCam) plFit(false); plDrawMarkers(); });
+      m.on("moveend", () => { plCam = {c: m.getCenter().toArray(), z: m.getZoom()}; });
+      m.on("zoom", () => el.classList.toggle("z2", m.getZoom() >= 14));
+      m.on("mousemove", e => { clearTimeout(plGeoT); plGeoT = setTimeout(() => plSetGeo(e.lngLat), 16); });
+      m.on("click", e => {
+        if (e.originalEvent && e.originalEvent.target && e.originalEvent.target.closest && e.originalEvent.target.closest(".pl-mk")) return;
+        if (!plPlacing) return;
+        plPlacing.u = +e.lngLat.lng.toFixed(6); plPlacing.v = +e.lngLat.lat.toFixed(6); plSetGeo(e.lngLat); SND.click("soft"); plDrawTmp(); plDrawBanner();
+      });
+      let errN = 0; m.on("error", () => { if (++errN === 6 && !m.areTilesLoaded()) toast("Карта грузится плохо — проверь интернет или VPN"); });
+      el.classList.toggle("z2", m.getZoom() >= 14);
+    }).catch(() => { if (ld) ld.innerHTML = `<b>Карта не загрузилась</b>Проверь интернет или включи VPN и обнови страницу.<button type="button" class="pl-btn sm" data-plmapretry="1" style="margin-top:12px">Ещё раз</button>`; delete el.dataset.ml; });
   }
-  function plTap(tg, e){
-    if (plPlacing){ const {u, v} = plApi.toWorld(e.clientX, e.clientY); if (u < 0 || u > 1 || v < 0 || v > 1) return;
-      plPlacing.u = +u.toFixed(5); plPlacing.v = +v.toFixed(5); SND.click("soft"); plDrawMarkers(); plDrawBanner(); return; }
-    if (tg){ plSelect(tg.dataset.plm, {open: true}); return; }
-    const t = Date.now(); if (t - plLastTap < 320){ const r = $("plMap").getBoundingClientRect(); plApi.zoomAt(1.8, e.clientX - r.left, e.clientY - r.top, true); plLastTap = 0; } else plLastTap = t;
+  const plSetGeo = ll => { const g = $("plGeo"); if (!g || !ll || !plMap) return; g.innerHTML = `<b>${ll.lat.toFixed(4)}° N</b> / <b>${ll.lng.toFixed(4)}° E</b> · z${plMap.getZoom().toFixed(1)}`; };
+  function plFit(anim){
+    if (!plMap) return;
+    const pts = plFiltered().map(plLL).filter(Boolean);
+    if (!pts.length){ plMap[anim ? "flyTo" : "jumpTo"]({center: PL_CENTER, zoom: 12.4}); return; }
+    if (pts.length === 1){ plMap[anim ? "flyTo" : "jumpTo"]({center: pts[0], zoom: 15}); return; }
+    const b = pts.reduce((a, p) => [[Math.min(a[0][0], p[0]), Math.min(a[0][1], p[1])], [Math.max(a[1][0], p[0]), Math.max(a[1][1], p[1])]], [[180, 90], [-180, -90]]);
+    plMap.fitBounds(b, {padding: {top: 70, bottom: 60, left: 50, right: 70}, maxZoom: 15.5, animate: !!anim, duration: anim ? 900 : 0});
+  }
+  const plMkHTML = p => { const w = plIsWant(p), s = plScore(p.id);
+    return `<span class="pl-mk-i"><span class="pl-mk-d">${w ? PLI.want : plKindI(p.kind)}</span>${w ? "" : `<span class="pl-mk-s">${s == null ? "?" : num1(s)}</span>`}<span class="pl-mk-n">${esc(p.name)}</span></span>`; };
+  function plDrawMarkers(){
+    if (!plMap || !PL) return;
+    const want = new Map(plFiltered().map(p => [p.id, p]).filter(([, p]) => plLL(p)));
+    for (const [id, mk] of plMks) if (!want.has(id)){ mk.remove(); plMks.delete(id); }
+    for (const [id, p] of want){
+      const w = plIsWant(p), cls = `pl-mk ${w ? "w" + (plWants(id).length > 1 ? " hot" : "") : plCls(plScore(id))}${plS.sel === id ? " sel" : ""}`, html = plMkHTML(p);
+      let mk = plMks.get(id);
+      if (!mk){
+        const el = document.createElement("button"); el.type = "button"; el.dataset.plm = id;
+        el.addEventListener("click", e => { e.stopPropagation(); if (plPlacing) return; plSelect(id, {open: true, fly: false}); });
+        mk = new maplibregl.Marker({element: el, anchor: "center"}).setLngLat(plLL(p)).addTo(plMap);
+        if (plSeen && !plSeen.has(id)) el.classList.add("nw");
+        plMks.set(id, mk);
+      } else mk.setLngLat(plLL(p));
+      const el = mk.getElement(), keepNw = el.classList.contains("nw");
+      if (el.dataset.c !== cls){ el.className = cls + (keepNw ? " nw" : ""); el.dataset.c = cls; }
+      if (el.dataset.h !== html){ el.innerHTML = html; el.dataset.h = html; }
+      el.setAttribute("aria-label", p.name);
+    }
+    plSeen = new Set(PL.places.map(p => p.id));
+    plDrawTmp();
+  }
+  function plDrawTmp(){
+    if (!plMap) return;
+    if (!plPlacing || plPlacing.u == null){ if (plTmp){ plTmp.remove(); plTmp = null; } return; }
+    if (!plTmp){ const el = document.createElement("span"); el.className = "pl-mk tmp"; el.innerHTML = `<span class="pl-mk-i"><span class="pl-mk-d">${PLI.fly}</span></span>`;
+      plTmp = new maplibregl.Marker({element: el, anchor: "center"}).setLngLat([plPlacing.u, plPlacing.v]).addTo(plMap); }
+    else plTmp.setLngLat([plPlacing.u, plPlacing.v]);
   }
   function plSelect(id, {fly = true, open = false} = {}){
     const p = plById(id); if (!p) return;
     plS.sel = id;
     document.querySelectorAll(".pl-mk.sel,.pl-li.sel").forEach(x => x.classList.remove("sel"));
     document.querySelectorAll(`[data-plm="${CSS.escape(id)}"],[data-plo="${CSS.escape(id)}"]`).forEach(x => x.classList.add("sel"));
-    if (fly && plApi && p.x != null){ if (!plWide()) $("plMap").scrollIntoView({block: "nearest", behavior: plRM() ? "auto" : "smooth"}); plApi.center(p.x, p.y, Math.max(plCam.k, 1.9), true); }
+    plMks.forEach((mk, k) => { const el = mk.getElement(); if (el.dataset.c){ el.dataset.c = ""; } });
+    const ll = plLL(p);
+    if (fly && plMap && ll){ if (!plWide()) $("plMap").scrollIntoView({block: "nearest", behavior: plRM() ? "auto" : "smooth"}); plMap.flyTo({center: ll, zoom: Math.max(plMap.getZoom(), 15), duration: plRM() ? 0 : 1100, essential: true}); }
     if (open){ if (plWide() && route === "places"){ plS.panel = id; plDrawSide(); const sd = $("plSide"); if (sd && sd.getBoundingClientRect().top < 60) sd.scrollIntoView({block: "start", behavior: "smooth"}); } else plOpenSheet(id); }
   }
   // ---- режим «поставить точку» ----
@@ -12469,9 +12548,10 @@ textarea.pld-in{resize:vertical;min-height:60px}
     if (plS.view !== "map"){ plS.view = "map"; lsSet("nexus_pl_view", "map"); renderPlaces(); }
     plPlacing = {u: o.u ?? null, v: o.v ?? null, ...o}; const el = $("plMap"); if (!el) return;
     el.classList.add("placing"); plDrawBanner(); plDrawMarkers();
+    if (plMap && plPlacing.u != null) plMap.flyTo({center: [plPlacing.u, plPlacing.v], zoom: Math.max(plMap.getZoom(), 15)});
     el.scrollIntoView({block: plWide() ? "nearest" : "center", behavior: plRM() ? "auto" : "smooth"});
   }
-  function plStopPlacing(){ if (!plPlacing) return; plPlacing = null; const el = $("plMap"); if (el) el.classList.remove("placing"); plDrawBanner(); if ($("plMks") && PL) plDrawMarkers(); }
+  function plStopPlacing(){ if (!plPlacing) return; plPlacing = null; const el = $("plMap"); if (el) el.classList.remove("placing"); plDrawBanner(); if (plMap && PL) plDrawMarkers(); }
   function plDrawBanner(){
     const b = $("plBan"); if (!b) return;
     if (!plPlacing){ b.innerHTML = ""; return; }
@@ -12536,10 +12616,10 @@ textarea.pld-in{resize:vertical;min-height:60px}
         <button type="button" class="pl-btn" data-pla="visit">${ICON.calendar}Мы были здесь</button>
         <button type="button" class="pl-btn cy${iWant ? " on" : ""}" data-pla="want">${iWant ? "Хочу ✓" : "Хочу сходить"}</button>
         <button type="button" class="pl-btn alt" data-pla="invite">${ICON.send}Позвать друзей</button>
-        ${mode === "sheet" && p.x != null && route === "places" ? `<button type="button" class="pl-btn alt" data-pla="fly">${PLI.fly}На карте</button>` : ""}
+        ${mode === "sheet" && plLL(p) && route === "places" ? `<button type="button" class="pl-btn alt" data-pla="fly">${PLI.fly}На карте</button>` : ""}
         <button type="button" class="pl-btn alt" data-pla="edit">${ICON.edit}Изменить</button>
       </div>
-      ${p.x == null ? `<div class="pld-s"><p class="pld-hint">Точки на карте нет.</p><div class="acts" style="margin-top:8px"><button type="button" class="pl-btn sm cy" data-pla="pin">Поставить точку</button></div></div>` : ""}
+      ${!plLL(p) ? `<div class="pld-s"><p class="pld-hint">Точки на карте нет.</p><div class="acts" style="margin-top:8px"><button type="button" class="pl-btn sm cy" data-pla="pin">Поставить точку</button></div></div>` : ""}
       ${wants.length ? `<div class="pld-s"><h4>${w ? "Хотят сходить" : "Хотят ещё"}<small>${wants.length}</small></h4><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">${avaStack(wants, 8)}<span class="pld-hint">${esc(wants.map(u => u === ME.id ? "ты" : frNick(u)).join(", "))}</span></div></div>` : ""}
       ${w ? "" : `<div class="pld-s"><h4>Оценки<small>${rates.length ? `средняя из ${rates.length}` : "пока никто не оценил"}</small></h4><div class="pld-crit">${crit}</div></div>`}
       <div class="pld-s"><h4>Походы<small>${vs.length}</small></h4>${vs.length ? `<div class="pld-vis">${visits}</div>` : `<p class="pld-hint">Ещё не ходили. Как сходите — жми «Мы были здесь».</p>`}</div>
@@ -12707,14 +12787,14 @@ textarea.pld-in{resize:vertical;min-height:60px}
     await loadPlaces(true);
   }
   // ---- новое место и правка ----
-  function plAdd(){ if (!plReady()) return; plS.panel = null; plStartPlacing({title: "Новое место: тапни по карте, где оно", skip: true, done: (u, v) => plForm(null, {x: u, y: v})}); }
-  function plMovePin(p){ plStartPlacing({title: `Новая точка для «${p.name}»: тапни по карте`, u: p.x, v: p.y, done: async (u, v) => {
-    const {error} = await SB.from("places").update({x: u, y: v, updated_at: now()}).eq("id", p.id); if (error){ plFail(error); return; }
+  function plAdd(){ if (!plReady()) return; plS.panel = null; plStartPlacing({title: "Новое место: тапни по карте, где оно", skip: true, done: (u, v) => plForm(null, {lng: u, lat: v})}); }
+  function plMovePin(p){ const ll = plLL(p); plStartPlacing({title: `Новая точка для «${p.name}»: тапни по карте`, u: ll ? ll[0] : null, v: ll ? ll[1] : null, done: async (u, v) => {
+    const {error} = await SB.from("places").update({lng: u, lat: v, x: null, y: null, updated_at: now()}).eq("id", p.id); if (error){ const g = plGeoErr(error); if (g){ toast(g); return; } plFail(error); return; }
     toast("Точка перенесена"); await loadPlaces(true); plSelect(p.id, {fly: true}); } }); }
   function plForm(p, init = {}){
     const isNew = !p; let file = null, mode = "been", inviteAll = false; const who = new Set([ME.id]);
     const v0 = p || {name: "", kind: "bar", gis_url: "", address: "", photo: null};
-    const s = openSheet(`<h3>${isNew ? "Новое место" : "Изменить место"}</h3><p class="sub">${isNew ? (init.x != null ? "Точка на карте стоит. Осталось пара полей." : "Без точки на карте — её можно поставить потом.") : esc(p.name)}</p>
+    const s = openSheet(`<h3>${isNew ? "Новое место" : "Изменить место"}</h3><p class="sub">${isNew ? (init.lng != null ? "Точка на карте стоит. Осталось пара полей." : "Без точки на карте — её можно поставить потом.") : esc(p.name)}</p>
       <label class="pld-f">Название<input class="pld-in" id="plfN" maxlength="120" value="${esc(v0.name)}" placeholder="Bodies Bar" autocomplete="off"></label>
       <div class="pld-f">Тип<div class="pld-kinds" id="plfK">${PL_KIND.map(([k, l]) => `<button type="button" class="pl-chip" data-k="${k}" aria-pressed="${v0.kind === k}">${l}</button>`).join("")}</div></div>
       ${isNew ? `<div class="pld-f">Статус<div class="pld-two" id="plfS"><button type="button" data-m="been" aria-pressed="true">Уже были</button><button type="button" class="w" data-m="want" aria-pressed="false">Хочу сходить</button></div></div>
@@ -12753,14 +12833,14 @@ textarea.pld-in{resize:vertical;min-height:60px}
         const photo = file ? await plUp(file, 1400) : (isNew ? null : v0.photo);
         const row = {name: name.slice(0, 120), kind, gis_url: gis || null, address: q("#plfA").value.trim().slice(0, 200) || null, photo};
         let id = p && p.id;
-        if (isNew){ const r = await SB.from("places").insert({...row, user_id: ME.id, x: init.x ?? null, y: init.y ?? null}).select().single(); if (r.error) throw r.error; id = r.data.id;
+        if (isNew){ const r = await SB.from("places").insert({...row, user_id: ME.id, ...(init.lng != null ? {lng: init.lng, lat: init.lat} : {})}).select().single(); if (r.error){ const g = plGeoErr(r.error); if (g){ toast(g); throw {message: g, shown: 1}; } throw r.error; } id = r.data.id;
           await loadPlaces(true);
           if (mode === "been") await plSaveVisit(id, q("#plfD").value, [...who]);
           else { await SB.from("place_wants").insert({place_id: id, user_id: ME.id}); if (inviteAll) await notify(plEveryone().filter(u => u !== ME.id), "place_want", "place:" + id, row.name); await loadPlaces(true); }
         } else { const {error} = await SB.from("places").update({...row, updated_at: now()}).eq("id", id); if (error) throw error; await loadPlaces(true); }
         s.close(); toast(isNew ? `«${row.name}» на карте` : "Сохранено"); if (isNew){ SND.click(); if (mode === "been") plDraft[id] = null; }
         if (route === "places") plSelect(id, {fly: isNew, open: isNew || !plSheet});
-      } catch(err){ ok.disabled = false; ok.textContent = isNew ? "Добавить на карту" : "Сохранить"; toast(err && err.code ? upErr(err) : "Не сохранилось: " + ((err && err.message) || "")); }
+      } catch(err){ ok.disabled = false; ok.textContent = isNew ? "Добавить на карту" : "Сохранить"; if (!(err && err.shown)) toast(err && err.code ? upErr(err) : "Не сохранилось: " + ((err && err.message) || "")); }
     };
   }
   // ---- события страницы ----
@@ -12769,6 +12849,8 @@ textarea.pld-in{resize:vertical;min-height:60px}
       const t = e.target; if (!t.closest) return; let b;
       if ((b = t.closest("[data-plview]"))){ plS.view = b.dataset.plview; lsSet("nexus_pl_view", plS.view); plStopPlacing(); renderPlaces(); return; }
       if (t.closest("[data-pladd]")){ plAdd(); return; }
+      if ((b = t.closest("[data-plz]"))){ if (!plMap) return; const z = b.dataset.plz; if (z === "fit") plFit(true); else plMap[z === "in" ? "zoomIn" : "zoomOut"](); return; }
+      if (t.closest("[data-plmapretry]")){ plKill(); delete m.dataset.v; renderPlaces(); return; }
       if (t.closest("[data-plretry]")){ plErr = null; loadPlaces(true); renderPlaces(); return; }
       if ((b = t.closest("[data-plst]"))){ plS.st = b.dataset.plst; plUpd(); return; }
       if ((b = t.closest("[data-plr]"))){ plS.r = b.dataset.plr; plUpd(); return; }
