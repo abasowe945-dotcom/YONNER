@@ -907,3 +907,8 @@ do $$ begin alter publication supabase_realtime add table public.place_ratings; 
 do $$ begin alter publication supabase_realtime add table public.place_dishes; exception when duplicate_object then null; end $$;
 do $$ begin alter publication supabase_realtime add table public.place_dish_rates; exception when duplicate_object then null; end $$;
 do $$ begin alter publication supabase_realtime add table public.place_wants; exception when duplicate_object then null; end $$;
+
+-- ===== 5.2: живая карта — у мест настоящие координаты (широта/долгота) =====
+alter table public.places add column if not exists lat double precision check (lat is null or (lat between 61.5 and 62.5));
+alter table public.places add column if not exists lng double precision check (lng is null or (lng between 129 and 130.6));
+grant update (lat, lng) on public.places to authenticated;
