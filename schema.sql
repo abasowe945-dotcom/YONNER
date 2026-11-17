@@ -751,3 +751,159 @@ create policy vac_delete on public.vacations for delete to authenticated using (
 revoke all on public.vacations from anon;
 grant select, insert, update, delete on public.vacations to authenticated;
 do $$ begin alter publication supabase_realtime add table public.vacations; exception when duplicate_object then null; end $$;
+
+-- ===== 5.0: заведения Якутска — карта, посещения, оценки, блюда, «хочу сходить» =====
+alter table public.notifications drop constraint if exists notifications_kind_check;
+alter table public.notifications add constraint notifications_kind_check check (kind in ('mention_post','mention_comment','comment','invite','mention_event','tier_reply','book_comment','suggest','suggest_ok','slop_plan','slop_poll','place_want','place_visit'));
+-- само место: общее на всех, точку на карте, фото, меню и ссылку может поправить любой
+create table if not exists public.places (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  name text not null check (char_length(name) between 1 and 120),
+  kind text not null default 'bar' check (kind in ('bar','rest','cafe','coffee','fast','club','other')),
+  x double precision check (x is null or (x >= 0 and x <= 1)),
+  y double precision check (y is null or (y >= 0 and y <= 1)),
+  photo text check (photo is null or char_length(photo) <= 600),
+  menu jsonb not null default '[]'::jsonb check (jsonb_typeof(menu) = 'array' and jsonb_array_length(menu) <= 40),
+  gis_url text check (gis_url is null or char_length(gis_url) <= 500),
+  address text check (address is null or char_length(address) <= 200),
+  note text check (note is null or char_length(note) <= 500),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+-- поход: день + кто был (каждый отмечается сам, автор похода может отметить друзей)
+create table if not exists public.place_visits (
+  id uuid primary key default gen_random_uuid(),
+  place_id uuid not null references public.places (id) on delete cascade,
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  day date not null,
+  created_at timestamptz not null default now()
+);
+create table if not exists public.place_visit_members (
+  visit_id uuid not null references public.place_visits (id) on delete cascade,
+  user_id uuid not null references auth.users (id) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (visit_id, user_id)
+);
+-- оценка места у каждого своя: интерьер, цены, вкус, пиво (1–10, пиво можно не ставить)
+create table if not exists public.place_ratings (
+  place_id uuid not null references public.places (id) on delete cascade,
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  interior smallint check (interior is null or interior between 1 and 10),
+  price smallint check (price is null or price between 1 and 10),
+  taste smallint check (taste is null or taste between 1 and 10),
+  beer smallint check (beer is null or beer between 1 and 10),
+  comment text check (comment is null or char_length(comment) <= 300),
+  updated_at timestamptz not null default now(),
+  primary key (place_id, user_id)
+);
+-- блюда и напитки: общий список у места, оценка у каждого своя
+create table if not exists public.place_dishes (
+  id uuid primary key default gen_random_uuid(),
+  place_id uuid not null references public.places (id) on delete cascade,
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  name text not null check (char_length(name) between 1 and 80),
+  kind text not null default 'food' check (kind in ('food','drink')),
+  created_at timestamptz not null default now()
+);
+create table if not exists public.place_dish_rates (
+  dish_id uuid not null references public.place_dishes (id) on delete cascade,
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  score smallint not null check (score between 1 and 10),
+  updated_at timestamptz not null default now(),
+  primary key (dish_id, user_id)
+);
+-- «хочу сходить»
+create table if not exists public.place_wants (
+  place_id uuid not null references public.places (id) on delete cascade,
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (place_id, user_id)
+);
+create index if not exists places_user_idx on public.places (user_id);
+create index if not exists place_visits_place_idx on public.place_visits (place_id, day desc);
+create index if not exists place_visits_user_idx on public.place_visits (user_id);
+create index if not exists place_visit_members_user_idx on public.place_visit_members (user_id);
+create index if not exists place_ratings_user_idx on public.place_ratings (user_id);
+create index if not exists place_dishes_place_idx on public.place_dishes (place_id);
+create index if not exists place_dishes_user_idx on public.place_dishes (user_id);
+create index if not exists place_dish_rates_user_idx on public.place_dish_rates (user_id);
+create index if not exists place_wants_user_idx on public.place_wants (user_id);
+alter table public.places enable row level security;
+alter table public.place_visits enable row level security;
+alter table public.place_visit_members enable row level security;
+alter table public.place_ratings enable row level security;
+alter table public.place_dishes enable row level security;
+alter table public.place_dish_rates enable row level security;
+alter table public.place_wants enable row level security;
+drop policy if exists plc_select on public.places;
+drop policy if exists plc_insert on public.places;
+drop policy if exists plc_update on public.places;
+drop policy if exists plc_delete on public.places;
+create policy plc_select on public.places for select to authenticated using (true);
+create policy plc_insert on public.places for insert to authenticated with check ((select auth.uid()) = user_id);
+create policy plc_update on public.places for update to authenticated using (true) with check (true);
+create policy plc_delete on public.places for delete to authenticated using ((select auth.uid()) = user_id);
+drop policy if exists plv_select on public.place_visits;
+drop policy if exists plv_insert on public.place_visits;
+drop policy if exists plv_update on public.place_visits;
+drop policy if exists plv_delete on public.place_visits;
+create policy plv_select on public.place_visits for select to authenticated using (true);
+create policy plv_insert on public.place_visits for insert to authenticated with check ((select auth.uid()) = user_id);
+create policy plv_update on public.place_visits for update to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy plv_delete on public.place_visits for delete to authenticated using ((select auth.uid()) = user_id);
+drop policy if exists plvm_select on public.place_visit_members;
+drop policy if exists plvm_insert on public.place_visit_members;
+drop policy if exists plvm_delete on public.place_visit_members;
+create policy plvm_select on public.place_visit_members for select to authenticated using (true);
+create policy plvm_insert on public.place_visit_members for insert to authenticated
+  with check ((select auth.uid()) = user_id or exists (select 1 from public.place_visits v where v.id = visit_id and v.user_id = (select auth.uid())));
+create policy plvm_delete on public.place_visit_members for delete to authenticated
+  using ((select auth.uid()) = user_id or exists (select 1 from public.place_visits v where v.id = visit_id and v.user_id = (select auth.uid())));
+drop policy if exists plr_select on public.place_ratings;
+drop policy if exists plr_insert on public.place_ratings;
+drop policy if exists plr_update on public.place_ratings;
+drop policy if exists plr_delete on public.place_ratings;
+create policy plr_select on public.place_ratings for select to authenticated using (true);
+create policy plr_insert on public.place_ratings for insert to authenticated with check ((select auth.uid()) = user_id);
+create policy plr_update on public.place_ratings for update to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy plr_delete on public.place_ratings for delete to authenticated using ((select auth.uid()) = user_id);
+drop policy if exists pld_select on public.place_dishes;
+drop policy if exists pld_insert on public.place_dishes;
+drop policy if exists pld_delete on public.place_dishes;
+create policy pld_select on public.place_dishes for select to authenticated using (true);
+create policy pld_insert on public.place_dishes for insert to authenticated with check ((select auth.uid()) = user_id);
+create policy pld_delete on public.place_dishes for delete to authenticated
+  using ((select auth.uid()) = user_id or exists (select 1 from public.places p where p.id = place_id and p.user_id = (select auth.uid())));
+drop policy if exists pldr_select on public.place_dish_rates;
+drop policy if exists pldr_insert on public.place_dish_rates;
+drop policy if exists pldr_update on public.place_dish_rates;
+drop policy if exists pldr_delete on public.place_dish_rates;
+create policy pldr_select on public.place_dish_rates for select to authenticated using (true);
+create policy pldr_insert on public.place_dish_rates for insert to authenticated with check ((select auth.uid()) = user_id);
+create policy pldr_update on public.place_dish_rates for update to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy pldr_delete on public.place_dish_rates for delete to authenticated using ((select auth.uid()) = user_id);
+drop policy if exists plw_select on public.place_wants;
+drop policy if exists plw_insert on public.place_wants;
+drop policy if exists plw_delete on public.place_wants;
+create policy plw_select on public.place_wants for select to authenticated using (true);
+create policy plw_insert on public.place_wants for insert to authenticated with check ((select auth.uid()) = user_id);
+create policy plw_delete on public.place_wants for delete to authenticated using ((select auth.uid()) = user_id);
+revoke all on public.places, public.place_visits, public.place_visit_members, public.place_ratings, public.place_dishes, public.place_dish_rates, public.place_wants from anon;
+grant select, insert, delete on public.places to authenticated;
+-- править место может любой, но автора поменять нельзя
+revoke update on public.places from authenticated;
+grant update (name, kind, x, y, photo, menu, gis_url, address, note, updated_at) on public.places to authenticated;
+grant select, insert, update, delete on public.place_visits, public.place_ratings, public.place_dish_rates to authenticated;
+grant select, insert, delete on public.place_visit_members, public.place_dishes, public.place_wants to authenticated;
+alter table public.place_visit_members replica identity full;
+alter table public.place_ratings replica identity full;
+alter table public.place_dish_rates replica identity full;
+alter table public.place_wants replica identity full;
+do $$ begin alter publication supabase_realtime add table public.places; exception when duplicate_object then null; end $$;
+do $$ begin alter publication supabase_realtime add table public.place_visits; exception when duplicate_object then null; end $$;
+do $$ begin alter publication supabase_realtime add table public.place_visit_members; exception when duplicate_object then null; end $$;
+do $$ begin alter publication supabase_realtime add table public.place_ratings; exception when duplicate_object then null; end $$;
+do $$ begin alter publication supabase_realtime add table public.place_dishes; exception when duplicate_object then null; end $$;
+do $$ begin alter publication supabase_realtime add table public.place_dish_rates; exception when duplicate_object then null; end $$;
+do $$ begin alter publication supabase_realtime add table public.place_wants; exception when duplicate_object then null; end $$;

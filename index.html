@@ -4206,6 +4206,317 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
 .slp-conf i{position:absolute;top:-20px;display:block}
 @media (max-width:820px){.sltl-r{grid-template-columns:70px minmax(0,1fr);min-height:78px}.sltl-z{min-height:78px}.sltl-i{width:44px}.sltl-i.ghost{margin:-33px 0 0 -22px}.sltl-l b{font-size:17px}.sltl-l span{font-size:10.5px}.slp-ch{grid-template-columns:1fr}.slp-po-i{width:104px}.slp-po-g{gap:12px}.slp-upc b{max-width:130px}}
 </style>
+<style id="plCss">
+/* ===== 5.0: заведения Якутска — карта в стиле игр с открытым миром ===== */
+body[data-world="wPlaces"]:not(.has-secbg){background:#050b15!important}
+body[data-world="wPlaces"]{color:#e6edf7}
+#wPlaces{--pl-bg:#07111f;--pl-panel:rgba(8,18,33,.9);--pl-cell:rgba(255,255,255,.04);--pl-gold:#f0c24b;--pl-gold2:#ffdf85;--pl-cyan:#3ff0ff;--pl-red:#ff4d6a;--pl-green:#5cffa2;--pl-dim:#8394ad;--pl-line:rgba(240,194,75,.2);--pl-mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;position:relative;font-family:var(--ios);color:#e6edf7}
+#wPlaces::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(70% 50% at 15% 0,rgba(240,194,75,.09),transparent 60%),radial-gradient(60% 50% at 100% 30%,rgba(63,240,255,.07),transparent 60%),linear-gradient(#050b15,#06101d)}
+.pl-main{max-width:1500px;margin:0 auto;padding:18px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
+.pl-hud{display:flex;align-items:flex-end;gap:14px 24px;flex-wrap:wrap;margin-bottom:14px}
+.pl-tt small{display:block;font:600 11px/1 var(--pl-mono);letter-spacing:.22em;color:var(--pl-gold);opacity:.8;margin-bottom:6px}
+.pl-tt h1{position:relative;margin:0;font:900 clamp(30px,4.4vw,52px)/.92 var(--ios);letter-spacing:.02em;text-transform:uppercase;color:#fff;text-shadow:0 0 22px rgba(240,194,75,.35)}
+.pl-tt h1::before,.pl-tt h1::after{content:attr(data-t);position:absolute;inset:0;pointer-events:none}
+.pl-tt h1::before{color:var(--pl-cyan);transform:translate(2px,0);clip-path:inset(0 0 62% 0);opacity:.7;animation:plGl 5s steps(1) infinite}
+.pl-tt h1::after{color:var(--pl-red);transform:translate(-2px,0);clip-path:inset(58% 0 0 0);opacity:.7;animation:plGl 5s steps(1) .25s infinite}
+@keyframes plGl{0%,92%,100%{transform:none;opacity:0}93%{transform:translate(3px,-1px);opacity:.8}95%{transform:translate(-3px,1px);opacity:.8}97%{transform:translate(1px,0);opacity:.6}}
+.pl-stats{display:flex;gap:6px;flex-wrap:wrap}
+.pl-stat{display:flex;flex-direction:column;gap:3px;padding:8px 12px;border:1px solid var(--pl-line);background:linear-gradient(135deg,rgba(240,194,75,.07),rgba(240,194,75,.01));clip-path:polygon(0 0,calc(100% - 9px) 0,100% 9px,100% 100%,9px 100%,0 calc(100% - 9px))}
+.pl-stat b{font:800 20px/1 var(--pl-mono);color:#fff;font-variant-numeric:tabular-nums}
+.pl-stat span{font:600 10px/1 var(--pl-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--pl-dim)}
+.pl-acts{display:flex;gap:8px;margin-left:auto;align-items:center}
+.pl-seg{display:flex;border:1px solid var(--pl-line);background:rgba(0,0,0,.3)}
+.pl-seg button{border:0;background:none;color:var(--pl-dim);font:700 12px/1 var(--pl-mono);letter-spacing:.1em;text-transform:uppercase;padding:11px 14px;cursor:pointer;display:flex;align-items:center;gap:7px}
+.pl-seg button svg{width:16px;height:16px}
+.pl-seg button[aria-pressed="true"]{background:var(--pl-gold);color:#151002}
+.pl-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;cursor:pointer;font:800 13px/1 var(--pl-mono);letter-spacing:.08em;text-transform:uppercase;padding:13px 18px;background:var(--pl-gold);color:#141002;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));transition:filter .15s,transform .15s}
+.pl-btn:hover{filter:brightness(1.12)}.pl-btn:active{transform:scale(.97)}
+.pl-btn svg{width:17px;height:17px}
+.pl-btn.alt{background:rgba(240,194,75,.1);color:var(--pl-gold2);box-shadow:inset 0 0 0 1px var(--pl-line)}
+.pl-btn.cy{background:rgba(63,240,255,.12);color:var(--pl-cyan);box-shadow:inset 0 0 0 1px rgba(63,240,255,.35)}
+.pl-btn.cy.on{background:var(--pl-cyan);color:#021417}
+.pl-btn.red{background:rgba(255,77,106,.12);color:var(--pl-red);box-shadow:inset 0 0 0 1px rgba(255,77,106,.35)}
+.pl-btn.sm{padding:9px 12px;font-size:11px}
+.pl-btn:disabled{opacity:.45;cursor:default}
+.pl-body{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:14px;align-items:start}
+/* ---- карта ---- */
+.pl-mapw{position:relative;height:calc(100vh - 250px);min-height:500px;max-height:900px;overflow:hidden;background:#0a1626;border:1px solid var(--pl-line);touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;outline:none;clip-path:polygon(0 0,calc(100% - 22px) 0,100% 22px,100% 100%,22px 100%,0 calc(100% - 22px))}
+.pl-mapw.drag{cursor:grabbing}
+.pl-mapw.placing{cursor:crosshair}
+.pl-world{position:absolute;left:0;top:0;width:904px;height:1280px;transform-origin:0 0;will-change:transform}
+.pl-world.anim{transition:transform .55s cubic-bezier(.2,.8,.2,1)}
+.pl-world > img{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;filter:brightness(1.22) saturate(1.2) contrast(1.05)}
+.pl-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(240,194,75,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(240,194,75,.05) 1px,transparent 1px);background-size:64px 64px}
+.pl-fx{position:absolute;inset:0;pointer-events:none;z-index:3;background:repeating-linear-gradient(0deg,rgba(0,0,0,.16) 0 1px,transparent 1px 3px),radial-gradient(120% 90% at 50% 50%,transparent 55%,rgba(2,6,14,.7))}
+.pl-fx::after{content:"";position:absolute;left:0;right:0;height:120px;top:-120px;background:linear-gradient(transparent,rgba(240,194,75,.06),transparent);animation:plScan 7s linear infinite}
+@keyframes plScan{to{transform:translateY(calc(100vh + 240px))}}
+.pl-crn{position:absolute;width:26px;height:26px;z-index:4;pointer-events:none;border-color:var(--pl-gold);border-style:solid;opacity:.85}
+.pl-crn.a{left:10px;top:10px;border-width:2px 0 0 2px}.pl-crn.b{right:10px;top:10px;border-width:2px 2px 0 0}.pl-crn.c{left:10px;bottom:10px;border-width:0 0 2px 2px}.pl-crn.d{right:10px;bottom:10px;border-width:0 2px 2px 0}
+.pl-tag{position:absolute;left:18px;top:16px;z-index:5;pointer-events:none;font:700 11px/1.5 var(--pl-mono);letter-spacing:.16em;color:var(--pl-gold2);text-transform:uppercase;text-shadow:0 1px 6px #000}
+.pl-tag b{display:block;font-size:20px;letter-spacing:.06em;color:#fff}
+.pl-geo{position:absolute;left:18px;bottom:16px;z-index:5;pointer-events:none;font:600 11px/1.4 var(--pl-mono);color:var(--pl-dim);letter-spacing:.06em;text-shadow:0 1px 4px #000}
+.pl-geo b{color:var(--pl-gold2);font-weight:700}
+.pl-zoom{position:absolute;right:14px;top:50%;transform:translateY(-50%);z-index:6;display:flex;flex-direction:column;gap:6px}
+.pl-zoom button{width:40px;height:40px;border:1px solid var(--pl-line);background:rgba(5,12,24,.85);color:var(--pl-gold2);font:700 20px/1 var(--pl-mono);cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.pl-zoom button svg{width:18px;height:18px}
+.pl-zoom button:hover{background:rgba(240,194,75,.18)}
+.pl-comp{position:absolute;right:16px;top:14px;z-index:5;width:46px;height:46px;border-radius:50%;border:1px solid var(--pl-line);display:grid;place-items:center;font:800 12px/1 var(--pl-mono);color:var(--pl-red);background:rgba(5,12,24,.6);pointer-events:none}
+.pl-comp::before{content:"";position:absolute;inset:5px;border-radius:50%;border:1px dashed rgba(240,194,75,.35)}
+.pl-leg{position:absolute;right:16px;bottom:14px;z-index:5;display:flex;gap:10px;font:600 10px/1 var(--pl-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--pl-dim);background:rgba(5,12,24,.75);padding:7px 10px;border:1px solid rgba(255,255,255,.06);pointer-events:none}
+.pl-leg i{display:inline-block;width:8px;height:8px;transform:rotate(45deg);margin-right:5px;vertical-align:0}
+.pl-banner{position:absolute;left:50%;top:14px;transform:translateX(-50%);z-index:7;display:flex;align-items:center;gap:10px;padding:9px 10px 9px 14px;background:rgba(5,12,24,.92);border:1px solid var(--pl-cyan);box-shadow:0 0 24px rgba(63,240,255,.25);font:700 12px/1.3 var(--pl-mono);letter-spacing:.06em;color:var(--pl-cyan);text-transform:uppercase;max-width:calc(100% - 28px)}
+.pl-banner .pl-btn{flex:none}
+.pl-banner span{flex:1;min-width:0}
+/* ---- метки ---- */
+.pl-mk{position:absolute;z-index:2;width:0;height:0;border:0;padding:0;background:none;cursor:pointer;color:#fff}
+.pl-mk-i{position:absolute;left:0;top:0;transform:translate(-50%,-50%) scale(calc(1 / var(--k,1)));transform-origin:50% 50%;display:flex;flex-direction:column;align-items:center;gap:3px}
+.pl-mk-d{position:relative;width:30px;height:30px;display:grid;place-items:center}
+.pl-mk-d::before{content:"";position:absolute;inset:3px;transform:rotate(45deg);background:rgba(5,12,24,.92);border:2px solid var(--c,var(--pl-gold));box-shadow:0 0 14px var(--c,var(--pl-gold)),inset 0 0 8px rgba(0,0,0,.6)}
+.pl-mk-d svg{position:relative;width:14px;height:14px;color:var(--c,var(--pl-gold));stroke-width:2.4}
+.pl-mk-s{font:800 11px/1 var(--pl-mono);padding:3px 5px;background:var(--c,var(--pl-gold));color:#05080e;min-width:22px;text-align:center;font-variant-numeric:tabular-nums}
+.pl-mk-n{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:3px;white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis;font:700 11px/1.3 var(--ios);color:#fff;text-shadow:0 1px 3px #000,0 0 8px #000;padding:2px 6px;background:rgba(5,12,24,.78);border-left:2px solid var(--c,var(--pl-gold));opacity:0;transition:opacity .15s;pointer-events:none}
+.pl-mapw.z2 .pl-mk-n,.pl-mk:hover .pl-mk-n,.pl-mk.sel .pl-mk-n,.pl-mk:focus-visible .pl-mk-n{opacity:1}
+.pl-mk.g{--c:var(--pl-green)}.pl-mk.y{--c:var(--pl-gold)}.pl-mk.r{--c:var(--pl-red)}.pl-mk.n{--c:#c7d2e3}
+.pl-mk.w{--c:var(--pl-cyan)}
+.pl-mk.w .pl-mk-d::before{transform:none;border-radius:0;clip-path:polygon(25% 3%,75% 3%,100% 50%,75% 97%,25% 97%,0 50%);border-width:0;background:var(--pl-cyan);box-shadow:none}
+.pl-mk.w .pl-mk-d::after{content:"";position:absolute;inset:5px;clip-path:polygon(25% 3%,75% 3%,100% 50%,75% 97%,25% 97%,0 50%);background:rgba(5,12,24,.94)}
+.pl-mk.w .pl-mk-d svg{z-index:1}
+.pl-mk.w.hot .pl-mk-d{animation:plHot 1.8s ease-in-out infinite}
+@keyframes plHot{50%{filter:drop-shadow(0 0 10px var(--pl-cyan))}}
+.pl-mk.sel{z-index:3}
+.pl-mk.sel .pl-mk-d::after{content:"";position:absolute;inset:-10px;border:2px solid var(--c);border-radius:50%;animation:plPing 1.6s ease-out infinite}
+.pl-mk.w.sel .pl-mk-d::after{clip-path:none;background:none;inset:-10px}
+@keyframes plPing{0%{transform:scale(.5);opacity:1}100%{transform:scale(1.6);opacity:0}}
+.pl-mk:hover .pl-mk-d{transform:scale(1.12)}
+.pl-mk-d{transition:transform .15s}
+.pl-mk.tmp{--c:var(--pl-cyan);pointer-events:none}
+.pl-mk.tmp .pl-mk-d::after{content:"";position:absolute;inset:-12px;border:2px dashed var(--pl-cyan);border-radius:50%;animation:plSpin 4s linear infinite}
+@keyframes plSpin{to{transform:rotate(1turn)}}
+.pl-mk.nw .pl-mk-i{animation:plDrop .5s cubic-bezier(.2,1.6,.4,1)}
+@keyframes plDrop{from{opacity:0;margin-top:-30px}}
+/* ---- боковая панель ---- */
+.pl-side{display:flex;flex-direction:column;gap:10px;min-width:0}
+.pl-panel{background:var(--pl-panel);border:1px solid rgba(255,255,255,.07);padding:14px;position:relative}
+.pl-panel::before{content:"";position:absolute;left:-1px;top:-1px;width:14px;height:14px;border-left:2px solid var(--pl-gold);border-top:2px solid var(--pl-gold)}
+.pl-srch{display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.35);border:1px solid var(--pl-line);padding:0 12px}
+.pl-srch svg{width:17px;height:17px;color:var(--pl-gold);flex:none}
+.pl-srch input{flex:1;min-width:0;background:none;border:0;outline:0;color:#fff;font:500 16px/1 var(--ios);padding:12px 0}
+.pl-srch input::placeholder{color:var(--pl-dim)}
+.pl-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+@media (max-width:900px){.pl-chips.sc{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-left:-14px;margin-right:-14px;padding:0 14px}}
+.pl-chips.sc::-webkit-scrollbar{display:none}
+.pl-chip{flex:none;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);color:#c8d3e3;font:700 11px/1 var(--pl-mono);letter-spacing:.06em;text-transform:uppercase;padding:9px 10px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.pl-chip[aria-pressed="true"]{border-color:var(--pl-gold);color:#141002;background:var(--pl-gold)}
+.pl-chip small{opacity:.7;font-weight:600}
+.pl-chip i{width:7px;height:7px;transform:rotate(45deg);display:inline-block}
+.pl-row{display:flex;align-items:center;gap:8px;margin-top:10px}
+.pl-row label{font:600 10px/1 var(--pl-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--pl-dim)}
+.pl-sel{flex:1;min-width:0;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.1);color:#fff;font:600 14px/1 var(--ios);padding:9px 10px;border-radius:0}
+.pl-list{display:flex;flex-direction:column;gap:6px;max-height:calc(100vh - 430px);min-height:180px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(240,194,75,.3) transparent;padding-right:2px}
+.pl-li{display:grid;grid-template-columns:54px minmax(0,1fr) auto;gap:11px;align-items:center;width:100%;text-align:left;padding:7px;border:1px solid transparent;background:rgba(255,255,255,.025);color:inherit;cursor:pointer;transition:background .15s,border-color .15s}
+.pl-li:hover,.pl-li.sel{background:rgba(240,194,75,.08);border-color:var(--pl-line)}
+.pl-li.sel{border-color:var(--pl-gold)}
+.pl-th{position:relative;width:54px;height:54px;overflow:hidden;background:linear-gradient(135deg,#132745,#0b1628);display:grid;place-items:center;color:var(--pl-gold)}
+.pl-th img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.pl-th svg{width:22px;height:22px}
+.pl-li .t{min-width:0}
+.pl-li .t b{display:block;font:700 15px/1.2 var(--ios);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff}
+.pl-li .t small{display:block;margin-top:4px;font:500 12px/1.3 var(--ios);color:var(--pl-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pl-li .t .ava-stack{margin-top:5px}
+.pl-sc{font:800 17px/1 var(--pl-mono);padding:8px 8px;min-width:46px;text-align:center;font-variant-numeric:tabular-nums;color:#06090f;background:var(--c,#c7d2e3)}
+.pl-sc.g{--c:var(--pl-green)}.pl-sc.y{--c:var(--pl-gold)}.pl-sc.r{--c:var(--pl-red)}
+.pl-sc.n{background:none;color:var(--pl-dim);font-size:12px;border:1px dashed rgba(255,255,255,.15)}
+.pl-sc.w{background:none;color:var(--pl-cyan);border:1px solid rgba(63,240,255,.4);font-size:11px;padding:7px 6px}
+.pl-empty{padding:26px 10px;text-align:center;color:var(--pl-dim);font-size:14px;line-height:1.5}
+.pl-empty b{display:block;color:#fff;font-size:16px;margin-bottom:4px}
+.pl-sum{display:flex;align-items:center;justify-content:space-between;margin:2px 0 8px;font:700 11px/1 var(--pl-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--pl-dim)}
+.pl-sum b{color:var(--pl-gold2)}
+/* ---- карточка места ---- */
+.pld{display:flex;flex-direction:column;gap:12px}
+.pld-back{align-self:flex-start;border:0;background:none;color:var(--pl-gold2);font:700 12px/1 var(--pl-mono);letter-spacing:.1em;text-transform:uppercase;cursor:pointer;padding:4px 0}
+.pld-hero{position:relative;min-height:190px;padding:16px;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;background:#0a1526 url("yakutsk-map.webp") center 45%/160% auto no-repeat;isolation:isolate}
+.pld-hero > img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
+.pld-hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(transparent 20%,rgba(4,9,18,.94)),repeating-linear-gradient(0deg,rgba(0,0,0,.12) 0 1px,transparent 1px 3px)}
+.pld-kind{align-self:flex-start;font:800 10px/1 var(--pl-mono);letter-spacing:.18em;text-transform:uppercase;color:#141002;background:var(--pl-gold);padding:5px 7px;margin-bottom:8px}
+.pld-kind.w{background:var(--pl-cyan);color:#021417}
+.pld-hero h2{margin:0;font:900 26px/1.05 var(--ios);color:#fff;text-shadow:0 2px 12px #000;padding-right:84px;overflow-wrap:anywhere}
+.pld-hero p{margin:6px 0 0;font-size:13px;color:#b9c6d8;padding-right:84px}
+.pld-big{position:absolute;right:14px;bottom:14px;text-align:center}
+.pld-big b{display:block;font:900 30px/1 var(--pl-mono);padding:10px 10px 8px;min-width:70px;color:#06090f;background:var(--c,#c7d2e3);font-variant-numeric:tabular-nums;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px))}
+.pld-big.g{--c:var(--pl-green)}.pld-big.y{--c:var(--pl-gold)}.pld-big.r{--c:var(--pl-red)}
+.pld-big.n b{background:rgba(5,12,24,.8);color:var(--pl-dim);font-size:13px;padding:12px 8px}
+.pld-big small{display:block;margin-top:5px;font:600 10px/1 var(--pl-mono);letter-spacing:.08em;color:#c7d2e3;text-transform:uppercase;text-shadow:0 1px 3px #000}
+.pld-acts{display:flex;flex-wrap:wrap;gap:6px}
+.pld-acts .pl-btn{flex:1 1 auto}
+.pld-s{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);padding:12px}
+.pld-s h4{display:flex;align-items:center;gap:8px;margin:0 0 10px;font:800 11px/1 var(--pl-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--pl-gold)}
+.pld-s h4 small{color:var(--pl-dim);font-weight:600;letter-spacing:.06em}
+.pld-s h4 .x{margin-left:auto}
+.pld-hint{margin:0;color:var(--pl-dim);font-size:13px;line-height:1.45}
+.pld-crit{display:grid;grid-template-columns:78px minmax(0,1fr) 40px;gap:8px 10px;align-items:center}
+.pld-crit span{font:600 13px/1 var(--ios);color:#c7d2e3}
+.pld-crit em{font:800 14px/1 var(--pl-mono);font-style:normal;text-align:right;font-variant-numeric:tabular-nums}
+.pld-bar{height:8px;background:rgba(255,255,255,.06);position:relative;overflow:hidden}
+.pld-bar i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,var(--c),color-mix(in srgb,var(--c) 60%,#fff));box-shadow:0 0 10px var(--c);transform-origin:left;animation:plBar .8s cubic-bezier(.2,.8,.2,1) both}
+@keyframes plBar{from{transform:scaleX(0)}}
+.pld-vis{display:flex;flex-direction:column;gap:6px}
+.pld-v{display:flex;align-items:center;gap:10px;padding:8px;background:rgba(0,0,0,.2);flex-wrap:wrap}
+.pld-v .d{font:800 13px/1.2 var(--pl-mono);color:#fff;min-width:0;flex:1}
+.pld-v .d small{display:block;font:500 11px/1.2 var(--ios);color:var(--pl-dim);margin-top:2px}
+.pld-v .ava-stack{flex:none}
+.pld-v .pl-btn{flex:none}
+.pld-pick{display:grid;grid-template-columns:72px minmax(0,1fr);gap:10px;align-items:center;margin-bottom:8px}
+.pld-pick > span{font:600 13px/1.2 var(--ios);color:#c7d2e3}
+.pld-ten{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:3px}
+.pld-ten button{height:32px;border:0;background:rgba(255,255,255,.06);color:#c7d2e3;font:700 13px/1 var(--pl-mono);cursor:pointer;padding:0;transition:background .12s}
+.pld-ten button.on{background:var(--c,var(--pl-gold));color:#06090f}
+.pld-ten button.lo{background:color-mix(in srgb,var(--c,var(--pl-gold)) 28%,transparent);color:#fff}
+.pld-ten.skip button{opacity:.35}
+.pld-nob{grid-column:2;justify-self:start;margin-top:-2px;border:0;background:none;color:var(--pl-dim);font:600 12px/1 var(--ios);cursor:pointer;padding:4px 0;text-decoration:underline;text-underline-offset:3px}
+.pld-in{width:100%;min-width:0;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.1);color:#fff;font:500 16px/1.3 var(--ios);padding:11px 12px;border-radius:0;outline:0}
+.pld-in:focus{border-color:var(--pl-gold)}
+textarea.pld-in{resize:vertical;min-height:60px}
+.pld-rt{display:flex;gap:10px;padding:8px 0;border-top:1px solid rgba(255,255,255,.05);align-items:flex-start}
+.pld-rt:first-of-type{border-top:0}
+.pld-rt .t{flex:1;min-width:0;font-size:13px;color:#c7d2e3}
+.pld-rt .t b{color:#fff;font-size:14px}
+.pld-rt .t p{margin:4px 0 0;color:#e6edf7;font-size:14px;overflow-wrap:anywhere}
+.pld-rt .nums{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px}
+.pld-rt .nums span{font:700 11px/1 var(--pl-mono);padding:4px 6px;background:rgba(255,255,255,.06);color:#c7d2e3}
+.pld-rt .nums span b{color:#fff;margin-left:3px;font-size:11px}
+.pld-dg{font:700 10px/1 var(--pl-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--pl-dim);margin:10px 0 6px}
+.pld-dg:first-child{margin-top:0}
+.pld-dish{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;gap:8px;align-items:center;padding:7px 8px;background:rgba(0,0,0,.2);margin-bottom:4px}
+.pld-dish .t{min-width:0}
+.pld-dish .t b{display:block;font:600 14px/1.25 var(--ios);color:#fff;overflow-wrap:anywhere}
+.pld-dish .t small{color:var(--pl-dim);font-size:11px}
+.pld-dish select{background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.12);color:#fff;font:700 13px/1 var(--pl-mono);padding:7px 4px;border-radius:0;max-width:74px}
+.pld-dish .pl-sc{font-size:13px;padding:6px 6px;min-width:38px}
+.pld-dish .rm{border:0;background:none;color:var(--pl-dim);cursor:pointer;padding:4px;font-size:16px;line-height:1}
+.pld-add{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px;margin-top:8px}
+.pld-add .pl-seg button{padding:10px 9px}
+.pld-menu{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:6px}
+.pld-menu button,.pld-menu label{position:relative;aspect-ratio:3/4;border:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.3);padding:0;cursor:pointer;overflow:hidden;display:grid;place-items:center;color:var(--pl-gold)}
+.pld-menu img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.pld-menu label{border-style:dashed;border-color:var(--pl-line);font:700 10px/1.3 var(--pl-mono);text-transform:uppercase;letter-spacing:.08em;text-align:center;gap:4px;align-content:center}
+.pld-menu label svg{width:22px;height:22px}
+.pld-meta{font:500 12px/1.5 var(--ios);color:var(--pl-dim);text-align:center}
+.pld-who{display:flex;flex-wrap:wrap;gap:6px}
+.pld-who button{display:flex;align-items:center;gap:7px;padding:5px 10px 5px 5px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:#c7d2e3;font:600 13px/1 var(--ios);cursor:pointer}
+.pld-who button[aria-pressed="true"]{border-color:var(--pl-gold);background:rgba(240,194,75,.16);color:#fff}
+.pld-who .fr-ava{width:24px;height:24px;font-size:12px}
+.pld-f{display:grid;gap:6px;margin-bottom:12px;font:700 10px/1 var(--pl-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--pl-dim)}
+.pld-ph{position:relative;height:150px;border:1px dashed var(--pl-line);background:rgba(0,0,0,.3);display:grid;place-items:center;text-align:center;color:var(--pl-dim);font:500 13px/1.4 var(--ios);cursor:pointer;overflow:hidden;padding:10px}
+.pld-ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.pld-ph.drop{border-color:var(--pl-cyan)}
+.pld-two{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.pld-two button{padding:12px 8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);color:#c7d2e3;font:700 12px/1.2 var(--pl-mono);letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+.pld-two button[aria-pressed="true"]{border-color:var(--pl-gold);background:rgba(240,194,75,.14);color:#fff}
+.pld-two button.w[aria-pressed="true"]{border-color:var(--pl-cyan);background:rgba(63,240,255,.12)}
+.pld-kinds{display:flex;flex-wrap:wrap;gap:5px}
+/* лист с местом */
+.sh.pl-sh{background:#08121f;border-radius:0;clip-path:none;border:1px solid var(--pl-line,rgba(240,194,75,.2));--pl-gold:#f0c24b;--pl-gold2:#ffdf85;--pl-cyan:#3ff0ff;--pl-red:#ff4d6a;--pl-green:#5cffa2;--pl-dim:#8394ad;--pl-line:rgba(240,194,75,.2);--pl-mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;color:#e6edf7}
+.sh.pl-sh h3{font:900 22px/1.1 var(--ios);text-transform:uppercase;letter-spacing:.02em}
+.sh.pl-sh .sub{color:#8394ad}
+@media (max-width:640px){.sh.pl-sh{border-radius:18px 18px 0 0;border-bottom:0}}
+/* календарь */
+.pl-cal{background:var(--pl-panel);border:1px solid var(--pl-line);padding:14px;min-height:520px}
+.pl-cal-h{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.pl-cal-h b{flex:1;font:900 22px/1 var(--ios);text-transform:uppercase;letter-spacing:.03em}
+.pl-cal-h button{width:40px;height:40px;border:1px solid var(--pl-line);background:rgba(0,0,0,.3);color:var(--pl-gold2);font:700 20px/1 var(--pl-mono);cursor:pointer}
+.pl-cal-h .tdy{width:auto;padding:0 12px;font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+.pl-cal-g{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.pl-cal-g .dw{font:700 10px/1 var(--pl-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--pl-dim);text-align:center;padding:4px 0 6px}
+.pl-cd{position:relative;min-height:96px;border:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.02);padding:6px;display:flex;flex-direction:column;gap:4px;text-align:left;color:inherit;font:inherit;overflow:hidden}
+.pl-cd.o{visibility:hidden}
+.pl-cd .n{font:700 12px/1 var(--pl-mono);color:var(--pl-dim)}
+.pl-cd.td{border-color:var(--pl-gold)}.pl-cd.td .n{color:var(--pl-gold2)}
+.pl-cd.has{cursor:pointer;background:rgba(240,194,75,.06);border-color:rgba(240,194,75,.25)}
+.pl-cd.has:hover{background:rgba(240,194,75,.12)}
+.pl-cd .bg{position:absolute;inset:0;z-index:0;opacity:.32}
+.pl-cd .bg img{width:100%;height:100%;object-fit:cover}
+.pl-cd > *:not(.bg){position:relative;z-index:1}
+.pl-cd .v{font:700 11px/1.2 var(--ios);color:#fff;background:rgba(5,12,24,.78);padding:3px 5px;border-left:2px solid var(--c,var(--pl-gold));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pl-cd .v.g{--c:var(--pl-green)}.pl-cd .v.r{--c:var(--pl-red)}.pl-cd .v.n{--c:#c7d2e3}
+.pl-cal-sum{margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;font:600 12px/1.4 var(--ios);color:var(--pl-dim)}
+.pl-cal-sum b{color:#fff}
+/* просмотр меню */
+.pl-lb{position:fixed;inset:0;z-index:95;background:rgba(2,5,10,.94);display:flex;align-items:center;justify-content:center;padding:max(50px,env(safe-area-inset-top,0px)) 10px max(70px,env(safe-area-inset-bottom,0px))}
+.pl-lb img{max-width:100%;max-height:100%;object-fit:contain;touch-action:pinch-zoom}
+.pl-lb .x{position:absolute;top:max(12px,env(safe-area-inset-top,0px));right:12px;width:44px;height:44px;border:1px solid rgba(240,194,75,.3);background:rgba(5,12,24,.8);color:#ffdf85;font-size:22px;cursor:pointer}
+.pl-lb .a{position:absolute;top:50%;transform:translateY(-50%);width:46px;height:64px;border:0;background:rgba(5,12,24,.7);color:#ffdf85;font-size:30px;cursor:pointer}
+.pl-lb .a.l{left:6px}.pl-lb .a.r{right:6px}
+.pl-lb .b{position:absolute;left:0;right:0;bottom:max(14px,env(safe-area-inset-bottom,0px));display:flex;justify-content:center;gap:10px;align-items:center;font:700 12px/1 ui-monospace,Menlo,monospace;color:#c7d2e3;letter-spacing:.1em}
+/* окошко в Активности */
+.pl-card{position:relative;overflow:hidden}
+.pl-card h3 .ev-add{margin-left:auto;width:28px;height:28px;border-radius:50%;border:0;background:var(--c-ring);color:#fff;font:600 19px/1 var(--ios);cursor:pointer;display:grid;place-items:center}
+.pl-card h3 .ev-add + small,.pl-card h3 small + .ev-add{margin-left:8px}
+.plc-last{position:relative;display:flex;flex-direction:column;justify-content:flex-end;width:100%;min-height:150px;border:0;padding:12px;margin:2px 0 10px;text-align:left;color:#fff;cursor:pointer;overflow:hidden;border-radius:14px;background:linear-gradient(135deg,#16305a,#0a1526);isolation:isolate;font-family:var(--ios)}
+.plc-last > img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transition:transform .5s}
+.plc-last:hover > img{transform:scale(1.05)}
+.plc-last::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(rgba(4,9,18,.1),rgba(4,9,18,.9))}
+.plc-last .map{position:absolute;inset:0;z-index:-2;background:url("yakutsk-map.webp") center 45%/170% auto no-repeat;opacity:.9}
+.plc-last .k{align-self:flex-start;font:800 9.5px/1 ui-monospace,Menlo,monospace;letter-spacing:.16em;text-transform:uppercase;background:#f0c24b;color:#141002;padding:4px 6px;margin-bottom:6px}
+.plc-last b{font:800 18px/1.15 var(--ios);padding-right:62px;overflow-wrap:anywhere}
+.plc-last small{display:block;margin-top:4px;font-size:12px;color:#c3cfdf;padding-right:62px}
+.plc-last .sc{position:absolute;right:10px;bottom:10px;font:900 20px/1 ui-monospace,Menlo,monospace;padding:8px 7px;min-width:48px;text-align:center;color:#06090f;background:var(--c,#c7d2e3);border-radius:8px}
+.plc-last .sc.g{--c:#5cffa2}.plc-last .sc.y{--c:#f0c24b}.plc-last .sc.r{--c:#ff4d6a}
+.plc-last .sc.n{background:rgba(5,12,24,.75);color:#c7d2e3;font-size:11px}
+.plc-last .ava-stack{margin-top:7px}
+.plc-want{display:flex;align-items:center;gap:8px;width:100%;border:0;background:none;color:inherit;font:500 13px/1.3 var(--ios);padding:6px 4px;cursor:pointer;text-align:left;border-radius:10px}
+.plc-want:hover{background:var(--c-cell-out)}
+.plc-want i{flex:none;width:9px;height:9px;transform:rotate(45deg);border:2px solid #3ff0ff}
+.plc-want span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.plc-want small{color:var(--c-dim);font-size:12px}
+.plc-stat{display:flex;gap:12px;margin:0 0 10px;font-size:12px;color:var(--c-dim)}
+.plc-stat b{color:var(--c-fg,inherit);font-size:13px}
+/* ---- телефон и планшет ---- */
+@media (min-width:901px){.pl-body > .pl-mapw,.pl-body > .pl-cal{position:sticky;top:78px}}
+@media (max-width:1100px){.pl-body{grid-template-columns:minmax(0,1fr) 340px}}
+@media (max-width:900px){
+  .pl-main{padding-top:12px}
+  .pl-body{grid-template-columns:minmax(0,1fr)}
+  .pl-hud{gap:10px;margin-bottom:10px;align-items:stretch}
+  .pl-tt{width:100%}
+  .pl-stats{order:2;width:100%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+  .pl-stat{padding:7px 8px;min-width:0}
+  .pl-stat b{font-size:17px}
+  .pl-stat span{font-size:8.5px;letter-spacing:.06em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pl-acts{order:3;width:100%;margin-left:0}
+  .pl-acts .pl-btn{flex:1}
+  .pl-seg{flex:none}
+  .pl-mapw{height:min(56svh,560px);min-height:320px;clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px))}
+  .pl-list{max-height:none;overflow:visible}
+  .pl-cal{min-height:0;padding:10px}
+}
+@media (max-width:560px){
+  .pl-main{padding-left:max(10px,env(safe-area-inset-left,0px));padding-right:max(10px,env(safe-area-inset-right,0px))}
+  .pl-tt h1{font-size:34px}
+  .pl-seg button span{display:none}
+  .pl-seg button{padding:11px 12px}
+  .pl-zoom{right:8px}
+  .pl-zoom button{width:38px;height:38px}
+  .pl-leg{display:none}
+  .pl-tag{left:12px;top:12px;font-size:9.5px}.pl-tag b{font-size:16px}
+  .pl-geo{left:12px;bottom:10px;font-size:9.5px}
+  .pl-comp{width:38px;height:38px;right:10px;top:10px;font-size:11px}
+  .pl-crn{width:18px;height:18px}
+  .pl-banner{top:auto;bottom:12px;flex-wrap:wrap;font-size:11px}
+  .pl-banner span{flex-basis:100%}
+  .pl-banner .pl-btn{flex:1}
+  .pl-cd{min-height:58px;padding:4px}
+  .pl-cd .v{font-size:9.5px;padding:2px 3px}
+  .pl-cd .v + .v{display:none}
+  .pl-cal-g{gap:3px}
+  .pld-hero{min-height:170px}
+  .pld-hero h2{font-size:22px}
+  .pld-pick{grid-template-columns:1fr;gap:6px}
+  .pld-nob{grid-column:1}
+  .pld-ten button{height:36px}
+  .pld-crit{grid-template-columns:70px minmax(0,1fr) 36px}
+}
+@media (prefers-reduced-motion:reduce){#wPlaces *,.pl-sh *{animation:none!important;transition:none!important}.pl-world.anim{transition:none!important}}
+</style>
 <style>img{max-width:100%}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -4257,6 +4568,11 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
   <main class="slp-main" id="slMain"></main>
 </div>
 
+<!-- ======== ЗАВЕДЕНИЯ: карта Якутска ======== -->
+<div class="world" id="wPlaces" hidden>
+  <main class="pl-main" id="plMain"></main>
+</div>
+
 <aside class="fw" id="fw" hidden aria-label="Активность друзей"></aside>
 <footer class="site-ft" id="siteFt">Сайт создан <b>Claude</b><span class="sep"></span>редактировал <b>H3RO</b><span class="sep"></span>с 7 ноября 2026</footer>
 <nav class="tabbar" id="tabbar" aria-label="Разделы"></nav>
@@ -4292,6 +4608,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     kino:{w:"wKino",theme:"kino",tab:"kino"}, "kino-future":{w:"wKino",theme:"kino",tab:"kino"},
     calendar:{w:"wApple",theme:"cal",tab:"calendar"},
     slop:{w:"wSlop",theme:"games",tab:"slop"},
+    places:{w:"wPlaces",theme:"games",tab:"people"},
     more:{w:"wApple",theme:"cal",tab:"more"}, vacation:{w:"wApple",theme:"cal",tab:"more"}, recap:{w:"wApple",theme:"cal",tab:"more"}, drops:{w:"wApple",theme:"cal",tab:"more"}, money:{w:"wApple",theme:"cal",tab:"more"}, ach:{w:"wApple",theme:"cal",tab:"more"}, patch:{w:"wApple",theme:"cal",tab:"more"}, people:{w:"wApple",theme:"cal",tab:"people"}, user:{w:"wApple",theme:"cal",tab:"people"}, event:{w:"wApple",theme:"cal",tab:"people"}
   };
   const I = (d, extra = "") => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ${extra}>${d}</svg>`;
@@ -4978,11 +5295,12 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
   function render(){
     const r = ROUTES[route] || ROUTES.games;
     if ($("view").hidden) document.body.dataset.theme = r.theme;
-    ["wGames","wKino","wApple","wSlop"].forEach(w => $(w).hidden = w !== r.w);
+    ["wGames","wKino","wApple","wSlop","wPlaces"].forEach(w => $(w).hidden = w !== r.w);
     document.body.dataset.world = r.w; if (r.w !== "wApple"){ $("aCrumb").textContent = ""; $("aTopActs").innerHTML = ""; }
     if (r.w === "wGames") renderGames();
     else if (r.w === "wKino") renderKino();
     else if (r.w === "wSlop") renderSlop();
+    else if (r.w === "wPlaces") renderPlaces();
     else ({soon:renderSoon, calendar:renderCal, more:renderMore, vacation:renderVac, recap:renderRecap, drops:renderDrops, money:renderMoney, ach:renderAch, patch:renderPatch, people:renderPeople, user:() => renderProfile(viewUid), event:renderEvent, watch:renderWatch, home:() => renderProfile(null), read:renderRead, watchcal:() => renderWatchCal()})[route]();
     document.body.dataset.route = route;
     fillMeSlots(); applySecBg(); wireCarousels(); wireHScrolls(); document.querySelectorAll('[data-pile="1"]').forEach(wirePile); document.querySelectorAll('[data-stack="1"]').forEach(wireStack); syncHead(); renderFw(); syncBell();
@@ -4997,6 +5315,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     if (h.startsWith("event:")){ route = "event"; viewEv = h.slice(6); return; }
     if (h.startsWith("watch:")){ route = "watch"; viewEv = h.slice(6); return; }
     if (h.startsWith("tier:")){ pendingTl = h.slice(5); route = "people"; return; }
+    if (h.startsWith("place:")){ plPending = h.slice(6); route = "places"; return; }
     route = ROUTES[h] && !["user", "event", "watch"].includes(h) ? h : "home"; }
   function animateWorld(){
     const r = ROUTES[route], p = ROUTES[prevRoute] || r;
@@ -6354,6 +6673,15 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
   // ================= патчноуты =================
   // Новые версии добавляются В НАЧАЛО списка. n — новое, c — изменено, f — исправлено, r — удалено.
   const PATCHES = [
+    {v: "5.0", date: "2026-11-17", title: "Заведения: карта Якутска, походы и оценки", kind: "major", sec: {
+      n: ["В «Активности» новое окошко <b>«Заведения»</b>: последний поход, кто ходил и оценка. По нажатию открывается карта",
+        "<b>Карта Якутска</b> в стиле игр с открытым миром: тяни, крути колесо или щипай двумя пальцами. Метка заведения окрашена по оценке, голубые шестиугольники — куда хотим сходить",
+        "<b>«Новое место»</b>: ткни точку на карте, добавь фото, ссылку на 2ГИС и отметь, кто был и когда. Можно сразу пометить «Хочу сходить» и позвать всех",
+        "Каждый, кто был, ставит свою оценку от 1 до 10: <b>интерьер, цены, вкус, пиво</b> (пиво можно пропустить). Итог — средняя по всем",
+        "<b>Блюда и напитки</b>: добавляй, что брали, каждый ставит свою оценку. Плюс <b>фото меню</b> — листаются пальцем",
+        "<b>«Я тоже был»</b> — отметься в чужом походе. Друзьям, которых ты отметил, придёт уведомление",
+        "Фильтры по оценке, типу и статусу, поиск по названию и <b>календарь походов</b> — кто чаще всех выбирается"],
+      c: ["Всё сделано сразу под телефон: карточка места открывается снизу, кнопка «На карте» подлетает к метке"]}},
     {v: "4.9", date: "2026-11-13", title: "«Играл давно», «Смотрел давно» и чистый список желаемого", kind: "minor", sec: {
       n: ["Новый статус при добавлении: <b>«Играл давно»</b> у игр, <b>«Смотрел давно»</b> у фильмов и сериалов, <b>«Читал давно»</b> в Читалке. Такие записи встают без даты и не забивают календарь и итоги года",
         "То же самое — когда берёшь игру или фильм у друга, из СЛОПа, из предложений и из «Друзья советуют»"],
@@ -7227,7 +7555,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     Promise.all(["backup", "autobackup"].map(x => db.doc("meta/" + x).get().then(d => d.exists ? d.data() : null).catch(() => null)))
       .then(([b, a]) => { lastBackup = b; autoBackup = a; if (route === "more") render(); });
     document.body.classList.remove("guest-tl"); if (pendingTl) setTimeout(openTlLink, 300);
-    loadFriends(); loadEvents(); subscribeEvents(); loadWall(); subscribeWall(); loadSlop(); subscribeSlop(); loadTlLikes(); loadVac(); subscribeVac(); loadNtf(); subscribeNtf(); loadSug(); subscribeBook(); loadReads().then(() => handleInbox());
+    loadFriends(); loadEvents(); subscribeEvents(); loadWall(); subscribeWall(); loadSlop(); subscribeSlop(); loadPlaces(); subscribePlaces(); loadTlLikes(); loadVac(); subscribeVac(); loadNtf(); subscribeNtf(); loadSug(); subscribeBook(); loadReads().then(() => handleInbox());
     db.collection("items").onSnapshot(snap => {
       if (!snap.metadata.fromCache){ clearTimeout(timer); itemsLoaded = true; netOk(); }
       MYITEMS = snap.docs.map(d => ({id: d.id, ...d.data()}));
@@ -7584,7 +7912,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
       ${myBd ? "" : `<button class="ib blue bd-set" data-bdset="1">Указать свой</button>`}</div>`;
     $("aMain").innerHTML = `<h1 class="a-h1">Активность</h1><p class="a-sub">${others.length ? `${others.length} ${plural(others.length, "человек", "человека", "человек")} на NEXUS кроме тебя. Видно всё, кроме заметок и причин дропа.` : "Пока здесь никого, кроме тебя. Скинь друзьям ссылку на сайт."}</p>
       <div class="fb">
-        <aside class="fb-col fb-l">${eventsCard()}${recCard()}${tlCard()}${bdH}</aside>
+        <aside class="fb-col fb-l">${eventsCard()}${placesCard()}${recCard()}${tlCard()}${bdH}</aside>
         <section class="fb-feed-w">${watchCard()}<div class="act-tabs" role="tablist"><button data-acttab="wall" aria-pressed="${actTab === "wall"}">${ICON.chat}Стена${WALL && WALL.posts.length ? `<small>${WALL.posts.length}</small>` : ""}</button><button data-acttab="feed" aria-pressed="${actTab === "feed"}">${ICON.people}Лента друзей</button></div>${actTab === "feed" ? feedCard() : wallCard()}</section>
         <aside class="fb-col fb-r"><div class="fb-card plain"><h3>Друзья<small>${others.length}</small></h3>${others.length ? `<div class="fl">${friendsH}</div>` : `<p class="a-sub" style="margin:0;font-size:13px">Скинь ссылку на сайт — тут появятся друзья и что они делали.</p>`}</div>${bookCard()}</aside>
       </div>`;
@@ -11735,6 +12063,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     }).subscribe();
   }
   const ntfText = n => { const who = `<b>${esc(profOf(n.actor).nick || "кто-то")}</b>`;
+    if (n.kind === "place_want") return `${who} зовёт сходить в заведение`; if (n.kind === "place_visit") return `${who} отметил, что вы были вместе`;
     if (n.kind === "slop_plan") return `${who} зовёт играть в СЛОПе`; if (n.kind === "slop_poll") return `${who} запустил голосование в СЛОПе`;
     return n.kind === "mention_post" ? `${who} отметил тебя в посте` : n.kind === "mention_comment" ? `${who} отметил тебя в комментарии` : n.kind === "comment" ? `${who} ответил на твой пост` : n.kind === "mention_event" ? `${who} отметил тебя на стене ${String(n.ref || "").startsWith("watch:") ? "кинопоказа" : "мероприятия"}` : n.kind === "tier_reply" ? `${who} ответил своей версией на твой тир-лист` : n.kind === "book_comment" ? `${who} ответил в книге жалоб` : n.kind === "suggest" ? `${who} предлагает тебе` : n.kind === "suggest_ok" ? `${who} сохранил себе то, что ты предложил` : `${who} зовёт тебя`; };
   const bellInv = () => (EV && ME ? myInvites() : []).map(m => ({inv: true, m, e: evById(m.event_id), ts: m.updated_at || (evById(m.event_id) || {}).created_at || ""})).filter(x => x.e);
@@ -11745,6 +12074,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     if (k === "event" || k === "watch"){ go(n.ref); return; }
     if (k === "sug"){ sugSheet(id); return; }
     if (k === "slopplan" || k === "sloppoll"){ slNtf(k, id); return; }
+    if (k === "place"){ go("place:" + id); return; }
     if (k === "user"){ go(n.ref); return; }
     if (k === "book"){ bkOpen.add(id); const jb = () => { const el = document.querySelector(`[data-bkc="${CSS.escape(id)}"]`); if (el){ const a = el.closest(".bk-e"); a.scrollIntoView({behavior: "smooth", block: "center"}); a.classList.remove("flash"); void a.offsetWidth; a.classList.add("flash"); } else if (bookN < 500){ bookN = 500; renderPeople(); } };
       if (route === "people") renderPeople(); else go("people"); setTimeout(jb, 400); setTimeout(jb, 1300); return; }
@@ -11761,7 +12091,7 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     pop.innerHTML = `<div class="ntf-h"><b>Уведомления</b>${NTF.some(n => !n.read) ? `<button type="button" data-ntfall="1">Прочитать всё</button>` : ""}</div><div class="ntf-l">${all.length ? all.map(x => {
       if (x.inv){ const e = x.e, f = e.kind === "watch" ? filmItem(e) : null;
         return `<button class="ntf-r unread" data-ntfev="${esc(evRoute(e))}">${avaHTML(profOf(x.m.invited_by || e.owner), "sm")}<span class="t"><span><b>${esc(frNick(x.m.invited_by || e.owner))}</b> зовёт ${e.kind === "watch" ? "смотреть" : "на"} «${esc(f ? f.title || e.title : e.title)}»</span><small>${esc(evIn(e) || evWhen(e))} · ждёт ответа</small></span><i class="ntf-k inv">${ICON.calendar}</i></button>`; }
-      const n = x.n; return `<button class="ntf-r${n.read ? "" : " unread"}" data-ntf="${esc(n.id)}">${avaHTML(profOf(n.actor), "sm")}<span class="t"><span>${ntfText(n)}</span>${n.body ? `<em>«${esc(n.body)}»</em>` : ""}<small>${esc(agoTs(n.created_at))}</small></span><i class="ntf-k">${n.kind === "comment" || n.kind === "book_comment" ? ICON.chat : n.kind === "tier_reply" ? ICON.tiers : n.kind === "suggest" || n.kind === "suggest_ok" ? ICON.film : "@"}</i></button>`; }).join("")
+      const n = x.n; return `<button class="ntf-r${n.read ? "" : " unread"}" data-ntf="${esc(n.id)}">${avaHTML(profOf(n.actor), "sm")}<span class="t"><span>${ntfText(n)}</span>${n.body ? `<em>«${esc(n.body)}»</em>` : ""}<small>${esc(agoTs(n.created_at))}</small></span><i class="ntf-k">${n.kind === "comment" || n.kind === "book_comment" ? ICON.chat : n.kind === "tier_reply" ? ICON.tiers : n.kind === "suggest" || n.kind === "suggest_ok" ? ICON.film : /^place_/.test(n.kind) ? ICON.pin : "@"}</i></button>`; }).join("")
       : `<p class="ntf-e">Пока тихо. Сюда придут упоминания, ответы на посты и приглашения.</p>`}</div>`;
     document.body.appendChild(pop);
     const w = pop.offsetWidth; pop.style.left = Math.max(8, Math.min(innerWidth - w - 8, r.right - w)) + "px"; pop.style.top = (r.bottom + 8) + "px";
@@ -11844,6 +12174,610 @@ body.slp-open .tabbar{transform:translate(-50%,170%)}
     $("nfW").onclick = () => { el.hidden = true; document.body.classList.remove("nf-on"); netShown = false; clearTimeout(bootWD); bootWD = setTimeout(netFail, 15000); };
   }
   function netOk(){ clearTimeout(bootWD); netShown = false; const el = $("netFail"); if (el){ el.hidden = true; document.body.classList.remove("nf-on"); } }
+
+
+  // ================= 5.0: заведения Якутска — карта, походы, оценки, блюда =================
+  const PL_W = 904, PL_H = 1280, PL_MAP = "yakutsk-map.webp";
+  const PLI = {
+    bar: I('<path d="M6 5h10v14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2Z"/><path d="M16 9h2a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-2M9.5 9v8M12.5 9v8M6 5c0-1.2 1-2 2.2-2 .6-.6 1.6-1 2.8-1s2.2.4 2.8 1C15 3 16 3.8 16 5"/>'),
+    rest: I('<path d="M7 3v7M4.5 3v4.5a2.5 2.5 0 0 0 5 0V3M7 10v11M17.5 3C15.5 5 15 8 15 11h2.5v10"/>'),
+    cafe: I('<path d="M4 9h13v4.5A5.5 5.5 0 0 1 11.5 19h-2A5.5 5.5 0 0 1 4 13.5Z"/><path d="M17 10.5h1.5a2.5 2.5 0 0 1 0 5H17M3 21h16M8.5 3.5c-.7.8-.7 1.7 0 2.5M12.5 3.5c-.7.8-.7 1.7 0 2.5"/>'),
+    coffee: I('<path d="M6.5 8h11l-1.4 12.2a1 1 0 0 1-1 .8H8.9a1 1 0 0 1-1-.8Z"/><path d="M5 5.5h14V8H5zM8 3h8M7.2 13h9.6"/>'),
+    fast: I('<path d="M4 11a8 6 0 0 1 16 0Z"/><path d="M3 14.5h18M4.5 18h15v.5a2.5 2.5 0 0 1-2.5 2.5H7a2.5 2.5 0 0 1-2.5-2.5Z"/>'),
+    club: I('<path d="M9 18V5.5L20 3v12.5"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="15.5" r="3"/>'),
+    other: I('<path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/>'),
+    want: I('<path d="M9.2 9.2a2.9 2.9 0 0 1 5.6 1c0 2-2.8 2.4-2.8 4.3"/><path d="M12 18.2h.01"/>', 'stroke-width="2.8"'),
+    map: I('<path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2Z"/><path d="M9 4v14M15 6v14"/>'),
+    gis: I('<path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v4.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 18.5v-11A1.5 1.5 0 0 1 5.5 6H10"/>'),
+    fit: I('<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/><circle cx="12" cy="12" r="2.5"/>'),
+    fly: I('<circle cx="12" cy="12" r="7.5"/><path d="M12 1.5v4M12 18.5v4M1.5 12h4M18.5 12h4"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/>'),
+    cam: I('<path d="M4 8h3l1.6-2.5h6.8L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13" r="3.6"/>'),
+    menu: I('<path d="M6 3h12a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M8.5 8h7M8.5 12h7M8.5 16h4"/>')
+  };
+  const PL_KIND = [["bar", "Бар"], ["rest", "Ресторан"], ["cafe", "Кафе"], ["coffee", "Кофейня"], ["fast", "Фастфуд"], ["club", "Клуб"], ["other", "Другое"]];
+  const plKindL = k => (PL_KIND.find(x => x[0] === k) || PL_KIND[6])[1];
+  const plKindI = k => PLI[k] || PLI.other;
+  const PL_CRIT = [["interior", "Интерьер"], ["price", "Цены"], ["taste", "Вкус"], ["beer", "Пиво"]];
+  const PL_TABLES = ["places", "place_visits", "place_visit_members", "place_ratings", "place_dishes", "place_dish_rates", "place_wants"];
+  let PL = null, plLoading = null, plAgain = false, plErr = null, plSubT = 0, plCam = null, plApi = null, plPlacing = null, plPending = null, plSheet = null, plSeen = null, plLastTap = 0;
+  let plCalY = new Date().getFullYear(), plCalM = new Date().getMonth();
+  const plS = {q: "", st: "all", r: "all", k: "all", sort: "visit", view: lsGet("nexus_pl_view") === "cal" ? "cal" : "map", sel: null, panel: null};
+  const plDraft = {};
+
+  // ---- данные ----
+  const plNorm = p => ({...p, menu: Array.isArray(p.menu) ? p.menu.filter(x => typeof x === "string" && x) : [], x: p.x == null ? null : +p.x, y: p.y == null ? null : +p.y});
+  const plMissing = () => !!(plErr && (/PGRST205|42P01/.test(plErr.code || "") || /schema cache|does not exist|relation/i.test(plErr.message || "")));
+  async function loadPlaces(force){
+    if (!SB || !ME) return null;
+    if (plLoading){ if (!force) return plLoading; plAgain = true; return plLoading.then(() => plLoading || PL); }
+    plLoading = (async () => {
+      try {
+        const rs = await Promise.all(PL_TABLES.map(t => SB.from(t).select("*")));
+        if (rs[0].error) throw rs[0].error;
+        const ok = r => r && !r.error ? r.data || [] : [];
+        PL = {at: Date.now(), places: ok(rs[0]).map(plNorm), visits: ok(rs[1]), vm: ok(rs[2]), rates: ok(rs[3]), dishes: ok(rs[4]), drates: ok(rs[5]), wants: ok(rs[6])}; plErr = null;
+      } catch(e){ plErr = e || {message: "ошибка"}; }
+      plLoading = null; plRefresh();
+      if (plAgain){ plAgain = false; loadPlaces(true); }
+      return PL;
+    })();
+    return plLoading;
+  }
+  function subscribePlaces(){
+    if (!SB || !ME) return;
+    let ch = SB.channel("nexus-places");
+    PL_TABLES.forEach(t => { ch = ch.on("postgres_changes", {event: "*", schema: "public", table: t}, p => {
+      clearTimeout(plSubT); plSubT = setTimeout(() => loadPlaces(true), 350);
+      const n = p.new; if (p.eventType !== "INSERT" || !n || n.user_id === ME.id || route === "places") return;
+      if (t === "places") toast(`${frNick(n.user_id)} добавил заведение: ${n.name}`);
+    }); });
+    ch.subscribe();
+  }
+  function plRefresh(){
+    if (route === "places") renderPlaces();
+    else if (route === "people"){ const c = $("plCard"); if (c) c.outerHTML = placesCard(); }
+    if (plSheet && !plSheet.s.closed) plDrawSheet();
+  }
+  const plById = id => PL && PL.places.find(p => p.id === id);
+  const plVisits = pid => PL.visits.filter(v => v.place_id === pid).sort((a, b) => String(b.day).localeCompare(String(a.day)) || String(b.created_at).localeCompare(String(a.created_at)));
+  const plVM = vid => [...new Set(PL.vm.filter(m => m.visit_id === vid).map(m => m.user_id))];
+  const plWho = pid => [...new Set(plVisits(pid).flatMap(v => plVM(v.id)))];
+  const plBeen = (pid, uid) => plWho(pid).includes(uid || (ME && ME.id));
+  const plRates = pid => PL.rates.filter(r => r.place_id === pid);
+  const plRAvg = r => { const v = PL_CRIT.map(([k]) => r[k]).filter(x => x != null && x !== ""); return v.length ? v.reduce((s, x) => s + +x, 0) / v.length : null; };
+  const plScore = pid => { const v = plRates(pid).map(plRAvg).filter(x => x != null); return v.length ? v.reduce((s, x) => s + x, 0) / v.length : null; };
+  const plCrit = (pid, k) => { const v = plRates(pid).map(r => r[k]).filter(x => x != null && x !== ""); return v.length ? {avg: v.reduce((s, x) => s + +x, 0) / v.length, n: v.length} : null; };
+  const plLast = pid => { const v = plVisits(pid); return v.length ? v[0].day : null; };
+  const plWants = pid => [...new Set(PL.wants.filter(w => w.place_id === pid).map(w => w.user_id))];
+  const plIsWant = p => !PL.visits.some(v => v.place_id === p.id);
+  const plDishes = pid => PL.dishes.filter(d => d.place_id === pid).sort((a, b) => String(a.created_at).localeCompare(String(b.created_at)));
+  const plDR = did => PL.drates.filter(r => r.dish_id === did);
+  const plDAvg = did => { const v = plDR(did).map(r => +r.score); return v.length ? v.reduce((s, x) => s + x, 0) / v.length : null; };
+  const plCls = s => s == null ? "n" : s >= 7.5 ? "g" : s >= 5 ? "y" : "r";
+  const plImg = p => p && p.photo ? publicUrl(p.photo) : "";
+  const plUrl = u => { u = String(u || "").trim(); if (!u) return ""; if (!/^https?:\/\//i.test(u)) u = "https://" + u; try { const x = new URL(u); return /^https?:$/.test(x.protocol) && x.hostname.includes(".") && x.href.length <= 500 ? x.href : ""; } catch(_){ return ""; } };
+  const plDay = d => { if (!d) return ""; const x = parseD(String(d).slice(0, 10)); return x.toLocaleDateString("ru-RU", x.getFullYear() !== new Date().getFullYear() ? {day: "numeric", month: "long", year: "numeric"} : {day: "numeric", month: "long"}); };
+  const plAgo = d => { const n = -daysTo(String(d).slice(0, 10)); return n === 0 ? "сегодня" : n === 1 ? "вчера" : n < 0 ? "запланировано на " + plDay(d) : n < 21 ? `${n} ${plural(n, "день", "дня", "дней")} назад` : plDay(d); };
+  const plEveryone = () => FR ? FR.profiles.map(p => p.user_id) : [];
+  const plWide = () => !!(window.matchMedia && matchMedia("(min-width:901px)").matches);
+  const plRM = () => !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+  const plK = s => String(s || "").toLowerCase().replace(/ё/g, "е").trim();
+  function plFiltered(){
+    let a = PL.places.slice();
+    const q = plK(plS.q); if (q) a = a.filter(p => plK(p.name + " " + (p.address || "")).includes(q));
+    if (plS.st === "been") a = a.filter(p => !plIsWant(p)); else if (plS.st === "want") a = a.filter(plIsWant); else if (plS.st === "mine") a = a.filter(p => plBeen(p.id));
+    if (plS.k !== "all") a = a.filter(p => p.kind === plS.k);
+    if (plS.r !== "all") a = a.filter(p => { const s = plScore(p.id); return plS.r === "none" ? s == null : s != null && (plS.r === "8" ? s >= 8 : plS.r === "6" ? s >= 6 && s < 8 : s < 6); });
+    const byNew = (x, y) => String(y.created_at).localeCompare(String(x.created_at));
+    if (plS.sort === "score") a.sort((x, y) => (plScore(y.id) ?? -1) - (plScore(x.id) ?? -1) || byNew(x, y));
+    else if (plS.sort === "abc") a.sort((x, y) => x.name.localeCompare(y.name, "ru"));
+    else a.sort((x, y) => String(plLast(y.id) || "").localeCompare(String(plLast(x.id) || "")) || byNew(x, y));
+    return a;
+  }
+  // картинку ужимаем до разумного размера, чтобы с телефона грузилось быстро
+  async function plUp(file, max = 1600){
+    let blob = file;
+    try { const im = await createImageBitmap(file), k = Math.min(1, max / Math.max(im.width, im.height)), c = document.createElement("canvas");
+      c.width = Math.max(1, Math.round(im.width * k)); c.height = Math.max(1, Math.round(im.height * k)); c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
+      blob = await new Promise(ok => c.toBlob(ok, "image/jpeg", .86)) || file; } catch(_){}
+    const type = ["image/png", "image/jpeg", "image/webp", "image/gif"].includes(blob.type) ? blob.type : "image/jpeg";
+    return (await assets.upload(blob, {type})).id;
+  }
+  const plFail = (e, what = "Не сохранилось") => { toast(what + (e && e.message ? ": " + e.message : "")); loadPlaces(true); };
+  const plReady = () => { if (!ME || !SB){ toast("Сначала войди"); return false; } if (!PL){ toast(plMissing() ? "Сначала нужно обновить базу (schema.sql, блок 5.0)" : "Карта ещё грузится"); return false; } return true; };
+
+  // ---- страница ----
+  function plErrHTML(){
+    return plMissing() ? `<div class="pl-panel" style="max-width:640px;margin:40px auto"><div class="pl-empty" style="text-align:left"><b>Карта заведений почти готова</b>Осталось один раз обновить базу: Supabase → SQL Editor → вставить блок «5.0: заведения» из файла schema.sql → Run. После этого страница оживёт у всех.</div></div>`
+      : `<div class="pl-panel" style="max-width:640px;margin:40px auto"><div class="pl-empty"><b>Не загрузилось</b>${esc((plErr && plErr.message) || "")}<div style="margin-top:14px"><button class="pl-btn" data-plretry="1">Ещё раз</button></div></div></div>`;
+  }
+  function renderPlaces(){
+    const m = $("plMain"); if (!m) return;
+    if (!ME){ m.innerHTML = `<div class="pl-empty" style="margin-top:40px"><b>Нужно войти</b></div>`; delete m.dataset.v; return; }
+    if (!PL){ m.innerHTML = plErr ? plErrHTML() : `<div class="pl-empty" style="margin-top:60px"><b>Загружаю карту…</b></div>`; delete m.dataset.v; plApi = null; if (!plErr) loadPlaces(); return; }
+    if (m.dataset.v !== plS.view){
+      m.dataset.v = plS.view; plApi = null;
+      m.innerHTML = `<div class="pl-hud">
+          <div class="pl-tt"><small><a href="#people" style="color:inherit;text-decoration:none">‹ Активность</a> // Якутск // карта походов</small><h1 data-t="Заведения">Заведения</h1></div>
+          <div class="pl-stats" id="plStats"></div>
+          <div class="pl-acts"><div class="pl-seg"><button type="button" data-plview="map" aria-pressed="${plS.view === "map"}" aria-label="Карта">${PLI.map}<span>Карта</span></button><button type="button" data-plview="cal" aria-pressed="${plS.view === "cal"}" aria-label="Календарь">${ICON.calendar}<span>Календарь</span></button></div><button type="button" class="pl-btn" data-pladd="1">${ICON.plus}Новое место</button></div>
+        </div>
+        <div class="pl-body">
+          ${plS.view === "map" ? `<section class="pl-mapw" id="plMap" tabindex="0" aria-label="Карта Якутска: тяни, чтобы двигать, колесо или два пальца — зум">
+            <div class="pl-world" id="plWorld"><img alt="" src="${PL_MAP}" draggable="false" decoding="async"><div class="pl-grid"></div><div id="plMks"></div></div>
+            <div class="pl-fx"></div><i class="pl-crn a"></i><i class="pl-crn b"></i><i class="pl-crn c"></i><i class="pl-crn d"></i>
+            <div class="pl-tag">Сектор 14<b>ЯКУТСК</b></div><div class="pl-comp">N</div>
+            <div class="pl-zoom"><button type="button" data-plz="in" aria-label="Приблизить">+</button><button type="button" data-plz="out" aria-label="Отдалить">−</button><button type="button" data-plz="fit" aria-label="Показать все места">${PLI.fit}</button></div>
+            <div class="pl-geo" id="plGeo">62.0274° N / 129.7320° E</div>
+            <div class="pl-leg"><span><i style="background:var(--pl-green)"></i>7,5+</span><span><i style="background:var(--pl-gold)"></i>5–7</span><span><i style="background:var(--pl-red)"></i>до 5</span><span><i style="background:var(--pl-cyan)"></i>хотим</span></div>
+            <div id="plBan"></div></section>` : `<section class="pl-cal" id="plCal"></section>`}
+          <aside class="pl-side" id="plSide"></aside>
+        </div>`;
+      if (!m.dataset.wired){ m.dataset.wired = 1; plWire(m); }
+    }
+    if (plS.panel && (!plWide() || !plById(plS.panel))) plS.panel = null;
+    plDrawStats(); plDrawSide();
+    if (plS.view === "map"){ plMapInit(); plDrawMarkers(); plDrawBanner(); } else plDrawCal();
+    if (plPending){ const id = plPending; plPending = null; history.replaceState(null, "", location.pathname + "#places"); if (plById(id)) setTimeout(() => plSelect(id, {fly: true, open: true}), 120); else toast("Это место удалили"); }
+  }
+  function plDrawStats(){
+    const el = $("plStats"); if (!el) return;
+    const been = PL.places.filter(p => !plIsWant(p)), sc = been.map(p => plScore(p.id)).filter(x => x != null);
+    const avg = sc.length ? sc.reduce((s, x) => s + x, 0) / sc.length : null;
+    el.innerHTML = [[been.length, "мест"], [PL.visits.length, plural(PL.visits.length, "поход", "похода", "походов")], [PL.places.length - been.length, "хотим"], [avg == null ? "—" : num1(avg), "средняя"]]
+      .map(([v, l]) => `<div class="pl-stat"><b>${v}</b><span>${l}</span></div>`).join("");
+  }
+  function plDrawSide(){
+    const el = $("plSide"); if (!el) return;
+    if (plS.panel){ const ae = document.activeElement; if (el.dataset.mode === "d" && ae && el.contains(ae) && ae.matches("input,textarea,select")){ clearTimeout(plDrawSide.t); plDrawSide.t = setTimeout(plDrawSide, 1500); return; }
+      el.dataset.mode = "d"; const sy = el.scrollTop; el.innerHTML = `<div class="pl-panel">${plDetailHTML(plById(plS.panel), "side")}</div>`; el.scrollTop = sy; return; }
+    if (el.dataset.mode !== "l"){
+      el.dataset.mode = "l";
+      el.innerHTML = `<div class="pl-panel"><label class="pl-srch">${ICON.search}<input id="plQ" type="search" placeholder="Найти заведение" autocomplete="off" enterkeyhint="search" value="${esc(plS.q)}"></label>
+        <div class="pl-chips sc" id="plSt"></div><div class="pl-chips sc" id="plR"></div>
+        <div class="pl-row"><label for="plK">Тип</label><select class="pl-sel" id="plK"></select><label for="plSort">Порядок</label><select class="pl-sel" id="plSort"><option value="visit">Свежие</option><option value="score">Оценка</option><option value="abc">А–Я</option></select></div></div>
+        <div class="pl-panel"><div class="pl-sum" id="plSum"></div><div class="pl-list" id="plList"></div></div>`;
+    }
+    const cnt = f => PL.places.filter(f).length;
+    $("plSt").innerHTML = [["all", "Все", PL.places.length], ["been", "Были", cnt(p => !plIsWant(p))], ["want", "Хотим", cnt(plIsWant)], ["mine", "Где я был", cnt(p => plBeen(p.id))]]
+      .map(([k, l, n]) => `<button type="button" class="pl-chip" data-plst="${k}" aria-pressed="${plS.st === k}">${l}<small>${n}</small></button>`).join("");
+    $("plR").innerHTML = [["all", "Любая оценка", ""], ["8", "8+", "var(--pl-green)"], ["6", "6–8", "var(--pl-gold)"], ["low", "до 6", "var(--pl-red)"], ["none", "Без оценки", ""]]
+      .map(([k, l, c]) => `<button type="button" class="pl-chip" data-plr="${k}" aria-pressed="${plS.r === k}">${c ? `<i style="background:${c}"></i>` : ""}${l}</button>`).join("");
+    const kinds = PL_KIND.filter(([k]) => PL.places.some(p => p.kind === k));
+    $("plK").innerHTML = `<option value="all">Все</option>` + kinds.map(([k, l]) => `<option value="${k}"${plS.k === k ? " selected" : ""}>${l}</option>`).join("");
+    if (plS.k !== "all" && !kinds.some(([k]) => k === plS.k)) plS.k = "all";
+    $("plSort").value = plS.sort;
+    const list = plFiltered();
+    $("plSum").innerHTML = `<span>Найдено <b>${list.length}</b></span>${plS.q || plS.st !== "all" || plS.r !== "all" || plS.k !== "all" ? `<button type="button" class="pld-back" data-plreset="1">Сбросить</button>` : ""}`;
+    $("plList").innerHTML = list.length ? list.map(plLi).join("") : PL.places.length ? `<div class="pl-empty"><b>Ничего не нашлось</b>Попробуй убрать фильтры.</div>`
+      : `<div class="pl-empty"><b>Пока пусто</b>Нажми «Новое место», ткни точку на карте — и оцените, где были.</div>`;
+  }
+  function plLi(p){
+    const w = plIsWant(p), s = plScore(p.id), last = plLast(p.id), who = w ? plWants(p.id) : plWho(p.id);
+    return `<button type="button" class="pl-li${plS.sel === p.id ? " sel" : ""}" data-plo="${esc(p.id)}"><span class="pl-th">${p.photo ? `<img alt="" loading="lazy" src="${esc(plImg(p))}" onerror="this.remove()">` : ""}${plKindI(p.kind)}</span>
+      <span class="t"><b>${esc(p.name)}</b><small>${esc(plKindL(p.kind))} · ${w ? (who.length ? `хотят ${who.length}` : "хотим сходить") : esc(plAgo(last))}${p.x == null ? " · без точки" : ""}</small>${who.length ? avaStack(who, 4) : ""}</span>
+      <span class="pl-sc ${w ? "w" : plCls(s)}">${w ? "ХОТИМ" : s == null ? "—" : num1(s)}</span></button>`;
+  }
+  function plDrawMarkers(){
+    const el = $("plMks"); if (!el) return;
+    const vis = new Set(plFiltered().map(p => p.id)), fresh = plSeen ? null : new Set();
+    const html = PL.places.filter(p => p.x != null && p.y != null && vis.has(p.id)).sort((a, b) => a.y - b.y).map(p => {
+      const w = plIsWant(p), s = plScore(p.id), isNew = plSeen && !plSeen.has(p.id);
+      return `<button type="button" class="pl-mk ${w ? "w" + (plWants(p.id).length > 1 ? " hot" : "") : plCls(s)}${plS.sel === p.id ? " sel" : ""}${isNew ? " nw" : ""}" data-plm="${esc(p.id)}" style="left:${(p.x * 100).toFixed(3)}%;top:${(p.y * 100).toFixed(3)}%" aria-label="${esc(p.name)}">
+        <span class="pl-mk-i"><span class="pl-mk-d">${w ? PLI.want : plKindI(p.kind)}</span>${w ? "" : `<span class="pl-mk-s">${s == null ? "?" : num1(s)}</span>`}<span class="pl-mk-n">${esc(p.name)}</span></span></button>`; }).join("")
+      + (plPlacing && plPlacing.u != null ? `<span class="pl-mk tmp" style="left:${plPlacing.u * 100}%;top:${plPlacing.v * 100}%"><span class="pl-mk-i"><span class="pl-mk-d">${PLI.fly}</span></span></span>` : "");
+    if (el.innerHTML !== html) el.innerHTML = html;
+    plSeen = new Set(PL.places.map(p => p.id)); void fresh;
+  }
+  // ---- камера карты: тянуть, колесо, два пальца, двойной тап ----
+  function plMapInit(){
+    const el = $("plMap"), w = $("plWorld"); if (!el || !w || plApi) return;
+    const box = () => ({w: el.clientWidth, h: el.clientHeight});
+    const minK = () => { const b = box(); return Math.max(b.w / PL_W, b.h / PL_H); };
+    const clampK = k => Math.min(4, Math.max(minK(), k));
+    const clamp = () => { const b = box(); plCam.k = clampK(plCam.k); plCam.x = Math.min(0, Math.max(b.w - PL_W * plCam.k, plCam.x)); plCam.y = Math.min(0, Math.max(b.h - PL_H * plCam.k, plCam.y)); };
+    const apply = anim => { if (!el.clientWidth) return; clamp(); w.classList.toggle("anim", !!anim && !plRM());
+      w.style.transform = `translate3d(${plCam.x.toFixed(2)}px,${plCam.y.toFixed(2)}px,0) scale(${plCam.k.toFixed(4)})`; w.style.setProperty("--k", plCam.k.toFixed(4));
+      el.classList.toggle("z2", plCam.k >= 1.25); if (anim){ clearTimeout(w._t); w._t = setTimeout(() => w.classList.remove("anim"), 600); } };
+    const center = (u, v, k, anim) => { const b = box(); plCam.k = clampK(k); plCam.x = b.w / 2 - u * PL_W * plCam.k; plCam.y = b.h / 2 - v * PL_H * plCam.k; apply(anim); };
+    const zoomAt = (f, px, py, anim) => { const k0 = plCam.k, k1 = clampK(k0 * f); plCam.x = px - (px - plCam.x) * k1 / k0; plCam.y = py - (py - plCam.y) * k1 / k0; plCam.k = k1; apply(anim); };
+    const toWorld = (cx, cy) => { const r = el.getBoundingClientRect(); return {u: (cx - r.left - plCam.x) / (PL_W * plCam.k), v: (cy - r.top - plCam.y) / (PL_H * plCam.k)}; };
+    const fit = anim => { const pts = PL.places.filter(p => p.x != null && plFiltered().includes(p)); const b = box();
+      if (!pts.length){ center(.47, .5, Math.max(minK(), Math.min(1.4, b.w / (PL_W * .75))), anim); return; }
+      const xs = pts.map(p => p.x), ys = pts.map(p => p.y), x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+      const k = Math.min(2.4, (b.w * .7) / Math.max(.08, (x1 - x0)) / PL_W, (b.h * .7) / Math.max(.08, (y1 - y0)) / PL_H);
+      center((x0 + x1) / 2, (y0 + y1) / 2, k, anim); };
+    plApi = {apply, center, zoomAt, toWorld, fit, box};
+    if (!plCam){ plCam = {k: 1, x: 0, y: 0}; fit(false); } else apply();
+    const geo = $("plGeo"), pts = new Map(); let g = null;
+    const setGeo = (cx, cy) => { const {u, v} = toWorld(cx, cy); if (u < 0 || u > 1 || v < 0 || v > 1) return;
+      geo.innerHTML = `<b>${(62.0274 + (.5 - v) * .173).toFixed(4)}° N</b> / <b>${(129.732 + (u - .5) * .26).toFixed(4)}° E</b> · ×${plCam.k.toFixed(1)}`; };
+    el.addEventListener("pointerdown", e => {
+      if (e.button > 0 || e.target.closest(".pl-zoom,#plBan")) return;
+      try { el.setPointerCapture(e.pointerId); } catch(_){}
+      pts.set(e.pointerId, {x: e.clientX, y: e.clientY});
+      if (pts.size === 1) g = {sx: e.clientX, sy: e.clientY, cx: plCam.x, cy: plCam.y, moved: 0, tgt: e.target.closest(".pl-mk")};
+      else if (pts.size === 2){ const [a, b] = [...pts.values()], r = el.getBoundingClientRect(); g = {pinch: true, d: Math.hypot(a.x - b.x, a.y - b.y) || 1, k: plCam.k, cx: plCam.x, cy: plCam.y, mx: (a.x + b.x) / 2 - r.left, my: (a.y + b.y) / 2 - r.top, moved: 99}; }
+    });
+    el.addEventListener("pointermove", e => {
+      if (!pts.has(e.pointerId)){ if (e.pointerType === "mouse") setGeo(e.clientX, e.clientY); return; }
+      pts.set(e.pointerId, {x: e.clientX, y: e.clientY});
+      if (g && g.pinch && pts.size >= 2){ const [a, b] = [...pts.values()], r = el.getBoundingClientRect(), mx = (a.x + b.x) / 2 - r.left, my = (a.y + b.y) / 2 - r.top;
+        const k1 = clampK(g.k * Math.hypot(a.x - b.x, a.y - b.y) / g.d); plCam.k = k1; plCam.x = mx - (g.mx - g.cx) * k1 / g.k; plCam.y = my - (g.my - g.cy) * k1 / g.k; apply(); }
+      else if (g && !g.pinch){ const dx = e.clientX - g.sx, dy = e.clientY - g.sy; g.moved = Math.max(g.moved, Math.hypot(dx, dy));
+        if (g.moved > 5){ el.classList.add("drag"); plCam.x = g.cx + dx; plCam.y = g.cy + dy; apply(); } }
+      setGeo(e.clientX, e.clientY);
+    });
+    const end = e => {
+      if (!pts.has(e.pointerId)) return; pts.delete(e.pointerId); el.classList.remove("drag");
+      if (!pts.size){ const tap = g && !g.pinch && g.moved <= 6 && e.type === "pointerup"; const tg = g && g.tgt; g = null;
+        // после тапа браузер шлёт ещё и click — он попал бы в фон только что открытого листа и закрыл его
+        if (tap){ const kill = ev => { ev.stopPropagation(); ev.preventDefault(); }; document.addEventListener("click", kill, {capture: true, once: true}); setTimeout(() => document.removeEventListener("click", kill, true), 400); plTap(tg, e); } }
+      else if (pts.size === 1 && g && g.pinch){ const [p] = [...pts.values()]; g = {sx: p.x, sy: p.y, cx: plCam.x, cy: plCam.y, moved: 99}; }
+    };
+    el.addEventListener("pointerup", end); el.addEventListener("pointercancel", end); el.addEventListener("lostpointercapture", end);
+    el.addEventListener("wheel", e => { e.preventDefault(); const r = el.getBoundingClientRect(); zoomAt(Math.exp(-Math.max(-120, Math.min(120, e.deltaY)) * .0022), e.clientX - r.left, e.clientY - r.top); setGeo(e.clientX, e.clientY); }, {passive: false});
+    el.addEventListener("keydown", e => { const st = 70, m = {ArrowLeft: [st, 0], ArrowRight: [-st, 0], ArrowUp: [0, st], ArrowDown: [0, -st]}[e.key];
+      if (m){ e.preventDefault(); plCam.x += m[0]; plCam.y += m[1]; apply(true); } else if (e.key === "+" || e.key === "="){ const b = box(); zoomAt(1.5, b.w / 2, b.h / 2, true); } else if (e.key === "-"){ const b = box(); zoomAt(1 / 1.5, b.w / 2, b.h / 2, true); } });
+    el.addEventListener("click", e => { const z = e.target.closest("[data-plz]"); if (!z) return; const b = box();
+      if (z.dataset.plz === "fit") fit(true); else zoomAt(z.dataset.plz === "in" ? 1.6 : 1 / 1.6, b.w / 2, b.h / 2, true); });
+    if (window.ResizeObserver) new ResizeObserver(() => apply()).observe(el); else addEventListener("resize", () => apply());
+  }
+  function plTap(tg, e){
+    if (plPlacing){ const {u, v} = plApi.toWorld(e.clientX, e.clientY); if (u < 0 || u > 1 || v < 0 || v > 1) return;
+      plPlacing.u = +u.toFixed(5); plPlacing.v = +v.toFixed(5); SND.click("soft"); plDrawMarkers(); plDrawBanner(); return; }
+    if (tg){ plSelect(tg.dataset.plm, {open: true}); return; }
+    const t = Date.now(); if (t - plLastTap < 320){ const r = $("plMap").getBoundingClientRect(); plApi.zoomAt(1.8, e.clientX - r.left, e.clientY - r.top, true); plLastTap = 0; } else plLastTap = t;
+  }
+  function plSelect(id, {fly = true, open = false} = {}){
+    const p = plById(id); if (!p) return;
+    plS.sel = id;
+    document.querySelectorAll(".pl-mk.sel,.pl-li.sel").forEach(x => x.classList.remove("sel"));
+    document.querySelectorAll(`[data-plm="${CSS.escape(id)}"],[data-plo="${CSS.escape(id)}"]`).forEach(x => x.classList.add("sel"));
+    if (fly && plApi && p.x != null){ if (!plWide()) $("plMap").scrollIntoView({block: "nearest", behavior: plRM() ? "auto" : "smooth"}); plApi.center(p.x, p.y, Math.max(plCam.k, 1.9), true); }
+    if (open){ if (plWide() && route === "places"){ plS.panel = id; plDrawSide(); const sd = $("plSide"); if (sd && sd.getBoundingClientRect().top < 60) sd.scrollIntoView({block: "start", behavior: "smooth"}); } else plOpenSheet(id); }
+  }
+  // ---- режим «поставить точку» ----
+  function plStartPlacing(o){
+    if (plS.view !== "map"){ plS.view = "map"; lsSet("nexus_pl_view", "map"); renderPlaces(); }
+    plPlacing = {u: o.u ?? null, v: o.v ?? null, ...o}; const el = $("plMap"); if (!el) return;
+    el.classList.add("placing"); plDrawBanner(); plDrawMarkers();
+    el.scrollIntoView({block: plWide() ? "nearest" : "center", behavior: plRM() ? "auto" : "smooth"});
+  }
+  function plStopPlacing(){ if (!plPlacing) return; plPlacing = null; const el = $("plMap"); if (el) el.classList.remove("placing"); plDrawBanner(); if ($("plMks") && PL) plDrawMarkers(); }
+  function plDrawBanner(){
+    const b = $("plBan"); if (!b) return;
+    if (!plPlacing){ b.innerHTML = ""; return; }
+    const has = plPlacing.u != null;
+    b.innerHTML = `<div class="pl-banner" role="status"><span>${has ? "Точка стоит. Тапни ещё раз, чтобы сдвинуть" : esc(plPlacing.title || "Тапни по карте, где заведение")}</span>
+      ${has ? `<button type="button" class="pl-btn sm cy on" data-plpok="1">Готово</button>` : plPlacing.skip ? `<button type="button" class="pl-btn sm alt" data-plpskip="1">Без точки</button>` : ""}<button type="button" class="pl-btn sm red" data-plpno="1">Отмена</button></div>`;
+  }
+  // ---- календарь походов ----
+  function plDrawCal(){
+    const el = $("plCal"); if (!el) return;
+    const first = new Date(plCalY, plCalM, 1), st = (first.getDay() + 6) % 7, dim = new Date(plCalY, plCalM + 1, 0).getDate(), td = today();
+    const key = d => `${plCalY}-${pad(plCalM + 1)}-${pad(d)}`;
+    const vis = new Set(plFiltered().map(p => p.id));
+    const inM = PL.visits.filter(v => String(v.day).startsWith(`${plCalY}-${pad(plCalM + 1)}-`) && plById(v.place_id) && vis.has(v.place_id));
+    let g = ["пн", "вт", "ср", "чт", "пт", "сб", "вс"].map(x => `<span class="dw">${x}</span>`).join("");
+    for (let i = 0; i < st; i++) g += `<span class="pl-cd o"></span>`;
+    for (let d = 1; d <= dim; d++){ const vs = inM.filter(v => String(v.day).slice(0, 10) === key(d)), ps = [...new Set(vs.map(v => v.place_id))].map(plById);
+      const bgp = ps.find(p => p.photo);
+      g += ps.length ? `<button type="button" class="pl-cd has${key(d) === td ? " td" : ""}" data-plday="${key(d)}">${bgp ? `<span class="bg"><img alt="" loading="lazy" src="${esc(plImg(bgp))}"></span>` : ""}<span class="n">${d}</span>${ps.map(p => `<span class="v ${plCls(plScore(p.id))}">${esc(p.name)}</span>`).join("")}</button>`
+        : `<span class="pl-cd${key(d) === td ? " td" : ""}"><span class="n">${d}</span></span>`; }
+    const people = {}; inM.forEach(v => plVM(v.id).forEach(u => people[u] = (people[u] || 0) + 1));
+    const top = Object.entries(people).sort((a, b) => b[1] - a[1])[0];
+    el.innerHTML = `<div class="pl-cal-h"><button type="button" data-plcal="-1" aria-label="Прошлый месяц">‹</button><b>${MONTHS_NOM[plCalM]} ${plCalY}</b><button type="button" class="tdy" data-plcal="0">Сегодня</button><button type="button" data-plcal="1" aria-label="Следующий месяц">›</button></div>
+      <div class="pl-cal-g">${g}</div>
+      <div class="pl-cal-sum">${inM.length ? `<span>Походов: <b>${inM.length}</b></span><span>Мест: <b>${new Set(inM.map(v => v.place_id)).size}</b></span>${top ? `<span>Чаще всех: <b>${esc(top[0] === ME.id ? "ты" : frNick(top[0]))}</b> (${top[1]})</span>` : ""}` : `<span>В этом месяце никуда не ходили. Пора исправлять.</span>`}</div>`;
+  }
+  function plDaySheet(day){
+    const ps = [...new Set(PL.visits.filter(v => String(v.day).slice(0, 10) === day).map(v => v.place_id))].map(plById).filter(Boolean);
+    if (ps.length === 1){ plSelect(ps[0].id, {fly: false, open: true}); return; }
+    const s = openSheet(`<h3>${esc(plDay(day))}</h3><p class="sub">${ps.length} ${plural(ps.length, "место", "места", "мест")} за день</p><div class="pl-list" style="max-height:none">${ps.map(plLi).join("")}</div>`); s.el.classList.add("pl-sh");
+    s.el.addEventListener("click", e => { const b = e.target.closest("[data-plo]"); if (b){ s.close(); setTimeout(() => plSelect(b.dataset.plo, {fly: false, open: true}), 200); } });
+  }
+
+  // ---- карточка места ----
+  function plDetailHTML(p, mode){
+    if (!p) return `<div class="pl-empty"><b>Место не найдено</b>Возможно, его удалили.</div>`;
+    const w = plIsWant(p), s = plScore(p.id), vs = plVisits(p.id), been = plBeen(p.id), wants = plWants(p.id), iWant = wants.includes(ME.id), rates = plRates(p.id);
+    const url = plUrl(p.gis_url), dr = plDraftOf(p.id);
+    const crit = PL_CRIT.map(([k, l]) => { const c = plCrit(p.id, k); return `<span>${l}</span><span class="pld-bar" style="--c:var(--pl-${c ? {g: "green", y: "gold", r: "red"}[plCls(c.avg)] : "dim"})">${c ? `<i style="width:${c.avg * 10}%"></i>` : ""}</span><em class="${c ? plCls(c.avg) : ""}" style="color:var(--pl-${c ? {g: "green", y: "gold", r: "red"}[plCls(c.avg)] : "dim"})">${c ? num1(c.avg) : "—"}</em>`; }).join("");
+    const visits = vs.map(v => { const mm = plVM(v.id), me = mm.includes(ME.id);
+      return `<div class="pld-v"><span class="d">${esc(plDay(v.day))}<small>${esc(plAgo(v.day))} · ${mm.length} ${plural(mm.length, "человек", "человека", "человек")}</small></span>${mm.length ? avaStack(mm, 6) : ""}
+        <button type="button" class="pl-btn sm ${me ? "alt" : "cy"}" data-pla="${me ? "vout" : "vin"}" data-v="${esc(v.id)}">${me ? "Меня не было" : "Я тоже был"}</button>${v.user_id === ME.id ? `<button type="button" class="pl-btn sm red" data-pla="vdel" data-v="${esc(v.id)}" aria-label="Удалить поход" title="Удалить поход">×</button>` : ""}</div>`; }).join("");
+    const ten = (k, v) => `<div class="pld-ten${k === "beer" && dr.nobeer ? " skip" : ""}" style="--c:var(--pl-${{g: "green", y: "gold", r: "red", n: "gold"}[plCls(v)]})">${Array.from({length: 10}, (_, i) => i + 1).map(n => `<button type="button" data-plrate="${k}:${n}" class="${v === n ? "on" : v != null && n < v ? "lo" : ""}" aria-label="${n}">${n}</button>`).join("")}</div>`;
+    const myRate = been ? `${PL_CRIT.map(([k, l]) => `<div class="pld-pick"><span>${l}${k === "price" ? `<br><small style="color:var(--pl-dim);font-size:11px">10 — дёшево</small>` : ""}</span>${ten(k, k === "beer" && dr.nobeer ? null : dr[k])}${k === "beer" ? `<button type="button" class="pld-nob" data-pla="nobeer">${dr.nobeer ? "Пиво всё-таки пил" : "Пиво не брал"}</button>` : ""}</div>`).join("")}
+        <textarea class="pld-in" id="plCm-${esc(p.id)}" data-plcm="${esc(p.id)}" maxlength="300" placeholder="Пара слов: что понравилось, что бесит">${esc(dr.comment || "")}</textarea>
+        <div class="acts" style="margin-top:8px"><button type="button" class="pl-btn" data-pla="rsave">${rates.some(r => r.user_id === ME.id) ? "Обновить оценку" : "Сохранить оценку"}</button>${rates.some(r => r.user_id === ME.id) ? `<button type="button" class="pl-btn sm alt" data-pla="rdel">Убрать</button>` : ""}</div>`
+      : `<p class="pld-hint">Оценивают те, кто был. Отметься в походе — и сможешь поставить оценку и оценить блюда.</p><div class="acts" style="margin-top:10px"><button type="button" class="pl-btn cy" data-pla="visit">Я был здесь</button></div>`;
+    const rlist = rates.slice().sort((a, b) => String(b.updated_at).localeCompare(String(a.updated_at))).map(r => { const a = plRAvg(r);
+      return `<div class="pld-rt">${avaHTML(profOf(r.user_id), "sm")}<div class="t"><b>${esc(r.user_id === ME.id ? "Ты" : frNick(r.user_id))}</b><div class="nums">${PL_CRIT.map(([k, l]) => r[k] != null ? `<span>${l}<b>${r[k]}</b></span>` : "").join("")}</div>${r.comment ? `<p>${esc(r.comment)}</p>` : ""}</div><span class="pl-sc ${plCls(a)}">${a == null ? "—" : num1(a)}</span></div>`; }).join("");
+    const dishes = plDishes(p.id), dRow = d => { const a = plDAvg(d.id), n = plDR(d.id).length, mine = plDR(d.id).find(r => r.user_id === ME.id);
+      return `<div class="pld-dish"><span class="t"><b>${esc(d.name)}</b><small>${n ? `${n} ${plural(n, "оценка", "оценки", "оценок")}` : "без оценок"}${d.user_id !== ME.id ? " · добавил " + esc(frNick(d.user_id)) : ""}</small></span>
+        <select data-pldr="${esc(d.id)}" aria-label="Моя оценка: ${esc(d.name)}" ${been ? "" : "disabled title=\"Сначала отметься в походе\""}><option value="">моя</option>${Array.from({length: 10}, (_, i) => `<option value="${i + 1}"${mine && +mine.score === i + 1 ? " selected" : ""}>${i + 1}</option>`).join("")}</select>
+        <span class="pl-sc ${plCls(a)}">${a == null ? "—" : num1(a)}</span>${d.user_id === ME.id || p.user_id === ME.id ? `<button type="button" class="rm" data-pla="ddel" data-d="${esc(d.id)}" aria-label="Удалить">×</button>` : ""}</div>`; };
+    const food = dishes.filter(d => d.kind !== "drink"), drink = dishes.filter(d => d.kind === "drink");
+    const dk = plDraftOf(p.id).dk || "food";
+    return `<div class="pld" data-plpid="${esc(p.id)}">
+      ${mode === "side" ? `<button type="button" class="pld-back" data-pla="back">‹ Все заведения</button>` : ""}
+      <div class="pld-hero">${p.photo ? `<img alt="" src="${esc(plImg(p))}" onerror="this.remove()">` : ""}<span class="pld-kind${w ? " w" : ""}">${w ? "Хотим сходить" : esc(plKindL(p.kind))}</span><h2>${esc(p.name)}</h2><p>${esc([p.address, vs.length ? `последний поход ${plAgo(vs[0].day)}` : ""].filter(Boolean).join(" · "))}</p>
+        <span class="pld-big ${plCls(s)}"><b>${s == null ? "нет оценок" : num1(s)}</b>${s == null ? "" : `<small>${rates.length} ${plural(rates.length, "оценка", "оценки", "оценок")}</small>`}</span></div>
+      <div class="pld-acts">
+        ${url ? `<a class="pl-btn alt" href="${esc(url)}" target="_blank" rel="noopener">${PLI.gis}2ГИС</a>` : ""}
+        <button type="button" class="pl-btn" data-pla="visit">${ICON.calendar}Мы были здесь</button>
+        <button type="button" class="pl-btn cy${iWant ? " on" : ""}" data-pla="want">${iWant ? "Хочу ✓" : "Хочу сходить"}</button>
+        <button type="button" class="pl-btn alt" data-pla="invite">${ICON.send}Позвать друзей</button>
+        ${mode === "sheet" && p.x != null && route === "places" ? `<button type="button" class="pl-btn alt" data-pla="fly">${PLI.fly}На карте</button>` : ""}
+        <button type="button" class="pl-btn alt" data-pla="edit">${ICON.edit}Изменить</button>
+      </div>
+      ${p.x == null ? `<div class="pld-s"><p class="pld-hint">Точки на карте нет.</p><div class="acts" style="margin-top:8px"><button type="button" class="pl-btn sm cy" data-pla="pin">Поставить точку</button></div></div>` : ""}
+      ${wants.length ? `<div class="pld-s"><h4>${w ? "Хотят сходить" : "Хотят ещё"}<small>${wants.length}</small></h4><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">${avaStack(wants, 8)}<span class="pld-hint">${esc(wants.map(u => u === ME.id ? "ты" : frNick(u)).join(", "))}</span></div></div>` : ""}
+      ${w ? "" : `<div class="pld-s"><h4>Оценки<small>${rates.length ? `средняя из ${rates.length}` : "пока никто не оценил"}</small></h4><div class="pld-crit">${crit}</div></div>`}
+      <div class="pld-s"><h4>Походы<small>${vs.length}</small></h4>${vs.length ? `<div class="pld-vis">${visits}</div>` : `<p class="pld-hint">Ещё не ходили. Как сходите — жми «Мы были здесь».</p>`}</div>
+      ${w && !been ? "" : `<div class="pld-s"><h4>Моя оценка</h4>${myRate}</div>`}
+      ${rlist ? `<div class="pld-s"><h4>Кто как оценил<small>${rates.length}</small></h4>${rlist}</div>` : ""}
+      <div class="pld-s"><h4>Блюда и напитки<small>${dishes.length}</small></h4>
+        ${food.length ? `<div class="pld-dg">Еда</div>${food.map(dRow).join("")}` : ""}${drink.length ? `<div class="pld-dg">Напитки</div>${drink.map(dRow).join("")}` : ""}
+        ${dishes.length ? "" : `<p class="pld-hint">Что брали? Добавь — и каждый, кто был, поставит свою оценку.</p>`}
+        <div class="pld-add"><input class="pld-in" data-pldn="${esc(p.id)}" maxlength="80" placeholder="Крылья, стаут, борщ…" enterkeyhint="done"><div class="pl-seg"><button type="button" data-pla="dk" data-k="food" aria-pressed="${dk === "food"}">Еда</button><button type="button" data-pla="dk" data-k="drink" aria-pressed="${dk === "drink"}">Пить</button></div><button type="button" class="pl-btn sm" data-pla="dadd" aria-label="Добавить">${ICON.plus}</button></div></div>
+      <div class="pld-s"><h4>Меню<small>${p.menu.length ? `${p.menu.length} фото` : ""}</small></h4><div class="pld-menu">${p.menu.map((m, i) => `<button type="button" data-pla="mopen" data-i="${i}" aria-label="Фото меню ${i + 1}"><img alt="" loading="lazy" src="${esc(publicUrl(m))}" onerror="this.remove()"></button>`).join("")}
+        <label>${PLI.cam}Фото меню<input type="file" accept="image/*" multiple hidden data-plmenu="${esc(p.id)}"></label></div></div>
+      <p class="pld-meta">Добавил ${esc(p.user_id === ME.id ? "ты" : frNick(p.user_id))} · ${esc(plDay(String(p.created_at).slice(0, 10)))}</p>
+    </div>`;
+  }
+  function plDraftOf(pid){
+    if (plDraft[pid]) return plDraft[pid];
+    const r = PL && PL.rates.find(x => x.place_id === pid && x.user_id === ME.id);
+    return plDraft[pid] = r ? {interior: r.interior ?? null, price: r.price ?? null, taste: r.taste ?? null, beer: r.beer ?? null, nobeer: r.beer == null && plRAvg(r) != null, comment: r.comment || ""} : {interior: null, price: null, taste: null, beer: null, nobeer: false, comment: ""};
+  }
+  function plOpenSheet(id){
+    if (plSheet && !plSheet.s.closed){ plSheet.id = id; plDrawSheet(); plSheet.s.el.scrollTop = 0; return; }
+    const s = openSheet(`<div id="plShB"></div>`, {wide: true, onClose: () => { if (plSheet && plSheet.s === s) plSheet = null; }});
+    s.el.classList.add("pl-sh"); plSheet = {s, id}; plDrawSheet();
+    s.el.addEventListener("click", e => plAct(e, s.el));
+    s.el.addEventListener("change", e => plChange(e));
+    s.el.addEventListener("input", e => plInput(e));
+    s.el.addEventListener("keydown", e => { if (e.key === "Enter" && e.target.matches("[data-pldn]")){ e.preventDefault(); plAddDish(e.target.dataset.pldn, s.el); } });
+  }
+  function plDrawSheet(){
+    if (!plSheet) return; const b = plSheet.s.el.querySelector("#plShB"); if (!b) return;
+    const a = document.activeElement; if (a && b.contains(a) && a.matches("input,textarea,select")) { clearTimeout(plDrawSheet.t); plDrawSheet.t = setTimeout(plDrawSheet, 1500); return; }
+    const sy = plSheet.s.el.scrollTop; b.innerHTML = plDetailHTML(plById(plSheet.id), "sheet"); plSheet.s.el.scrollTop = sy;
+  }
+  function plRedraw(){
+    if (plS.panel && route === "places"){ const a = document.activeElement, sd = $("plSide"); if (!(a && sd && sd.contains(a) && a.matches("input,textarea,select"))) plDrawSide(); }
+    if (plSheet) plDrawSheet();
+  }
+  const plPidOf = el => { const d = el.closest("[data-plpid]"); return d ? d.dataset.plpid : null; };
+  // тап по цифре оценки — меняем только кнопки, без перерисовки
+  function plRatePick(btn){
+    const [k, n] = btn.dataset.plrate.split(":"), pid = plPidOf(btn), dr = plDraftOf(pid); if (!pid) return;
+    dr[k] = dr[k] === +n ? null : +n; if (k === "beer") dr.nobeer = false; dr.dirty = true;
+    const box = btn.parentElement, v = dr[k]; box.classList.remove("skip");
+    box.style.setProperty("--c", `var(--pl-${{g: "green", y: "gold", r: "red", n: "gold"}[plCls(v)]})`);
+    box.querySelectorAll("button").forEach((b, i) => { b.className = v === i + 1 ? "on" : v != null && i + 1 < v ? "lo" : ""; });
+    SND.click("soft");
+  }
+  async function plAct(e, root){
+    const t = e.target; if (!t.closest) return;
+    const rb = t.closest("[data-plrate]"); if (rb){ plRatePick(rb); return; }
+    const b = t.closest("[data-pla]"); if (!b || !root.contains(b)) return;
+    const pid = plPidOf(b), p = plById(pid), a = b.dataset.pla; if (!p && a !== "back") return;
+    if (a === "back"){ plS.panel = null; plDrawSide(); return; }
+    if (a === "fly"){ if (plSheet) plSheet.s.close(); plSelect(pid, {fly: true}); return; }
+    if (a === "visit"){ plVisitSheet(pid); return; }
+    if (a === "edit"){ plForm(p); return; }
+    if (a === "pin"){ if (plSheet) plSheet.s.close(); plMovePin(p); return; }
+    if (a === "mopen"){ plLb(pid, +b.dataset.i); return; }
+    if (a === "nobeer"){ const dr = plDraftOf(pid); dr.nobeer = !dr.nobeer; if (dr.nobeer) dr.beer = null; dr.dirty = true; plRedraw(); return; }
+    if (a === "dk"){ plDraftOf(pid).dk = b.dataset.k; b.parentElement.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); return; }
+    if (a === "dadd"){ plAddDish(pid, root); return; }
+    b.disabled = true;
+    try {
+      if (a === "want"){
+        const has = plWants(pid).includes(ME.id);
+        const {error} = has ? await SB.from("place_wants").delete().eq("place_id", pid).eq("user_id", ME.id) : await SB.from("place_wants").insert({place_id: pid, user_id: ME.id});
+        if (error) throw error; if (!has){ toast("Добавил в «Хочу сходить»"); SND.click(); } await loadPlaces(true);
+      } else if (a === "invite"){
+        const all = plEveryone().filter(u => u !== ME.id); if (!all.length){ toast("Пока некого звать — на сайте только ты"); return; }
+        if (!plWants(pid).includes(ME.id)) await SB.from("place_wants").insert({place_id: pid, user_id: ME.id});
+        await notify(all, "place_want", "place:" + pid, p.name); toast(`Позвал всех (${all.length}): ${p.name}`); SND.click(); confetti(); await loadPlaces(true);
+      } else if (a === "vin" || a === "vout"){
+        const vid = b.dataset.v;
+        const {error} = a === "vin" ? await SB.from("place_visit_members").insert({visit_id: vid, user_id: ME.id}) : await SB.from("place_visit_members").delete().eq("visit_id", vid).eq("user_id", ME.id);
+        if (error) throw error; if (a === "vin") await SB.from("place_wants").delete().eq("place_id", pid).eq("user_id", ME.id); await loadPlaces(true);
+      } else if (a === "vdel"){
+        if (!confirm("Удалить этот поход? Отметки друзей в нём тоже пропадут.")) return;
+        const {error} = await SB.from("place_visits").delete().eq("id", b.dataset.v); if (error) throw error; toast("Поход удалён"); await loadPlaces(true);
+      } else if (a === "rsave"){
+        const dr = plDraftOf(pid), ta = root.querySelector(`[data-plcm="${CSS.escape(pid)}"]`); if (ta) dr.comment = ta.value;
+        const row = {place_id: pid, user_id: ME.id, interior: dr.interior, price: dr.price, taste: dr.taste, beer: dr.nobeer ? null : dr.beer, comment: (dr.comment || "").trim().slice(0, 300) || null, updated_at: now()};
+        if (PL_CRIT.every(([k]) => row[k] == null)){ toast("Поставь хотя бы одну оценку"); return; }
+        const {error} = await SB.from("place_ratings").upsert(row, {onConflict: "place_id,user_id"}); if (error) throw error;
+        dr.dirty = false; toast("Оценка сохранена"); SND.click(); await loadPlaces(true);
+      } else if (a === "rdel"){
+        if (!confirm("Убрать свою оценку?")) return;
+        const {error} = await SB.from("place_ratings").delete().eq("place_id", pid).eq("user_id", ME.id); if (error) throw error; delete plDraft[pid]; await loadPlaces(true);
+      } else if (a === "ddel"){
+        if (!confirm("Удалить блюдо вместе с оценками?")) return;
+        const {error} = await SB.from("place_dishes").delete().eq("id", b.dataset.d); if (error) throw error; await loadPlaces(true);
+      }
+    } catch(err){ plFail(err); } finally { if (b.isConnected) b.disabled = false; }
+  }
+  async function plAddDish(pid, root){
+    const inp = root.querySelector(`[data-pldn="${CSS.escape(pid)}"]`), name = inp ? inp.value.trim() : ""; if (!name){ toast("Напиши, что брали"); inp && inp.focus(); return; }
+    if (plDishes(pid).some(d => plK(d.name) === plK(name))){ toast("Такое уже есть в списке"); return; }
+    const kind = plDraftOf(pid).dk || "food";
+    const {error} = await SB.from("place_dishes").insert({place_id: pid, user_id: ME.id, name: name.slice(0, 80), kind});
+    if (error){ plFail(error); return; } inp.value = ""; inp.blur(); toast(kind === "drink" ? "Напиток добавлен" : "Блюдо добавлено"); await loadPlaces(true);
+  }
+  async function plChange(e){
+    const t = e.target;
+    if (t.matches("[data-pldr]")){ const did = t.dataset.pldr, v = +t.value;
+      const {error} = v ? await SB.from("place_dish_rates").upsert({dish_id: did, user_id: ME.id, score: v, updated_at: now()}, {onConflict: "dish_id,user_id"}) : await SB.from("place_dish_rates").delete().eq("dish_id", did).eq("user_id", ME.id);
+      if (error){ plFail(error); return; } t.blur(); await loadPlaces(true); return; }
+    if (t.matches("[data-plmenu]")){ const pid = t.dataset.plmenu, fs = [...t.files].filter(f => f.type.startsWith("image/") || /\.(heic|heif|jpe?g|png|webp)$/i.test(f.name)).slice(0, 12); t.value = "";
+      if (!fs.length) return; await plMenuAdd(pid, fs); }
+  }
+  function plInput(e){ const t = e.target; if (t.matches("[data-plcm]")){ const dr = plDraftOf(t.dataset.plcm); dr.comment = t.value; dr.dirty = true; } }
+  async function plMenuAdd(pid, files){
+    toast(`Загружаю ${files.length} фото…`);
+    try { const ids = []; for (const f of files) ids.push(await plUp(f, 1800));
+      await loadPlaces(true); const p = plById(pid); if (!p) return; const next = [...p.menu, ...ids].slice(-40);
+      const {error} = await SB.from("places").update({menu: next, updated_at: now()}).eq("id", pid); if (error) throw error;
+      toast("Меню обновлено"); await loadPlaces(true);
+    } catch(err){ toast(upErr(err)); }
+  }
+  // просмотр фото меню
+  function plLb(pid, i){
+    const p = plById(pid); if (!p || !p.menu.length) return; let k = i, sx = null;
+    const el = document.createElement("div"); el.className = "pl-lb"; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", "Меню"); document.body.appendChild(el);
+    const cur = () => (plById(pid) || p).menu;
+    const draw = () => { const m = cur(); if (!m.length){ close(); return; } k = (k + m.length) % m.length; const own = String(m[k]).startsWith(ME.id + "/") || p.user_id === ME.id;
+      el.innerHTML = `<img alt="Фото меню" src="${esc(publicUrl(m[k]))}"><button type="button" class="x" aria-label="Закрыть">×</button>${m.length > 1 ? `<button type="button" class="a l" aria-label="Назад">‹</button><button type="button" class="a r" aria-label="Вперёд">›</button>` : ""}<div class="b"><span>${k + 1} / ${m.length}</span>${own ? `<button type="button" class="pl-btn red sm" data-lbdel="1">Удалить</button>` : ""}</div>`; };
+    const key = e => { if (e.key === "Escape"){ e.stopPropagation(); e.preventDefault(); close(); } else if (e.key === "ArrowLeft"){ k--; draw(); } else if (e.key === "ArrowRight"){ k++; draw(); } };
+    const close = () => { el.remove(); document.removeEventListener("keydown", key, true); };
+    el.addEventListener("click", async e => { const t = e.target;
+      if (t === el || t.closest(".x")) close(); else if (t.closest(".a.l")){ k--; draw(); } else if (t.closest(".a.r")){ k++; draw(); }
+      else if (t.closest("[data-lbdel]")){ if (!confirm("Удалить это фото меню?")) return; const next = cur().filter((_, j) => j !== k);
+        const {error} = await SB.from("places").update({menu: next, updated_at: now()}).eq("id", pid); if (error){ plFail(error, "Не удалилось"); return; }
+        const pp = plById(pid); if (pp) pp.menu = next; p.menu = next; draw(); loadPlaces(true); } });
+    el.addEventListener("touchstart", e => { sx = e.touches.length === 1 ? e.touches[0].clientX : null; }, {passive: true});
+    el.addEventListener("touchend", e => { if (sx == null) return; const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 50 && cur().length > 1){ k += dx < 0 ? 1 : -1; draw(); } sx = null; }, {passive: true});
+    document.addEventListener("keydown", key, true); draw();
+  }
+  // ---- «мы были здесь»: день и кто был ----
+  function plWhoChips(sel){
+    const ps = FR ? FR.profiles.map(p => p.user_id === ME.id ? myProf() : p) : [myProf()];
+    return ps.sort((a, b) => (b.user_id === ME.id) - (a.user_id === ME.id) || String(a.nick).localeCompare(String(b.nick), "ru"))
+      .map(p => `<button type="button" data-plwho="${esc(p.user_id)}" aria-pressed="${sel.has(p.user_id)}">${avaHTML(p, "sm")}${esc(p.user_id === ME.id ? "Я" : p.nick)}</button>`).join("");
+  }
+  function plVisitSheet(pid){
+    const p = plById(pid); if (!p) return; const who = new Set([ME.id]);
+    const s = openSheet(`<h3>Мы были здесь</h3><p class="sub">${esc(p.name)}</p>
+      <label class="pld-f">Когда<input type="date" class="pld-in" id="plvD" value="${today()}" max="${addDays(today(), 60)}"></label>
+      <div class="pld-f">Кто был — отметь друзей<div class="pld-who" id="plvW">${plWhoChips(who)}</div></div>
+      <p class="pld-hint">Отмеченным друзьям придёт уведомление. Каждый потом сам может отметиться или убраться из похода.</p>
+      <div class="acts" style="margin-top:14px"><button type="button" class="pl-btn" id="plvOk">Отметить поход</button><button type="button" class="pl-btn alt" id="plvNo">Отмена</button></div>`);
+    s.el.classList.add("pl-sh"); const q = x => s.el.querySelector(x);
+    q("#plvW").onclick = e => { const b = e.target.closest("[data-plwho]"); if (!b) return; const u = b.dataset.plwho; who.has(u) ? who.delete(u) : who.add(u); b.setAttribute("aria-pressed", who.has(u)); };
+    q("#plvNo").onclick = () => s.close();
+    q("#plvOk").onclick = async () => { const day = q("#plvD").value; if (!/^\d{4}-\d{2}-\d{2}$/.test(day)){ toast("Выбери дату"); return; } if (!who.size){ toast("Отметь хотя бы одного"); return; }
+      q("#plvOk").disabled = true;
+      try { await plSaveVisit(pid, day, [...who]); s.close(); toast(`Поход отмечен: ${plDay(day)}`); SND.click(); confetti(); }
+      catch(err){ plFail(err); } finally { const b = q("#plvOk"); if (b) b.disabled = false; } };
+  }
+  async function plSaveVisit(pid, day, uids){
+    const p = plById(pid); let v = PL.visits.find(x => x.place_id === pid && String(x.day).slice(0, 10) === day);
+    if (v && v.user_id !== ME.id) uids = uids.filter(u => u === ME.id || plVM(v.id).includes(u)); // в чужой поход можно добавить только себя
+    if (!v){ const r = await SB.from("place_visits").insert({place_id: pid, user_id: ME.id, day}).select().single(); if (r.error) throw r.error; v = r.data; }
+    const have = plVM(v.id), add = uids.filter(u => !have.includes(u));
+    if (add.length){ const {error} = await SB.from("place_visit_members").insert(add.map(u => ({visit_id: v.id, user_id: u}))); if (error) throw error; }
+    if (uids.includes(ME.id)) await SB.from("place_wants").delete().eq("place_id", pid).eq("user_id", ME.id);
+    const others = add.filter(u => u !== ME.id); if (others.length) notify(others, "place_visit", "place:" + pid, `${p ? p.name : ""} — ${plDay(day)}`);
+    await loadPlaces(true);
+  }
+  // ---- новое место и правка ----
+  function plAdd(){ if (!plReady()) return; plS.panel = null; plStartPlacing({title: "Новое место: тапни по карте, где оно", skip: true, done: (u, v) => plForm(null, {x: u, y: v})}); }
+  function plMovePin(p){ plStartPlacing({title: `Новая точка для «${p.name}»: тапни по карте`, u: p.x, v: p.y, done: async (u, v) => {
+    const {error} = await SB.from("places").update({x: u, y: v, updated_at: now()}).eq("id", p.id); if (error){ plFail(error); return; }
+    toast("Точка перенесена"); await loadPlaces(true); plSelect(p.id, {fly: true}); } }); }
+  function plForm(p, init = {}){
+    const isNew = !p; let file = null, mode = "been", inviteAll = false; const who = new Set([ME.id]);
+    const v0 = p || {name: "", kind: "bar", gis_url: "", address: "", photo: null};
+    const s = openSheet(`<h3>${isNew ? "Новое место" : "Изменить место"}</h3><p class="sub">${isNew ? (init.x != null ? "Точка на карте стоит. Осталось пара полей." : "Без точки на карте — её можно поставить потом.") : esc(p.name)}</p>
+      <label class="pld-f">Название<input class="pld-in" id="plfN" maxlength="120" value="${esc(v0.name)}" placeholder="Bodies Bar" autocomplete="off"></label>
+      <div class="pld-f">Тип<div class="pld-kinds" id="plfK">${PL_KIND.map(([k, l]) => `<button type="button" class="pl-chip" data-k="${k}" aria-pressed="${v0.kind === k}">${l}</button>`).join("")}</div></div>
+      ${isNew ? `<div class="pld-f">Статус<div class="pld-two" id="plfS"><button type="button" data-m="been" aria-pressed="true">Уже были</button><button type="button" class="w" data-m="want" aria-pressed="false">Хочу сходить</button></div></div>
+        <div id="plfBeen"><label class="pld-f">Когда были<input type="date" class="pld-in" id="plfD" value="${today()}" max="${addDays(today(), 60)}"></label><div class="pld-f">Кто был<div class="pld-who" id="plfW">${plWhoChips(who)}</div></div></div>
+        <div id="plfWant" hidden><button type="button" class="pl-chip" id="plfInv" aria-pressed="false" style="margin-bottom:12px">Позвать всех друзей — придёт уведомление</button></div>` : ""}
+      <div class="pld-f">Фото заведения<div class="pld-ph" id="plfP" role="button" tabindex="0">${v0.photo ? `<img alt="" src="${esc(plImg(v0))}">` : `<span>Нажми, чтобы выбрать фото<br>или вставь картинку (Ctrl+V)</span>`}</div><input type="file" id="plfF" accept="image/*" hidden></div>
+      <label class="pld-f">Ссылка на 2ГИС<input class="pld-in" id="plfG" type="url" inputmode="url" maxlength="500" value="${esc(v0.gis_url || "")}" placeholder="https://2gis.ru/yakutsk/firm/…"></label>
+      <label class="pld-f">Адрес (необязательно)<input class="pld-in" id="plfA" maxlength="200" value="${esc(v0.address || "")}" placeholder="пр. Ленина, 1"></label>
+      <div class="acts" style="margin-top:14px"><button type="button" class="pl-btn" id="plfOk">${isNew ? "Добавить на карту" : "Сохранить"}</button>${isNew ? "" : `<button type="button" class="pl-btn alt" id="plfPin">${PLI.fly}${p.x == null ? "Поставить точку" : "Переставить точку"}</button>`}<button type="button" class="pl-btn alt" id="plfNo">Отмена</button></div>
+      ${!isNew && p.user_id === ME.id ? `<div class="acts" style="margin-top:18px"><button type="button" class="pl-btn red sm" id="plfDel">Удалить место</button></div>` : ""}`);
+    s.el.classList.add("pl-sh"); const q = x => s.el.querySelector(x);
+    let kind = v0.kind;
+    q("#plfK").onclick = e => { const b = e.target.closest("[data-k]"); if (!b) return; kind = b.dataset.k; q("#plfK").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); };
+    if (isNew){
+      q("#plfS").onclick = e => { const b = e.target.closest("[data-m]"); if (!b) return; mode = b.dataset.m; q("#plfS").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); q("#plfBeen").hidden = mode !== "been"; q("#plfWant").hidden = mode !== "want"; };
+      q("#plfW").onclick = e => { const b = e.target.closest("[data-plwho]"); if (!b) return; const u = b.dataset.plwho; who.has(u) ? who.delete(u) : who.add(u); b.setAttribute("aria-pressed", who.has(u)); };
+      q("#plfInv").onclick = () => { inviteAll = !inviteAll; q("#plfInv").setAttribute("aria-pressed", inviteAll); };
+      setTimeout(() => { const n = q("#plfN"); if (n && plWide()) n.focus(); }, 80);
+    }
+    const setFile = f => { if (!f || !(f.type || "").startsWith("image/")) { toast("Нужна картинка"); return; } file = f; q("#plfP").innerHTML = `<img alt="" src="${URL.createObjectURL(f)}">`; };
+    pasteTarget = setFile;
+    q("#plfP").onclick = () => q("#plfF").click(); q("#plfP").onkeydown = e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); q("#plfF").click(); } };
+    q("#plfF").onchange = e => { const f = e.target.files[0]; if (f) setFile(f); e.target.value = ""; };
+    bindDrop(q("#plfP"), setFile);
+    q("#plfNo").onclick = () => s.close();
+    if (q("#plfPin")) q("#plfPin").onclick = () => { s.close(); if (plSheet) plSheet.s.close(); if (route !== "places") go("places"); setTimeout(() => plMovePin(p), route === "places" ? 50 : 400); };
+    if (q("#plfDel")) q("#plfDel").onclick = async () => { if (!confirm(`Удалить «${p.name}» со всеми походами, оценками и меню?`)) return;
+      const {error} = await SB.from("places").delete().eq("id", p.id); if (error){ plFail(error, "Не удалилось"); return; }
+      s.close(); if (plSheet) plSheet.s.close(); if (plS.panel === p.id) plS.panel = null; if (plS.sel === p.id) plS.sel = null; toast("Место удалено"); await loadPlaces(true); };
+    q("#plfOk").onclick = async () => {
+      const name = q("#plfN").value.trim().replace(/\s+/g, " "); if (!name){ toast("Напиши название"); q("#plfN").focus(); return; }
+      const gRaw = q("#plfG").value.trim(), gis = plUrl(gRaw); if (gRaw && !gis){ toast("Ссылка какая-то не такая"); q("#plfG").focus(); return; }
+      if (isNew && mode === "been" && !/^\d{4}-\d{2}-\d{2}$/.test(q("#plfD").value)){ toast("Выбери дату похода"); return; }
+      const ok = q("#plfOk"); ok.disabled = true; ok.textContent = "Сохраняю…";
+      try {
+        const photo = file ? await plUp(file, 1400) : (isNew ? null : v0.photo);
+        const row = {name: name.slice(0, 120), kind, gis_url: gis || null, address: q("#plfA").value.trim().slice(0, 200) || null, photo};
+        let id = p && p.id;
+        if (isNew){ const r = await SB.from("places").insert({...row, user_id: ME.id, x: init.x ?? null, y: init.y ?? null}).select().single(); if (r.error) throw r.error; id = r.data.id;
+          await loadPlaces(true);
+          if (mode === "been") await plSaveVisit(id, q("#plfD").value, [...who]);
+          else { await SB.from("place_wants").insert({place_id: id, user_id: ME.id}); if (inviteAll) await notify(plEveryone().filter(u => u !== ME.id), "place_want", "place:" + id, row.name); await loadPlaces(true); }
+        } else { const {error} = await SB.from("places").update({...row, updated_at: now()}).eq("id", id); if (error) throw error; await loadPlaces(true); }
+        s.close(); toast(isNew ? `«${row.name}» на карте` : "Сохранено"); if (isNew){ SND.click(); if (mode === "been") plDraft[id] = null; }
+        if (route === "places") plSelect(id, {fly: isNew, open: isNew || !plSheet});
+      } catch(err){ ok.disabled = false; ok.textContent = isNew ? "Добавить на карту" : "Сохранить"; toast(err && err.code ? upErr(err) : "Не сохранилось: " + ((err && err.message) || "")); }
+    };
+  }
+  // ---- события страницы ----
+  function plWire(m){
+    m.addEventListener("click", e => {
+      const t = e.target; if (!t.closest) return; let b;
+      if ((b = t.closest("[data-plview]"))){ plS.view = b.dataset.plview; lsSet("nexus_pl_view", plS.view); plStopPlacing(); renderPlaces(); return; }
+      if (t.closest("[data-pladd]")){ plAdd(); return; }
+      if (t.closest("[data-plretry]")){ plErr = null; loadPlaces(true); renderPlaces(); return; }
+      if ((b = t.closest("[data-plst]"))){ plS.st = b.dataset.plst; plUpd(); return; }
+      if ((b = t.closest("[data-plr]"))){ plS.r = b.dataset.plr; plUpd(); return; }
+      if (t.closest("[data-plreset]")){ plS.q = ""; plS.st = plS.r = plS.k = "all"; const qi = $("plQ"); if (qi) qi.value = ""; plUpd(); return; }
+      if ((b = t.closest("[data-plo]"))){ plSelect(b.dataset.plo, {fly: plS.view === "map", open: true}); return; }
+      if ((b = t.closest("[data-plcal]"))){ const d = +b.dataset.plcal; if (!d){ plCalY = new Date().getFullYear(); plCalM = new Date().getMonth(); } else { plCalM += d; if (plCalM < 0){ plCalM = 11; plCalY--; } if (plCalM > 11){ plCalM = 0; plCalY++; } } plDrawCal(); return; }
+      if ((b = t.closest("[data-plday]"))){ plDaySheet(b.dataset.plday); return; }
+      if (t.closest("[data-plpno]")){ const c = plPlacing && plPlacing.cancel; plStopPlacing(); c && c(); return; }
+      if (t.closest("[data-plpskip]")){ const d = plPlacing.done; plStopPlacing(); d(null, null); return; }
+      if (t.closest("[data-plpok]")){ const {u, v, done} = plPlacing; plStopPlacing(); done(u, v); return; }
+      const side = $("plSide"); if (side && side.contains(t)) plAct(e, side);
+    });
+    m.addEventListener("input", e => { if (e.target.id === "plQ"){ plS.q = e.target.value; clearTimeout(plWire.t); plWire.t = setTimeout(plUpd, 120); } else plInput(e); });
+    m.addEventListener("change", e => { const t = e.target; if (t.id === "plK"){ plS.k = t.value; plUpd(); } else if (t.id === "plSort"){ plS.sort = t.value; plUpd(); } else plChange(e); });
+    m.addEventListener("keydown", e => { if (e.key === "Enter" && e.target.matches("[data-pldn]")){ e.preventDefault(); plAddDish(e.target.dataset.pldn, m); } });
+  }
+  function plUpd(){ plDrawSide(); if (plS.view === "map") plDrawMarkers(); else plDrawCal(); }
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && plPlacing && !sheets.length){ e.preventDefault(); const c = plPlacing.cancel; plStopPlacing(); c && c(); } });
+  window.addEventListener("hashchange", () => { if (route !== "places"){ plStopPlacing(); if (plSheet) plSheet.s.close(); } });
+  document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-plgo]"); if (!b) return; e.preventDefault(); go("place:" + b.dataset.plgo); });
+
+  // ---- окошко в «Активности»: последнее место и оценка ----
+  function placesCard(){
+    const head = `<h3>${ICON.pin} Заведения${PL ? `<small>${PL.places.length}</small>` : ""}<button class="ev-add" data-go="places" title="Открыть карту заведений" aria-label="Открыть карту заведений">›</button></h3>`;
+    if (!PL){ if (!plErr) loadPlaces(); return `<div class="fb-card pl-card" id="plCard">${head}<p class="a-sub" style="margin:0;font-size:13px">${plErr ? (plMissing() ? "Карта заведений заработает после обновления базы." : "Не загрузилось.") : "Загружаю…"}</p></div>`; }
+    const been = PL.places.filter(p => !plIsWant(p)), want = PL.places.filter(plIsWant);
+    const lastV = PL.visits.filter(v => plById(v.place_id) && String(v.day).slice(0, 10) <= today()).sort((a, b) => String(b.day).localeCompare(String(a.day)) || String(b.created_at).localeCompare(String(a.created_at)))[0];
+    const p = lastV && plById(lastV.place_id), s = p ? plScore(p.id) : null, mm = lastV ? plVM(lastV.id) : [];
+    const last = p ? `<button class="plc-last" data-plgo="${esc(p.id)}" aria-label="Открыть ${esc(p.name)}">${p.photo ? `<img alt="" loading="lazy" src="${esc(plImg(p))}" onerror="this.remove()">` : `<span class="map"></span>`}<span class="k">Последний поход · ${esc(plKindL(p.kind))}</span><b>${esc(p.name)}</b><small>${esc(plAgo(lastV.day))}${mm.length ? ` · ${mm.length} ${plural(mm.length, "человек", "человека", "человек")}` : ""}</small>${mm.length ? avaStack(mm, 6) : ""}<span class="sc ${plCls(s)}">${s == null ? "без оценки" : num1(s)}</span></button>`
+      : `<p class="a-sub" style="margin:0 0 10px;font-size:13px">Отмечайте на карте, где были, и ставьте оценки: интерьер, цены, вкус, пиво.</p>`;
+    const wl = want.sort((a, b) => plWants(b.id).length - plWants(a.id).length).slice(0, 3)
+      .map(w => { const n = plWants(w.id).length; return `<button class="plc-want" data-plgo="${esc(w.id)}"><i></i><span>${esc(w.name)}</span><small>${n ? `хотят ${n}` : "хотим"}</small></button>`; }).join("");
+    return `<div class="fb-card pl-card" id="plCard">${head}
+      <div class="plc-stat"><span><b>${been.length}</b> ${plural(been.length, "место", "места", "мест")}</span><span><b>${PL.visits.length}</b> ${plural(PL.visits.length, "поход", "похода", "походов")}</span><span><b>${want.length}</b> хотим</span></div>
+      ${last}${wl ? `<div style="margin:-2px 0 10px">${wl}</div>` : ""}<button class="ib blue bd-set" data-go="places">Открыть карту</button></div>`;
+  }
 
   // ================= запуск =================
   readHash(); render();
