@@ -222,7 +222,7 @@
   let BOOK = null, bookLoading = null, bookDraft = {text: "", file: null}, bookN = 5;
   async function loadBook(force){
     if (!SB || !ME) return null; if (BOOK && !force) return BOOK; if (bookLoading) return bookLoading;
-    bookLoading = (async () => { const [f, v, c, cl] = await Promise.all([SB.from("feedback").select("*").order("created_at", {ascending: false}).limit(200), fetchAll(() => SB.from("feedback_votes").select("*"), ["feedback_id", "user_id"]), fetchAll(() => SB.from("feedback_comments").select("*").order("created_at", {ascending: true}), ["id"]), fetchAll(() => SB.from("feedback_comment_likes").select("comment_id,user_id"), ["comment_id", "user_id"])]);
+    bookLoading = (async () => { const [f, v, c, cl] = await Promise.all([SB.from("feedback").select("*").order("created_at", {ascending: false}).limit(200), fetchAll(() => SB.from("feedback_votes").select("*"), ["feedback_id", "user_id"]), fetchAll(() => SB.from("feedback_comments").select("*").order("created_at", {ascending: true}), ["id"]), fetchAll(() => SB.from("feedback_comment_likes").select("comment_id,user_id,created_at"), ["comment_id", "user_id"])]);
       BOOK = {items: f.error ? [] : (f.data || []).sort(byAt("created_at")), votes: v.error ? [] : v.data || [], comments: c && !c.error ? c.data || [] : [], clikes: cl && !cl.error ? cl.data || [] : []}; bookLoading = null; if (route === "people") renderPeople(); return BOOK; })();
     return bookLoading;
   }

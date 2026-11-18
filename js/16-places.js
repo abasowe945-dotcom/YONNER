@@ -108,7 +108,7 @@
   }
   function plRefresh(){
     if (route === "places") renderPlaces();
-    else if (route === "people"){ const c = $("plCard"); if (c) c.outerHTML = placesCard(); }
+    else if (route === "people"){ if (actTab === "feed" && !document.querySelector(".sh-wrap")) renderPeople(); else { const c = $("plCard"); if (c) c.outerHTML = placesCard(); } }
     if (plSheet && !plSheet.s.closed) plDrawSheet();
   }
   const plById = id => PL && PL.places.find(p => p.id === id);

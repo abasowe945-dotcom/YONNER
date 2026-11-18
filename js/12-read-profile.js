@@ -933,10 +933,11 @@
     FR.profiles.filter(p => p.created_at && ME && p.user_id !== ME.id && Date.now() - Date.parse(p.created_at) < 60 * 864e5)
       .forEach(p => evs.push({join: true, uid: p.user_id, ts: p.created_at, verb: "присоединился к NEXUS"}));
     if (SL && ME) slEvents().filter(e => e.uid && e.uid !== ME.id && Date.now() - Date.parse(e.ts) < 30 * 864e5).slice(0, 40).forEach(e => evs.push({join: true, slop: e.id, uid: e.uid, ts: new Date(e.ts).toISOString(), verb: e.verb === "добавил игру" ? "добавил в СЛОП" : e.verb, title: e.title}));
+    socEvents().forEach(e => evs.push(e));
     evs.sort((x, y) => String(y.ts).localeCompare(String(x.ts)));
     const groups = [];
     for (const e of evs){ const g = groups[groups.length - 1];
-      if (g && g.uid === e.uid && (!e.join || e.slop) && (!g.ev[0].join || g.ev[0].slop) && Date.parse(g.ev[g.ev.length - 1].ts) - Date.parse(e.ts) < 6 * 36e5) g.ev.push(e);
+      if (g && g.uid === e.uid && (!e.join || e.slop || e.soc) && (!g.ev[0].join || g.ev[0].slop || g.ev[0].soc) && Date.parse(g.ev[g.ev.length - 1].ts) - Date.parse(e.ts) < 6 * 36e5) g.ev.push(e);
       else groups.push({uid: e.uid, ts: e.ts, d: localDate(new Date(e.ts)), ev: [e]}); }
     return groups;
   }
@@ -947,7 +948,7 @@
   // строки «прошёл A, B и ещё 2» — по одному глаголу на строку
   function groupLines(g, max = 3){
     const by = new Map();
-    g.ev.forEach(e => { const verb = e.slop ? `${e.verb} «${e.title}» (СЛОП)` : e.join ? e.verb : e.rd && e.verb === "прочитал" ? "прочитал " + (RNOUN[e.rd.type] || "книгу") : e.verb; const k = verb + "|" + (e.join ? "j" : evKind(e)); if (!by.has(k)) by.set(k, {verb, kind: e.join ? "" : evKind(e), ev: []}); by.get(k).ev.push(e); });
+    g.ev.forEach(e => { const verb = e.soc ? `${e.verb}${e.title ? ` «${e.title}»` : ""}` : e.slop ? `${e.verb} «${e.title}» (СЛОП)` : e.join ? e.verb : e.rd && e.verb === "прочитал" ? "прочитал " + (RNOUN[e.rd.type] || "книгу") : e.verb; const k = verb + "|" + (e.join ? "j" : evKind(e)); if (!by.has(k)) by.set(k, {verb, kind: e.join ? "" : evKind(e), ev: []}); by.get(k).ev.push(e); });
     const lines = [...by.values()];
     return {html: lines.slice(0, max).map(l => `<li><span class="vb">${esc(l.verb)}</span>${l.ev[0].join ? "" : ` ${l.ev.slice(0, 2).map(e => `<b>${esc(evTitle(e))}</b>`).join(", ")}${l.ev.length > 2 ? ` <em>и ещё ${l.ev.length - 2}</em>` : ""}`}</li>`).join(""), more: Math.max(0, lines.length - max)};
   }
@@ -955,7 +956,8 @@
   function feedGroupHTML(g, i){
     const p = profOf(g.uid), shown = g.ev.slice(0, FEED_SHOW), rest = g.ev.length - shown.length;
     const li = e => { const r = evRate(e);
-      return e.slop ? `<li class="fg-e"><time>${esc(feedTime(e.ts))}</time><button class="fg-t" data-slopgo="${esc(e.slop)}"><span class="vb">${esc(e.verb)}</span> <b>${esc(e.title)}</b> <em>СЛОП</em></button></li>`
+      return e.soc ? `<li class="fg-e"><time>${esc(feedTime(e.ts))}</time><button class="fg-t" data-actref="${esc(e.ref || "")}"><span class="vb">${esc(e.verb)}</span>${e.title ? ` <b>${esc(e.title)}</b>` : ""}${e.verb.includes(e.tag) ? "" : ` <em>${esc(e.tag)}</em>`}${e.q ? `<small class="fg-q">«${esc(e.q)}»</small>` : ""}</button></li>`
+        : e.slop ? `<li class="fg-e"><time>${esc(feedTime(e.ts))}</time><button class="fg-t" data-slopgo="${esc(e.slop)}"><span class="vb">${esc(e.verb)}</span> <b>${esc(e.title)}</b> <em>СЛОП</em></button></li>`
         : e.join ? `<li class="fg-e"><time>${esc(feedTime(e.ts))}</time><span class="vb">${esc(e.verb)}</span></li>`
         : `<li class="fg-e"><time>${esc(feedTime(e.ts))}</time><button class="fg-t" ${e.rd ? `data-frd="${esc(e.uid + "/" + e.rd.id)}"` : `data-fi="${esc(e.uid + "/" + e.it.id)}"`}><span class="vb">${esc(e.verb)}</span> <b>${esc(evTitle(e))}</b> <em>${esc(evKind(e))}</em>${r != null ? ` <span class="fg-r ${rateCls(r)}">${num1(r)}</span>` : ""}</button></li>`; };
     return `<article class="fg"><button class="fg-a" data-user="${esc(g.uid)}">${avaHTML(p)}</button>
@@ -971,9 +973,65 @@
       return `<button class="fgs-r" ${e.rd ? `data-frd="${esc(e.uid + "/" + e.rd.id)}"` : `data-fi="${esc(e.uid + "/" + e.it.id)}"`}>${e.rd ? rCover(e.rd) : posterHTML(e.it, {rate: false, tgt: false})}<span class="t"><span class="vb">${esc(feedTime(e.ts))} · ${esc(e.verb)}</span><b>${esc(evTitle(e))}</b><small>${esc(evKind(e))}${e.it && genres(e.it)[0] ? " · " + esc(genres(e.it)[0].toLowerCase()) : ""}</small></span>${r != null ? `<span class="r ${rateCls(r)}">${num1(r)}</span>` : ""}</button>`; };
     const last = g.ev[g.ev.length - 1];
     const s = openSheet(`<div class="fgs-h">${avaHTML(p, "md")}<div><h3>${esc(p.nick || "")}</h3><p class="sub">${g.ev.length} ${plural(g.ev.length, "действие", "действия", "действий")} · ${esc(feedTime(last.ts))} — ${esc(feedTime(g.ts))}</p></div><button class="ib" data-user="${esc(g.uid)}">Профиль</button></div>
-      <div class="fgs">${g.ev.filter(e => !e.join).map(row).join("")}</div>`, {wide: true});
-    s.el.addEventListener("click", e => { if (e.target.closest("[data-user]")) s.close(); });
+      <div class="fgs">${g.ev.filter(e => !e.join || e.slop || e.soc).map(e => e.soc || e.slop ? socRow(e) : row(e)).join("")}</div>`, {wide: true});
+    s.el.addEventListener("click", e => { if (e.target.closest("[data-user],[data-actref],[data-slopgo]")) s.close(); });
   }
+  // ================= 5.3: живая лента — комменты, лайки, встречи, заведения, книга жалоб, тир-листы =================
+  // всё собирается из уже загруженных разделов; свои действия не показываем, только за последние 30 дней
+  const socRow = e => `<button class="fgs-r soc" ${e.soc ? `data-actref="${esc(e.ref || "")}"` : `data-slopgo="${esc(e.slop)}"`}><span class="t"><span class="vb">${esc(feedTime(e.ts))} · ${esc(e.verb)}</span><b>${esc(e.title || "")}</b><small>${esc(e.soc ? (e.verb.includes(e.tag) ? "" : e.tag) : "СЛОП")}${e.q ? `${e.soc && e.verb.includes(e.tag) ? "" : " · "}«${esc(e.q)}»` : ""}</small></span></button>`;
+  const cut = (s, n = 70) => { s = String(s || "").replace(/\s+/g, " ").trim(); return s.length > n ? s.slice(0, n - 1) + "…" : s; };
+  function socEvents(){
+    if (!ME) return [];
+    const out = [], since = Date.now() - 30 * 864e5;
+    const add = (uid, ts, verb, title, tag, ref, q) => { if (!uid || uid === ME.id || !ts) return; const t = Date.parse(ts); if (!(t > since)) return;
+      out.push({join: true, soc: true, uid, ts: new Date(t).toISOString(), verb, title: title || "", tag, ref, q: q ? cut(q) : ""}); };
+    const of = (uid, mine, noun) => uid === ME.id ? mine : `${noun} ${nickOf(uid)}`;
+    try {
+      if (EV){ const eT = id => { const e = evById(id); return e ? (e.kind === "watch" ? (e.film && e.film.title) || e.title : e.title) : null; };
+        EV.events.forEach(e => add(e.owner, e.created_at, e.kind === "watch" ? "зовёт смотреть" : "создал встречу", e.kind === "watch" ? (e.film && e.film.title) || e.title : e.title, "встречи", evRoute(e)));
+        EV.members.forEach(m => { const e = evById(m.event_id); if (e && m.status === "going" && m.user_id !== e.owner) add(m.user_id, m.updated_at, "идёт на", eT(m.event_id), "встречи", evRoute(e)); });
+        EV.posts.forEach(p => { const e = evById(p.event_id); if (e) add(p.user_id, p.created_at, "написал на встрече", eT(p.event_id), "встречи", evRoute(e), p.body || (p.image ? "фото" : "")); });
+        (EV.likes || []).forEach(l => { const p = EV.posts.find(x => x.id === l.post_id), e = p && evById(p.event_id); if (e) add(l.user_id, l.created_at, `лайкнул ${of(p.user_id, "твой пост", "пост")} на встрече`, eT(p.event_id), "встречи", evRoute(e)); });
+      }
+      if (WALL){ const post = id => WALL.posts.find(p => p.id === id);
+        WALL.posts.forEach(p => add(p.user_id, p.created_at, "написал на стене", "", "стена", "post:" + p.id, p.body || (p.image ? "фото" : "")));
+        WALL.comments.forEach(c => { const p = post(c.post_id); add(c.user_id, c.created_at, p ? (p.user_id === c.user_id ? "прокомментировал свой пост" : `прокомментировал ${of(p.user_id, "твой пост", "пост")}`) : "прокомментировал пост", "", "стена", "comment:" + c.post_id, c.body); });
+        WALL.reacts.forEach(r => { const p = post(r.post_id); if (p) add(r.user_id, r.created_at, `отреагировал на ${of(p.user_id, "твой пост", "пост")}`, "", "стена", "post:" + p.id, p.body); });
+        WALL.clikes.forEach(l => { const c = WALL.comments.find(x => x.id === l.comment_id); if (c) add(l.user_id, l.created_at, `лайкнул ${of(c.user_id, "твой комментарий", "комментарий")}`, "", "стена", "comment:" + c.post_id, c.body); });
+      }
+      if (typeof BOOK !== "undefined" && BOOK){ const fb = id => BOOK.items.find(f => f.id === id);
+        BOOK.items.forEach(f => add(f.user_id, f.created_at, "написал в книгу жалоб", "", "книга жалоб", "book:" + f.id, f.body));
+        (BOOK.comments || []).forEach(c => add(c.user_id, c.created_at, "ответил в книге жалоб", "", "книга жалоб", "book:" + c.feedback_id, c.body));
+        BOOK.votes.forEach(v => { const f = fb(v.feedback_id); if (f) add(v.user_id, v.created_at, v.v === 1 ? `поддержал ${of(f.user_id, "твою запись", "запись")} в книге жалоб` : `против ${of(f.user_id, "твоей записи", "записи")} в книге жалоб`, "", "книга жалоб", "book:" + f.id, f.body); });
+        (BOOK.clikes || []).forEach(l => { const c = (BOOK.comments || []).find(x => x.id === l.comment_id); if (c) add(l.user_id, l.created_at, `лайкнул ${of(c.user_id, "твой ответ", "ответ")} в книге жалоб`, "", "книга жалоб", "book:" + c.feedback_id, c.body); });
+      }
+      if (SL){ const gT = id => { const g = slGame(id); return g ? g.title : null; };
+        SL.plans.forEach(p => { const t = gT(p.game_id); if (t) add(p.user_id, p.created_at, `запланировал катку${p.day ? " на " + p.day.split("-").reverse().slice(0, 2).join(".") : ""}`, t, "СЛОП", "slopplan:" + p.id); });
+        SL.pmembers.forEach(m => { const p = SL.plans.find(x => x.id === m.plan_id); if (p && m.user_id !== p.user_id) add(m.user_id, m.created_at, "идёт на катку", gT(p.game_id), "СЛОП", "slopplan:" + p.id); });
+        SL.polls.forEach(p => add(p.user_id, p.created_at, "запустил голосование", "", "СЛОП", "sloppoll:" + p.id));
+        SL.pvotes.forEach(v => add(v.user_id, v.created_at, "проголосовал за", gT(v.game_id), "СЛОП", "sloppoll:" + v.poll_id));
+        SL.tiers.forEach(t => { const ti = gT(t.game_id), n = typeof SL_TIERS !== "undefined" && SL_TIERS[t.tier]; if (ti && n) add(t.updated_by, t.updated_at, `поставил в общий тир-лист «${n[0]}»`, ti, "СЛОП", "slopgame:" + t.game_id); });
+      }
+      if (FR){ const tl = id => (FR.tierlists || []).find(t => t.id === id);
+        (FR.tierlists || []).forEach(t => { const r = t.reply_to && tl(t.reply_to); add(t.user_id, t.created_at, r ? `сделал свою версию ${of(r.user_id, "твоего тир-листа", "тир-листа")}` : "сделал тир-лист", t.title, "тир-листы", "tier:" + t.id); });
+        (typeof TLL !== "undefined" ? TLL : []).forEach(l => { const t = tl(l.tierlist_id); if (t) add(l.user_id, l.created_at, `лайкнул ${of(t.user_id, "твой тир-лист", "тир-лист")}`, t.title, "тир-листы", "tier:" + t.id); });
+        (FR.showcases || []).forEach(s => add(s.user_id, s.updated_at || s.created_at, "обновил витрину", s.title, "профиль", "user:" + s.user_id));
+      }
+      if (PL){ const pN = id => { const p = plById(id); return p ? p.name : null; };
+        PL.places.forEach(p => add(p.user_id, p.created_at, "добавил заведение", p.name, "заведения", "place:" + p.id));
+        PL.visits.forEach(v => { const n = pN(v.place_id); if (n) add(v.user_id, v.created_at, "сходил в", n, "заведения", "place:" + v.place_id); });
+        PL.rates.forEach(r => { const n = pN(r.place_id); if (n) add(r.user_id, r.updated_at, "оценил", n, "заведения", "place:" + r.place_id, r.comment); });
+        PL.dishes.forEach(d => { const n = pN(d.place_id); if (n) add(d.user_id, d.created_at, `добавил ${d.kind === "drink" ? "напиток" : "блюдо"} «${d.name}» в`, n, "заведения", "place:" + d.place_id); });
+        PL.drates.forEach(r => { const d = PL.dishes.find(x => x.id === r.dish_id), n = d && pN(d.place_id); if (n) add(r.user_id, r.updated_at, `оценил «${d.name}» в`, n, "заведения", "place:" + d.place_id); });
+        PL.wants.forEach(w => { const n = pN(w.place_id); if (n) add(w.user_id, w.created_at, "хочет сходить в", n, "заведения", "place:" + w.place_id); });
+      }
+    } catch(e){ logErr("лента: сбор действий", e); }
+    return out;
+  }
+  document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-actref]"); if (!b) return; e.preventDefault();
+    const ref = b.dataset.actref, [k, id] = ref.split(":"); if (!id) return;
+    if (k === "slopgame"){ if (route === "slop"){ if (slGame(id)) slOpenCard(id); } else { slPending = id; go("slop"); } return; }
+    ntfGo({ref}); });
   function feedCard(){
     if (!FR) return `<div class="fb-card"><p class="a-sub" style="margin:0">Загружаю…</p></div>`;
     FGROUPS = feedGroups();

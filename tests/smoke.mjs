@@ -13,7 +13,22 @@ function fixtures(nItemsFriend) {
   const items = []; for (let i = 0; i < nItemsFriend; i++) items.push({id: "f" + i, user_id: FUID, data: {title: "Игра " + i, kind: "game", status: "done", added: now}, updated_at: now});
   return {
     profiles: [{user_id: UID, nick: "TESTER", created_at: now}, {user_id: FUID, nick: "FRIEND", created_at: now}],
-    public_items: items, is_nexus_admin: true, items: [{id: "m1", user_id: UID, data: {title: "Моя игра", kind: "game", status: "playing", added: now}}],
+    public_items: items, is_nexus_admin: true,
+    // живая лента: всё от друга, свежее
+    events: [{id: "e1", owner: FUID, title: "Шашлыки", created_at: now, kind: "meet"}],
+    event_members: [{event_id: "e1", user_id: UID, status: "going", updated_at: now}],
+    event_posts: [{id: "ep1", event_id: "e1", user_id: FUID, body: "Беру мангал", created_at: now}],
+    event_post_likes: [],
+    wall_posts: [{id: "w1", user_id: UID, body: "Мой пост", created_at: now}],
+    wall_comments: [{id: "wc1", post_id: "w1", user_id: FUID, body: "Годно", created_at: now}],
+    wall_reactions: [{post_id: "w1", user_id: FUID, kind: "fire", created_at: now}], wall_comment_likes: [],
+    feedback: [{id: "f1", user_id: FUID, body: "Сделайте тёмную тему темнее", created_at: now}],
+    feedback_comments: [{id: "fc1", feedback_id: "f1", user_id: FUID, body: "и ещё", created_at: now}], feedback_votes: [], feedback_comment_likes: [],
+    slop_games: [{id: "g1", user_id: UID, title: "Lethal Company", created_at: now, genres: [], screenshots: []}],
+    slop_plans: [{id: "sp1", game_id: "g1", user_id: FUID, day: "2026-12-01", created_at: now}], slop_plan_members: [], slop_tiers: [{game_id: "g1", tier: 0, updated_by: FUID, updated_at: now}],
+    tierlists: [{id: "t1", user_id: UID, title: "Лучшие шутеры", tiers: [], pool: [], created_at: now}], tierlist_likes: [{tierlist_id: "t1", user_id: FUID, created_at: now}],
+    places: [{id: "pl1", user_id: FUID, name: "Тамерлан", created_at: now}], place_visits: [], place_visit_members: [],
+    place_ratings: [{place_id: "pl1", user_id: FUID, taste: 5, updated_at: now}], place_dishes: [], place_dish_rates: [], place_wants: [], items: [{id: "m1", user_id: UID, data: {title: "Моя игра", kind: "game", status: "playing", added: now}}],
   };
 }
 const routes = ["#home", "#games", "#games-future", "#kino", "#kino-future", "#read", "#slop", "#places", "#people", "#more", "#calendar", "#vacation", "#patch", "#user:" + FUID];
@@ -54,6 +69,14 @@ async function run() {
       window.__RTEMIT("event_post_likes", {eventType: "INSERT", new: {post_id: "p1", user_id: "u9"}, old: {}});
       await new Promise(r => setTimeout(r, 600)); return {extra: window.__SBLOG.slice(before).filter(x => /^event/.test(x.name)).length, grew: (EV ? EV.likes.length : -1) - n0}; });
     if (rt.extra || rt.grew !== 1) fails.push(`realtime: лайк не вписался на месте (${JSON.stringify(rt)})`);
+    // живая лента: комменты, лайки, встречи, заведения, книга жалоб, тир-листы
+    const feed = await p.evaluate(async () => { location.hash = "#people"; await new Promise(r => setTimeout(r, 800)); actTab = "feed"; renderPeople(); await new Promise(r => setTimeout(r, 300));
+      return FGROUPS.flatMap(g => g.ev).map(e => e.verb + " " + (e.title || "")).join("\n"); });
+    for (const w of ["написал на встрече", "прокомментировал твой пост", "написал в книгу жалоб", "запланировал катку", "лайкнул твой тир-лист", "добавил заведение", "оценил", "отреагировал на твой пост", "общий тир-лист"])
+      if (!feed.includes(w)) fails.push(`живая лента: нет «${w}»`);
+    if (process.env.DEBUG) console.log(feed);
+    const jump = await p.evaluate(async () => { const b = document.createElement("button"); b.dataset.actref = "place:pl1"; document.body.appendChild(b); b.click(); b.remove(); await new Promise(r => setTimeout(r, 500)); return location.hash; });
+    if (!/place/.test(jump)) fails.push("живая лента: клик по заведению не открыл его (" + jump + ")");
     for (const r of routes) { await p.evaluate(h => { location.hash = h; }, r); await p.waitForTimeout(400); }
     const fr = await p.evaluate(fid => { try { return typeof frItems === "function" ? frItems(fid).length : -1; } catch (e) { return -2; } }, FUID);
     if (fr !== 1500) fails.push(`полка друга: загружено ${fr} из 1500 записей`);
