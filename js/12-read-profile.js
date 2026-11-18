@@ -52,7 +52,7 @@
   async function loadReads(){
     if (!SB || !ME) return [];
     if (rLoading) return rLoading;
-    rLoading = (async () => { const {data, error} = await SB.from("reads").select("id,data,updated_at").eq("user_id", ME.id);
+    rLoading = (async () => { const {data, error} = await fetchAll(() => SB.from("reads").select("id,data,updated_at").eq("user_id", ME.id), ["user_id", "id"]);
       READS = error ? (READS || []) : (data || []).map(r => ({...r.data, id: r.id, _upd: r.updated_at})); rLoading = null;
       if (route === "read" || route === "home") render(); return READS; })();
     return rLoading;
@@ -993,7 +993,7 @@
     if (wLoading){ if (force) wAgain = true; return wLoading; }
     wLoading = (async () => {
       try {
-        const [p, c, r, l] = await Promise.all([SB.from("wall_posts").select("*").order("created_at", {ascending: false}).limit(120), SB.from("wall_comments").select("*").order("created_at", {ascending: true}), SB.from("wall_reactions").select("*"), SB.from("wall_comment_likes").select("*")]);
+        const [p, c, r, l] = await Promise.all([SB.from("wall_posts").select("*").order("created_at", {ascending: false}).limit(120), fetchAll(() => SB.from("wall_comments").select("*").order("created_at", {ascending: true}), ["id"]), fetchAll(() => SB.from("wall_reactions").select("*"), ["post_id", "user_id", "kind"]), fetchAll(() => SB.from("wall_comment_likes").select("*"), ["comment_id", "user_id"])]);
         if (p.error) throw p.error;
         WALL = {at: Date.now(), posts: p.data || [], comments: c.error ? [] : c.data || [], reacts: r.error ? [] : r.data || [], clikes: l.error ? [] : l.data || []};
       } catch(e){ logErr("загрузка стены", e); if (!WALL) WALL = {at: Date.now(), posts: [], comments: [], reacts: [], clikes: [], failed: true}; }

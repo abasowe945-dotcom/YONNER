@@ -94,6 +94,18 @@
     try { await sb.from("client_errors").insert(rows); } catch(_){ /* ожидаемо: нет сети — ошибка останется в консоли */ }
     flushErr.busy = false;
   }
+  // Supabase отдаёт не больше 1000 строк за раз — всё, что может вырасти, грузим пачками.
+  // mk() каждый раз строит новый запрос; keys — уникальный ключ таблицы, чтобы пачки не перемешались.
+  async function fetchAll(mk, keys = [], page = 1000){
+    const out = [];
+    for (let from = 0; from < 200000; from += page){
+      let q = mk(); keys.forEach(k => { q = q.order(k, {ascending: true}); });
+      const r = await q.range(from, from + page - 1);
+      if (r.error) return {data: null, error: r.error};
+      const d = r.data || []; out.push(...d); if (d.length < page) break;
+    }
+    return {data: out, error: null};
+  }
   window.addEventListener("error", ev => logErr("window", ev.error || ev.message));
   window.addEventListener("unhandledrejection", ev => logErr("promise", ev.reason));
   const blobUrl = id => publicUrl(id);

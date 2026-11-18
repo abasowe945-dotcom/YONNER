@@ -77,12 +77,13 @@
   // ---- данные ----
   const plNorm = p => ({...p, menu: Array.isArray(p.menu) ? p.menu.filter(x => typeof x === "string" && x) : [], x: p.x == null ? null : +p.x, y: p.y == null ? null : +p.y, lat: p.lat == null ? null : +p.lat, lng: p.lng == null ? null : +p.lng});
   const plMissing = () => !!(plErr && (/PGRST205|42P01/.test(plErr.code || "") || /schema cache|does not exist|relation/i.test(plErr.message || "")));
+  const PL_KEYS = {places: ["id"], place_visits: ["id"], place_visit_members: ["visit_id", "user_id"], place_ratings: ["place_id", "user_id"], place_dishes: ["id"], place_dish_rates: ["dish_id", "user_id"], place_wants: ["place_id", "user_id"]};
   async function loadPlaces(force){
     if (!SB || !ME) return null;
     if (plLoading){ if (!force) return plLoading; plAgain = true; return plLoading.then(() => plLoading || PL); }
     plLoading = (async () => {
       try {
-        const rs = await Promise.all(PL_TABLES.map(t => SB.from(t).select("*")));
+        const rs = await Promise.all(PL_TABLES.map(t => fetchAll(() => SB.from(t).select("*"), PL_KEYS[t] || ["id"])));
         if (rs[0].error) throw rs[0].error;
         const ok = r => r && !r.error ? r.data || [] : [];
         PL = {at: Date.now(), places: ok(rs[0]).map(plNorm), visits: ok(rs[1]), vm: ok(rs[2]), rates: ok(rs[3]), dishes: ok(rs[4]), drates: ok(rs[5]), wants: ok(rs[6])}; plErr = null;

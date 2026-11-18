@@ -33,7 +33,7 @@
     if (evLoading){ if (force) evAgain = true; return evLoading; }
     evLoading = (async () => {
       try {
-        const [e, m, p, l] = await Promise.all([SB.from("events").select("*"), SB.from("event_members").select("*"), SB.from("event_posts").select("*"), SB.from("event_post_likes").select("*")]);
+        const [e, m, p, l] = await Promise.all([fetchAll(() => SB.from("events").select("*"), ["id"]), fetchAll(() => SB.from("event_members").select("*"), ["event_id", "user_id"]), fetchAll(() => SB.from("event_posts").select("*"), ["id"]), fetchAll(() => SB.from("event_post_likes").select("*"), ["post_id", "user_id"])]);
         if (e.error) throw e.error; if (m.error) throw m.error; if (p.error) throw p.error;
         EV = {at: Date.now(), events: e.data || [], members: m.data || [], posts: p.data || [], likes: l.error ? [] : (l.data || [])};
       } catch(err){ logErr("загрузка мероприятий", err); if (!EV) EV = {at: Date.now(), events: [], members: [], posts: [], failed: true}; }

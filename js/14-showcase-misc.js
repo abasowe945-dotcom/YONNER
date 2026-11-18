@@ -545,7 +545,7 @@
   }
   // лайки на тир-листы: все видят, кто лайкнул
   let TLL = [];
-  async function loadTlLikes(){ if (!SB || !ME) return; const {data, error} = await SB.from("tierlist_likes").select("tierlist_id,user_id,created_at").order("created_at", {ascending: true}); if (!error){ TLL = data || []; tlLikesSync(); } }
+  async function loadTlLikes(){ if (!SB || !ME) return; const {data, error} = await fetchAll(() => SB.from("tierlist_likes").select("tierlist_id,user_id,created_at").order("created_at", {ascending: true}), ["tierlist_id", "user_id"]); if (!error){ TLL = data || []; tlLikesSync(); } }
   const tlLikers = id => TLL.filter(l => l.tierlist_id === id).map(l => l.user_id);
   const tlLikeCnt = id => { const n = tlLikers(id).length; return n ? BK_HEART + n : ""; };
   const tlLikeHTML = id => { const us = tlLikers(id), on = !!ME && us.includes(ME.id);

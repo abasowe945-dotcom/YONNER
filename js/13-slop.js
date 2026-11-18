@@ -38,11 +38,11 @@
     slLoading = (async () => {
       try {
         const [g, m, s, c, pl, pm, tr, po, pv] = await Promise.all([
-          SB.from("slop_games").select("*").order("created_at", {ascending: false}),
-          SB.from("slop_marks").select("*"),
-          SB.from("slop_status").select("*"),
-          SB.from("slop_comments").select("*").order("created_at", {ascending: true}),
-          SB.from("slop_plans").select("*"), SB.from("slop_plan_members").select("plan_id,user_id"), SB.from("slop_tiers").select("*"),
+          fetchAll(() => SB.from("slop_games").select("*").order("created_at", {ascending: false}), ["id"]),
+          fetchAll(() => SB.from("slop_marks").select("*"), ["game_id", "user_id", "kind"]),
+          fetchAll(() => SB.from("slop_status").select("*"), ["game_id", "user_id"]),
+          fetchAll(() => SB.from("slop_comments").select("*").order("created_at", {ascending: true}), ["id"]),
+          fetchAll(() => SB.from("slop_plans").select("*"), ["id"]), fetchAll(() => SB.from("slop_plan_members").select("plan_id,user_id"), ["plan_id", "user_id"]), fetchAll(() => SB.from("slop_tiers").select("*"), ["game_id"]),
           SB.from("slop_polls").select("*").order("created_at", {ascending: false}).limit(5), SB.from("slop_poll_votes").select("poll_id,user_id,game_id").order("created_at", {ascending: false}).limit(400)]);
         if (g.error) throw g.error;
         const ok = r => r && !r.error ? r.data || [] : [];

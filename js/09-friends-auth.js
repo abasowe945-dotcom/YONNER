@@ -89,8 +89,8 @@
     if (frLoading) return frLoading;
     frLoading = (async () => {
       try {
-        let [pr, it, rd, sc, tq] = await Promise.all([SB.from("profiles").select(PF_COLS), SB.rpc("public_items"), SB.from("reads").select("id,user_id,data,updated_at"), SB.from("showcases").select("*"), SB.from("tierlists").select("*").order("updated_at", {ascending: false})]);
-        if (pr.error) pr = await SB.from("profiles").select("user_id,nick,avatar,ava_animal,ava_color,birthday,created_at");
+        let [pr, it, rd, sc, tq] = await Promise.all([fetchAll(() => SB.from("profiles").select(PF_COLS), ["user_id"]), fetchAll(() => SB.rpc("public_items"), ["user_id", "id"]), fetchAll(() => SB.from("reads").select("id,user_id,data,updated_at"), ["user_id", "id"]), fetchAll(() => SB.from("showcases").select("*"), ["id"]), fetchAll(() => SB.from("tierlists").select("*").order("updated_at", {ascending: false}), ["id"])]);
+        if (pr.error) pr = await fetchAll(() => SB.from("profiles").select("user_id,nick,avatar,ava_animal,ava_color,birthday,created_at"), ["user_id"]);
         if (pr.error) throw pr.error; if (it.error) throw it.error;
         FR = {at: Date.now(), profiles: pr.data || [], items: (it.data || []).map(r => ({...(r.data || {}), id: r.id, uid: r.user_id, _upd: r.updated_at})), reads: rd && !rd.error ? (rd.data || []).map(r => ({...(r.data || {}), id: r.id, uid: r.user_id, _upd: r.updated_at})) : [], showcases: sc && !sc.error ? (sc.data || []).map(x => ({...x, entries: Array.isArray(x.entries) ? x.entries : []})) : [], tierlists: tq && !tq.error ? (tq.data || []).map(x => ({...x, tiers: Array.isArray(x.tiers) ? x.tiers : [], pool: Array.isArray(x.pool) ? x.pool : []})) : []};
         if (FV) items = frItems(FV);
@@ -325,7 +325,7 @@
     const emit = () => listeners.forEach(f => { try { f(snap()); } catch(e){ console.error(e); } });
     async function loadAll(){
       const rows = []; let from = 0;
-      for (;;){ const {data, error} = await sb.from("items").select("id,data").eq("user_id", uid).range(from, from + 999); if (error) throw error; rows.push(...data); if (data.length < 1000) break; from += 1000; }
+      for (;;){ const {data, error} = await sb.from("items").select("id,data").eq("user_id", uid).order("id", {ascending: true}).range(from, from + 999); if (error) throw error; rows.push(...data); if (data.length < 1000) break; from += 1000; }
       map.clear(); rows.forEach(r => map.set(r.id, r.data)); loaded = true; emit();
     }
     sb.channel("items-" + uid).on("postgres_changes", {event: "*", schema: "public", table: "items", filter: `user_id=eq.${uid}`}, p => {
