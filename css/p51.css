@@ -1,0 +1,10 @@
+/* ===== 5.1: guilty pleasure, дроп манги ===== */
+.gp-st{position:absolute;left:50%;bottom:12%;z-index:3;transform:translateX(-50%) rotate(-9deg);padding:4px 7px 3px;border:2px solid #ff5fa2;border-radius:4px;background:rgba(30,4,18,.72);color:#ff8cc0;font:900 9.5px/1.05 var(--ios);letter-spacing:.08em;text-transform:uppercase;text-align:center;white-space:nowrap;box-shadow:0 0 0 1px rgba(0,0,0,.35),0 0 14px rgba(255,95,162,.45);pointer-events:none}
+.view .poster .gp-st{font-size:13px;padding:6px 10px 5px;border-width:3px}
+.pv-gp.on{background:rgba(255,95,162,.22)!important;color:#ff9fcb!important;border-color:rgba(255,95,162,.45)!important}
+.k-chipb.k-gp{display:inline-flex;align-items:center;gap:6px}.k-chipb.k-gp svg{width:15px;height:15px}.k-chipb.k-gp small{opacity:.6;font-weight:600}
+.k-chipb.k-gp[aria-pressed="true"]{background:#ff5fa2!important;color:#2a0616!important;border-color:#ff5fa2!important}
+.rx-cv.dr img,.rx-cv.dr .ph{filter:grayscale(1) brightness(.62)}
+.rx-drp{position:absolute;left:50%;top:50%;z-index:3;transform:translate(-50%,-50%) rotate(-14deg);padding:4px 8px 3px;border:3px solid #ff3b30;border-radius:4px;color:#ff3b30;font:900 15px/1 var(--ios);letter-spacing:.14em;text-transform:uppercase;background:rgba(20,0,0,.35);pointer-events:none}
+.rs-st button[aria-pressed="true"].st-dropped{background:#ff453a;border-color:#ff453a;color:#2b0300}
+.s-drop .rx-sh small{color:#ff6961}

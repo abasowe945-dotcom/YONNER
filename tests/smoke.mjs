@@ -1,0 +1,54 @@
+// Смоук-тест NEXUS: открывает сайт в Chrome на подменной базе и проверяет, что ни одна страница не падает с ошибкой.
+// Запуск: node tests/smoke.mjs  (нужен пакет playwright; в GitHub Actions ставится автоматически)
+import fs from "node:fs"; import path from "node:path"; import {fileURLToPath} from "node:url"; import {createRequire} from "node:module";
+const require = createRequire(import.meta.url);
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+let pw; try { pw = require("playwright"); } catch { pw = require(process.env.PW_PATH || "playwright-core"); }
+const ORIGIN = "https://nexus.test", BASE = ORIGIN + "/YONNER/";
+const MIME = {".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".webmanifest": "application/manifest+json", ".png": "image/png", ".webp": "image/webp"};
+const UID = "00000000-0000-0000-0000-000000000001", FUID = "00000000-0000-0000-0000-000000000002";
+const now = new Date().toISOString();
+function fixtures(nItemsFriend) {
+  const items = []; for (let i = 0; i < nItemsFriend; i++) items.push({id: "f" + i, user_id: FUID, data: {title: "Игра " + i, kind: "game", status: "done", added: now}, updated_at: now});
+  return {
+    profiles: [{user_id: UID, nick: "TESTER", created_at: now}, {user_id: FUID, nick: "FRIEND", created_at: now}],
+    public_items: items, items: [{id: "m1", user_id: UID, data: {title: "Моя игра", kind: "game", status: "playing", added: now}}],
+  };
+}
+const routes = ["#home", "#games", "#games-future", "#kino", "#kino-future", "#read", "#slop", "#places", "#people", "#more", "#calendar", "#vacation", "#patch", "#user:" + FUID];
+async function run() {
+  const exe = process.env.CHROME_PATH || undefined;
+  const browser = await pw.chromium.launch({executablePath: exe, args: ["--no-sandbox"]});
+  const fails = [];
+  async function page(session, fx, label) {
+    const ctx = await browser.newContext({serviceWorkers: "block"}); const p = await ctx.newPage();
+    const errs = []; p.on("pageerror", e => errs.push("pageerror: " + e.message)); p.on("console", m => { if (m.type() === "error" && !/Failed to load resource|net::ERR/.test(m.text())) errs.push("console: " + m.text()); });
+    await ctx.route("**/*", async r => {
+      const u = new URL(r.request().url());
+      if (u.origin === ORIGIN) { let f = decodeURIComponent(u.pathname.replace(/^\/YONNER\//, "")) || "index.html"; const fp = path.join(ROOT, f);
+        if (fs.existsSync(fp) && fs.statSync(fp).isFile()) return r.fulfill({status: 200, body: fs.readFileSync(fp), contentType: MIME[path.extname(f)] || "application/octet-stream"});
+        return r.fulfill({status: 404, body: ""}); }
+      if (/supabase-js/.test(u.pathname)) return r.fulfill({status: 200, contentType: "text/javascript", body: fs.readFileSync(path.join(ROOT, "tests/mock-supabase.js"))});
+      return r.fulfill({status: 200, contentType: /\.css/.test(u.pathname) || u.host.includes("fonts") ? "text/css" : "text/javascript", body: ""});
+    });
+    await p.addInitScript(([s, fx]) => { window.__SESSION = s; window.__FX = fx; try { localStorage.setItem("nexus_patch_seen", "9999"); localStorage.setItem("nexus_patch_pop", "9999"); } catch (e) {} }, [session, fx]);
+    await p.goto(BASE + "index.html"); await p.waitForTimeout(1500);
+    return {p, ctx, errs, label};
+  }
+  // 1. гость: экран входа
+  { const {p, ctx, errs} = await page(null, {}, "guest");
+    const authShown = await p.evaluate(() => !document.getElementById("auth").hidden);
+    if (!authShown) fails.push("гость: не показан экран входа"); errs.forEach(e => fails.push("гость: " + e)); await ctx.close(); }
+  // 2. вошедший: обходим все разделы
+  { const sess = {user: {id: UID, email: "t@t.t"}, access_token: "x"};
+    const {p, ctx, errs} = await page(sess, fixtures(1500), "user");
+    for (const r of routes) { await p.evaluate(h => { location.hash = h; }, r); await p.waitForTimeout(400); }
+    const fr = await p.evaluate(fid => { try { return typeof frItems === "function" ? frItems(fid).length : -1; } catch (e) { return -2; } }, FUID);
+    if (fr !== 1500) fails.push(`полка друга: загружено ${fr} из 1500 записей`);
+    const log = await p.evaluate(() => window.__SBLOG.length); console.log("запросов к базе за сессию:", log);
+    errs.forEach(e => fails.push("вошедший: " + e)); await ctx.close(); }
+  await browser.close();
+  if (fails.length) { console.error("ПРОВАЛ:\n - " + [...new Set(fails)].join("\n - ")); process.exit(1); }
+  console.log("OK: все разделы открылись без ошибок");
+}
+run().catch(e => { console.error(e); process.exit(1); });
