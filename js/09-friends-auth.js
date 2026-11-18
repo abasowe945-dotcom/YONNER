@@ -313,7 +313,7 @@
         toast(`Загружено записей: ${r.n}` + (r.pics ? `, картинок: ${r.pics}` : "") + (r.skip ? `. Уже были: ${r.skip}` : "")); s.close();
       } catch(err){ lb.textContent = "Загрузить бэкап"; toast("Не похоже на бэкап NEXUS"); }
     };
-    s.el.querySelector("#pfOut").onclick = async () => { await SB.auth.signOut(); location.reload(); };
+    s.el.querySelector("#pfOut").onclick = async () => { await SB.auth.signOut(); try { if (window.caches) await caches.delete("nexus-data"); } catch(e){ logErr("выход: очистка кэша", e); } location.reload(); };
   }
 
   // ================= хранилище на Supabase =================

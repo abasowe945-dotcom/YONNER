@@ -1,3 +1,22 @@
+  // ================= service worker и «вышла новая версия» =================
+  if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost"))
+    navigator.serviceWorker.register("sw.js").catch(e => { if (!/Security|not supported|denied/i.test(String(e && (e.name + e.message)))) logErr("service worker", e); });
+  // приложение на телефоне может висеть открытым днями — при возвращении проверяем, не вышла ли новая версия
+  let verBar = null, verAt = 0;
+  async function checkNewVer(){
+    if (verBar || NEXUS_VER === "?" || Date.now() - verAt < 5 * 60e3 || !navigator.onLine) return; verAt = Date.now();
+    try {
+      const html = await (await fetch("index.html", {cache: "no-store"})).text(), m = /js\/01-core\.js\?v=([^"&]+)/.exec(html);
+      if (!m || m[1] === NEXUS_VER) return;
+      verBar = document.createElement("button"); verBar.type = "button"; verBar.className = "ver-bar";
+      verBar.style.cssText = "position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:99999;padding:11px 18px;border:0;border-radius:999px;background:#0a84ff;color:#fff;font:600 14px Manrope,system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.45);cursor:pointer";
+      verBar.textContent = "Вышла новая версия NEXUS — обновить"; verBar.onclick = () => location.reload();
+      document.body.appendChild(verBar);
+    } catch(_){ /* ожидаемо: нет сети — проверим в следующий раз */ }
+  }
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") checkNewVer(); });
+  setInterval(checkNewVer, 30 * 60e3);
+
   // ================= запуск =================
   readHash(); render();
   (async () => {

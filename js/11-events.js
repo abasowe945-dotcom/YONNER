@@ -55,7 +55,17 @@
         toast(`${n.nick || "Кто-то новый"} присоединился к NEXUS`); SND.click(); sysNote("NEXUS · новенький", `${n.nick || "Кто-то"} теперь на сайте`, () => go("user:" + n.user_id)); loadFriends(true); })
       .subscribe();
   }
-  const sysNote = (title, body, onClick) => { try { if ("Notification" in window && Notification.permission === "granted"){ const n = new Notification(title, {body, icon: "icon-192.png"}); n.onclick = () => { window.focus(); onClick && onClick(); n.close(); }; } } catch(_){} };
+  // системное уведомление: через service worker (Android и приложение на экране «Домой» на iPhone), иначе — как раньше (компьютер)
+  const noteClicks = new Map();
+  const sysNote = (title, body, onClick) => {
+    if (!("Notification" in window) || Notification.permission !== "granted") return;
+    const tag = "n" + Date.now() + Math.random().toString(36).slice(2, 6); if (onClick) noteClicks.set(tag, onClick);
+    const opts = {body, icon: "icon-192.png", badge: "icon-192.png", tag, lang: "ru"};
+    const old = () => { try { const n = new Notification(title, opts); n.onclick = () => { window.focus(); const f = noteClicks.get(tag); f && f(); n.close(); }; } catch(e){ logErr("уведомление", e); } };
+    if ("serviceWorker" in navigator && navigator.serviceWorker.controller) navigator.serviceWorker.ready.then(r => r.showNotification(title, opts)).catch(e => { logErr("уведомление через service worker", e); old(); });
+    else old();
+  };
+  if ("serviceWorker" in navigator) navigator.serviceWorker.addEventListener("message", e => { const t = e.data && e.data.nexusNote, f = t && noteClicks.get(t); if (f){ noteClicks.delete(t); f(); } });
   function notifyInvite(m){
     const e = evById(m.event_id); if (!e || evNotified.has(e.id)) return; evNotified.add(e.id); lsSet("nexus_inv_" + e.id, "1");
     const t = `${frNick(m.invited_by || e.owner)} зовёт тебя: ${e.title}`;
