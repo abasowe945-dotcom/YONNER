@@ -12,7 +12,7 @@ function fixtures(nItemsFriend) {
   const items = []; for (let i = 0; i < nItemsFriend; i++) items.push({id: "f" + i, user_id: FUID, data: {title: "Игра " + i, kind: "game", status: "done", added: now}, updated_at: now});
   return {
     profiles: [{user_id: UID, nick: "TESTER", created_at: now}, {user_id: FUID, nick: "FRIEND", created_at: now}],
-    public_items: items, items: [{id: "m1", user_id: UID, data: {title: "Моя игра", kind: "game", status: "playing", added: now}}],
+    public_items: items, is_nexus_admin: true, items: [{id: "m1", user_id: UID, data: {title: "Моя игра", kind: "game", status: "playing", added: now}}],
   };
 }
 const routes = ["#home", "#games", "#games-future", "#kino", "#kino-future", "#read", "#slop", "#places", "#people", "#more", "#calendar", "#vacation", "#patch", "#user:" + FUID];
@@ -46,6 +46,12 @@ async function run() {
     const fr = await p.evaluate(fid => { try { return typeof frItems === "function" ? frItems(fid).length : -1; } catch (e) { return -2; } }, FUID);
     if (fr !== 1500) fails.push(`полка друга: загружено ${fr} из 1500 записей`);
     const log = await p.evaluate(() => window.__SBLOG.length); console.log("запросов к базе за сессию:", log);
+    // журнал ошибок: ошибка уходит в client_errors, окно журнала открывается
+    const sent = await p.evaluate(async () => { logErr("тест", new Error("проверка журнала")); await new Promise(r => setTimeout(r, 300)); return window.__SBLOG.some(x => x.name === "client_errors" && x.ops.includes("insert")); });
+    if (!sent) fails.push("журнал ошибок: ошибка не отправилась в базу");
+    await p.evaluate(() => { location.hash = "#more"; }); await p.waitForTimeout(400);
+    const tile = await p.evaluate(async () => { document.querySelector('[data-fold="site"]').click(); await new Promise(r => setTimeout(r, 600)); const b = document.querySelector("[data-errlog]"); if (!b) return false; b.click(); await new Promise(r => setTimeout(r, 400)); return !!document.getElementById("elList"); });
+    if (!tile) fails.push("журнал ошибок: нет плитки или окна у владельца");
     errs.forEach(e => fails.push("вошедший: " + e)); await ctx.close(); }
   await browser.close();
   if (fails.length) { console.error("ПРОВАЛ:\n - " + [...new Set(fails)].join("\n - ")); process.exit(1); }

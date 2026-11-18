@@ -101,7 +101,7 @@
   tick(); setInterval(tick, 20000);
   // 3.6: сколько осталось работать до 18:00 (по будням)
   const WORK_DEF = {on: true, start: "09:00", end: "18:00", days: [1, 2, 3, 4, 5]};
-  const workCfg = () => { let w = null; try { w = MEP && MEP.work; } catch(_){} return {...WORK_DEF, ...(w || {})}; };
+  const workCfg = () => { let w = null; try { w = MEP && MEP.work; } catch(_){ /* ожидаемо: профиль ещё не загружен */ } return {...WORK_DEF, ...(w || {})}; };
   const hm = s => { const [a, b] = String(s || "0:0").split(":").map(Number); return (a || 0) * 60 + (b || 0); };
   function workTick(){ const el = $("workT"); if (!el) return; const d = new Date(), wd = d.getDay(), W = workCfg(), end = new Date(d), em = hm(W.end); end.setHours(Math.floor(em / 60), em % 60, 0, 0);
     if (!W.on || !W.days.includes(wd) || d.getHours() * 60 + d.getMinutes() < hm(W.start) - 60){ el.hidden = true; return; }

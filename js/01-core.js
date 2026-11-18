@@ -74,6 +74,28 @@
   let calY = new Date().getFullYear(), calM = new Date().getMonth(), recY = new Date().getFullYear();
   const $ = id => document.getElementById(id);
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  // ================= журнал ошибок: всё неожиданное уходит в client_errors, владелец видит в «Ещё» =================
+  const NEXUS_VER = ((document.currentScript && /[?&]v=([^&]+)/.exec(document.currentScript.src)) || [])[1] || "?";
+  const ERRQ = [], errSeen = new Set(); let errSent = 0;
+  function logErr(where, e){
+    try {
+      const msg = String((e && (e.message || e.error_description || e.msg || e.details)) || e || "без текста").slice(0, 500);
+      if (/ResizeObserver loop|^Script error\.?$|AbortError|aborted|NotAllowedError/i.test(msg)) return;
+      const key = where + "|" + msg; if (errSeen.has(key) || errSent + ERRQ.length >= 30) return; errSeen.add(key);
+      console.warn("[NEXUS]", where, e);
+      ERRQ.push({place: String(where).slice(0, 120), msg, stack: String((e && e.stack) || "").slice(0, 2000), url: String(location.hash).slice(0, 200), ua: navigator.userAgent.slice(0, 300), ver: NEXUS_VER});
+      flushErr();
+    } catch(_){ /* ожидаемо: журнал сам не должен ломать сайт */ }
+  }
+  async function flushErr(){
+    let sb = null, me = null; try { sb = SB; me = ME; } catch(_){ /* ожидаемо: база ещё не подключена */ }
+    if (!sb || !me || !ERRQ.length || flushErr.busy) return;
+    flushErr.busy = true; const rows = ERRQ.splice(0); errSent += rows.length;
+    try { await sb.from("client_errors").insert(rows); } catch(_){ /* ожидаемо: нет сети — ошибка останется в консоли */ }
+    flushErr.busy = false;
+  }
+  window.addEventListener("error", ev => logErr("window", ev.error || ev.message));
+  window.addEventListener("unhandledrejection", ev => logErr("promise", ev.reason));
   const blobUrl = id => publicUrl(id);
   const num1 = n => String(Math.round(n * 10) / 10).replace(".", ",");
   const now = () => new Date().toISOString();
@@ -390,7 +412,7 @@
     fresh.forEach(id => achSeen.add(id));
     const a = ACH.find(x => x[0] === fresh[0]);
     toast(`Ачивка: ${a[1]}${fresh.length > 1 ? ` и ещё ${fresh.length - 1}` : ""}`); confetti();
-    try { await db.doc("meta/ach").set({unlocked: [...achSeen]}); } catch(e){}
+    try { await db.doc("meta/ach").set({unlocked: [...achSeen]}); } catch(e){ logErr("ачивки: сохранение", e); }
   }
   // тема
   const THEME_DEF = {gBg:"#0e0e10", gAcc:"#e9e9ee", kBg:"#1c1c2b", kAcc:"#ffffff", aAcc:"#0a84ff"};

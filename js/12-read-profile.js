@@ -209,7 +209,7 @@
   function wireRack(el){
     let d = null, moved = false, lastSnd = 0;
     el.addEventListener("pointerdown", e => { if (e.pointerType !== "mouse" || e.button) return; d = {x: e.clientX, l: el.scrollLeft}; moved = false; });
-    el.addEventListener("pointermove", e => { if (!d) return; const dx = e.clientX - d.x; if (!moved && Math.abs(dx) > 5){ moved = true; el.classList.add("drag"); try { el.setPointerCapture(e.pointerId); } catch(_){} } if (moved) el.scrollLeft = d.l - dx; });
+    el.addEventListener("pointermove", e => { if (!d) return; const dx = e.clientX - d.x; if (!moved && Math.abs(dx) > 5){ moved = true; el.classList.add("drag"); try { el.setPointerCapture(e.pointerId); } catch(_){ /* ожидаемо: палец уже убран */ } } if (moved) el.scrollLeft = d.l - dx; });
     const up = () => { d = null; el.classList.remove("drag"); }; el.addEventListener("pointerup", up); el.addEventListener("pointercancel", up);
     el.addEventListener("click", e => { if (moved){ e.stopPropagation(); e.preventDefault(); moved = false; } }, true);
     el.addEventListener("pointerover", e => { const m = e.target.closest(".rx-mag"); if (!m || m.contains(e.relatedTarget) || d) return; const t = performance.now(); if (t - lastSnd > 140){ lastSnd = t; SND.paper("soft"); } });
@@ -236,7 +236,7 @@
     r.status = rNorm(r.status);
     if (pre && pre.genres && !r.genre) r.genre = pre.genres.join(", ");
     let file = null;
-    if (pre && pre.cover){ try { const bin = Uint8Array.from(atob(pre.cover), c => c.charCodeAt(0)); file = new File([bin], "cover.jpg", {type: pre.coverType || "image/jpeg"}); r.cover = null; } catch(_){} }
+    if (pre && pre.cover){ try { const bin = Uint8Array.from(atob(pre.cover), c => c.charCodeAt(0)); file = new File([bin], "cover.jpg", {type: pre.coverType || "image/jpeg"}); r.cover = null; } catch(_){ logErr("Читалка: обложка из закладки", _); } }
     if (pre && pre.coverData){ file = dataToFile(pre.coverData) || null; if (file) r.cover = null; }
     const hint = r._hint; delete r._hint; delete r.coverData;
     const coverSrc = () => file ? URL.createObjectURL(file) : r.cover ? publicUrl(r.cover) : r.coverUrl;
@@ -287,7 +287,7 @@
         if (d.genres && d.genres.length) r.genre = d.genres.join(", "); if (d.siteStatus) r.siteStatus = d.siteStatus; if (d.rating) r.score = d.rating; if (d.kind) r.kind = d.kind;
         if (d.desc && !q("#rsDs").value.trim()) q("#rsDs").value = d.desc.slice(0, 1200);
         setType(d.type === "manga" ? "manga" : d.type === "book" ? "book" : "comic");
-        if (d.cover){ try { const bin = Uint8Array.from(atob(d.cover), c => c.charCodeAt(0)); file = new File([bin], "cover.jpg", {type: d.coverType || "image/jpeg"}); r.cover = null; } catch(_){} }
+        if (d.cover){ try { const bin = Uint8Array.from(atob(d.cover), c => c.charCodeAt(0)); file = new File([bin], "cover.jpg", {type: d.coverType || "image/jpeg"}); r.cover = null; } catch(_){ logErr("Читалка: обложка из закладки", _); } }
         else if (d.coverUrl && !file){ r.cover = null; r.coverUrl = d.coverUrl; }
         redraw(); sug.hidden = true; SND.paper("flip"); toast("Подтянул: " + r.title);
       } catch(_){ b.classList.remove("busy"); b.querySelector(".src").textContent = "не вышло"; } };
@@ -315,7 +315,7 @@
       if (r.status !== "done"){ r.noDate = null; r.doneAt = null; } else if (r.noDate) r.doneAt = null; else if (!r.doneAt) r.doneAt = today();
       if (r.fav && !r.favAt) r.favAt = now(); if (!r.fav){ r.fav = null; r.favAt = null; }
       const b = q("#rsOk"); b.disabled = true;
-      try { if (file && assets) r.cover = await upload(file); } catch(_){}
+      try { if (file && assets) r.cover = await upload(file); } catch(e){ logErr("Читалка: обложка", e); }
       delete r.genres; delete r.coverType; delete r.coverData;
       if (await saveRead(r)){ s.close(); toast(isNew ? "Добавлено в Читалку" : "Сохранено"); if (route === "read" || route === "home") render(); else go("read"); } else b.disabled = false;
     };
@@ -375,7 +375,7 @@
       var msg = {nexusReader: 1, mode: isTitle ? "title" : "list", hint: hint, items: items}, got = false, tries = 0;
       window.addEventListener("message", function(e){ if (e.source === w && e.data && e.data.nexusAck){ got = true; box.textContent = "NEXUS: готово, смотри вкладку NEXUS"; setTimeout(function(){ box.remove(); }, 3000); } });
       var t = setInterval(function(){ if (got || ++tries > 90 || w.closed){ clearInterval(t); if (!got) box.textContent = "NEXUS: вкладка не ответила. Войди в NEXUS и нажми закладку ещё раз"; return; }
-        try { w.postMessage(msg, new URL(N).origin); } catch(e){} }, 400);
+        try { w.postMessage(msg, new URL(N).origin); } catch(e){ /* ожидаемо: вкладка ещё не готова, повторим */ } }, 400);
     });
   };
   const bmHref = () => "javascript:" + encodeURIComponent("(" + BM_FN.toString() + ")(" + JSON.stringify(location.origin + location.pathname) + ")");
@@ -388,7 +388,7 @@
   window.addEventListener("message", e => {
     let host; try { host = new URL(e.origin).hostname; } catch(_){ return; }
     const d = e.data; if (!d || d.nexusReader !== 1 || !RD_HOST.test(host) || !Array.isArray(d.items)) return;
-    try { e.source.postMessage({nexusAck: 1}, e.origin); } catch(_){}
+    try { e.source.postMessage({nexusAck: 1}, e.origin); } catch(_){ /* ожидаемо: вкладку закрыли */ }
     const items = d.items.slice(0, 800).map(x => x && typeof x === "object" ? {
       url: httpsUrl(x.url), title: clip(x.title, 200), origTitle: clip(x.origTitle, 200), coverUrl: httpsUrl(x.coverUrl), coverData: typeof x.coverData === "string" && x.coverData.length < 2e6 ? x.coverData : null,
       publisher: clip(x.publisher, 80), year: +x.year > 1900 && +x.year < 2100 ? +x.year : null, chTotal: +x.chTotal > 0 && +x.chTotal < 100000 ? Math.round(+x.chTotal) : null,
@@ -430,9 +430,9 @@
       for (const x of todo){ k++; b.textContent = `${k} / ${todo.length}…`;
         const f = dataToFile(x.coverData); let cover = null;
         if (x.ex){ if (x.ex.cover || (x.ex.coverUrl && !f)) continue;
-          if (f && assets){ try { cover = await upload(f); } catch(_){} }
+          if (f && assets){ try { cover = await upload(f); } catch(e){ logErr("Читалка: обложка", e); } }
           if (cover || x.coverUrl){ await saveRead({...x.ex, cover: cover || x.ex.cover || null, coverUrl: cover ? x.ex.coverUrl || null : x.coverUrl}); cov++; } continue; }
-        if (f && assets){ try { cover = await upload(f); } catch(_){} }
+        if (f && assets){ try { cover = await upload(f); } catch(e){ logErr("Читалка: обложка", e); } }
         const row = {title: x.title, url: x.url, origTitle: x.origTitle, coverUrl: x.coverUrl, cover, status: st, type: tp, source: x.source, chRead: 0, chTotal: x.chTotal, year: x.year, publisher: x.publisher};
         if (await saveRead(row)) add++; }
       s.close(); rTab = st; renderRead();
@@ -574,7 +574,7 @@
     const flip = mv => { const cs = [...box.children], r0 = new Map(cs.map(c => [c, c.getBoundingClientRect()])); mv();
       cs.forEach(c => { if (c === (drag && drag.c)) return; const a = r0.get(c), b = c.getBoundingClientRect(), dx = a.left - b.left, dy = a.top - b.top; if (!dx && !dy) return;
         c.style.transition = "none"; c.style.transform = `translate(${dx}px,${dy}px)`; requestAnimationFrame(() => { c.style.transition = "transform .28s cubic-bezier(.2,.9,.3,1.1)"; c.style.transform = ""; }); }); };
-    box.addEventListener("pointerdown", e => { const c = e.target.closest(".og-c"); if (!c || e.button) return; e.preventDefault(); drag = {c, x: e.clientX, y: e.clientY, on: false}; try { box.setPointerCapture(e.pointerId); } catch(_){} });
+    box.addEventListener("pointerdown", e => { const c = e.target.closest(".og-c"); if (!c || e.button) return; e.preventDefault(); drag = {c, x: e.clientX, y: e.clientY, on: false}; try { box.setPointerCapture(e.pointerId); } catch(_){ /* ожидаемо: палец уже убран */ } });
     box.addEventListener("pointermove", e => { if (!drag) return;
       if (!drag.on){ if (Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 5) return; drag.on = true; drag.c.classList.add("lift"); }
       const t = document.elementFromPoint(e.clientX, e.clientY), o = t && t.closest(".og-c");
@@ -620,7 +620,7 @@
     let d = null, moved = false, vel = 0, lx = 0, lt = 0, mom = 0;
     el.addEventListener("pointerdown", e => { if (e.pointerType !== "mouse" || e.button) return; cancelAnimationFrame(mom); d = {x: e.clientX, l: el.scrollLeft}; moved = false; lx = e.clientX; lt = performance.now(); vel = 0; });
     el.addEventListener("pointermove", e => { if (!d) return; const dx = e.clientX - d.x;
-      if (!moved && Math.abs(dx) > 5){ moved = true; el.classList.add("drag"); try { el.setPointerCapture(e.pointerId); } catch(_){} }
+      if (!moved && Math.abs(dx) > 5){ moved = true; el.classList.add("drag"); try { el.setPointerCapture(e.pointerId); } catch(_){ /* ожидаемо: палец уже убран */ } }
       if (!moved) return; el.scrollLeft = d.l - dx; const t = performance.now(); vel = (e.clientX - lx) / Math.max(1, t - lt); lx = e.clientX; lt = t; });
     const up = () => { if (!d) return; d = null; el.classList.remove("drag"); if (!moved) return;
       let v = -vel * 16; const step = () => { v *= .92; el.scrollLeft += v; if (Math.abs(v) > .4) mom = requestAnimationFrame(step); }; mom = requestAnimationFrame(step); };
@@ -906,7 +906,7 @@
     let d = null, moved = false;
     el.addEventListener("pointerdown", e => { if (e.button) return; d = {x: e.clientX, y: e.clientY}; moved = false; el.classList.add("hold"); });
     el.addEventListener("pointermove", e => { if (!d) return; const dx = e.clientX - d.x;
-      if (!moved && Math.abs(dx) > 6 && Math.abs(dx) > Math.abs(e.clientY - d.y)){ moved = true; try { el.setPointerCapture(e.pointerId); } catch(_){} }
+      if (!moved && Math.abs(dx) > 6 && Math.abs(dx) > Math.abs(e.clientY - d.y)){ moved = true; try { el.setPointerCapture(e.pointerId); } catch(_){ /* ожидаемо: палец уже убран */ } }
       if (moved) lay(dx); });
     const up = e => { if (!d) return; const dx = (e && e.clientX != null ? e.clientX : d.x) - d.x; d = null; el.classList.remove("hold"); if (moved && Math.abs(dx) > 50) step(dx < 0 ? 1 : -1); else lay(); };
     el.addEventListener("pointerup", up); el.addEventListener("pointercancel", () => { d = null; el.classList.remove("hold"); lay(); });
@@ -996,7 +996,7 @@
         const [p, c, r, l] = await Promise.all([SB.from("wall_posts").select("*").order("created_at", {ascending: false}).limit(120), SB.from("wall_comments").select("*").order("created_at", {ascending: true}), SB.from("wall_reactions").select("*"), SB.from("wall_comment_likes").select("*")]);
         if (p.error) throw p.error;
         WALL = {at: Date.now(), posts: p.data || [], comments: c.error ? [] : c.data || [], reacts: r.error ? [] : r.data || [], clikes: l.error ? [] : l.data || []};
-      } catch(e){ if (!WALL) WALL = {at: Date.now(), posts: [], comments: [], reacts: [], clikes: [], failed: true}; }
+      } catch(e){ logErr("загрузка стены", e); if (!WALL) WALL = {at: Date.now(), posts: [], comments: [], reacts: [], clikes: [], failed: true}; }
       wLoading = null; if (route === "people") renderPeople();
       if (wAgain){ wAgain = false; loadWall(true); }
       return WALL;

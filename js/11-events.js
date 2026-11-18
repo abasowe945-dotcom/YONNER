@@ -36,7 +36,7 @@
         const [e, m, p, l] = await Promise.all([SB.from("events").select("*"), SB.from("event_members").select("*"), SB.from("event_posts").select("*"), SB.from("event_post_likes").select("*")]);
         if (e.error) throw e.error; if (m.error) throw m.error; if (p.error) throw p.error;
         EV = {at: Date.now(), events: e.data || [], members: m.data || [], posts: p.data || [], likes: l.error ? [] : (l.data || [])};
-      } catch(err){ if (!EV) EV = {at: Date.now(), events: [], members: [], posts: [], failed: true}; }
+      } catch(err){ logErr("загрузка мероприятий", err); if (!EV) EV = {at: Date.now(), events: [], members: [], posts: [], failed: true}; }
       evLoading = null; checkInvites(); render();
       if (evAgain){ evAgain = false; loadEvents(true); }
       return EV;

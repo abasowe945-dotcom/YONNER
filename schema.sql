@@ -912,3 +912,55 @@ do $$ begin alter publication supabase_realtime add table public.place_wants; ex
 alter table public.places add column if not exists lat double precision check (lat is null or (lat between 61.5 and 62.5));
 alter table public.places add column if not exists lng double precision check (lng is null or (lng between 129 and 130.6));
 grant update (lat, lng) on public.places to authenticated;
+
+-- ===== журнал ошибок сайта: пишут все, читает только владелец =====
+create table if not exists public.nexus_admins (
+  user_id uuid primary key references auth.users (id) on delete cascade
+);
+alter table public.nexus_admins enable row level security;
+-- никаких правил: таблицу видит только сама база (через функцию ниже)
+
+create or replace function public.is_nexus_admin() returns boolean
+language sql stable security definer set search_path = '' as $$
+  select exists (select 1 from public.nexus_admins a where a.user_id = (select auth.uid()));
+$$;
+revoke all on function public.is_nexus_admin() from public, anon;
+grant execute on function public.is_nexus_admin() to authenticated;
+
+create table if not exists public.client_errors (
+  id       bigint generated always as identity primary key,
+  user_id  uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  at       timestamptz not null default now(),
+  place    text check (char_length(place) <= 120),
+  msg      text check (char_length(msg) <= 500),
+  stack    text check (char_length(stack) <= 2000),
+  url      text check (char_length(url) <= 200),
+  ua       text check (char_length(ua) <= 300),
+  ver      text check (char_length(ver) <= 20)
+);
+create index if not exists client_errors_at_idx on public.client_errors (at desc);
+alter table public.client_errors enable row level security;
+drop policy if exists ce_insert on public.client_errors;
+drop policy if exists ce_select on public.client_errors;
+drop policy if exists ce_delete on public.client_errors;
+-- не больше 200 ошибок в сутки с одного аккаунта (чтобы один глючный телефон не забил базу)
+create or replace function public.client_errors_today() returns bigint
+language sql stable security definer set search_path = '' as $$
+  select count(*) from public.client_errors c where c.user_id = (select auth.uid()) and c.at > now() - interval '1 day';
+$$;
+revoke all on function public.client_errors_today() from public, anon;
+grant execute on function public.client_errors_today() to authenticated;
+create policy ce_insert on public.client_errors for insert to authenticated
+  with check ((select auth.uid()) = user_id and (select public.client_errors_today()) < 200);
+create policy ce_select on public.client_errors for select to authenticated using ((select public.is_nexus_admin()));
+create policy ce_delete on public.client_errors for delete to authenticated using ((select public.is_nexus_admin()));
+
+-- старше 30 дней — само чистится при каждой новой записи
+create or replace function public.client_errors_gc() returns trigger
+language plpgsql security definer set search_path = '' as $$
+begin
+  delete from public.client_errors where at < now() - interval '30 days';
+  return null;
+end $$;
+drop trigger if exists client_errors_gc on public.client_errors;
+create trigger client_errors_gc after insert on public.client_errors for each statement execute function public.client_errors_gc();

@@ -47,7 +47,7 @@
         if (g.error) throw g.error;
         const ok = r => r && !r.error ? r.data || [] : [];
         SL = {games: (g.data || []).map(slNorm), marks: ok(m), status: ok(s), comments: ok(c), plans: ok(pl), pmembers: ok(pm), tiers: ok(tr), polls: ok(po).map(x => ({...x, game_ids: Array.isArray(x.game_ids) ? x.game_ids : []})), pvotes: ok(pv)}; slErr = false;
-      } catch(e){ slErr = true; }
+      } catch(e){ slErr = true; logErr("загрузка СЛОПа", e); }
       slLoading = null; slRefresh(); return SL;
     })();
     return slLoading;
@@ -63,7 +63,7 @@
   }
   function slRefresh(){
     if (route === "slop") renderSlop();
-    else if (route === "people" && typeof actTab !== "undefined" && actTab === "feed" && !document.querySelector(".sh-wrap")) { try { render(); } catch(_){} }
+    else if (route === "people" && typeof actTab !== "undefined" && actTab === "feed" && !document.querySelector(".sh-wrap")) { try { render(); } catch(e){ logErr("СЛОП: перерисовка ленты", e); } }
     if (slOpenId){ if (slGame(slOpenId)) slDrawCard(true); else slCloseCard(); }
     if (SL && ME) slRefresh2();
   }
@@ -260,7 +260,7 @@
   }
   async function slToggleWait(id){
     const g = slGame(id); if (!g || !ME) return; const on = !slMarks(id, "wait").includes(ME.id);
-    try { SND.click("soft"); } catch(_){}
+    try { SND.click("soft"); } catch(_){ /* ожидаемо: звук недоступен */ }
     const ok = await slSetMark(id, ["wait"], on);
     slPop(document.querySelector(`[data-sl-wait="${id}"]`)); slPop(document.querySelector("#slCard .slp-want"));
     if (!ok) return;
@@ -269,7 +269,7 @@
   }
   async function slToggleWant(id){
     const g = slGame(id); if (!g || !ME) return; const on = !slWant(g).includes(ME.id);
-    try { SND.click("soft"); } catch(_){}
+    try { SND.click("soft"); } catch(_){ /* ожидаемо: звук недоступен */ }
     await slSetMark(id, on ? ["want"] : ["want", "wait"], on);
     slPop(document.querySelector("#slCard .slp-want"));
   }
@@ -283,7 +283,7 @@
     if (dated){ body.releaseDate = g.release_date; if (g.release_prec && g.release_prec !== "day") body.releasePrec = g.release_prec; }
     if (g.descr) body.desc = g.descr; if (g.genres.length) body.genre = g.genres.join(", "); if (g.steam_id) body.steamId = g.steam_id;
     const u = slImg(g);
-    if (u && assets){ try { const r = await fetch(u); if (!r.ok) throw 0; const bl = await r.blob(); if (bl.type.startsWith("image/")) body.cover = (await assets.upload(bl, {type: bl.type})).id; } catch(_){} }
+    if (u && assets){ try { const r = await fetch(u); if (!r.ok) throw 0; const bl = await r.blob(); if (bl.type.startsWith("image/")) body.cover = (await assets.upload(bl, {type: bl.type})).id; } catch(e){ logErr("СЛОП: копия обложки", e); } }
     try { await db.collection("items").add(body); return true; } catch(_){ return false; }
   }
   async function slShelfDrop(g){
@@ -293,7 +293,7 @@
   }
   async function slSetStatus(id, st){
     const cur = SL.status.find(s => s.game_id === id && s.user_id === ME.id);
-    try { SND.click("soft"); } catch(_){}
+    try { SND.click("soft"); } catch(_){ /* ожидаемо: звук недоступен */ }
     if (cur && cur.status === st){ SL.status = SL.status.filter(s => s !== cur); slRefresh();
       const {error} = await SB.from("slop_status").delete().eq("game_id", id).eq("user_id", ME.id); if (error){ toast("Не сохранилось"); loadSlop(); } return; }
     const row = {game_id: id, user_id: ME.id, status: st, verdict: st === "playing" ? null : (cur && cur.verdict) || null, note: st === "playing" ? null : (cur && cur.note) || null, updated_at: now()};
@@ -316,7 +316,7 @@
     slDrawCard(); document.body.classList.add("slp-open");
     void ov.offsetWidth; ov.classList.add("on");
     setTimeout(() => { if (slOpenId === id) ov.classList.add("still"); }, 900);
-    try { SND.click("tab"); } catch(_){}
+    try { SND.click("tab"); } catch(_){ /* ожидаемо: звук недоступен */ }
     const pe = ov.querySelector(".slp-c-poster");
     if (from && pe && !slRM() && document.body.animate){
       const a = from.getBoundingClientRect(), b = pe.getBoundingClientRect();
@@ -402,7 +402,7 @@
     if (keep){
       const m2 = c.querySelector(".slp-media"); if (media && m2 && media.innerHTML.replace(/\s+/g, "").length === m2.innerHTML.replace(/\s+/g, "").length) m2.replaceWith(media);
       Object.entries(vals).forEach(([id, v]) => { const i = c.querySelector("#" + id); if (i && id !== "slNote") i.value = v; else if (i && fid === "slNote") i.value = v; });
-      c.scrollTop = sy; if (fid){ const f = c.querySelector("#" + fid); if (f){ f.focus({preventScroll: true}); try { f.setSelectionRange(f.value.length, f.value.length); } catch(_){} } }
+      c.scrollTop = sy; if (fid){ const f = c.querySelector("#" + fid); if (f){ f.focus({preventScroll: true}); try { f.setSelectionRange(f.value.length, f.value.length); } catch(_){ /* ожидаемо: поле без курсора */ } } }
     }
   }
   function slWireCard(ov){
@@ -454,7 +454,7 @@
     if (!u || u.length > 500){ toast("Это не ссылка — нужен адрес страницы игры целиком"); const i = $("slFtpIn"); if (i) i.focus(); return; }
     const {error} = await SB.from("slop_games").update({freetp_url: u, updated_at: now()}).eq("id", id);
     if (error){ toast("Не сохранилось, попробуй ещё раз"); return; }
-    g.freetp_url = u; slFtpEdit = null; slRefresh(); try { SND.click("soft"); } catch(_){} toast(`Ссылка FreeTP добавлена — ${g.title}`);
+    g.freetp_url = u; slFtpEdit = null; slRefresh(); try { SND.click("soft"); } catch(_){ /* ожидаемо: звук недоступен */ } toast(`Ссылка FreeTP добавлена — ${g.title}`);
   }
   async function slSendComment(){
     const i = $("slCIn"), id = slOpenId; if (!i || !id) return; const body = i.value.trim().slice(0, 1000); if (!body) return;
@@ -627,7 +627,7 @@
   function slPaint(cv, im, pos){
     const W = cv.width, H = cv.height, c = cv.getContext("2d"), iw = im.naturalWidth, ih = im.naturalHeight, cov = Math.max(W / iw, H / ih), k = cov * pos.s, w = iw * k, h = ih * k;
     c.fillStyle = "#12141a"; c.fillRect(0, 0, W, H);
-    if (w < W - .5 || h < H - .5){ c.save(); try { c.filter = `blur(${Math.round(W / 20)}px) brightness(.5) saturate(1.25)`; } catch(_){} const m = 1.2; c.drawImage(im, (W - iw * cov * m) / 2, (H - ih * cov * m) / 2, iw * cov * m, ih * cov * m); c.restore(); }
+    if (w < W - .5 || h < H - .5){ c.save(); try { c.filter = `blur(${Math.round(W / 20)}px) brightness(.5) saturate(1.25)`; } catch(_){ /* ожидаемо: старый Safari без фильтров */ } const m = 1.2; c.drawImage(im, (W - iw * cov * m) / 2, (H - ih * cov * m) / 2, iw * cov * m, ih * cov * m); c.restore(); }
     const cl = (v, span, size) => size >= span ? Math.min(0, Math.max(span - size, v)) : Math.min(span - size, Math.max(0, v));
     const x = cl((W - w) / 2 + pos.x * W, W, w), y = cl((H - h) / 2 + pos.y * H, H, h);
     c.imageSmoothingQuality = "high"; c.drawImage(im, x, y, w, h);
@@ -656,7 +656,7 @@
     q("#slpkQ").addEventListener("keydown", e => { if (e.key === "Enter"){ e.preventDefault(); const b = q(".slp-pk-i:not([disabled])"); if (b) b.click(); } });
     s.el.addEventListener("click", e => { const t = e.target.closest("[data-pkt]"), b = e.target.closest("[data-pk]");
       if (t){ tab = t.dataset.pkt; draw(); return; }
-      if (b && !b.disabled){ const it = list[+b.dataset.pk]; if (!it) return; try { SND.click("soft"); } catch(_){} s.close(); apply(it); } });
+      if (b && !b.disabled){ const it = list[+b.dataset.pk]; if (!it) return; try { SND.click("soft"); } catch(_){ /* ожидаемо: звук недоступен */ } s.close(); apply(it); } });
     draw(); setTimeout(() => q("#slpkQ").focus(), 320);
   }
 
@@ -738,7 +738,7 @@
     if ((b = q("[data-cgo]"))){ const id = b.dataset.cgo; c.s.close(); if (route === "slop") setTimeout(() => slOpenCard(id), 120); else { slPending = id; go("slop"); } return; }
     if ((b = q("[data-cjoin]"))){ const pid = b.dataset.cjoin, on = !slGoing(pid).includes(ME.id);
       SL.pmembers = SL.pmembers.filter(m => !(m.plan_id === pid && m.user_id === ME.id)); if (on) SL.pmembers.push({plan_id: pid, user_id: ME.id});
-      try { SND.click("soft"); } catch(_){} slRefresh(); slPop(c.s.el.querySelector(`[data-cjoin="${pid}"]`));
+      try { SND.click("soft"); } catch(_){ /* ожидаемо: звук недоступен */ } slRefresh(); slPop(c.s.el.querySelector(`[data-cjoin="${pid}"]`));
       const r = on ? await SB.from("slop_plan_members").upsert({plan_id: pid, user_id: ME.id}, {onConflict: "plan_id,user_id", ignoreDuplicates: true}) : await SB.from("slop_plan_members").delete().eq("plan_id", pid).eq("user_id", ME.id);
       if (r.error){ toast("Не сохранилось"); loadSlop(); } return; }
     if ((b = q("[data-cdel]"))){ const pid = b.dataset.cdel; if (!b.dataset.sure){ b.dataset.sure = "1"; b.textContent = "Точно? Нажми ещё раз"; return; }
@@ -776,11 +776,11 @@
     const up = e => { const d = slTl && slTl.dr; if (!d) return; slTl.dr = null; s.el.querySelectorAll(".sltl-z.over").forEach(z => z.classList.remove("over"));
       if (!d.on) return; d.g.remove(); d.it.classList.remove("lift");
       const el = document.elementFromPoint(e.clientX, e.clientY), z = el && el.closest && el.closest(".sltl-z"); if (!z){ slTlDraw(); return; }
-      const id = d.it.dataset.tg; if (z.dataset.tz === "pool"){ slSetTier(id, null); try { SND.tick(.7); } catch(_){} return; }
+      const id = d.it.dataset.tg; if (z.dataset.tz === "pool"){ slSetTier(id, null); try { SND.tick(.7); } catch(_){ /* ожидаемо: звук недоступен */ } return; }
       const tier = +z.dataset.tz, dest = SL.tiers.filter(t => t.tier === tier && t.game_id !== id && slGame(t.game_id)).sort((a, b) => a.pos - b.pos);
       const before = el.closest(".sltl-i"), bi = before && before.dataset.tg !== id ? dest.findIndex(t => t.game_id === before.dataset.tg) : -1;
       const i = bi >= 0 ? bi : dest.length, pv = dest[i - 1], nx = dest[i], pos = !pv && !nx ? 0 : !pv ? nx.pos - 1 : !nx ? pv.pos + 1 : (pv.pos + nx.pos) / 2;
-      try { SND.tick(.7); } catch(_){} slSetTier(id, tier, pos); };
+      try { SND.tick(.7); } catch(_){ /* ожидаемо: звук недоступен */ } slSetTier(id, tier, pos); };
     addEventListener("pointermove", mv); addEventListener("pointerup", up); addEventListener("pointercancel", up);
     slTlDraw();
   }
@@ -850,7 +850,7 @@
     if (!el){ el = document.createElement("div"); el.id = "slPoll"; el.className = "slp-rl slp-poll"; document.body.appendChild(el);
       el.addEventListener("click", async e => { const q = s => e.target.closest(s), pid = slPollId; let b;
         if ((b = q("[data-pv]")) && pid){ const pp = SL.polls.find(x => x.id === pid); if (!pp || Date.parse(pp.ends_at) <= Date.now()) return; const gid = b.dataset.pv;
-          SL.pvotes = SL.pvotes.filter(v => !(v.poll_id === pid && v.user_id === ME.id)); SL.pvotes.push({poll_id: pid, user_id: ME.id, game_id: gid}); try { SND.click("soft"); } catch(_){} slPollDraw();
+          SL.pvotes = SL.pvotes.filter(v => !(v.poll_id === pid && v.user_id === ME.id)); SL.pvotes.push({poll_id: pid, user_id: ME.id, game_id: gid}); try { SND.click("soft"); } catch(_){ /* ожидаемо: звук недоступен */ } slPollDraw();
           const {error} = await SB.from("slop_poll_votes").upsert({poll_id: pid, user_id: ME.id, game_id: gid, created_at: now()}, {onConflict: "poll_id,user_id"}); if (error) toast("Голос не засчитался, нажми ещё раз"); return; }
         if (!(b = q("[data-pl]"))) return; const a = b.dataset.pl, gid = b.dataset.id;
         if (a === "close") slPollClose(); else if (a === "open"){ slPollClose(); slOpenCard(gid); } else if (a === "plan"){ slPollClose(); slCalendar({gameId: gid, form: true}); } }); }
@@ -865,7 +865,7 @@
       const left = Date.parse(p.ends_at) - Date.now(), sec = Math.max(0, Math.ceil(left / 1000)), bar = $("slpoBar"), sub = $("slpoS"); if (!bar || !sub) return;
       bar.style.transform = `scaleX(${Math.max(0, Math.min(1, left / 60000))})`; bar.classList.toggle("hot", sec <= 10);
       sub.innerHTML = `Запустил ${esc(p.user_id === ME.id ? "ты" : profOf(p.user_id).nick || "кто-то")} · осталось <b>${sec}</b> сек · жми на игру, голос можно менять`;
-      if (sec !== lastS){ lastS = sec; if (sec <= 5 && sec > 0) try { SND.tick(1); } catch(_){} }
+      if (sec !== lastS){ lastS = sec; if (sec <= 5 && sec > 0) try { SND.tick(1); } catch(_){ /* ожидаемо: звук недоступен */ } }
       if (left <= 0){ clearInterval(slPollTm); slPollFinish(p, false); } }, 200);
   }
   function slPollDraw(){
@@ -889,7 +889,7 @@
     try { if (!SND.on) return; const A = window.AudioContext || window.webkitAudioContext; if (!A) return; const c = slFanfare.c || (slFanfare.c = new A()); if (c.state === "suspended") c.resume(); const t0 = c.currentTime + .02;
       [[523.25, 0, .16], [659.25, .14, .16], [783.99, .28, .16], [1046.5, .42, .7], [783.99, .42, .7], [659.25, .42, .7], [1318.5, .62, .7]].forEach(([f, d, l]) => { const o = c.createOscillator(), g = c.createGain(); o.type = "triangle"; o.frequency.value = f;
         g.gain.setValueAtTime(.0001, t0 + d); g.gain.exponentialRampToValueAtTime(.13, t0 + d + .02); g.gain.exponentialRampToValueAtTime(.0001, t0 + d + l); o.connect(g).connect(c.destination); o.start(t0 + d); o.stop(t0 + d + l + .05); });
-    } catch(_){}
+    } catch(_){ /* ожидаемо: браузер не дал включить звук */ }
   }
   function slConfetti(){
     if (slRM() || !document.body.animate) return; const box = document.createElement("div"); box.className = "slp-conf"; document.body.appendChild(box);
@@ -928,7 +928,7 @@
       const an = strip.animate([{transform: `translateX(${-start}px)`}, {transform: `translateX(${-target}px)`}], {duration: 5600, easing: "cubic-bezier(.1,.62,.06,1)", fill: "forwards"});
       let last = -1; const tick = () => { if (el.hidden || !strip.isConnected) return;
         const x = -new DOMMatrixReadOnly(getComputedStyle(strip).transform).m41, i = Math.floor((x + box.clientWidth / 2) / step);
-        if (i !== last){ last = i; try { SND.tick(.6); } catch(_){} }
+        if (i !== last){ last = i; try { SND.tick(.6); } catch(_){ /* ожидаемо: звук недоступен */ } }
         if (an.playState !== "finished") slRoulette.raf = requestAnimationFrame(tick); };
       slRoulette.raf = requestAnimationFrame(tick);
       an.onfinish = finish;

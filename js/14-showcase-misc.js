@@ -345,7 +345,7 @@
     const flip = mv => { const cs = [...box.children], r0 = new Map(cs.map(c => [c, c.getBoundingClientRect()])); mv();
       cs.forEach(c => { if (c === (drag && drag.c)) return; const a = r0.get(c), b = c.getBoundingClientRect(), dx = a.left - b.left, dy = a.top - b.top; if (!dx && !dy) return;
         c.style.transition = "none"; c.style.transform = `translate(${dx}px,${dy}px)`; requestAnimationFrame(() => { c.style.transition = "transform .28s cubic-bezier(.2,.9,.3,1.1)"; c.style.transform = ""; }); }); };
-    box.addEventListener("pointerdown", e => { const c = e.target.closest(".og-c"); if (!c || e.button) return; e.preventDefault(); drag = {c, x: e.clientX, y: e.clientY, on: false}; try { box.setPointerCapture(e.pointerId); } catch(_){} });
+    box.addEventListener("pointerdown", e => { const c = e.target.closest(".og-c"); if (!c || e.button) return; e.preventDefault(); drag = {c, x: e.clientX, y: e.clientY, on: false}; try { box.setPointerCapture(e.pointerId); } catch(_){ /* ожидаемо: палец уже убран */ } });
     box.addEventListener("pointermove", e => { if (!drag) return;
       if (!drag.on){ if (Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 5) return; drag.on = true; drag.c.classList.add("lift"); }
       const t = document.elementFromPoint(e.clientX, e.clientY), o = t && t.closest(".og-c");
@@ -692,7 +692,7 @@
     const old = st === "old"; if (old) st = "done";
     const k = sKind(f), body = {}; SK[k].keep.forEach(x => { if (f[x] != null) body[x] = f[x]; });
     let cover = null;
-    if (f.cover && assets){ try { const rs = await fetch(publicUrl(f.cover)); if (!rs.ok) throw 0; cover = await upload(await rs.blob()); } catch(_){} }
+    if (f.cover && assets){ try { const rs = await fetch(publicUrl(f.cover)); if (!rs.ok) throw 0; cover = await upload(await rs.blob()); } catch(e){ logErr("предложение: копия обложки", e); } }
     if (k === "read"){
       const r = {...body, status: st, myRating: rating ?? null, chRead: st === "done" ? (+body.chTotal || 0) : 0, via, createdAt: now()};
       if (st === "done"){ if (old) r.noDate = true; else r.doneAt = today(); }
@@ -1020,7 +1020,7 @@
     s.el.querySelector("#tpA").onclick = async e => { const b = e.target.closest("[data-tp]"); if (!b) return;
       if (b.dataset.tp === "dl"){ const a = document.createElement("a"); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove(); return; }
       if (b.dataset.tp === "copy"){ try { await navigator.clipboard.write([new ClipboardItem({"image/png": blob})]); toast("Картинка в буфере — вставь в Telegram через Ctrl+V"); } catch(_){ toast("Браузер не дал скопировать — скачай PNG"); } return; }
-      if (b.dataset.tp === "share"){ try { await navigator.share({files: [file], title: tl.title}); } catch(_){} } };
+      if (b.dataset.tp === "share"){ try { await navigator.share({files: [file], title: tl.title}); } catch(_){ /* ожидаемо: закрыл окно «Поделиться» */ } } };
   }
 
 

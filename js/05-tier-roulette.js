@@ -118,7 +118,7 @@
   }
   function blip(S, f = 1500){ if (!S.sound) return; try { S.actx = S.actx || new (window.AudioContext || window.webkitAudioContext)(); const a = S.actx, o = a.createOscillator(), g = a.createGain();
     o.type = "triangle"; o.frequency.value = f; g.gain.setValueAtTime(.06, a.currentTime); g.gain.exponentialRampToValueAtTime(.0001, a.currentTime + .05);
-    o.connect(g).connect(a.destination); o.start(); o.stop(a.currentTime + .06); } catch(e){} }
+    o.connect(g).connect(a.destination); o.start(); o.stop(a.currentTime + .06); } catch(e){ /* ожидаемо: браузер не дал включить звук */ } }
   function spin(S){
     const pool = S.pool();
     if (S.spinning || pool.length < 2) return; S.spinning = true;

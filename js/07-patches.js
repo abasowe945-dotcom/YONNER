@@ -367,7 +367,7 @@
   ];
   const PN_LABEL = {n: "Новое", c: "Изменено", f: "Исправлено", r: "Удалено"};
   const lsGet = k => { try { return localStorage.getItem(k); } catch(e){ return null; } };
-  const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch(e){} };
+  const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch(e){ /* ожидаемо: приватный режим */ } };
   const PATCH_LOUD = () => PATCHES.find(p => !p.silent && p.season == null) || PATCHES[0];
   const patchUnseen = () => { const v = lsGet("nexus_patch_seen"), L = PATCH_LOUD(); return v !== L.v && !PATCHES.slice(0, PATCHES.indexOf(L)).some(p => p.v === v); };
   const patchCard = (p, latest) => `<article class="pn${latest ? " latest" : ""}"><div class="pn-h"><span class="pn-v ${p.kind}">${p.kind === "proto" ? "v" : "Патч "}${esc(p.v)}</span>

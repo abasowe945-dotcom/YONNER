@@ -86,7 +86,7 @@
         if (rs[0].error) throw rs[0].error;
         const ok = r => r && !r.error ? r.data || [] : [];
         PL = {at: Date.now(), places: ok(rs[0]).map(plNorm), visits: ok(rs[1]), vm: ok(rs[2]), rates: ok(rs[3]), dishes: ok(rs[4]), drates: ok(rs[5]), wants: ok(rs[6])}; plErr = null;
-      } catch(e){ plErr = e || {message: "ошибка"}; }
+      } catch(e){ plErr = e || {message: "ошибка"}; logErr("загрузка заведений", e); }
       plLoading = null; plRefresh();
       if (plAgain){ plAgain = false; loadPlaces(true); }
       return PL;
@@ -149,7 +149,7 @@
     let blob = file;
     try { const im = await createImageBitmap(file), k = Math.min(1, max / Math.max(im.width, im.height)), c = document.createElement("canvas");
       c.width = Math.max(1, Math.round(im.width * k)); c.height = Math.max(1, Math.round(im.height * k)); c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
-      blob = await new Promise(ok => c.toBlob(ok, "image/jpeg", .86)) || file; } catch(_){}
+      blob = await new Promise(ok => c.toBlob(ok, "image/jpeg", .86)) || file; } catch(_){ /* ожидаемо: не сжалось — грузим как есть */ }
     const type = ["image/png", "image/jpeg", "image/webp", "image/gif"].includes(blob.type) ? blob.type : "image/jpeg";
     return (await assets.upload(blob, {type})).id;
   }
@@ -242,7 +242,7 @@
     });
     return plLibP;
   }
-  function plKill(){ if (plMap){ try { plMap.remove(); } catch(_){} } plMap = null; plTmp = null; plMks.clear(); }
+  function plKill(){ if (plMap){ try { plMap.remove(); } catch(_){ /* ожидаемо: карта уже снята */ } } plMap = null; plTmp = null; plMks.clear(); }
   function plMapInit(){
     const el = $("plMap"), host = $("plGL"); if (!el || !host || el.dataset.ml) return; el.dataset.ml = 1;
     const ld = $("plLd");
@@ -252,7 +252,7 @@
       try {
         m = plMap = new maplibregl.Map({container: host, style: plStyle(), center: plCam ? plCam.c : PL_CENTER, zoom: plCam ? plCam.z : 12.4, minZoom: 10, maxZoom: 18.5, maxBounds: PL_BOUNDS,
           dragRotate: false, pitchWithRotate: false, touchPitch: false, attributionControl: {compact: true}, fadeDuration: 120});
-      } catch(e){ plMap = null; if (ld) ld.innerHTML = `<b>Карта не запустилась</b>Похоже, браузер не умеет WebGL. Обнови его или открой с другого устройства.`; return; }
+      } catch(e){ plMap = null; logErr("карта Якутска", e); if (ld) ld.innerHTML = `<b>Карта не запустилась</b>Похоже, браузер не умеет WebGL. Обнови его или открой с другого устройства.`; return; }
       m.touchZoomRotate.disableRotation(); if (m.keyboard && m.keyboard.disableRotation) m.keyboard.disableRotation();
       m.on("load", () => { m.resize(); el.classList.add("ready"); if (!plCam) plFit(false); plDrawMarkers(); });
       if (window.ResizeObserver) new ResizeObserver(() => { if (plMap === m && host.clientHeight) m.resize(); }).observe(host);

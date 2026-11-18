@@ -77,7 +77,7 @@
       if (bd) el.scrollBy({left: bd, behavior: "smooth"}); };
     el.addEventListener("pointerdown", e => { if (e.pointerType !== "mouse" || e.button) return; cancelAnimationFrame(mom); drag = {x: e.clientX, l: el.scrollLeft}; lastX = e.clientX; lastT = performance.now(); vel = 0; moved = false; });
     el.addEventListener("pointermove", e => { if (!drag) return; const dx = e.clientX - drag.x;
-      if (!moved && Math.abs(dx) > 4){ moved = true; el.classList.add("drag"); try { el.setPointerCapture(e.pointerId); } catch(_){} }
+      if (!moved && Math.abs(dx) > 4){ moved = true; el.classList.add("drag"); try { el.setPointerCapture(e.pointerId); } catch(_){ /* ожидаемо: палец уже убран */ } }
       if (!moved) return; el.scrollLeft = drag.l - dx; const t = performance.now(); vel = (e.clientX - lastX) / Math.max(1, t - lastT); lastX = e.clientX; lastT = t; });
     const up = () => { if (!drag) return; drag = null; el.classList.remove("drag"); if (!moved) return;
       let v = -vel * 16; const step = () => { v *= .93; el.scrollLeft += v; if (Math.abs(v) > .5) mom = requestAnimationFrame(step); else snap(); };
@@ -237,7 +237,8 @@
       site: {t: "Сайт и данные", apps: [
         {t: "Патчноуты", s: "версия " + PATCHES[0].v, g: GRAD.blue, i: ICON.scroll, a: 'data-go="patch"', b: patchUnseen() ? "NEW" : ""},
         {t: "Скачать бэкап", s: bdays == null ? "ещё не было" : bdays === 0 ? "сегодня" : `${bdays} дн. назад`, g: GRAD.green, i: ICON.down, a: 'data-backup="1"', b: bdays == null || bdays >= 30 ? "!" : ""},
-        {t: "Загрузить бэкап", s: "из zip-архива", g: GRAD.gray, i: ICON.up, a: 'data-imp="1"'}]}
+        {t: "Загрузить бэкап", s: "из zip-архива", g: GRAD.gray, i: ICON.up, a: 'data-imp="1"'},
+        ...(IS_ADMIN ? [{t: "Журнал ошибок", s: "видишь только ты", g: GRAD.red, i: ICON.info, a: 'data-errlog="1"'}] : [])]}
     };
   }
   const appHTML = (a, i = 0) => `<button class="ios-app" style="--i:${i}" ${a.a}>${a.b ? `<span class="bdg">${a.b}</span>` : ""}<span class="ai" style="--g:${a.g}">${a.i}</span><span>${a.t}</span>${a.s ? `<small>${esc(a.s)}</small>` : ""}</button>`;
@@ -263,6 +264,23 @@
       <div class="ios-h">Разделы</div>
       <div class="ios-home">${Object.entries(A).map(([key, F]) => `<button class="ios-fold" data-fold="${key}"><span class="box">${F.apps.slice(0, 4).map(a => `<span class="ai" style="--g:${a.g}">${a.i}</span>`).join("")}</span><span class="lb">${F.t}<small>${F.apps.length} ${plural(F.apps.length, "раздел", "раздела", "разделов")}${F.apps.some(a => a.b) ? " · есть новое" : ""}</small></span></button>`).join("")}</div>`;
   }
+  // журнал ошибок — только для владельца (таблица nexus_admins)
+  async function errLogSheet(){
+    const s = openSheet(`<h3>Журнал ошибок</h3><p class="sub">Последние ошибки у всех на сайте. Одинаковые склеены.</p><div class="errlog" id="elList">Загружаю…</div>
+      <div class="acts" style="margin-top:14px"><button class="ib red" id="elClr">Очистить</button><button class="ib" id="elNo">Закрыть</button></div>`, {wide: true});
+    s.el.querySelector("#elNo").onclick = () => s.close();
+    const draw = async () => {
+      const box = s.el.querySelector("#elList"); if (!box) return;
+      const {data, error} = await SB.from("client_errors").select("id,user_id,at,place,msg,stack,url,ua,ver").order("at", {ascending: false}).limit(300);
+      if (error){ box.textContent = "Не загрузилось: " + error.message; return; }
+      if (!data.length){ box.textContent = "Ошибок нет. Подозрительно чисто."; return; }
+      const g = new Map(); data.forEach(r => { const k = r.place + "|" + r.msg, x = g.get(k); if (x){ x.n++; x.who.add(r.user_id); } else g.set(k, {...r, n: 1, who: new Set([r.user_id])}); });
+      box.innerHTML = [...g.values()].map(r => `<details style="margin:0 0 8px;padding:8px 10px;border-radius:10px;background:rgba(127,127,127,.12)"><summary style="cursor:pointer"><b>${esc(r.place)}</b> · ${esc(r.msg)} <small style="opacity:.6">×${r.n} · ${[...r.who].map(u => esc(frNick(u))).join(", ")} · ${esc(new Date(r.at).toLocaleString("ru-RU"))} · v${esc(r.ver || "?")}</small></summary><pre style="white-space:pre-wrap;font-size:11px;opacity:.75;margin:6px 0 0">${esc(r.url || "")}\n${esc(r.ua || "")}\n${esc(r.stack || "")}</pre></details>`).join("");
+    };
+    s.el.querySelector("#elClr").onclick = async () => { const {error} = await SB.from("client_errors").delete().gte("id", 0); if (error){ toast("Не очистилось"); return; } toast("Журнал очищен"); draw(); };
+    draw();
+  }
+  document.addEventListener("click", e => { if (e.target.closest && e.target.closest("[data-errlog]")) errLogSheet(); });
   let folderClose = null;
   function openFolder(key, from){
     const F = moreApps()[key]; if (!F) return;
@@ -349,7 +367,7 @@
       </div>`;
     document.querySelectorAll('[data-stack="1"]').forEach(wireStack);
     wireWall3(); wireBook(); if (actTab === "wall" && !WALL) loadWall();
-    if (fid){ const n = $(fid); if (n){ n.focus({preventScroll: true}); try { n.setSelectionRange(fsel[0], fsel[1]); } catch(_){} } } if (Math.abs(scrollY - sy) > 2) scrollTo(0, sy);
+    if (fid){ const n = $(fid); if (n){ n.focus({preventScroll: true}); try { n.setSelectionRange(fsel[0], fsel[1]); } catch(_){ /* ожидаемо: поле без курсора */ } } } if (Math.abs(scrollY - sy) > 2) scrollTo(0, sy);
   }
 
   // ================= 2.2: звуки — клики и трещотка =================

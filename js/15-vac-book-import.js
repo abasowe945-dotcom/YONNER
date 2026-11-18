@@ -43,7 +43,7 @@
     if (!SB || !ME) return null; if (VAC && !force) return VAC; if (vacLoading) return vacLoading;
     vacLoading = (async () => { const {data, error} = await SB.from("vacations").select("*");
       if (!error) VAC = (data || []).map(r => ({...r, days: Array.isArray(r.days) ? r.days.filter(x => /^\d{4}-\d{2}-\d{2}$/.test(x)).sort() : []}));
-      vacLoading = null; if (!error && (route === "vacation" ? vc.loaded : route === "home" || route === "user")) { try { render(); } catch(_){} } return VAC; })();
+      vacLoading = null; if (!error && (route === "vacation" ? vc.loaded : route === "home" || route === "user")) { try { render(); } catch(e){ logErr("отпуска: перерисовка", e); } } return VAC; })();
     return vacLoading;
   }
   function subscribeVac(){ if (!SB || !ME) return; let t = 0; SB.channel("nexus-vac").on("postgres_changes", {event: "*", schema: "public", table: "vacations"}, () => { clearTimeout(t); t = setTimeout(() => loadVac(true), 400); }).subscribe(); }
@@ -120,7 +120,7 @@
       if (!cand.length) toast("Эти дни заблокированы — сними запрет ластиком"); else if (cand.length !== days.length) toast(`Пропустил заблокированные дни: ${days.length - cand.length}`); }
     else if (vc.tool === "block"){ const allOn = days.every(d => bs.has(d)); days.forEach(d => { if (allOn) bs.delete(d); else { bs.add(d); vs.delete(d); } }); }
     else days.forEach(d => { vs.delete(d); bs.delete(d); });
-    Y.vac = [...vs].sort(); Y.block = [...bs].sort(); vc.last = b; try { SND.click("soft"); } catch(_){} vcSave(); vcDraw();
+    Y.vac = [...vs].sort(); Y.block = [...bs].sort(); vc.last = b; try { SND.click("soft"); } catch(_){ /* ожидаемо: звук недоступен */ } vcSave(); vcDraw();
   }
   function vcTap(ds, shift){
     if (shift && vc.last){ vc.anchor = null; vcApply(vc.last, ds); return; }
@@ -163,7 +163,7 @@
     st[2].className = "vc-st" + (left < 0 ? " bad" : ""); st[2].innerHTML = `<small>${left < 0 ? "Перебор" : "Осталось"}</small><b>${Math.abs(left)}</b>`; }
 
   // ---- калькулятор отпускных: всё считается и хранится только в этом браузере ----
-  const vcCalcGet = () => { let c = null; try { c = JSON.parse(lsGet("nexus_vac_calc") || "null"); } catch(_){} c = c && typeof c === "object" ? c : {}; return {earn: c.earn || "", full: c.full == null ? 12 : c.full, parts: Array.isArray(c.parts) ? c.parts : [], days: c.days || "", rate: c.rate || 13}; };
+  const vcCalcGet = () => { let c = null; try { c = JSON.parse(lsGet("nexus_vac_calc") || "null"); } catch(_){ /* ожидаемо: старые кривые данные */ } c = c && typeof c === "object" ? c : {}; return {earn: c.earn || "", full: c.full == null ? 12 : c.full, parts: Array.isArray(c.parts) ? c.parts : [], days: c.days || "", rate: c.rate || 13}; };
   const vcCalcSet = c => lsSet("nexus_vac_calc", JSON.stringify(c));
   const vcNum = v => { const n = parseFloat(String(v == null ? "" : v).replace(/\s/g, "").replace(",", ".")); return isFinite(n) ? n : 0; };
   function vcCalcDraw(){

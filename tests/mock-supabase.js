@@ -17,9 +17,10 @@
       }
     });
     async function run() {
-      LOG.push({kind, name, ops: q.ops.map(o => Array.isArray(o) ? o[0] : o)});
+      LOG.push({kind, name, ops: q.ops.map(o => Array.isArray(o) ? o[0] : o), at: performance.now()});
       if (q.ops.some(o => ["insert", "update", "upsert", "delete"].includes(o))) return {data: null, error: null};
-      let rows = (FX()[name] || []).slice();
+      const raw = FX()[name]; if (raw !== undefined && !Array.isArray(raw)) return {data: raw, error: null};
+      let rows = (raw || []).slice();
       for (const o of q.ops) if (Array.isArray(o) && o[0] === "eq") rows = rows.filter(r => r[o[1]] === undefined || r[o[1]] === o[2]);
       if (q.rangeA !== null) rows = rows.slice(q.rangeA, Math.min(q.rangeB + 1, q.rangeA + MAX));
       else rows = rows.slice(0, Math.min(q.lim || MAX, MAX));

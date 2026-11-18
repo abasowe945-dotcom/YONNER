@@ -94,7 +94,7 @@
         if (pr.error) throw pr.error; if (it.error) throw it.error;
         FR = {at: Date.now(), profiles: pr.data || [], items: (it.data || []).map(r => ({...(r.data || {}), id: r.id, uid: r.user_id, _upd: r.updated_at})), reads: rd && !rd.error ? (rd.data || []).map(r => ({...(r.data || {}), id: r.id, uid: r.user_id, _upd: r.updated_at})) : [], showcases: sc && !sc.error ? (sc.data || []).map(x => ({...x, entries: Array.isArray(x.entries) ? x.entries : []})) : [], tierlists: tq && !tq.error ? (tq.data || []).map(x => ({...x, tiers: Array.isArray(x.tiers) ? x.tiers : [], pool: Array.isArray(x.pool) ? x.pool : []})) : []};
         if (FV) items = frItems(FV);
-      } catch(e){ if (force || !FR) toast("Не получилось загрузить друзей: " + (e.message || e)); if (!FR) FR = {at: Date.now(), profiles: [], items: [], failed: true}; }
+      } catch(e){ logErr("загрузка друзей", e); if (force || !FR) toast("Не получилось загрузить друзей: " + (e.message || e)); if (!FR) FR = {at: Date.now(), profiles: [], items: [], failed: true}; }
       frLoading = null; render(); return FR;
     })();
     return frLoading;
@@ -229,14 +229,14 @@
     const zip = new JSZip(), ids = [...new Set(MYITEMS.flatMap(imgIds))];
     let done = 0, ok = 0, i = 0;
     const worker = async () => { while (i < ids.length){ const id = ids[i++];
-      try { const r = await fetch(publicUrl(id), {cache: "force-cache"}); if (!r.ok) throw 0; zip.file("media/" + id, await r.blob()); ok++; } catch(e){}
+      try { const r = await fetch(publicUrl(id), {cache: "force-cache"}); if (!r.ok) throw 0; zip.file("media/" + id, await r.blob()); ok++; } catch(e){ /* ожидаемо: картинку удалили — бэкап идёт без неё */ }
       done++; onProg && onProg(done, ids.length); } };
     await Promise.all([worker(), worker(), worker(), worker()]);
     zip.file("nexus.json", JSON.stringify({nexus: 2, nick: NICK, exportedAt: now(), items: MYITEMS, theme}, null, 2));
     const blob = await zip.generateAsync({type: "blob", compression: "STORE"});
     saveBlob(blob, `${NICK}-nexus-${today()}.zip`);
     const info = {at: now(), items: MYITEMS.length, files: ok, missing: ids.length - ok};
-    lastBackup = info; try { await db.doc("meta/backup").set(info); } catch(e){}
+    lastBackup = info; try { await db.doc("meta/backup").set(info); } catch(e){ logErr("бэкап: отметка", e); }
     return info;
   }
   async function runBackup(btn){
@@ -258,7 +258,7 @@
     const remap = async id => {
       if (typeof id !== "string" || !id) return null; if (id in map) return map[id];
       let nid = null; const zf = zip && zip.file("media/" + id);
-      if (zf){ try { const type = extMime(id); const b = await zf.async("blob"); nid = (await assets.upload(new Blob([b], {type}), {type})).id; } catch(e){} }
+      if (zf){ try { const type = extMime(id); const b = await zf.async("blob"); nid = (await assets.upload(new Blob([b], {type}), {type})).id; } catch(e){ logErr("бэкап: загрузка картинки", e); } }
       else if (id.startsWith(mine)) nid = id; // картинка ещё лежит на сервере
       return map[id] = nid;
     };
@@ -362,7 +362,7 @@
             return {exists: metaCache[key] != null, data: () => metaCache[key]}; },
           async set(d){ metaCache[key] = d; metaNotify(key); const {error} = await sb.from("meta").upsert({user_id: uid, key, data: d}); if (error) throw fail(error); },
           async delete(){ metaCache[key] = null; metaNotify(key); const {error} = await sb.from("meta").delete().eq("user_id", uid).eq("key", key); if (error) throw fail(error); },
-          onSnapshot(fn){ (metaL[key] = metaL[key] || []).push(fn); this.get().then(fn).catch(() => {}); return () => {}; }
+          onSnapshot(fn){ (metaL[key] = metaL[key] || []).push(fn); this.get().then(fn).catch(e => logErr("настройки: " + key, e)); return () => {}; }
         };
       }
     };
@@ -439,7 +439,8 @@
   }
 
   async function start(user){
-    ME = user;
+    ME = user; flushErr();
+    SB.rpc("is_nexus_admin").then(r => { IS_ADMIN = !!r && r.data === true; if (IS_ADMIN && route === "more") render(); }, e => logErr("проверка админа", e));
     let {data: prof, error: pe} = await SB.from("profiles").select("nick,avatar,ava_animal,ava_color,birthday,pid,bg,bg_m,bg_dim,work").eq("user_id", user.id).maybeSingle();
     if (pe) ({data: prof, error: pe} = await SB.from("profiles").select("nick,avatar,ava_animal,ava_color,birthday,pid,bg,bg_m,bg_dim").eq("user_id", user.id).maybeSingle());
     if (pe) ({data: prof} = await SB.from("profiles").select("nick,avatar,ava_animal,ava_color,birthday").eq("user_id", user.id).maybeSingle());

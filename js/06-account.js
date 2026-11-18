@@ -1,5 +1,5 @@
   // ================= аккаунт, ник, профиль =================
-  let NICK = "H3RO", SB = null, ME = null;
+  let NICK = "H3RO", SB = null, ME = null, IS_ADMIN = false;
   const nickShort = () => NICK.toUpperCase().slice(0, 8);
   function nickLogo(n){
     let i = n.search(/\d/); if (i < 0) i = Math.min(1, n.length - 1);
