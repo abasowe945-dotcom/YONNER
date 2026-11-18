@@ -67,7 +67,7 @@
   const PL_KIND = [["bar", "Бар"], ["rest", "Ресторан"], ["cafe", "Кафе"], ["coffee", "Кофейня"], ["fast", "Фастфуд"], ["club", "Клуб"], ["other", "Другое"]];
   const plKindL = k => (PL_KIND.find(x => x[0] === k) || PL_KIND[6])[1];
   const plKindI = k => PLI[k] || PLI.other;
-  const PL_CRIT = [["interior", "Интерьер"], ["price", "Цены"], ["taste", "Вкус"], ["beer", "Пиво"]];
+  const PL_CRIT = [["interior", "Интерьер"], ["price", "Цены"], ["taste", "Вкус"], ["beer", "Алкоголь"]];
   const PL_TABLES = ["places", "place_visits", "place_visit_members", "place_ratings", "place_dishes", "place_dish_rates", "place_wants"];
   let PL = null, plLoading = null, plAgain = false, plErr = null, plSubT = 0, plCam = null, plPlacing = null, plPending = null, plSheet = null, plSeen = null, plLastTap = 0;
   let plCalY = new Date().getFullYear(), plCalM = new Date().getMonth();
@@ -373,7 +373,7 @@
       return `<div class="pld-v"><span class="d">${esc(plDay(v.day))}<small>${esc(plAgo(v.day))} · ${mm.length} ${plural(mm.length, "человек", "человека", "человек")}</small></span>${mm.length ? avaStack(mm, 6) : ""}
         <button type="button" class="pl-btn sm ${me ? "alt" : "cy"}" data-pla="${me ? "vout" : "vin"}" data-v="${esc(v.id)}">${me ? "Меня не было" : "Я тоже был"}</button>${v.user_id === ME.id ? `<button type="button" class="pl-btn sm red" data-pla="vdel" data-v="${esc(v.id)}" aria-label="Удалить поход" title="Удалить поход">×</button>` : ""}</div>`; }).join("");
     const ten = (k, v) => `<div class="pld-ten${k === "beer" && dr.nobeer ? " skip" : ""}" style="--c:var(--pl-${{g: "green", y: "gold", r: "red", n: "gold"}[plCls(v)]})">${Array.from({length: 10}, (_, i) => i + 1).map(n => `<button type="button" data-plrate="${k}:${n}" class="${v === n ? "on" : v != null && n < v ? "lo" : ""}" aria-label="${n}">${n}</button>`).join("")}</div>`;
-    const myRate = been ? `${PL_CRIT.map(([k, l]) => `<div class="pld-pick"><span>${l}${k === "price" ? `<br><small style="color:var(--pl-dim);font-size:11px">10 — дёшево</small>` : ""}</span>${ten(k, k === "beer" && dr.nobeer ? null : dr[k])}${k === "beer" ? `<button type="button" class="pld-nob" data-pla="nobeer">${dr.nobeer ? "Пиво всё-таки пил" : "Пиво не брал"}</button>` : ""}</div>`).join("")}
+    const myRate = been ? `${PL_CRIT.map(([k, l]) => `<div class="pld-pick"><span>${l}${k === "price" ? `<br><small style="color:var(--pl-dim);font-size:11px">10 — дёшево</small>` : ""}</span>${ten(k, k === "beer" && dr.nobeer ? null : dr[k])}${k === "beer" ? `<button type="button" class="pld-nob" data-pla="nobeer">${dr.nobeer ? "Всё-таки пил" : "Не пил"}</button>` : ""}</div>`).join("")}
         <textarea class="pld-in" id="plCm-${esc(p.id)}" data-plcm="${esc(p.id)}" maxlength="300" placeholder="Пара слов: что понравилось, что бесит">${esc(dr.comment || "")}</textarea>
         <div class="acts" style="margin-top:8px"><button type="button" class="pl-btn" data-pla="rsave">${rates.some(r => r.user_id === ME.id) ? "Обновить оценку" : "Сохранить оценку"}</button>${rates.some(r => r.user_id === ME.id) ? `<button type="button" class="pl-btn sm alt" data-pla="rdel">Убрать</button>` : ""}</div>`
       : `<p class="pld-hint">Оценивают те, кто был. Отметься в походе — и сможешь поставить оценку и оценить блюда.</p><div class="acts" style="margin-top:10px"><button type="button" class="pl-btn cy" data-pla="visit">Я был здесь</button></div>`;
@@ -662,7 +662,7 @@
     const lastV = PL.visits.filter(v => plById(v.place_id) && String(v.day).slice(0, 10) <= today()).sort((a, b) => String(b.day).localeCompare(String(a.day)) || String(b.created_at).localeCompare(String(a.created_at)))[0];
     const p = lastV && plById(lastV.place_id), s = p ? plScore(p.id) : null, mm = lastV ? plVM(lastV.id) : [];
     const last = p ? `<button class="plc-last" data-plgo="${esc(p.id)}" aria-label="Открыть ${esc(p.name)}">${p.photo ? `<img alt="" loading="lazy" src="${esc(plImg(p))}" onerror="this.remove()">` : `<span class="map"></span>`}<span class="k">Последний поход · ${esc(plKindL(p.kind))}</span><b>${esc(p.name)}</b><small>${esc(plAgo(lastV.day))}${mm.length ? ` · ${mm.length} ${plural(mm.length, "человек", "человека", "человек")}` : ""}</small>${mm.length ? avaStack(mm, 6) : ""}<span class="sc ${plCls(s)}">${s == null ? "без оценки" : num1(s)}</span></button>`
-      : `<p class="a-sub" style="margin:0 0 10px;font-size:13px">Отмечайте на карте, где были, и ставьте оценки: интерьер, цены, вкус, пиво.</p>`;
+      : `<p class="a-sub" style="margin:0 0 10px;font-size:13px">Отмечайте на карте, где были, и ставьте оценки: интерьер, цены, вкус, алкоголь.</p>`;
     const wl = want.sort((a, b) => plWants(b.id).length - plWants(a.id).length).slice(0, 3)
       .map(w => { const n = plWants(w.id).length; return `<button class="plc-want" data-plgo="${esc(w.id)}"><i></i><span>${esc(w.name)}</span><small>${n ? `хотят ${n}` : "хотим"}</small></button>`; }).join("");
     return `<div class="fb-card pl-card" id="plCard">${head}
