@@ -67,17 +67,21 @@
   const PL_KIND = [["bar", "Бар"], ["rest", "Ресторан"], ["cafe", "Кафе"], ["coffee", "Кофейня"], ["fast", "Фастфуд"], ["club", "Клуб"], ["other", "Другое"]];
   const plKindL = k => (PL_KIND.find(x => x[0] === k) || PL_KIND[6])[1];
   const plKindI = k => PLI[k] || PLI.other;
-  const PL_CRIT = [["interior", "Интерьер"], ["price", "Цены"], ["taste", "Вкус"], ["beer", "Алкоголь"]];
-  const PL_TABLES = ["places", "place_visits", "place_visit_members", "place_ratings", "place_dishes", "place_dish_rates", "place_wants"];
+  // 5.4: шкалы оценки — [поле, название, вес в итоге, подсказка]; любую можно пропустить
+  const PL_CRIT = [["taste", "Вкус", 2, "еда и напитки, весит вдвое"], ["service", "Обслуживание", 1, ""], ["vibe", "Атмосфера", 1, "уют, шум, компания"], ["value", "Цена/качество", 1, "стоит ли своих денег"], ["alco", "Алкоголь", 1, ""]];
+  const PL_PRICE = ["₽", "₽₽", "₽₽₽"], PL_PRICE_T = ["недорого", "средне", "дорого"];
+  const PL_TAGS = ["Большие порции", "Маленькие порции", "Быстро принесли", "Долго ждали", "Уютно", "Громко", "Для компании", "Для свидания", "Живая музыка", "Кальян", "Вежливые", "Хамят", "Чисто", "Грязновато", "Дорого для того, что есть"];
+  const PL_FEW = 3; // пока оценок меньше — итог притягивается к среднему по всем местам
+  const PL_TABLES = ["places", "place_visits", "place_visit_members", "place_reviews", "place_dishes", "place_dish_rates", "place_wants"];
   let PL = null, plLoading = null, plAgain = false, plErr = null, plSubT = 0, plCam = null, plPlacing = null, plPending = null, plSheet = null, plSeen = null, plLastTap = 0;
   let plCalY = new Date().getFullYear(), plCalM = new Date().getMonth();
-  const plS = {q: "", st: "all", r: "all", k: "all", sort: "visit", view: lsGet("nexus_pl_view") === "cal" ? "cal" : "map", sel: null, panel: null};
+  const plS = {q: "", st: "all", r: "all", k: "all", pr: "all", tag: "all", sort: "visit", view: ["cal", "top"].includes(lsGet("nexus_pl_view")) ? lsGet("nexus_pl_view") : "map", sel: null, panel: null};
   const plDraft = {};
 
   // ---- данные ----
   const plNorm = p => ({...p, menu: Array.isArray(p.menu) ? p.menu.filter(x => typeof x === "string" && x) : [], x: p.x == null ? null : +p.x, y: p.y == null ? null : +p.y, lat: p.lat == null ? null : +p.lat, lng: p.lng == null ? null : +p.lng});
   const plMissing = () => !!(plErr && (/PGRST205|42P01/.test(plErr.code || "") || /schema cache|does not exist|relation/i.test(plErr.message || "")));
-  const PL_KEYS = {places: ["id"], place_visits: ["id"], place_visit_members: ["visit_id", "user_id"], place_ratings: ["place_id", "user_id"], place_dishes: ["id"], place_dish_rates: ["dish_id", "user_id"], place_wants: ["place_id", "user_id"]};
+  const PL_KEYS = {places: ["id"], place_visits: ["id"], place_visit_members: ["visit_id", "user_id"], place_reviews: ["id"], place_dishes: ["id"], place_dish_rates: ["dish_id", "user_id"], place_wants: ["place_id", "user_id"]};
   async function loadPlaces(force){
     if (!SB || !ME) return null;
     if (plLoading){ if (!force) return plLoading; plAgain = true; return plLoading.then(() => plLoading || PL); }
@@ -94,7 +98,7 @@
     })();
     return plLoading;
   }
-  const PL_RT = {place_visit_members: ["vm", ["visit_id", "user_id"]], place_ratings: ["rates", ["place_id", "user_id"]], place_dish_rates: ["drates", ["dish_id", "user_id"]], place_wants: ["wants", ["place_id", "user_id"]]};
+  const PL_RT = {place_visit_members: ["vm", ["visit_id", "user_id"]], place_reviews: ["rates", ["id"]], place_dish_rates: ["drates", ["dish_id", "user_id"]], place_wants: ["wants", ["place_id", "user_id"]]};
   function subscribePlaces(){
     if (!SB || !ME) return;
     let ch = SB.channel("nexus-places");
@@ -116,10 +120,29 @@
   const plVM = vid => [...new Set(PL.vm.filter(m => m.visit_id === vid).map(m => m.user_id))];
   const plWho = pid => [...new Set(plVisits(pid).flatMap(v => plVM(v.id)))];
   const plBeen = (pid, uid) => plWho(pid).includes(uid || (ME && ME.id));
-  const plRates = pid => PL.rates.filter(r => r.place_id === pid);
-  const plRAvg = r => { const v = PL_CRIT.map(([k]) => r[k]).filter(x => x != null && x !== ""); return v.length ? v.reduce((s, x) => s + +x, 0) / v.length : null; };
-  const plScore = pid => { const v = plRates(pid).map(plRAvg).filter(x => x != null); return v.length ? v.reduce((s, x) => s + x, 0) / v.length : null; };
+  // 5.4: оценка — за каждый поход; в итог идёт последняя оценка каждого человека
+  const plRevs = pid => PL.rates.filter(r => r.place_id === pid);
+  const plRevKey = r => { const v = r.visit_id && PL.visits.find(x => x.id === r.visit_id); return String(v && v.day || String(r.created_at || "").slice(0, 10)) + "|" + String(r.created_at || ""); };
+  const plHist = (pid, uid) => plRevs(pid).filter(r => r.user_id === uid).sort((a, b) => plRevKey(b).localeCompare(plRevKey(a)));
+  const plRates = pid => { const by = new Map(); plRevs(pid).forEach(r => { const o = by.get(r.user_id); if (!o || plRevKey(r) > plRevKey(o)) by.set(r.user_id, r); }); return [...by.values()]; };
+  const plRAvg = r => { let s = 0, w = 0; PL_CRIT.forEach(([k, , wt]) => { const x = r[k]; if (x != null && x !== ""){ s += +x * wt; w += wt; } }); return w ? s / w : null; };
+  const plAvgOf = v => v.length ? v.reduce((s, x) => s + x, 0) / v.length : null;
+  const plRaw = pid => plAvgOf(plRates(pid).map(plRAvg).filter(x => x != null));
+  const plN = pid => plRates(pid).filter(r => plRAvg(r) != null).length;
+  // среднее по всем местам — «точка притяжения» для мест с малым числом оценок
+  const plMean = () => { if (plMean.at === PL && plMean.v != null) return plMean.v; const v = plAvgOf(PL.places.map(p => plRaw(p.id)).filter(x => x != null)); plMean.at = PL; plMean.v = v == null ? 7 : v; return plMean.v; };
+  const plShrink = (avg, n, c) => avg == null ? null : n >= PL_FEW ? avg : (avg * n + c * (PL_FEW - n)) / PL_FEW;
+  const plScore = pid => plShrink(plRaw(pid), plN(pid), plMean());
+  const plFew = pid => { const n = plN(pid); return n > 0 && n < PL_FEW; };
   const plCrit = (pid, k) => { const v = plRates(pid).map(r => r[k]).filter(x => x != null && x !== ""); return v.length ? {avg: v.reduce((s, x) => s + +x, 0) / v.length, n: v.length} : null; };
+  const plCritMean = k => { const v = PL.rates.map(r => r[k]).filter(x => x != null && x !== "").map(Number); return plAvgOf(v) ?? 7; };
+  const plCritRank = (pid, k) => { const c = plCrit(pid, k); return c ? plShrink(c.avg, c.n, plCritMean(k)) : null; };
+  const plPrice = pid => { const v = plRates(pid).map(r => +r.price_lvl).filter(x => x >= 1 && x <= 3).sort(); return v.length ? v[Math.floor((v.length - 1) / 2)] : null; };
+  const plBack = pid => { const v = plRates(pid).filter(r => r.back === true || r.back === false); return v.length ? {yes: v.filter(r => r.back).length, n: v.length} : null; };
+  const plTagsOf = pid => { const c = new Map(); plRates(pid).forEach(r => (r.tags || []).forEach(t => c.set(t, (c.get(t) || 0) + 1))); return [...c].sort((a, b) => b[1] - a[1]); };
+  // хит и провал — лучшее и худшее блюдо по вашим оценкам
+  const plHitFlop = pid => { const d = plDishes(pid).map(x => ({d: x, a: plDAvg(x.id)})).filter(x => x.a != null).sort((a, b) => b.a - a.a);
+    const hit = d.length && d[0].a >= 7 ? d[0] : null, flop = d.length && d[d.length - 1].a <= 5 && d[d.length - 1] !== hit ? d[d.length - 1] : null; return {hit, flop}; };
   const plLast = pid => { const v = plVisits(pid); return v.length ? v[0].day : null; };
   const plWants = pid => [...new Set(PL.wants.filter(w => w.place_id === pid).map(w => w.user_id))];
   const plIsWant = p => !PL.visits.some(v => v.place_id === p.id);
@@ -140,6 +163,8 @@
     const q = plK(plS.q); if (q) a = a.filter(p => plK(p.name + " " + (p.address || "")).includes(q));
     if (plS.st === "been") a = a.filter(p => !plIsWant(p)); else if (plS.st === "want") a = a.filter(plIsWant); else if (plS.st === "mine") a = a.filter(p => plBeen(p.id));
     if (plS.k !== "all") a = a.filter(p => p.kind === plS.k);
+    if (plS.pr !== "all") a = a.filter(p => plPrice(p.id) === +plS.pr);
+    if (plS.tag !== "all") a = a.filter(p => plTagsOf(p.id).some(([t]) => t === plS.tag));
     if (plS.r !== "all") a = a.filter(p => { const s = plScore(p.id); return plS.r === "none" ? s == null : s != null && (plS.r === "8" ? s >= 8 : plS.r === "6" ? s >= 6 && s < 8 : s < 6); });
     const byNew = (x, y) => String(y.created_at).localeCompare(String(x.created_at));
     if (plS.sort === "score") a.sort((x, y) => (plScore(y.id) ?? -1) - (plScore(x.id) ?? -1) || byNew(x, y));
@@ -173,7 +198,7 @@
       m.innerHTML = `<div class="pl-hud">
           <div class="pl-tt"><small><a href="#people" style="color:inherit;text-decoration:none">‹ Активность</a> // Якутск // карта походов</small><h1 data-t="Заведения">Заведения</h1></div>
           <div class="pl-stats" id="plStats"></div>
-          <div class="pl-acts"><div class="pl-seg"><button type="button" data-plview="map" aria-pressed="${plS.view === "map"}" aria-label="Карта">${PLI.map}<span>Карта</span></button><button type="button" data-plview="cal" aria-pressed="${plS.view === "cal"}" aria-label="Календарь">${ICON.calendar}<span>Календарь</span></button></div><button type="button" class="pl-btn" data-pladd="1">${ICON.plus}Новое место</button></div>
+          <div class="pl-acts"><div class="pl-seg"><button type="button" data-plview="map" aria-pressed="${plS.view === "map"}" aria-label="Карта">${PLI.map}<span>Карта</span></button><button type="button" data-plview="cal" aria-pressed="${plS.view === "cal"}" aria-label="Календарь">${ICON.calendar}<span>Календарь</span></button><button type="button" data-plview="top" aria-pressed="${plS.view === "top"}" aria-label="Топы">${ICON.trophy}<span>Топы</span></button></div><button type="button" class="pl-btn" data-pladd="1">${ICON.plus}Новое место</button></div>
         </div>
         <div class="pl-body">
           ${plS.view === "map" ? `<section class="pl-mapw" id="plMap" aria-label="Карта Якутска: тяни, чтобы двигать, колесо или два пальца — зум">
@@ -183,14 +208,14 @@
             <div class="pl-zoom"><button type="button" data-plz="in" aria-label="Приблизить">+</button><button type="button" data-plz="out" aria-label="Отдалить">−</button><button type="button" data-plz="fit" aria-label="Показать все места">${PLI.fit}</button></div>
             <div class="pl-geo" id="plGeo">62.0274° N / 129.7320° E</div>
             <div class="pl-leg"><span><i style="background:var(--pl-green)"></i>7,5+</span><span><i style="background:var(--pl-gold)"></i>5–7</span><span><i style="background:var(--pl-red)"></i>до 5</span><span><i style="background:var(--pl-cyan)"></i>хотим</span></div>
-            <div id="plBan"></div></section>` : `<section class="pl-cal" id="plCal"></section>`}
+            <div id="plBan"></div></section>` : plS.view === "top" ? `<section class="pl-top" id="plTop"></section>` : `<section class="pl-cal" id="plCal"></section>`}
           <aside class="pl-side" id="plSide"></aside>
         </div>`;
       if (!m.dataset.wired){ m.dataset.wired = 1; plWire(m); }
     }
     if (plS.panel && (!plWide() || !plById(plS.panel))) plS.panel = null;
     plDrawStats(); plDrawSide();
-    if (plS.view === "map"){ plMapInit(); plDrawMarkers(); plDrawBanner(); } else plDrawCal();
+    if (plS.view === "map"){ plMapInit(); plDrawMarkers(); plDrawBanner(); } else if (plS.view === "top") plDrawTop(); else plDrawCal();
     if (plPending){ const id = plPending; plPending = null; history.replaceState(null, "", location.pathname + "#places"); if (plById(id)) setTimeout(() => plSelect(id, {fly: true, open: true}), 120); else toast("Это место удалили"); }
   }
   function plDrawStats(){
@@ -207,8 +232,8 @@
     if (el.dataset.mode !== "l"){
       el.dataset.mode = "l";
       el.innerHTML = `<div class="pl-panel"><label class="pl-srch">${ICON.search}<input id="plQ" type="search" placeholder="Найти заведение" autocomplete="off" enterkeyhint="search" value="${esc(plS.q)}"></label>
-        <div class="pl-chips sc" id="plSt"></div><div class="pl-chips sc" id="plR"></div>
-        <div class="pl-row"><label for="plK">Тип</label><select class="pl-sel" id="plK"></select><label for="plSort">Порядок</label><select class="pl-sel" id="plSort"><option value="visit">Свежие</option><option value="score">Оценка</option><option value="abc">А–Я</option></select></div></div>
+        <div class="pl-chips sc" id="plSt"></div><div class="pl-chips sc" id="plR"></div><div class="pl-chips sc" id="plPr"></div>
+        <div class="pl-row"><label for="plK">Тип</label><select class="pl-sel" id="plK"></select><label for="plTag">Ярлык</label><select class="pl-sel" id="plTag"></select><label for="plSort">Порядок</label><select class="pl-sel" id="plSort"><option value="visit">Свежие</option><option value="score">Оценка</option><option value="abc">А–Я</option></select></div></div>
         <div class="pl-panel"><div class="pl-sum" id="plSum"></div><div class="pl-list" id="plList"></div></div>`;
     }
     const cnt = f => PL.places.filter(f).length;
@@ -216,20 +241,24 @@
       .map(([k, l, n]) => `<button type="button" class="pl-chip" data-plst="${k}" aria-pressed="${plS.st === k}">${l}<small>${n}</small></button>`).join("");
     $("plR").innerHTML = [["all", "Любая оценка", ""], ["8", "8+", "var(--pl-green)"], ["6", "6–8", "var(--pl-gold)"], ["low", "до 6", "var(--pl-red)"], ["none", "Без оценки", ""]]
       .map(([k, l, c]) => `<button type="button" class="pl-chip" data-plr="${k}" aria-pressed="${plS.r === k}">${c ? `<i style="background:${c}"></i>` : ""}${l}</button>`).join("");
+    $("plPr").innerHTML = [["all", "Любой чек"], ...PL_PRICE.map((x, i) => [String(i + 1), x + " " + PL_PRICE_T[i]])].map(([k, l]) => `<button type="button" class="pl-chip" data-plpr="${k}" aria-pressed="${plS.pr === k}">${l}</button>`).join("");
+    const tagsAll = [...new Set(PL.rates.flatMap(r => r.tags || []))].sort((a, b) => a.localeCompare(b, "ru"));
+    if (plS.tag !== "all" && !tagsAll.includes(plS.tag)) plS.tag = "all";
+    $("plTag").innerHTML = `<option value="all">Любой</option>` + tagsAll.map(t => `<option value="${esc(t)}"${plS.tag === t ? " selected" : ""}>${esc(t)}</option>`).join("");
     const kinds = PL_KIND.filter(([k]) => PL.places.some(p => p.kind === k));
     $("plK").innerHTML = `<option value="all">Все</option>` + kinds.map(([k, l]) => `<option value="${k}"${plS.k === k ? " selected" : ""}>${l}</option>`).join("");
     if (plS.k !== "all" && !kinds.some(([k]) => k === plS.k)) plS.k = "all";
     $("plSort").value = plS.sort;
     const list = plFiltered();
-    $("plSum").innerHTML = `<span>Найдено <b>${list.length}</b></span>${plS.q || plS.st !== "all" || plS.r !== "all" || plS.k !== "all" ? `<button type="button" class="pld-back" data-plreset="1">Сбросить</button>` : ""}`;
+    $("plSum").innerHTML = `<span>Найдено <b>${list.length}</b></span>${plS.q || plS.st !== "all" || plS.r !== "all" || plS.k !== "all" || plS.pr !== "all" || plS.tag !== "all" ? `<button type="button" class="pld-back" data-plreset="1">Сбросить</button>` : ""}`;
     $("plList").innerHTML = list.length ? list.map(plLi).join("") : PL.places.length ? `<div class="pl-empty"><b>Ничего не нашлось</b>Попробуй убрать фильтры.</div>`
       : `<div class="pl-empty"><b>Пока пусто</b>Нажми «Новое место», ткни точку на карте — и оцените, где были.</div>`;
   }
   function plLi(p){
-    const w = plIsWant(p), s = plScore(p.id), last = plLast(p.id), who = w ? plWants(p.id) : plWho(p.id);
+    const w = plIsWant(p), s = plScore(p.id), last = plLast(p.id), who = w ? plWants(p.id) : plWho(p.id), pr = plPrice(p.id), bk = plBack(p.id), hf = w ? {} : plHitFlop(p.id);
     return `<button type="button" class="pl-li${plS.sel === p.id ? " sel" : ""}" data-plo="${esc(p.id)}"><span class="pl-th">${p.photo ? `<img alt="" loading="lazy" src="${esc(plImg(p))}" onerror="this.remove()">` : ""}${plKindI(p.kind)}</span>
-      <span class="t"><b>${esc(p.name)}</b><small>${esc(plKindL(p.kind))} · ${w ? (who.length ? `хотят ${who.length}` : "хотим сходить") : esc(plAgo(last))}${!plLL(p) ? " · без точки" : ""}</small>${who.length ? avaStack(who, 4) : ""}</span>
-      <span class="pl-sc ${w ? "w" : plCls(s)}">${w ? "ХОТИМ" : s == null ? "—" : num1(s)}</span></button>`;
+      <span class="t"><b>${esc(p.name)}</b><small>${esc(plKindL(p.kind))}${pr ? " · " + PL_PRICE[pr - 1] : ""} · ${w ? (who.length ? `хотят ${who.length}` : "хотим сходить") : esc(plAgo(last))}${bk ? ` · вернутся ${bk.yes} из ${bk.n}` : ""}${!plLL(p) ? " · без точки" : ""}</small>${hf.hit ? `<small class="pl-hit">хит: ${esc(hf.hit.d.name)}</small>` : ""}${who.length ? avaStack(who, 4) : ""}</span>
+      <span class="pl-sc ${w ? "w" : plCls(s)}${!w && plFew(p.id) ? " few" : ""}"${!w && plFew(p.id) ? ' title="Мало оценок — итог подтянут к среднему по всем местам"' : ""}>${w ? "ХОТИМ" : s == null ? "—" : num1(s)}</span></button>`;
   }
   // ---- живая карта: MapLibre + тайлы OpenFreeMap, только Якутск и окрестности ----
   const PL_LIB = "https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.1/dist/maplibre-gl";
@@ -280,8 +309,8 @@
     const b = pts.reduce((a, p) => [[Math.min(a[0][0], p[0]), Math.min(a[0][1], p[1])], [Math.max(a[1][0], p[0]), Math.max(a[1][1], p[1])]], [[180, 90], [-180, -90]]);
     plMap.fitBounds(b, {padding: {top: 70, bottom: 60, left: 50, right: 70}, maxZoom: 15.5, animate: !!anim, duration: anim ? 900 : 0});
   }
-  const plMkHTML = p => { const w = plIsWant(p), s = plScore(p.id);
-    return `<span class="pl-mk-i"><span class="pl-mk-d">${w ? PLI.want : plKindI(p.kind)}</span>${w ? "" : `<span class="pl-mk-s">${s == null ? "?" : num1(s)}</span>`}<span class="pl-mk-n">${esc(p.name)}</span></span>`; };
+  const plMkHTML = p => { const w = plIsWant(p), s = plScore(p.id), hf = w ? {} : plHitFlop(p.id);
+    return `<span class="pl-mk-i" title="${esc(p.name + (hf.hit ? " · хит: " + hf.hit.d.name : "") + (hf.flop ? " · провал: " + hf.flop.d.name : ""))}"><span class="pl-mk-d">${w ? PLI.want : plKindI(p.kind)}</span>${w ? "" : `<span class="pl-mk-s">${s == null ? "?" : num1(s)}</span>`}<span class="pl-mk-n">${esc(p.name)}${hf.hit ? `<small>хит: ${esc(hf.hit.d.name)}</small>` : ""}</span></span>`; };
   function plDrawMarkers(){
     if (!plMap || !PL) return;
     const want = new Map(plFiltered().map(p => [p.id, p]).filter(([, p]) => plLL(p)));
@@ -364,31 +393,51 @@
   }
 
   // ---- карточка места ----
+  const plColor = v => `var(--pl-${{g: "green", y: "gold", r: "red", n: "dim"}[plCls(v)]})`;
+  // ряд из 10 кнопок — одинаковый у заведения и у блюд; тап по своей цифре ещё раз — снять
+  const plTen = (name, key, v, sm) => `<div class="pld-ten${sm ? " sm" : ""}" style="--c:${v == null ? "var(--pl-gold)" : plColor(v)}">${Array.from({length: 10}, (_, i) => i + 1).map(n => `<button type="button" data-${name}="${esc(key)}:${n}" class="${v === n ? "on" : v != null && n < v ? "lo" : ""}" aria-label="${n}">${n}</button>`).join("")}</div>`;
+  const plVisLabel = v => v ? plDay(v.day) : "без похода";
   function plDetailHTML(p, mode){
     if (!p) return `<div class="pl-empty"><b>Место не найдено</b>Возможно, его удалили.</div>`;
-    const w = plIsWant(p), s = plScore(p.id), vs = plVisits(p.id), been = plBeen(p.id), wants = plWants(p.id), iWant = wants.includes(ME.id), rates = plRates(p.id);
-    const url = plUrl(p.gis_url), dr = plDraftOf(p.id);
-    const crit = PL_CRIT.map(([k, l]) => { const c = plCrit(p.id, k); return `<span>${l}</span><span class="pld-bar" style="--c:var(--pl-${c ? {g: "green", y: "gold", r: "red"}[plCls(c.avg)] : "dim"})">${c ? `<i style="width:${c.avg * 10}%"></i>` : ""}</span><em class="${c ? plCls(c.avg) : ""}" style="color:var(--pl-${c ? {g: "green", y: "gold", r: "red"}[plCls(c.avg)] : "dim"})">${c ? num1(c.avg) : "—"}</em>`; }).join("");
+    const w = plIsWant(p), s = plScore(p.id), raw = plRaw(p.id), nR = plN(p.id), few = plFew(p.id), vs = plVisits(p.id), been = plBeen(p.id), wants = plWants(p.id), iWant = wants.includes(ME.id), rates = plRates(p.id);
+    const url = plUrl(p.gis_url), dr = plDraftOf(p.id), pr = plPrice(p.id), bk = plBack(p.id), tags = plTagsOf(p.id), hf = plHitFlop(p.id);
+    const crit = PL_CRIT.map(([k, l, wt]) => { const c = plCrit(p.id, k); return `<span>${l}${wt > 1 ? `<sup>×${wt}</sup>` : ""}</span><span class="pld-bar" style="--c:${c ? plColor(c.avg) : "var(--pl-dim)"}">${c ? `<i style="width:${c.avg * 10}%"></i>` : ""}</span><em class="${c ? plCls(c.avg) : ""}" style="color:${c ? plColor(c.avg) : "var(--pl-dim)"}">${c ? num1(c.avg) : "—"}</em>`; }).join("");
+    const summary = [pr ? `<span class="pld-chip">${PL_PRICE[pr - 1]} ${PL_PRICE_T[pr - 1]}</span>` : "", bk ? `<span class="pld-chip ${bk.yes / bk.n >= .6 ? "g" : bk.yes / bk.n < .4 ? "r" : ""}">вернутся ${bk.yes} из ${bk.n}</span>` : "",
+      hf.hit ? `<span class="pld-chip g">хит: ${esc(hf.hit.d.name)} ${num1(hf.hit.a)}</span>` : "", hf.flop ? `<span class="pld-chip r">провал: ${esc(hf.flop.d.name)} ${num1(hf.flop.a)}</span>` : ""].join("");
+    const tagsH = tags.length ? `<div class="pld-tags">${tags.slice(0, 8).map(([t, n]) => `<span class="pld-tag">${esc(t)}${n > 1 ? `<b>${n}</b>` : ""}</span>`).join("")}</div>` : "";
     const visits = vs.map(v => { const mm = plVM(v.id), me = mm.includes(ME.id);
       return `<div class="pld-v"><span class="d">${esc(plDay(v.day))}<small>${esc(plAgo(v.day))} · ${mm.length} ${plural(mm.length, "человек", "человека", "человек")}</small></span>${mm.length ? avaStack(mm, 6) : ""}
         <button type="button" class="pl-btn sm ${me ? "alt" : "cy"}" data-pla="${me ? "vout" : "vin"}" data-v="${esc(v.id)}">${me ? "Меня не было" : "Я тоже был"}</button>${v.user_id === ME.id ? `<button type="button" class="pl-btn sm red" data-pla="vdel" data-v="${esc(v.id)}" aria-label="Удалить поход" title="Удалить поход">×</button>` : ""}</div>`; }).join("");
-    const ten = (k, v) => `<div class="pld-ten${k === "beer" && dr.nobeer ? " skip" : ""}" style="--c:var(--pl-${{g: "green", y: "gold", r: "red", n: "gold"}[plCls(v)]})">${Array.from({length: 10}, (_, i) => i + 1).map(n => `<button type="button" data-plrate="${k}:${n}" class="${v === n ? "on" : v != null && n < v ? "lo" : ""}" aria-label="${n}">${n}</button>`).join("")}</div>`;
-    const myRate = been ? `${PL_CRIT.map(([k, l]) => `<div class="pld-pick"><span>${l}${k === "price" ? `<br><small style="color:var(--pl-dim);font-size:11px">10 — дёшево</small>` : ""}</span>${ten(k, k === "beer" && dr.nobeer ? null : dr[k])}${k === "beer" ? `<button type="button" class="pld-nob" data-pla="nobeer">${dr.nobeer ? "Всё-таки пил" : "Не пил"}</button>` : ""}</div>`).join("")}
+    // моя оценка — за конкретный поход
+    const myVs = vs.filter(v => plVM(v.id).includes(ME.id));
+    const myRate = been ? `${myVs.length > 1 ? `<label class="pld-rv">Оценка за поход<select class="pl-sel" data-plrv="${esc(p.id)}">${myVs.map(v => `<option value="${esc(v.id)}"${v.id === dr.vid ? " selected" : ""}>${esc(plVisLabel(v))}${plRevs(p.id).some(r => r.visit_id === v.id && r.user_id === ME.id) ? " — оценено" : ""}</option>`).join("")}</select></label>` : ""}
+        <p class="pld-hint" style="margin:0 0 8px">Любую шкалу можно пропустить: тапни свою цифру ещё раз, чтобы снять.</p>
+        ${PL_CRIT.map(([k, l, wt, hint]) => `<div class="pld-pick"><span>${l}${wt > 1 ? ` <sup>×${wt}</sup>` : ""}${hint ? `<br><small style="color:var(--pl-dim);font-size:11px">${hint}</small>` : ""}</span>${plTen("plrate", k, dr[k])}</div>`).join("")}
+        <div class="pld-pick"><span>Средний чек</span><div class="pl-seg">${PL_PRICE.map((x, i) => `<button type="button" data-pla="plv" data-n="${i + 1}" aria-pressed="${dr.price_lvl === i + 1}" title="${PL_PRICE_T[i]}">${x}</button>`).join("")}</div></div>
+        <div class="pld-pick"><span>Вернулся бы?</span><div class="pl-seg"><button type="button" data-pla="back" data-n="1" aria-pressed="${dr.back === true}">Да</button><button type="button" data-pla="back" data-n="0" aria-pressed="${dr.back === false}">Нет</button></div></div>
+        <div class="pld-tagpick">${PL_TAGS.map(t => `<button type="button" class="pld-tag${dr.tags.includes(t) ? " on" : ""}" data-pla="tag" data-t="${esc(t)}" aria-pressed="${dr.tags.includes(t)}">${esc(t)}</button>`).join("")}</div>
         <textarea class="pld-in" id="plCm-${esc(p.id)}" data-plcm="${esc(p.id)}" maxlength="300" placeholder="Пара слов: что понравилось, что бесит">${esc(dr.comment || "")}</textarea>
-        <div class="acts" style="margin-top:8px"><button type="button" class="pl-btn" data-pla="rsave">${rates.some(r => r.user_id === ME.id) ? "Обновить оценку" : "Сохранить оценку"}</button>${rates.some(r => r.user_id === ME.id) ? `<button type="button" class="pl-btn sm alt" data-pla="rdel">Убрать</button>` : ""}</div>`
+        <div class="acts" style="margin-top:8px"><button type="button" class="pl-btn" data-pla="rsave">${dr.id ? "Обновить оценку" : "Сохранить оценку"}</button>${dr.id ? `<button type="button" class="pl-btn sm alt" data-pla="rdel">Убрать</button>` : ""}</div>`
       : `<p class="pld-hint">Оценивают те, кто был. Отметься в походе — и сможешь поставить оценку и оценить блюда.</p><div class="acts" style="margin-top:10px"><button type="button" class="pl-btn cy" data-pla="visit">Я был здесь</button></div>`;
-    const rlist = rates.slice().sort((a, b) => String(b.updated_at).localeCompare(String(a.updated_at))).map(r => { const a = plRAvg(r);
-      return `<div class="pld-rt">${avaHTML(profOf(r.user_id), "sm")}<div class="t"><b>${esc(r.user_id === ME.id ? "Ты" : frNick(r.user_id))}</b><div class="nums">${PL_CRIT.map(([k, l]) => r[k] != null ? `<span>${l}<b>${r[k]}</b></span>` : "").join("")}</div>${r.comment ? `<p>${esc(r.comment)}</p>` : ""}</div><span class="pl-sc ${plCls(a)}">${a == null ? "—" : num1(a)}</span></div>`; }).join("");
+    const rlist = rates.slice().sort((a, b) => plRevKey(b).localeCompare(plRevKey(a))).map(r => { const a = plRAvg(r), hist = plHist(p.id, r.user_id).slice(1, 4).filter(x => plRAvg(x) != null);
+      const vis = r.visit_id && PL.visits.find(v => v.id === r.visit_id);
+      const meta = [r.price_lvl ? PL_PRICE[r.price_lvl - 1] : "", r.back === true ? "вернётся" : r.back === false ? "не вернётся" : "", vis ? "за " + plDay(vis.day) : ""].filter(Boolean).join(" · ");
+      return `<div class="pld-rt">${avaHTML(profOf(r.user_id), "sm")}<div class="t"><b>${esc(r.user_id === ME.id ? "Ты" : frNick(r.user_id))}</b>${meta ? `<small class="pld-rm">${esc(meta)}</small>` : ""}
+        <div class="nums">${PL_CRIT.map(([k, l]) => r[k] != null ? `<span>${l}<b>${r[k]}</b></span>` : "").join("")}</div>
+        ${(r.tags || []).length ? `<div class="pld-tags sm">${r.tags.map(t => `<span class="pld-tag">${esc(t)}</span>`).join("")}</div>` : ""}
+        ${r.comment ? `<p>${esc(r.comment)}</p>` : ""}
+        ${hist.length ? `<small class="pld-hist">раньше: ${hist.map(x => { const xv = x.visit_id && PL.visits.find(v => v.id === x.visit_id); return `${num1(plRAvg(x))}${xv ? ` (${esc(plDay(xv.day))})` : ""}`; }).join(", ")}${a != null && plRAvg(hist[0]) != null ? (a > plRAvg(hist[0]) + .4 ? " — стало лучше" : a < plRAvg(hist[0]) - .4 ? " — стало хуже" : "") : ""}</small>` : ""}</div><span class="pl-sc ${plCls(a)}">${a == null ? "—" : num1(a)}</span></div>`; }).join("");
     const dishes = plDishes(p.id), dRow = d => { const a = plDAvg(d.id), n = plDR(d.id).length, mine = plDR(d.id).find(r => r.user_id === ME.id);
-      return `<div class="pld-dish"><span class="t"><b>${esc(d.name)}</b><small>${n ? `${n} ${plural(n, "оценка", "оценки", "оценок")}` : "без оценок"}${d.user_id !== ME.id ? " · добавил " + esc(frNick(d.user_id)) : ""}</small></span>
-        <select data-pldr="${esc(d.id)}" aria-label="Моя оценка: ${esc(d.name)}" ${been ? "" : "disabled title=\"Сначала отметься в походе\""}><option value="">моя</option>${Array.from({length: 10}, (_, i) => `<option value="${i + 1}"${mine && +mine.score === i + 1 ? " selected" : ""}>${i + 1}</option>`).join("")}</select>
-        <span class="pl-sc ${plCls(a)}">${a == null ? "—" : num1(a)}</span>${d.user_id === ME.id || p.user_id === ME.id ? `<button type="button" class="rm" data-pla="ddel" data-d="${esc(d.id)}" aria-label="Удалить">×</button>` : ""}</div>`; };
+      const tag = hf.hit && hf.hit.d.id === d.id ? `<span class="pld-chip g sm">хит</span>` : hf.flop && hf.flop.d.id === d.id ? `<span class="pld-chip r sm">провал</span>` : "";
+      return `<div class="pld-dish"><span class="t"><b>${esc(d.name)}${tag}</b><small>${n ? `${n} ${plural(n, "оценка", "оценки", "оценок")}` : "без оценок"}${d.user_id !== ME.id ? " · добавил " + esc(frNick(d.user_id)) : ""}</small></span>
+        <span class="pl-sc ${plCls(a)}">${a == null ? "—" : num1(a)}</span>${d.user_id === ME.id || p.user_id === ME.id ? `<button type="button" class="rm" data-pla="ddel" data-d="${esc(d.id)}" aria-label="Удалить">×</button>` : ""}
+        ${been ? `<div class="pld-dten">${plTen("pldrate", d.id, mine ? +mine.score : null, true)}</div>` : ""}</div>`; };
     const food = dishes.filter(d => d.kind !== "drink"), drink = dishes.filter(d => d.kind === "drink");
     const dk = plDraftOf(p.id).dk || "food";
     return `<div class="pld" data-plpid="${esc(p.id)}">
       ${mode === "side" ? `<button type="button" class="pld-back" data-pla="back">‹ Все заведения</button>` : ""}
       <div class="pld-hero">${p.photo ? `<img alt="" src="${esc(plImg(p))}" onerror="this.remove()">` : ""}<span class="pld-kind${w ? " w" : ""}">${w ? "Хотим сходить" : esc(plKindL(p.kind))}</span><h2>${esc(p.name)}</h2><p>${esc([p.address, vs.length ? `последний поход ${plAgo(vs[0].day)}` : ""].filter(Boolean).join(" · "))}</p>
-        <span class="pld-big ${plCls(s)}"><b>${s == null ? "нет оценок" : num1(s)}</b>${s == null ? "" : `<small>${rates.length} ${plural(rates.length, "оценка", "оценки", "оценок")}</small>`}</span></div>
+        <span class="pld-big ${plCls(s)}"><b>${s == null ? "нет оценок" : num1(s)}</b>${s == null ? "" : `<small>${nR} ${plural(nR, "оценка", "оценки", "оценок")}${few ? " · мало" : ""}</small>`}</span></div>
       <div class="pld-acts">
         ${url ? `<a class="pl-btn alt" href="${esc(url)}" target="_blank" rel="noopener">${PLI.gis}2ГИС</a>` : ""}
         <button type="button" class="pl-btn" data-pla="visit">${ICON.calendar}Мы были здесь</button>
@@ -399,23 +448,30 @@
       </div>
       ${!plLL(p) ? `<div class="pld-s"><p class="pld-hint">Точки на карте нет.</p><div class="acts" style="margin-top:8px"><button type="button" class="pl-btn sm cy" data-pla="pin">Поставить точку</button></div></div>` : ""}
       ${wants.length ? `<div class="pld-s"><h4>${w ? "Хотят сходить" : "Хотят ещё"}<small>${wants.length}</small></h4><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">${avaStack(wants, 8)}<span class="pld-hint">${esc(wants.map(u => u === ME.id ? "ты" : frNick(u)).join(", "))}</span></div></div>` : ""}
-      ${w ? "" : `<div class="pld-s"><h4>Оценки<small>${rates.length ? `средняя из ${rates.length}` : "пока никто не оценил"}</small></h4><div class="pld-crit">${crit}</div></div>`}
+      ${w ? "" : `<div class="pld-s"><h4>Оценки<small>${rates.length ? `по последней оценке каждого · вкус весит вдвое` : "пока никто не оценил"}</small></h4>${summary ? `<div class="pld-sum">${summary}</div>` : ""}<div class="pld-crit">${crit}</div>${tagsH}${few ? `<p class="pld-few">Оценок пока меньше ${PL_FEW}, поэтому итог подтянут к среднему по всем местам. Без поправки было бы ${num1(raw)}.</p>` : ""}</div>`}
       <div class="pld-s"><h4>Походы<small>${vs.length}</small></h4>${vs.length ? `<div class="pld-vis">${visits}</div>` : `<p class="pld-hint">Ещё не ходили. Как сходите — жми «Мы были здесь».</p>`}</div>
-      ${w && !been ? "" : `<div class="pld-s"><h4>Моя оценка</h4>${myRate}</div>`}
+      ${w && !been ? "" : `<div class="pld-s"><h4>Моя оценка${dr.vid && myVs.length ? `<small>за ${esc(plVisLabel(myVs.find(v => v.id === dr.vid)))}</small>` : ""}</h4>${myRate}</div>`}
       ${rlist ? `<div class="pld-s"><h4>Кто как оценил<small>${rates.length}</small></h4>${rlist}</div>` : ""}
       <div class="pld-s"><h4>Блюда и напитки<small>${dishes.length}</small></h4>
         ${food.length ? `<div class="pld-dg">Еда</div>${food.map(dRow).join("")}` : ""}${drink.length ? `<div class="pld-dg">Напитки</div>${drink.map(dRow).join("")}` : ""}
         ${dishes.length ? "" : `<p class="pld-hint">Что брали? Добавь — и каждый, кто был, поставит свою оценку.</p>`}
-        <div class="pld-add"><input class="pld-in" data-pldn="${esc(p.id)}" maxlength="80" placeholder="Крылья, стаут, борщ…" enterkeyhint="done"><div class="pl-seg"><button type="button" data-pla="dk" data-k="food" aria-pressed="${dk === "food"}">Еда</button><button type="button" data-pla="dk" data-k="drink" aria-pressed="${dk === "drink"}">Пить</button></div><button type="button" class="pl-btn sm" data-pla="dadd" aria-label="Добавить">${ICON.plus}</button></div></div>
+        <div class="pld-add"><input class="pld-in" data-pldn="${esc(p.id)}" maxlength="80" placeholder="Крылья, стаут, борщ…" enterkeyhint="done"><div class="pl-seg"><button type="button" data-pla="dk" data-k="food" aria-pressed="${dk === "food"}">Еда</button><button type="button" data-pla="dk" data-k="drink" aria-pressed="${dk === "drink"}">Пить</button></div><button type="button" class="pl-btn sm" data-pla="dadd" aria-label="Добавить">${ICON.plus}</button></div>
       <div class="pld-s"><h4>Меню<small>${p.menu.length ? `${p.menu.length} фото` : ""}</small></h4><div class="pld-menu">${p.menu.map((m, i) => `<button type="button" data-pla="mopen" data-i="${i}" aria-label="Фото меню ${i + 1}"><img alt="" loading="lazy" src="${esc(publicUrl(m))}" onerror="this.remove()"></button>`).join("")}
         <label>${PLI.cam}Фото меню<input type="file" accept="image/*" multiple hidden data-plmenu="${esc(p.id)}"></label></div></div>
       <p class="pld-meta">Добавил ${esc(p.user_id === ME.id ? "ты" : frNick(p.user_id))} · ${esc(plDay(String(p.created_at).slice(0, 10)))}</p>
     </div>`;
   }
+  // черновик моей оценки — за выбранный поход (по умолчанию последний, где я был); новую оценку начинаем с прошлой
   function plDraftOf(pid){
-    if (plDraft[pid]) return plDraft[pid];
-    const r = PL && PL.rates.find(x => x.place_id === pid && x.user_id === ME.id);
-    return plDraft[pid] = r ? {interior: r.interior ?? null, price: r.price ?? null, taste: r.taste ?? null, beer: r.beer ?? null, nobeer: r.beer == null && plRAvg(r) != null, comment: r.comment || ""} : {interior: null, price: null, taste: null, beer: null, nobeer: false, comment: ""};
+    const cur = plDraft[pid]; if (cur && (!cur.vid || PL.visits.some(v => v.id === cur.vid))) return cur;
+    const myVs = plVisits(pid).filter(v => plVM(v.id).includes(ME.id));
+    return plDraftFor(pid, myVs.length ? myVs[0].id : null, cur && cur.dk);
+  }
+  function plDraftFor(pid, vid, dk){
+    const mine = plHist(pid, ME.id), r = mine.find(x => vid ? x.visit_id === vid : !x.visit_id) || null, base = r || mine[0] || null;
+    const d = {vid, id: r ? r.id : null, dk: dk || "food", comment: r ? r.comment || "" : "", price_lvl: base ? base.price_lvl ?? null : null, back: base ? base.back ?? null : null, tags: base ? [...(base.tags || [])] : []};
+    PL_CRIT.forEach(([k]) => { d[k] = base ? base[k] ?? null : null; });
+    return plDraft[pid] = d;
   }
   function plOpenSheet(id){
     if (plSheet && !plSheet.s.closed){ plSheet.id = id; plDrawSheet(); plSheet.s.el.scrollTop = 0; return; }
@@ -439,15 +495,25 @@
   // тап по цифре оценки — меняем только кнопки, без перерисовки
   function plRatePick(btn){
     const [k, n] = btn.dataset.plrate.split(":"), pid = plPidOf(btn), dr = plDraftOf(pid); if (!pid) return;
-    dr[k] = dr[k] === +n ? null : +n; if (k === "beer") dr.nobeer = false; dr.dirty = true;
-    const box = btn.parentElement, v = dr[k]; box.classList.remove("skip");
-    box.style.setProperty("--c", `var(--pl-${{g: "green", y: "gold", r: "red", n: "gold"}[plCls(v)]})`);
+    dr[k] = dr[k] === +n ? null : +n; dr.dirty = true;
+    const box = btn.parentElement, v = dr[k];
+    box.style.setProperty("--c", v == null ? "var(--pl-gold)" : plColor(v));
     box.querySelectorAll("button").forEach((b, i) => { b.className = v === i + 1 ? "on" : v != null && i + 1 < v ? "lo" : ""; });
     SND.click("soft");
+  }
+  const plSegSync = (b, on) => { b.parentElement.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b && on)); SND.click("soft"); };
+  // оценка блюда — те же 10 кнопок; тап по своей цифре ещё раз — снять
+  async function plDishRate(btn){
+    const [did, n] = btn.dataset.pldrate.split(":"), mine = plDR(did).find(r => r.user_id === ME.id), v = mine && +mine.score === +n ? null : +n;
+    const box = btn.parentElement; box.style.setProperty("--c", v == null ? "var(--pl-gold)" : plColor(v));
+    box.querySelectorAll("button").forEach((b, i) => { b.className = v === i + 1 ? "on" : v != null && i + 1 < v ? "lo" : ""; }); SND.click("soft");
+    const {error} = v ? await SB.from("place_dish_rates").upsert({dish_id: did, user_id: ME.id, score: v, updated_at: now()}, {onConflict: "dish_id,user_id"}) : await SB.from("place_dish_rates").delete().eq("dish_id", did).eq("user_id", ME.id);
+    if (error){ plFail(error); return; } await loadPlaces(true);
   }
   async function plAct(e, root){
     const t = e.target; if (!t.closest) return;
     const rb = t.closest("[data-plrate]"); if (rb){ plRatePick(rb); return; }
+    const db = t.closest("[data-pldrate]"); if (db){ plDishRate(db); return; }
     const b = t.closest("[data-pla]"); if (!b || !root.contains(b)) return;
     const pid = plPidOf(b), p = plById(pid), a = b.dataset.pla; if (!p && a !== "back") return;
     if (a === "back"){ plS.panel = null; plDrawSide(); return; }
@@ -456,7 +522,11 @@
     if (a === "edit"){ plForm(p); return; }
     if (a === "pin"){ if (plSheet) plSheet.s.close(); plMovePin(p); return; }
     if (a === "mopen"){ plLb(pid, +b.dataset.i); return; }
-    if (a === "nobeer"){ const dr = plDraftOf(pid); dr.nobeer = !dr.nobeer; if (dr.nobeer) dr.beer = null; dr.dirty = true; plRedraw(); return; }
+    if (a === "plv"){ const dr = plDraftOf(pid), n = +b.dataset.n; dr.price_lvl = dr.price_lvl === n ? null : n; dr.dirty = true; plSegSync(b, dr.price_lvl === n); return; }
+    if (a === "back"){ const dr = plDraftOf(pid), v = b.dataset.n === "1"; dr.back = dr.back === v ? null : v; dr.dirty = true; plSegSync(b, dr.back === v); return; }
+    if (a === "tag"){ const dr = plDraftOf(pid), tg = b.dataset.t, on = dr.tags.includes(tg);
+      if (!on && dr.tags.length >= 6){ toast("Хватит шести ярлыков"); return; }
+      dr.tags = on ? dr.tags.filter(x => x !== tg) : [...dr.tags, tg]; dr.dirty = true; b.classList.toggle("on", !on); b.setAttribute("aria-pressed", !on); SND.click("soft"); return; }
     if (a === "dk"){ plDraftOf(pid).dk = b.dataset.k; b.parentElement.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); return; }
     if (a === "dadd"){ plAddDish(pid, root); return; }
     b.disabled = true;
@@ -478,13 +548,14 @@
         const {error} = await SB.from("place_visits").delete().eq("id", b.dataset.v); if (error) throw error; toast("Поход удалён"); await loadPlaces(true);
       } else if (a === "rsave"){
         const dr = plDraftOf(pid), ta = root.querySelector(`[data-plcm="${CSS.escape(pid)}"]`); if (ta) dr.comment = ta.value;
-        const row = {place_id: pid, user_id: ME.id, interior: dr.interior, price: dr.price, taste: dr.taste, beer: dr.nobeer ? null : dr.beer, comment: (dr.comment || "").trim().slice(0, 300) || null, updated_at: now()};
+        const row = {place_id: pid, visit_id: dr.vid || null, user_id: ME.id, price_lvl: dr.price_lvl, back: dr.back, tags: dr.tags.slice(0, 12), comment: (dr.comment || "").trim().slice(0, 300) || null, updated_at: now()};
+        PL_CRIT.forEach(([k]) => { row[k] = dr[k]; });
         if (PL_CRIT.every(([k]) => row[k] == null)){ toast("Поставь хотя бы одну оценку"); return; }
-        const {error} = await SB.from("place_ratings").upsert(row, {onConflict: "place_id,user_id"}); if (error) throw error;
-        dr.dirty = false; toast("Оценка сохранена"); SND.click(); await loadPlaces(true);
+        const {error} = dr.id ? await SB.from("place_reviews").update(row).eq("id", dr.id).eq("user_id", ME.id) : await SB.from("place_reviews").insert(row); if (error) throw error;
+        dr.dirty = false; toast(dr.id ? "Оценка обновлена" : "Оценка сохранена"); SND.click(); delete plDraft[pid]; await loadPlaces(true); plDraftFor(pid, dr.vid, dr.dk); plRedraw();
       } else if (a === "rdel"){
-        if (!confirm("Убрать свою оценку?")) return;
-        const {error} = await SB.from("place_ratings").delete().eq("place_id", pid).eq("user_id", ME.id); if (error) throw error; delete plDraft[pid]; await loadPlaces(true);
+        const dr = plDraftOf(pid); if (!dr.id || !confirm("Убрать оценку за этот поход?")) return;
+        const {error} = await SB.from("place_reviews").delete().eq("id", dr.id).eq("user_id", ME.id); if (error) throw error; delete plDraft[pid]; await loadPlaces(true); plDraftFor(pid, dr.vid, dr.dk); plRedraw();
       } else if (a === "ddel"){
         if (!confirm("Удалить блюдо вместе с оценками?")) return;
         const {error} = await SB.from("place_dishes").delete().eq("id", b.dataset.d); if (error) throw error; await loadPlaces(true);
@@ -500,9 +571,7 @@
   }
   async function plChange(e){
     const t = e.target;
-    if (t.matches("[data-pldr]")){ const did = t.dataset.pldr, v = +t.value;
-      const {error} = v ? await SB.from("place_dish_rates").upsert({dish_id: did, user_id: ME.id, score: v, updated_at: now()}, {onConflict: "dish_id,user_id"}) : await SB.from("place_dish_rates").delete().eq("dish_id", did).eq("user_id", ME.id);
-      if (error){ plFail(error); return; } t.blur(); await loadPlaces(true); return; }
+    if (t.matches("[data-plrv]")){ const pid = t.dataset.plrv, old = plDraftOf(pid); plDraftFor(pid, t.value, old.dk); t.blur(); plRedraw(); return; }
     if (t.matches("[data-plmenu]")){ const pid = t.dataset.plmenu, fs = [...t.files].filter(f => f.type.startsWith("image/") || /\.(heic|heif|jpe?g|png|webp)$/i.test(f.name)).slice(0, 12); t.value = "";
       if (!fs.length) return; await plMenuAdd(pid, fs); }
   }
@@ -636,7 +705,8 @@
       if (t.closest("[data-plretry]")){ plErr = null; loadPlaces(true); renderPlaces(); return; }
       if ((b = t.closest("[data-plst]"))){ plS.st = b.dataset.plst; plUpd(); return; }
       if ((b = t.closest("[data-plr]"))){ plS.r = b.dataset.plr; plUpd(); return; }
-      if (t.closest("[data-plreset]")){ plS.q = ""; plS.st = plS.r = plS.k = "all"; const qi = $("plQ"); if (qi) qi.value = ""; plUpd(); return; }
+      if ((b = t.closest("[data-plpr]"))){ plS.pr = b.dataset.plpr; plUpd(); return; }
+      if (t.closest("[data-plreset]")){ plS.q = ""; plS.st = plS.r = plS.k = plS.pr = plS.tag = "all"; const qi = $("plQ"); if (qi) qi.value = ""; plUpd(); return; }
       if ((b = t.closest("[data-plo]"))){ plSelect(b.dataset.plo, {fly: plS.view === "map", open: true}); return; }
       if ((b = t.closest("[data-plcal]"))){ const d = +b.dataset.plcal; if (!d){ plCalY = new Date().getFullYear(); plCalM = new Date().getMonth(); } else { plCalM += d; if (plCalM < 0){ plCalM = 11; plCalY--; } if (plCalM > 11){ plCalM = 0; plCalY++; } } plDrawCal(); return; }
       if ((b = t.closest("[data-plday]"))){ plDaySheet(b.dataset.plday); return; }
@@ -646,10 +716,44 @@
       const side = $("plSide"); if (side && side.contains(t)) plAct(e, side);
     });
     m.addEventListener("input", e => { if (e.target.id === "plQ"){ plS.q = e.target.value; clearTimeout(plWire.t); plWire.t = setTimeout(plUpd, 120); } else plInput(e); });
-    m.addEventListener("change", e => { const t = e.target; if (t.id === "plK"){ plS.k = t.value; plUpd(); } else if (t.id === "plSort"){ plS.sort = t.value; plUpd(); } else plChange(e); });
+    m.addEventListener("change", e => { const t = e.target; if (t.id === "plK"){ plS.k = t.value; plUpd(); } else if (t.id === "plSort"){ plS.sort = t.value; plUpd(); } else if (t.id === "plTag"){ plS.tag = t.value; plUpd(); } else plChange(e); });
     m.addEventListener("keydown", e => { if (e.key === "Enter" && e.target.matches("[data-pldn]")){ e.preventDefault(); plAddDish(e.target.dataset.pldn, m); } });
   }
-  function plUpd(){ plDrawSide(); if (plS.view === "map") plDrawMarkers(); else plDrawCal(); }
+  // ---- 5.4: топы компании и расхождения ----
+  function plDrawTop(){
+    const el = $("plTop"); if (!el || !PL) return;
+    const been = plFiltered().filter(p => !plIsWant(p)), rated = been.filter(p => plN(p.id) > 0);
+    const row = (p, val, sub, cls) => `<button type="button" class="pl-tr" data-plo="${esc(p.id)}"><span class="pl-th">${p.photo ? `<img alt="" loading="lazy" src="${esc(plImg(p))}" onerror="this.remove()">` : ""}${plKindI(p.kind)}</span><span class="t"><b>${esc(p.name)}</b><small>${sub}</small></span><span class="pl-sc ${cls || plCls(val)}">${val == null ? "—" : num1(val)}</span></button>`;
+    const card = (title, list, note) => `<div class="pl-tc"><h3>${title}</h3>${list.length ? list.join("") : `<p class="pld-hint">${note || "Пока не из чего выбрать — нужны оценки."}</p>`}</div>`;
+    const nSub = p => { const n = plN(p.id); return `${plKindL(p.kind)} · ${n} ${plural(n, "оценка", "оценки", "оценок")}${plFew(p.id) ? " · мало" : ""}`; };
+    const byCrit = (k, dir = -1, take = 3) => been.map(p => ({p, v: plCritRank(p.id, k), c: plCrit(p.id, k)})).filter(x => x.v != null).sort((a, b) => dir * (a.v - b.v)).slice(0, take)
+      .map(x => row(x.p, x.c.avg, `${plKindL(x.p.kind)} · ${x.c.n} ${plural(x.c.n, "оценка", "оценки", "оценок")}${x.c.n < PL_FEW ? " · мало" : ""}`));
+    const top = rated.slice().sort((a, b) => plScore(b.id) - plScore(a.id));
+    const kinds = PL_KIND.map(([k, l]) => { const best = top.find(p => p.kind === k); return best ? row(best, plScore(best.id), `${l} · ${plN(best.id)} ${plural(plN(best.id), "оценка", "оценки", "оценок")}`) : ""; }).filter(Boolean);
+    const backs = been.map(p => ({p, b: plBack(p.id)})).filter(x => x.b && x.b.n >= 2).sort((a, b) => b.b.yes / b.b.n - a.b.yes / a.b.n || b.b.n - a.b.n).slice(0, 3)
+      .map(x => row(x.p, null, `вернутся ${x.b.yes} из ${x.b.n}`, x.b.yes / x.b.n >= .6 ? "g" : x.b.yes / x.b.n < .4 ? "r" : "y").replace(">—</span>", `>${Math.round(x.b.yes / x.b.n * 100)}%</span>`));
+    const shame = rated.length >= 2 ? rated.slice().sort((a, b) => plScore(a.id) - plScore(b.id)).slice(0, 3).filter(p => plScore(p.id) < 6.5).map(p => row(p, plScore(p.id), nSub(p))) : [];
+    const shameIds = new Set(rated.slice().sort((a, b) => plScore(a.id) - plScore(b.id)).slice(0, 3).filter(p => plScore(p.id) < 6.5).map(p => p.id));
+    const badSvc = been.map(p => ({p, c: plCrit(p.id, "service")})).filter(x => x.c && x.c.avg < 5 && !shameIds.has(x.p.id)).sort((a, b) => a.c.avg - b.c.avg).slice(0, 2)
+      .map(x => row(x.p, x.c.avg, `хамят и тормозят · обслуживание ${num1(x.c.avg)}`));
+    // расхождения: где ваши оценки разошлись сильнее всего
+    const spread = been.map(p => { const rs = plRates(p.id).map(r => ({u: r.user_id, v: plRAvg(r)})).filter(x => x.v != null).sort((a, b) => b.v - a.v); return rs.length >= 2 ? {p, hi: rs[0], lo: rs[rs.length - 1], d: rs[0].v - rs[rs.length - 1].v} : null; })
+      .filter(x => x && x.d >= 1.5).sort((a, b) => b.d - a.d).slice(0, 5);
+    const nm = u => u === ME.id ? "ты" : frNick(u);
+    el.innerHTML = `<div class="pl-tg">
+      ${card(`${ICON.trophy} Лучшие места`, top.slice(0, 5).map(p => row(p, plScore(p.id), nSub(p))))}
+      ${card("Лучшие по типам", kinds)}
+      ${card("Лучшая кухня", byCrit("taste"))}
+      ${card("Лучший алкоголь", byCrit("alco"))}
+      ${card("Лучшее обслуживание", byCrit("service"))}
+      ${card("Лучшая атмосфера", byCrit("vibe"))}
+      ${card("Стоит своих денег", byCrit("value"))}
+      ${card("Сюда вернутся", backs, "Нужно хотя бы два ответа «Вернулся бы?»")}
+      ${card(`${ICON.skull} Позорная доска`, [...shame, ...badSvc], "Пока никто не опозорился")}
+      <div class="pl-tc wide"><h3>Расхождения<small>где вы оценили сильнее всего по-разному</small></h3>${spread.length ? spread.map(x => `<button type="button" class="pl-tr" data-plo="${esc(x.p.id)}"><span class="pl-th">${x.p.photo ? `<img alt="" loading="lazy" src="${esc(plImg(x.p))}" onerror="this.remove()">` : ""}${plKindI(x.p.kind)}</span><span class="t"><b>${esc(x.p.name)}</b><small>${esc(nm(x.hi.u))} — <em class="${plCls(x.hi.v)}">${num1(x.hi.v)}</em>, ${esc(nm(x.lo.u))} — <em class="${plCls(x.lo.v)}">${num1(x.lo.v)}</em></small></span><span class="pl-sc y">±${num1(x.d)}</span></button>`).join("") : `<p class="pld-hint">Пока все сходятся во мнениях. Скучно.</p>`}</div>
+    </div>`;
+  }
+  function plUpd(){ plDrawSide(); if (plS.view === "map") plDrawMarkers(); else if (plS.view === "top") plDrawTop(); else plDrawCal(); }
   document.addEventListener("keydown", e => { if (e.key === "Escape" && plPlacing && !sheets.length){ e.preventDefault(); const c = plPlacing.cancel; plStopPlacing(); c && c(); } });
   window.addEventListener("hashchange", () => { if (route !== "places"){ plStopPlacing(); if (plSheet) plSheet.s.close(); } });
   document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-plgo]"); if (!b) return; e.preventDefault(); go("place:" + b.dataset.plgo); });
@@ -662,7 +766,7 @@
     const lastV = PL.visits.filter(v => plById(v.place_id) && String(v.day).slice(0, 10) <= today()).sort((a, b) => String(b.day).localeCompare(String(a.day)) || String(b.created_at).localeCompare(String(a.created_at)))[0];
     const p = lastV && plById(lastV.place_id), s = p ? plScore(p.id) : null, mm = lastV ? plVM(lastV.id) : [];
     const last = p ? `<button class="plc-last" data-plgo="${esc(p.id)}" aria-label="Открыть ${esc(p.name)}">${p.photo ? `<img alt="" loading="lazy" src="${esc(plImg(p))}" onerror="this.remove()">` : `<span class="map"></span>`}<span class="k">Последний поход · ${esc(plKindL(p.kind))}</span><b>${esc(p.name)}</b><small>${esc(plAgo(lastV.day))}${mm.length ? ` · ${mm.length} ${plural(mm.length, "человек", "человека", "человек")}` : ""}</small>${mm.length ? avaStack(mm, 6) : ""}<span class="sc ${plCls(s)}">${s == null ? "без оценки" : num1(s)}</span></button>`
-      : `<p class="a-sub" style="margin:0 0 10px;font-size:13px">Отмечайте на карте, где были, и ставьте оценки: интерьер, цены, вкус, алкоголь.</p>`;
+      : `<p class="a-sub" style="margin:0 0 10px;font-size:13px">Отмечайте на карте, где были, и ставьте оценки: вкус, обслуживание, атмосфера, цена/качество, алкоголь.</p>`;
     const wl = want.sort((a, b) => plWants(b.id).length - plWants(a.id).length).slice(0, 3)
       .map(w => { const n = plWants(w.id).length; return `<button class="plc-want" data-plgo="${esc(w.id)}"><i></i><span>${esc(w.name)}</span><small>${n ? `хотят ${n}` : "хотим"}</small></button>`; }).join("");
     return `<div class="fb-card pl-card" id="plCard">${head}

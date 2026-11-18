@@ -27,8 +27,15 @@ function fixtures(nItemsFriend) {
     slop_games: [{id: "g1", user_id: UID, title: "Lethal Company", created_at: now, genres: [], screenshots: []}],
     slop_plans: [{id: "sp1", game_id: "g1", user_id: FUID, day: "2026-12-01", created_at: now}], slop_plan_members: [], slop_tiers: [{game_id: "g1", tier: 0, updated_by: FUID, updated_at: now}],
     tierlists: [{id: "t1", user_id: UID, title: "Лучшие шутеры", tiers: [], pool: [], created_at: now}], tierlist_likes: [{tierlist_id: "t1", user_id: FUID, created_at: now}],
-    places: [{id: "pl1", user_id: FUID, name: "Тамерлан", created_at: now}], place_visits: [], place_visit_members: [],
-    place_ratings: [{place_id: "pl1", user_id: FUID, taste: 5, updated_at: now}], place_dishes: [], place_dish_rates: [], place_wants: [], items: [{id: "m1", user_id: UID, data: {title: "Моя игра", kind: "game", status: "playing", added: now}}],
+    places: [{id: "pl1", user_id: FUID, name: "Тамерлан", kind: "bar", created_at: now, menu: []}, {id: "pl2", user_id: UID, name: "Кофе Шоп", kind: "coffee", created_at: now, menu: []}],
+    place_visits: [{id: "v1", place_id: "pl1", user_id: FUID, day: "2026-11-01", created_at: now}, {id: "v2", place_id: "pl1", user_id: FUID, day: "2026-11-15", created_at: now}, {id: "v3", place_id: "pl2", user_id: UID, day: "2026-11-10", created_at: now}],
+    place_visit_members: [{visit_id: "v1", user_id: FUID}, {visit_id: "v2", user_id: FUID}, {visit_id: "v2", user_id: UID}, {visit_id: "v3", user_id: UID}, {visit_id: "v3", user_id: FUID}],
+    place_reviews: [{id: "r1", place_id: "pl1", visit_id: "v1", user_id: FUID, taste: 9, service: 8, vibe: 8, value: 8, alco: 9, price_lvl: 2, back: true, tags: ["Уютно"], comment: "Было топ", created_at: "2026-11-01T10:00:00Z", updated_at: now},
+      {id: "r2", place_id: "pl1", visit_id: "v2", user_id: FUID, taste: 4, service: 3, vibe: 6, value: 5, price_lvl: 2, back: false, tags: ["Долго ждали", "Хамят"], comment: "Испортились", created_at: now, updated_at: now},
+      {id: "r3", place_id: "pl1", visit_id: "v2", user_id: UID, taste: 9, service: 9, vibe: 9, value: 9, price_lvl: 3, back: true, tags: ["Уютно"], created_at: now, updated_at: now},
+      {id: "r4", place_id: "pl2", visit_id: "v3", user_id: FUID, taste: 10, service: 10, vibe: 9, value: 7, price_lvl: 1, back: true, tags: [], created_at: now, updated_at: now}],
+    place_dishes: [{id: "d1", place_id: "pl1", user_id: FUID, name: "Крылья", kind: "food", created_at: now}, {id: "d2", place_id: "pl1", user_id: FUID, name: "Борщ", kind: "food", created_at: now}],
+    place_dish_rates: [{dish_id: "d1", user_id: FUID, score: 9, updated_at: now}, {dish_id: "d2", user_id: FUID, score: 3, updated_at: now}], place_wants: [], items: [{id: "m1", user_id: UID, data: {title: "Моя игра", kind: "game", status: "playing", added: now}}],
   };
 }
 const routes = ["#home", "#games", "#games-future", "#kino", "#kino-future", "#read", "#slop", "#places", "#people", "#more", "#calendar", "#vacation", "#patch", "#user:" + FUID];
@@ -77,6 +84,22 @@ async function run() {
     if (process.env.DEBUG) console.log(feed);
     const jump = await p.evaluate(async () => { const b = document.createElement("button"); b.dataset.actref = "place:pl1"; document.body.appendChild(b); b.click(); b.remove(); await new Promise(r => setTimeout(r, 500)); return location.hash; });
     if (!/place/.test(jump)) fails.push("живая лента: клик по заведению не открыл его (" + jump + ")");
+    // заведения 5.4: подсчёт, топы, форма оценки
+    const pl = await p.evaluate(async () => { location.hash = "#places"; await new Promise(r => setTimeout(r, 600));
+      const out = {score: num1(plScore("pl1")), raw: num1(plRaw("pl1")), few: plFew("pl1"), back: plBack("pl1"), price: plPrice("pl1"), hit: (plHitFlop("pl1").hit || {}).d?.name, flop: (plHitFlop("pl1").flop || {}).d?.name, hist: plHist("pl1", "00000000-0000-0000-0000-000000000002").length};
+      plS.view = "top"; renderPlaces(); await new Promise(r => setTimeout(r, 300)); out.top = ($("plTop") || {}).innerText || "";
+      plOpenSheet("pl1"); await new Promise(r => setTimeout(r, 400)); const sh = document.querySelector(".pl-sh");
+      out.sheet = sh ? sh.innerText : ""; const before = window.__SBLOG.length;
+      sh.querySelector('[data-plrate="service:7"]').click(); sh.querySelector('[data-pla="tag"][data-t="Громко"]').click(); sh.querySelector('[data-pla="rsave"]').click(); await new Promise(r => setTimeout(r, 400));
+      out.saved = window.__SBLOG.slice(before).some(x => x.name === "place_reviews" && (x.ops.includes("update") || x.ops.includes("insert")));
+      const db = sh.querySelector('[data-pldrate="d1:8"]'); if (db){ db.click(); await new Promise(r => setTimeout(r, 300)); out.dish = window.__SBLOG.slice(before).some(x => x.name === "place_dish_rates"); }
+      return out; });
+    if (process.env.DEBUG) console.log(JSON.stringify({...pl, top: pl.top.slice(0, 600), sheet: pl.sheet.slice(0, 900)}, null, 1));
+    if (!pl.saved) fails.push("заведения: оценка не сохранилась");
+    if (!pl.dish) fails.push("заведения: оценка блюда не сохранилась");
+    if (pl.hit !== "Крылья" || pl.flop !== "Борщ") fails.push("заведения: хит/провал посчитаны неверно");
+    if (!/Расхождения/i.test(pl.top) || !/Позорная доска/i.test(pl.top)) fails.push("заведения: нет топов");
+    await p.evaluate(() => { document.querySelectorAll(".sh-wrap").forEach(x => x.remove()); plS.view = "map"; });
     for (const r of routes) { await p.evaluate(h => { location.hash = h; }, r); await p.waitForTimeout(400); }
     const fr = await p.evaluate(fid => { try { return typeof frItems === "function" ? frItems(fid).length : -1; } catch (e) { return -2; } }, FUID);
     if (fr !== 1500) fails.push(`полка друга: загружено ${fr} из 1500 записей`);

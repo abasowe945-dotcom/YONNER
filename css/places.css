@@ -327,3 +327,51 @@ textarea.pld-in{resize:vertical;min-height:60px}
 .pl-mapw .maplibregl-ctrl-attrib.maplibregl-compact{background:rgba(5,12,24,.8)!important}
 @media (max-width:560px){.pl-mapw .maplibregl-ctrl-bottom-right{bottom:0}}
 @media (prefers-reduced-motion:reduce){#wPlaces *,.pl-sh *{animation:none!important;transition:none!important}.pl-world.anim{transition:none!important}}
+/* ===== 5.4: новая система оценок ===== */
+.pld-pick{grid-template-columns:108px minmax(0,1fr)}
+.pld-pick sup,.pld-crit sup{font:800 9px/1 var(--pl-mono);color:var(--pl-gold);margin-left:2px}
+.pld-pick .pl-seg{justify-self:start}
+.pld-rv{display:flex;align-items:center;gap:10px;margin:0 0 10px;font:600 13px/1.2 var(--ios);color:#c7d2e3}
+.pld-sum{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.pld-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);font:700 11.5px/1.2 var(--ios);color:#e6edf7}
+.pld-chip.g{border-color:color-mix(in srgb,var(--pl-green) 45%,transparent);color:var(--pl-green)}
+.pld-chip.r{border-color:color-mix(in srgb,var(--pl-red) 45%,transparent);color:var(--pl-red)}
+.pld-chip.sm{padding:2px 5px;font-size:10px;margin-left:6px;vertical-align:middle;text-transform:uppercase;letter-spacing:.06em}
+.pld-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+.pld-tags.sm{margin-top:6px}
+.pld-tag{display:inline-flex;align-items:center;gap:5px;padding:5px 9px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:#c7d2e3;font:600 12px/1.2 var(--ios)}
+.pld-tags.sm .pld-tag{padding:3px 7px;font-size:11px}
+.pld-tag b{font:800 10px/1 var(--pl-mono);color:var(--pl-gold)}
+.pld-tagpick{display:flex;flex-wrap:wrap;gap:5px;margin:4px 0 10px}
+.pld-tagpick .pld-tag{cursor:pointer}
+.pld-tagpick .pld-tag.on{background:var(--pl-gold);border-color:var(--pl-gold);color:#141002}
+.pld-rm{display:block;color:var(--pl-dim);font-size:11.5px;margin-top:2px}
+.pld-hist{display:block;margin-top:5px;color:var(--pl-dim);font-size:11.5px}
+.pld-dish{grid-template-columns:minmax(0,1fr) auto auto}
+.pld-dten{grid-column:1 / -1;margin-top:4px}
+.pld-ten.sm button{height:26px;font-size:11.5px}
+.pl-sc.few{opacity:.8;outline:1px dashed rgba(255,255,255,.35);outline-offset:2px}
+.pl-li .pl-hit{color:var(--pl-green)}
+.pl-mk-n small{display:block;font-size:10px;font-weight:600;color:var(--pl-green)}
+/* топы */
+.pl-top{background:var(--pl-panel);border:1px solid var(--pl-line);padding:14px;min-height:520px}
+.pl-tg{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.pl-tc{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);padding:12px;display:flex;flex-direction:column;gap:6px}
+.pl-tc.wide{grid-column:1 / -1}
+.pl-tc h3{display:flex;align-items:center;gap:8px;margin:0 0 4px;font:800 11px/1.2 var(--pl-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--pl-gold)}
+.pl-tc h3 svg{width:15px;height:15px}
+.pl-tc h3 small{color:var(--pl-dim);font-weight:600;letter-spacing:.04em;text-transform:none;font-family:var(--ios)}
+.pl-tr{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:10px;align-items:center;width:100%;text-align:left;padding:5px;border:1px solid transparent;background:rgba(0,0,0,.18);color:inherit;cursor:pointer}
+.pl-tr:hover{border-color:var(--pl-line);background:rgba(240,194,75,.06)}
+.pl-tr .pl-th{width:44px;height:44px}
+.pl-tr .t{min-width:0}
+.pl-tr .t b{display:block;font:700 14px/1.2 var(--ios);color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pl-tr .t small{display:block;margin-top:3px;font:500 12px/1.3 var(--ios);color:var(--pl-dim)}
+.pl-tr .t small em{font-style:normal;font-weight:800}
+.pl-tr .t small em.g{color:var(--pl-green)}.pl-tr .t small em.y{color:var(--pl-gold)}.pl-tr .t small em.r{color:var(--pl-red)}
+.pl-tr .pl-sc{font-size:14px;min-width:42px;padding:6px}
+@media (min-width:901px){.pl-body > .pl-top{position:sticky;top:78px;max-height:calc(100vh - 96px);overflow:auto}}
+@media (max-width:640px){.pld-pick{grid-template-columns:1fr;gap:6px}.pl-tg{grid-template-columns:1fr}}
+.pld-crit,.pl-panel .pld-crit{grid-template-columns:112px minmax(0,1fr) 36px}
+.pld-crit span{white-space:nowrap}
+.pld-few{margin:8px 0 0;font:500 12px/1.35 var(--ios);color:var(--pl-dim)}

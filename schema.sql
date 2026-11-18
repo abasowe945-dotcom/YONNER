@@ -964,3 +964,45 @@ begin
 end $$;
 drop trigger if exists client_errors_gc on public.client_errors;
 create trigger client_errors_gc after insert on public.client_errors for each statement execute function public.client_errors_gc();
+
+-- ===== 5.4: оценки заведений за каждый поход =====
+-- вкус (в итоге весит вдвое), обслуживание, атмосфера, цена/качество, алкоголь — каждую можно пропустить;
+-- чек ₽/₽₽/₽₽₽, «вернулся бы?», ярлыки и пара слов. Старая place_ratings остаётся как была (не трогаем).
+create table if not exists public.place_reviews (
+  id         uuid primary key default gen_random_uuid(),
+  place_id   uuid not null references public.places (id) on delete cascade,
+  visit_id   uuid references public.place_visits (id) on delete set null,
+  user_id    uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  taste      smallint check (taste is null or taste between 1 and 10),
+  service    smallint check (service is null or service between 1 and 10),
+  vibe       smallint check (vibe is null or vibe between 1 and 10),
+  value      smallint check (value is null or value between 1 and 10),
+  alco       smallint check (alco is null or alco between 1 and 10),
+  price_lvl  smallint check (price_lvl is null or price_lvl between 1 and 3),
+  back       boolean,
+  tags       text[] not null default '{}' check (cardinality(tags) <= 12),
+  comment    text check (comment is null or char_length(comment) <= 300),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create index if not exists place_reviews_place_idx on public.place_reviews (place_id);
+create unique index if not exists place_reviews_visit_user_uq on public.place_reviews (visit_id, user_id) where visit_id is not null;
+alter table public.place_reviews enable row level security;
+drop policy if exists prv_select on public.place_reviews;
+drop policy if exists prv_insert on public.place_reviews;
+drop policy if exists prv_update on public.place_reviews;
+drop policy if exists prv_delete on public.place_reviews;
+create policy prv_select on public.place_reviews for select to authenticated using (true);
+create policy prv_insert on public.place_reviews for insert to authenticated with check ((select auth.uid()) = user_id);
+create policy prv_update on public.place_reviews for update to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy prv_delete on public.place_reviews for delete to authenticated using ((select auth.uid()) = user_id);
+do $$ begin alter publication supabase_realtime add table public.place_reviews; exception when duplicate_object then null; end $$;
+
+-- перенос старых оценок: интерьер → атмосфера, цены → цена/качество, пиво → алкоголь; привязка к последнему походу человека
+insert into public.place_reviews (place_id, visit_id, user_id, taste, vibe, value, alco, comment, created_at, updated_at)
+select r.place_id,
+  (select v.id from public.place_visits v join public.place_visit_members m on m.visit_id = v.id
+    where v.place_id = r.place_id and m.user_id = r.user_id order by v.day desc nulls last, v.created_at desc limit 1),
+  r.user_id, r.taste, r.interior, r.price, r.beer, r.comment, r.updated_at, r.updated_at
+from public.place_ratings r
+where not exists (select 1 from public.place_reviews x where x.place_id = r.place_id and x.user_id = r.user_id);
