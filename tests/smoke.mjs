@@ -4,6 +4,7 @@ import fs from "node:fs"; import path from "node:path"; import {fileURLToPath} f
 const require = createRequire(import.meta.url);
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 let pw; try { pw = require("playwright"); } catch { pw = require(process.env.PW_PATH || "playwright-core"); }
+const fs_index = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
 const ORIGIN = "https://nexus.test", BASE = ORIGIN + "/YONNER/";
 const MIME = {".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".webmanifest": "application/manifest+json", ".png": "image/png", ".webp": "image/webp"};
 const UID = "00000000-0000-0000-0000-000000000001", FUID = "00000000-0000-0000-0000-000000000002";
@@ -42,6 +43,8 @@ async function run() {
   // 2. вошедший: обходим все разделы
   { const sess = {user: {id: UID, email: "t@t.t"}, access_token: "x"};
     const {p, ctx, errs} = await page(sess, fixtures(1500), "user");
+    const ver = await p.evaluate(() => NEXUS_VER), want = (/js\/01-core\.js\?v=([^"&]+)/.exec(fs_index) || [])[1];
+    if (ver !== want) fails.push(`версия сайта не считалась: ${ver} вместо ${want}`);
     // при входе на полку игр не должно грузиться всё сразу
     const early = await p.evaluate(() => window.__SBLOG.length); console.log("запросов при входе (первые 1.5 с):", early);
     if (early > 30) fails.push(`при входе сразу ${early} запросов — ленивая загрузка не работает`);

@@ -1,0 +1,19 @@
+name: Автотест NEXUS
+on:
+  push:
+  pull_request:
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Синтаксис всех скриптов
+        run: for f in js/*.js sw.js; do node --check "$f"; done
+      - name: Ставлю браузер
+        run: npm i --no-save playwright@1 && npx playwright install --with-deps chromium
+      - name: Открываю все разделы на подменной базе
+        run: node tests/smoke.mjs
