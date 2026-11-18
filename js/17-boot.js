@@ -1,3 +1,12 @@
+  // ================= догрузка раздела, если зашли в него раньше фоновой загрузки =================
+  window.addEventListener("hashchange", () => { if (!SB || !ME) return;
+    const r = route, all = r === "people";
+    if ((all || r === "home" || r === "user") && !WALL) loadWall();
+    if ((all || r === "home" || r === "user" || r === "vacation") && !VAC) loadVac();
+    if ((all || r === "slop") && !SL) loadSlop();
+    if ((all || r === "places") && !PL) loadPlaces();
+  });
+
   // ================= service worker и «вышла новая версия» =================
   if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost"))
     navigator.serviceWorker.register("sw.js").catch(e => { if (!/Security|not supported|denied/i.test(String(e && (e.name + e.message)))) logErr("service worker", e); });

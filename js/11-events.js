@@ -46,11 +46,13 @@
   function subscribeEvents(){
     if (!SB || !ME) return;
     SB.channel("nexus-events")
-      .on("postgres_changes", {event: "*", schema: "public", table: "events"}, () => loadEvents(true))
+      .on("postgres_changes", {event: "*", schema: "public", table: "events"}, () => rtLater("ev", () => loadEvents(true), 300))
       .on("postgres_changes", {event: "*", schema: "public", table: "event_members"}, p => { const n = p.new;
-        loadEvents(true).then(() => { if (p.eventType === "INSERT" && n && n.user_id === ME.id && n.status === "invited" && n.invited_by !== ME.id) notifyInvite(n); }); })
-      .on("postgres_changes", {event: "*", schema: "public", table: "event_posts"}, () => loadEvents(true))
-      .on("postgres_changes", {event: "*", schema: "public", table: "event_post_likes"}, () => loadEvents(true))
+        const after = () => { if (p.eventType === "INSERT" && n && n.user_id === ME.id && n.status === "invited" && n.invited_by !== ME.id) notifyInvite(n); };
+        if (EV && rtPatch(EV.members, p, ["event_id", "user_id"]) && (!n || evById(n.event_id))){ rtLater("evr", () => { checkInvites(); render(); }); after(); }
+        else loadEvents(true).then(after); })
+      .on("postgres_changes", {event: "*", schema: "public", table: "event_posts"}, p => { if (EV && rtPatch(EV.posts, p, ["id"])) rtLater("evr", () => render()); else rtLater("ev", () => loadEvents(true), 300); })
+      .on("postgres_changes", {event: "*", schema: "public", table: "event_post_likes"}, p => { if (EV && rtPatch(EV.likes, p, ["post_id", "user_id"])) rtLater("evr", () => render()); else rtLater("ev", () => loadEvents(true), 300); })
       .on("postgres_changes", {event: "INSERT", schema: "public", table: "profiles"}, p => { const n = p.new; if (!n || n.user_id === ME.id) return;
         toast(`${n.nick || "Кто-то новый"} присоединился к NEXUS`); SND.click(); sysNote("NEXUS · новенький", `${n.nick || "Кто-то"} теперь на сайте`, () => go("user:" + n.user_id)); loadFriends(true); })
       .subscribe();

@@ -106,6 +106,20 @@
     }
     return {data: out, error: null};
   }
+  // realtime: вписываем пришедшую строку прямо в загруженный список, вместо того чтобы перекачивать всю таблицу.
+  // Возвращает false, если вписать нельзя (список ещё не загружен или в событии нет ключа) — тогда зовём полную загрузку.
+  function rtPatch(arr, p, keys, {norm, front = false} = {}){
+    if (!Array.isArray(arr) || !p) return false;
+    const pick = p.eventType === "DELETE" ? p.old : p.new;
+    if (!pick || keys.some(k => pick[k] === undefined || pick[k] === null)) return false;
+    const i = arr.findIndex(r => keys.every(k => r[k] === pick[k]));
+    if (p.eventType === "DELETE"){ if (i >= 0) arr.splice(i, 1); return true; }
+    const row = norm ? norm(p.new) : p.new;
+    if (i >= 0) arr[i] = {...arr[i], ...row}; else if (front) arr.unshift(row); else arr.push(row);
+    return true;
+  }
+  // откладываем перерисовку, чтобы пачка событий подряд дала одну перерисовку
+  const rtLater = (key, fn, ms = 250) => { clearTimeout(rtLater[key]); rtLater[key] = setTimeout(fn, ms); };
   window.addEventListener("error", ev => logErr("window", ev.error || ev.message));
   window.addEventListener("unhandledrejection", ev => logErr("promise", ev.reason));
   const blobUrl = id => publicUrl(id);

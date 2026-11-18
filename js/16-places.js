@@ -94,11 +94,13 @@
     })();
     return plLoading;
   }
+  const PL_RT = {place_visit_members: ["vm", ["visit_id", "user_id"]], place_ratings: ["rates", ["place_id", "user_id"]], place_dish_rates: ["drates", ["dish_id", "user_id"]], place_wants: ["wants", ["place_id", "user_id"]]};
   function subscribePlaces(){
     if (!SB || !ME) return;
     let ch = SB.channel("nexus-places");
     PL_TABLES.forEach(t => { ch = ch.on("postgres_changes", {event: "*", schema: "public", table: t}, p => {
-      clearTimeout(plSubT); plSubT = setTimeout(() => loadPlaces(true), 350);
+      const pp = PL_RT[t]; if (pp && PL && rtPatch(PL[pp[0]], p, pp[1])) rtLater("pl", plRefresh, 200);
+      else { clearTimeout(plSubT); plSubT = setTimeout(() => loadPlaces(true), 350); }
       const n = p.new; if (p.eventType !== "INSERT" || !n || n.user_id === ME.id || route === "places") return;
       if (t === "places") toast(`${frNick(n.user_id)} добавил заведение: ${n.name}`);
     }); });

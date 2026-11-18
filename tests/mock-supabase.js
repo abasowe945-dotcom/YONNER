@@ -29,7 +29,10 @@
     }
     return p;
   }
-  const chan = () => { const c = {on: () => c, subscribe: () => c, unsubscribe: () => {}}; return c; };
+  // realtime: тест может вызвать window.__RTEMIT(table, payload)
+  const RT = (window.__RT = window.__RT || []);
+  window.__RTEMIT = (table, p) => RT.filter(h => h.table === table && (h.event === "*" || h.event === p.eventType)).forEach(h => h.fn(p));
+  const chan = () => { const c = {on: (_, f, fn) => { RT.push({table: f.table, event: f.event, fn}); return c; }, subscribe: () => c, unsubscribe: () => {}}; return c; };
   window.supabase = {
     createClient() {
       const s = window.__SESSION || null;

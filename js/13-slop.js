@@ -57,7 +57,10 @@
     if (!SB || !ME) return;
     const kick = () => { clearTimeout(slSubT); slSubT = setTimeout(() => loadSlop(), 300); };
     let ch = SB.channel("nexus-slop");
-    ["slop_games", "slop_marks", "slop_status", "slop_comments", "slop_plans", "slop_plan_members", "slop_tiers", "slop_polls", "slop_poll_votes"].forEach(t => { ch = ch.on("postgres_changes", {event: "*", schema: "public", table: t}, p => { kick();
+    // мелкие таблицы (отметки, комменты, голоса) вписываем на месте, остальное — полная загрузка
+    const SLP = {slop_marks: ["marks", ["game_id", "user_id", "kind"]], slop_status: ["status", ["game_id", "user_id"]], slop_comments: ["comments", ["id"]], slop_plan_members: ["pmembers", ["plan_id", "user_id"]], slop_tiers: ["tiers", ["game_id"]], slop_poll_votes: ["pvotes", ["poll_id", "user_id"]]};
+    ["slop_games", "slop_marks", "slop_status", "slop_comments", "slop_plans", "slop_plan_members", "slop_tiers", "slop_polls", "slop_poll_votes"].forEach(t => { ch = ch.on("postgres_changes", {event: "*", schema: "public", table: t}, p => {
+      const sp = SLP[t]; if (sp && SL && rtPatch(SL[sp[0]], p, sp[1])) rtLater("sl", slRefresh, 200); else kick();
       if (t === "slop_games" && p.eventType === "INSERT" && p.new && p.new.user_id !== ME.id && route !== "slop") toast(`${frNick(p.new.user_id)} добавил в СЛОП: ${p.new.title}`); }); });
     ch.subscribe();
   }
@@ -939,12 +942,13 @@
   function subscribeWall(){
     if (!SB || !ME) return;
     const kick = () => { clearTimeout(wSubT); wSubT = setTimeout(() => loadWall(true), 250); };
+    const wPatch = (arr, p, keys) => { if (rtPatch(arr, p, keys)) rtLater("wall", () => { if (route === "people") renderPeople(); }); else kick(); };
     SB.channel("nexus-wall")
       .on("postgres_changes", {event: "*", schema: "public", table: "wall_posts"}, p => { kick(); const n = p.new; if (p.eventType === "INSERT" && n && n.user_id !== ME.id && route !== "people") toast(`${frNick(n.user_id)} написал на стене`); })
-      .on("postgres_changes", {event: "*", schema: "public", table: "wall_comments"}, kick)
-      .on("postgres_changes", {event: "*", schema: "public", table: "wall_reactions"}, kick)
-      .on("postgres_changes", {event: "*", schema: "public", table: "wall_comment_likes"}, kick)
-      .on("postgres_changes", {event: "*", schema: "public", table: "showcases"}, () => { clearTimeout(subscribeWall.t); subscribeWall.t = setTimeout(() => loadFriends(true), 400); })
+      .on("postgres_changes", {event: "*", schema: "public", table: "wall_comments"}, p => wPatch(WALL && WALL.comments, p, ["id"]))
+      .on("postgres_changes", {event: "*", schema: "public", table: "wall_reactions"}, p => wPatch(WALL && WALL.reacts, p, ["post_id", "user_id", "kind"]))
+      .on("postgres_changes", {event: "*", schema: "public", table: "wall_comment_likes"}, p => wPatch(WALL && WALL.clikes, p, ["comment_id", "user_id"]))
+      .on("postgres_changes", {event: "*", schema: "public", table: "showcases"}, p => { if (FR && rtPatch(FR.showcases, p, ["id"], {norm: x => ({...x, entries: Array.isArray(x.entries) ? x.entries : []})})) rtLater("fr", () => render(), 300); else rtLater("frl", () => loadFriends(true), 400); })
       .subscribe();
   }
   const nickOf = uid => ME && uid === ME.id ? "Ты" : (profOf(uid).nick || "кто-то");

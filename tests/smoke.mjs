@@ -32,7 +32,7 @@ async function run() {
       return r.fulfill({status: 200, contentType: /\.css/.test(u.pathname) || u.host.includes("fonts") ? "text/css" : "text/javascript", body: ""});
     });
     await p.addInitScript(([s, fx]) => { window.__SESSION = s; window.__FX = fx; try { localStorage.setItem("nexus_patch_seen", "9999"); localStorage.setItem("nexus_patch_pop", "9999"); } catch (e) {} }, [session, fx]);
-    await p.goto(BASE + "index.html"); await p.waitForTimeout(1500);
+    await p.goto(BASE + "index.html#games"); await p.waitForTimeout(1500);
     return {p, ctx, errs, label};
   }
   // 1. гость: экран входа
@@ -42,6 +42,15 @@ async function run() {
   // 2. вошедший: обходим все разделы
   { const sess = {user: {id: UID, email: "t@t.t"}, access_token: "x"};
     const {p, ctx, errs} = await page(sess, fixtures(1500), "user");
+    // при входе на полку игр не должно грузиться всё сразу
+    const early = await p.evaluate(() => window.__SBLOG.length); console.log("запросов при входе (первые 1.5 с):", early);
+    if (early > 30) fails.push(`при входе сразу ${early} запросов — ленивая загрузка не работает`);
+    await p.waitForTimeout(4000);
+    // realtime: лайк под постом мероприятия вписывается на месте, без перезагрузки таблиц
+    const rt = await p.evaluate(async () => { const before = window.__SBLOG.length; const n0 = EV ? EV.likes.length : -1;
+      window.__RTEMIT("event_post_likes", {eventType: "INSERT", new: {post_id: "p1", user_id: "u9"}, old: {}});
+      await new Promise(r => setTimeout(r, 600)); return {extra: window.__SBLOG.slice(before).filter(x => /^event/.test(x.name)).length, grew: (EV ? EV.likes.length : -1) - n0}; });
+    if (rt.extra || rt.grew !== 1) fails.push(`realtime: лайк не вписался на месте (${JSON.stringify(rt)})`);
     for (const r of routes) { await p.evaluate(h => { location.hash = h; }, r); await p.waitForTimeout(400); }
     const fr = await p.evaluate(fid => { try { return typeof frItems === "function" ? frItems(fid).length : -1; } catch (e) { return -2; } }, FUID);
     if (fr !== 1500) fails.push(`полка друга: загружено ${fr} из 1500 записей`);
