@@ -177,7 +177,7 @@
   document.addEventListener("click", e => { const l = e.target.closest && e.target.closest(".ln[data-href]"); if (!l) return; e.preventDefault(); e.stopPropagation(); window.open(l.dataset.href, "_blank", "noopener"); }, true);
   document.addEventListener("keydown", e => { const l = e.target.closest && e.target.closest(".ln[data-href]"); if (l && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); e.stopPropagation(); window.open(l.dataset.href, "_blank", "noopener"); } }, true);
   function posterHTML(it, o = {}){
-    const img = it.cover ? `<img alt="" src="${blobUrl(it.cover)}" style="${posStyle(it.coverPos)}" onerror="this.remove()">` : "";
+    const img = it.cover ? `<img alt="" src="${blobUrl(it.cover)}" style="${posStyle(it.coverPos)}"${o.eager ? "" : ' loading="lazy" decoding="async"'} onerror="this.remove()">` : ""; // 5.4.1: лениво, иначе большая полка грузит сотни постеров разом
     const ph = it.cover ? "" : `<div class="ph">${esc(it.title)}</div>`;
     let b = "";
     const gs0 = isGame(it) && inLib(it) ? gStatus(it.status) : null;

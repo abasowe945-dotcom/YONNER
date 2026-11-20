@@ -594,7 +594,7 @@ body[data-theme="games"] .sec-bg{--sb-ov:var(--s-bg)} body[data-theme="kino"] .s
 .pn-season{margin:34px 0 0;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--c-dim);font-weight:700;display:flex;align-items:center;gap:12px}
 .pn-season::after{content:"";flex:1;height:1px;background:var(--c-line)}
 .pn-quote{margin-top:12px;padding:10px 14px;border-left:3px solid var(--c-ring);background:var(--c-cell-out);border-radius:0 12px 12px 0;color:var(--c-dim);font-size:14px;font-style:italic}
-.s-card .poster,.k-card .poster,.fr-card .poster,.dr .poster,.rel .poster{transition:transform .4s cubic-bezier(.22,.8,.3,1),box-shadow .4s ease!important;will-change:transform}
+.s-card .poster,.k-card .poster,.fr-card .poster,.dr .poster,.rel .poster{transition:transform .4s cubic-bezier(.22,.8,.3,1),box-shadow .4s ease!important} /* 5.4.1: без will-change — на 700+ карточках iPhone не тянул тысячи слоёв и показывал чёрный экран */
 .s-card:hover,.k-card:hover,.fr-card:hover{position:relative;z-index:3}
 .rel:hover .poster{transform:scale(1.06)!important}
 /* ---------- единая шапка ---------- */

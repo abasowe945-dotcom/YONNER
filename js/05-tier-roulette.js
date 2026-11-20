@@ -75,7 +75,7 @@
   // ================= рулетка =================
   let rlState = null;
   function closeRoulette(){ if ($("rl").hidden) return; if (rlState) rlState.dead = true; rlState = null; $("rl").hidden = true; $("rl").innerHTML = ""; if (!tierKind) document.body.classList.remove("ov-open"); }
-  const rlTile = it => `<div class="rl-t">${posterHTML(it, {rate:false, tgt:false, badge:false})}<div class="tt">${esc(it.title)}</div></div>`;
+  const rlTile = it => `<div class="rl-t">${posterHTML(it, {rate:false, tgt:false, badge:false, eager:true})}<div class="tt">${esc(it.title)}</div></div>`;
   function openRoulette(kind){
     const S = rlState = {kind, temps: [], rerolls: 1, spinning: false, last: null, sound: true, actx: null, dead: false};
     S.pool = () => [...items.filter(ofKind(kind)).filter(isFuture), ...S.temps];

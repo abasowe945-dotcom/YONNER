@@ -96,7 +96,7 @@
           </div>
         </div>
         <div class="s-side">
-          ${posterHTML(it, {id:"heroPoster", editable: canWrite && !!assets, tgt:false, rate:false})}
+          ${posterHTML(it, {id:"heroPoster", editable: canWrite && !!assets, tgt:false, rate:false, eager:true})}
           ${canWrite ? `<div class="pv-acts"><button class="pv-btn" id="editBtn">${ICON.edit}Редактировать</button>${assets ? `<button class="pv-btn" id="wallBtn">${ICON.wall}Фон страницы</button>` : ""}${ME ? `<button class="pv-btn sg-pv" id="sugBtn">${ICON.send}Предложить другу</button>` : ""}</div>` : ""}
           <dl class="s-facts">${facts.map(([k,v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("")}</dl>
           ${gs.length ? `<div class="s-tags">${gs.map(g => `<span>${esc(g)}</span>`).join("")}</div>` : ""}
@@ -127,7 +127,7 @@
       ["Моя оценка", typeof it.rating === "number" ? `${num1(it.rating)} / 10` : null], ["Тип", KTYPES[it.type]], [kinoDateLabel(it), it.noDate && ["done","played"].includes(it.status) ? "давно, без даты" : fmtDate(itemDate(it))]].filter(f => f[1]);
     showView(`
       <div class="k-hero">
-        <div class="k-hcol"><div class="pwrap">${posterHTML(it, {id:"heroPoster", editable: canWrite && !!assets, rate:false})}<div class="gfx" id="gfx"></div></div>
+        <div class="k-hcol"><div class="pwrap">${posterHTML(it, {id:"heroPoster", editable: canWrite && !!assets, rate:false, eager:true})}<div class="gfx" id="gfx"></div></div>
           ${canWrite ? `<div class="pv-acts"><button class="pv-btn" id="editBtn">${ICON.edit}Редактировать</button>${assets ? `<button class="pv-btn" id="wallBtn">${ICON.wall}Фон страницы</button>` : ""}${ME ? `<button class="pv-btn sg-pv" id="sugBtn">${ICON.send}Предложить другу</button>` : ""}</div>` : ""}</div>
         <div class="k-glass" style="position:relative">
           <h2 class="k-title">${esc(it.title)}</h2>
