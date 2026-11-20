@@ -2641,6 +2641,7 @@ body.has-secbg[data-route="home"],body.has-secbg[data-route="user"]{background:t
 .dvd-grid > .k-card .kc-p.dvd{animation:dvdFlip .7s cubic-bezier(.2,.9,.25,1) backwards;animation-delay:calc(var(--i,0) * 45ms)}
 @keyframes dvdFlip{0%{opacity:0;transform:rotateY(78deg) translateX(-40px)}55%{opacity:1}100%{opacity:1;transform:none}}
 body.enter .k-grid.dvd-grid > *{animation:none}
+.dvd-grid > .k-card.na .kc-p.dvd{animation:none} /* 5.4.1: анимируем только первые 24, иначе сотни 3D-анимаций разом роняют вкладку на iPhone */
 .k-mon h2{text-transform:none}
 @media (prefers-reduced-motion:reduce){.dvd-grid > .k-card .kc-p.dvd{animation:none}.dvd-disc,.dvd-case{transition:none}}
 

@@ -206,7 +206,7 @@
     const et = isSeries(it) ? +it.epTotal || 0 : 0, ew = +it.epWatched || 0;
     const ep = et ? `<span class="epbar"><i style="width:${Math.min(100, ew / et * 100)}%"></i></span>${canWrite && it.status === "playing" ? `<span class="ep1" data-ep1="${esc(it.id)}" role="button" aria-label="+1 серия">+1</span>` : ""}` : "";
     const wd = it.date && !it.noDate && ["done", "played"].includes(it.status) ? it.date : null;
-    return `<button class="k-card" data-id="${esc(it.id)}"${o.i != null ? ` style="--i:${Math.min(o.i, 24)}"` : ""}><div class="kc-p dvd"><span class="dvd-disc" aria-hidden="true"></span><span class="dvd-case">${posterHTML(it)}<span class="dvd-band">DVD</span>${wd ? `<span class="dvd-date" title="Дата просмотра">${fmtShort(wd)}</span>` : ""}</span>${ep}</div><div class="t">${esc(it.title)}</div><div class="m"><span class="k-dot" style="background:${st.c}"></span>${esc(st.l)}${et ? ` · ${ew}/${et} сер.` : ""}${bits ? " · " + esc(bits) : ""}</div></button>`;
+    return `<button class="k-card${o.i != null && o.i >= 24 ? " na" : ""}" data-id="${esc(it.id)}"${o.i != null && o.i < 24 ? ` style="--i:${o.i}"` : ""}><div class="kc-p dvd"><span class="dvd-disc" aria-hidden="true"></span><span class="dvd-case">${posterHTML(it)}<span class="dvd-band">DVD</span>${wd ? `<span class="dvd-date" title="Дата просмотра">${fmtShort(wd)}</span>` : ""}</span>${ep}</div><div class="t">${esc(it.title)}</div><div class="m"><span class="k-dot" style="background:${st.c}"></span>${esc(st.l)}${et ? ` · ${ew}/${et} сер.` : ""}${bits ? " · " + esc(bits) : ""}</div></button>`;
   }
 
   // ================= нижняя панель =================

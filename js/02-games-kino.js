@@ -94,7 +94,7 @@
     let n = 0;
     return keys.filter(k => k !== "~now" || kF === "playing").map(k => { const part = groups.get(k);
       const label = k === "~now" ? "Смотрю сейчас" : k === "~none" ? "Без даты" : (() => { const [y, m] = k.split("-").map(Number); return `${MONTHS_NOM[m - 1].replace(/^./, c => c.toUpperCase())}${y !== td.getFullYear() ? " " + y : ""}`; })();
-      return `<div class="k-sec k-mon"><h2>${label}</h2><span>${part.length}</span><i></i></div><section class="k-grid dvd-grid">${part.map(x => kCard(x, {i: n++ % 12})).join("")}</section>`; }).join("");
+      return `<div class="k-sec k-mon"><h2>${label}</h2><span>${part.length}</span><i></i></div><section class="k-grid dvd-grid">${part.map(x => kCard(x, {i: n++})).join("")}</section>`; }).join("");
   }
   function tick(){ const d = new Date(), s = d.toLocaleDateString("ru-RU",{weekday:"short",day:"numeric",month:"short"}).replace(/\.$/,"");
     $("clock").innerHTML = `<b>${d.toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit"})}</b><small>${s.charAt(0).toUpperCase()+s.slice(1)}</small>`; }
