@@ -505,3 +505,26 @@
 .tlc-rp span{color:#4da3ff}
 .tlc-rp button{width:22px;height:22px;border:0;border-radius:50%;background:var(--c-cell-out);color:var(--c-dim);font:600 15px/1 var(--ios);cursor:pointer}
 @media (max-width:720px){.tlcm.sub{margin-left:28px}.tlc-in .ib{padding:0 12px}}
+
+/* ================= календари друзей ================= */
+.c-whos{display:flex;gap:8px;margin:16px 0 0;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.c-whos::-webkit-scrollbar{display:none}
+.c-who{flex:none;display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px 0 6px;border:1px solid var(--c-line);border-radius:999px;background:var(--c-cell);color:var(--c-dim);font:650 13.5px/1 var(--ios);cursor:pointer;transition:background .15s,color .15s,border-color .15s}
+.c-who:hover{color:var(--c-fg);border-color:var(--c-dim)}
+.c-who[aria-pressed="true"]{background:var(--c-fg);color:var(--c-bg);border-color:var(--c-fg)}
+.c-who-all{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:rgba(127,127,127,.2)}
+.c-who-all svg{width:14px;height:14px}
+.c-t.c-fr{cursor:pointer;touch-action:auto}
+.c-who-a{position:absolute;left:5px;top:5px;z-index:3;border-radius:50%;box-shadow:0 0 0 2px rgba(0,0,0,.55);line-height:0}
+.c-fin{position:absolute;right:5px;top:5px;z-index:3;display:grid;place-items:center;border-radius:999px;font:800 9px/1 var(--ios);letter-spacing:.04em}
+.c-fin-ok{width:20px;height:20px;background:var(--r-green,#30d158);color:#04210d}
+.c-fin-ok svg{width:12px;height:12px}
+.c-fin-dr{height:17px;padding:0 6px;background:#ff3b30;color:#fff}
+.c-tiles.n3 .c-t:not(:first-child) .c-fin-ok,.c-tiles.n4 .c-fin-ok{width:15px;height:15px;right:3px;top:3px}
+.c-tiles.n3 .c-t:not(:first-child) .c-fin-dr,.c-tiles.n4 .c-fin-dr{height:13px;padding:0 4px;font-size:7.5px;right:3px;top:3px}
+.c-tiles.n3 .c-t:not(:first-child) .c-who-a,.c-tiles.n4 .c-who-a{left:3px;top:3px;transform:scale(.8);transform-origin:top left}
+@media (max-width:720px){
+  .c-fin-dr{font-size:0;width:12px;height:12px;padding:0}
+  .c-fin-ok{width:14px;height:14px}.c-fin-ok svg{width:9px;height:9px}
+  .c-who-a{transform:scale(.7);transform-origin:top left;left:2px;top:2px}
+}

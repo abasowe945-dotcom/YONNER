@@ -231,8 +231,50 @@
     const rate = !soon && typeof it.rating === "number" ? `<span class="c-rate ${rateCls(it.rating)}">${num1(it.rating)}</span>` : "";
     return `<div class="c-t ${g ? "game" : "kino"}${soon ? " rel" : ""}" data-drag="${esc(it.id)}" title="${esc(it.title + " · " + lbl)}">${img}${soon ? `<span class="c-relb">${relShort(it).toUpperCase()}</span>` : ""}${g && hasActive(it) ? `<span class="c-tgt">${ICON.target}</span>` : ""}<span class="c-kind">${g ? ICON.pad : ICON.film}</span>${rate}${extra || ""}</div>`;
   }
+  // ---------- календари друзей: кто во что начал играть, что прошёл, дропнул и посмотрел ----------
+  let calUid = null; // null — свой календарь, "*" — все вместе, иначе uid друга
+  const calMine = () => MYITEMS.map(i => ({...i, uid: ME ? ME.id : "me"}));
+  function calPool(){
+    if (!calUid) return [];
+    const fr = (FR ? FR.items : []).filter(i => !ME || i.uid !== ME.id);
+    return calUid === "*" ? [...calMine(), ...fr] : ME && calUid === ME.id ? calMine() : fr.filter(i => i.uid === calUid);
+  }
+  // одна запись может дать две отметки: день начала и день, когда прошёл или дропнул
+  function calEntries(){
+    const out = [];
+    calPool().forEach(it => {
+      if (relOn(it) || isFuture(it) || isSoon(it) || it.noDate) return;
+      if (isGame(it)){
+        const s = gStatus(it.status), start = it.date || (it.createdAt ? localDate(new Date(it.createdAt)) : null);
+        const fin = (s === "done" || s === "dropped") ? (it.finishedAt || null) : null;
+        if (start && start !== fin) out.push({it, day: start, k: "start"});
+        if (fin) out.push({it, day: fin, k: s === "done" ? "done" : "drop"});
+      } else { const d = itemDate(it); if (d) out.push({it, day: d, k: "watch"}); }
+    });
+    return out;
+  }
+  const CAL_K = {start: "начал играть", done: "прошёл", drop: "дропнул", watch: "посмотрел"};
+  const calKey = e => e.it.uid + "/" + e.it.id;
+  function calTile(e, extra){
+    const it = e.it, g = isGame(it);
+    const img = it.cover ? `<img alt="" src="${blobUrl(it.cover)}" style="${posStyle(it.coverPos)}">` : `<div class="nm">${esc(it.title)}</div>`;
+    const rate = e.k !== "start" && typeof it.rating === "number" ? `<span class="c-rate ${rateCls(it.rating)}">${num1(it.rating)}</span>` : "";
+    const who = calUid === "*" ? `<span class="c-who-a">${avaHTML(profOf(it.uid), "xs")}</span>` : "";
+    const mark = e.k === "done" ? `<span class="c-fin c-fin-ok" aria-hidden="true">${CHECK_I}</span>` : e.k === "drop" ? `<span class="c-fin c-fin-dr">ДРОП</span>` : "";
+    return `<div class="c-t ${g ? "game" : "kino"} c-fr" data-cfi="${esc(calKey(e))}" title="${esc(it.title + " · " + nickOf(it.uid) + " " + CAL_K[e.k])}">${img}${who}${mark}<span class="c-kind">${g ? ICON.pad : ICON.film}</span>${rate}${extra || ""}</div>`;
+  }
+  function calWhoBar(){
+    if (!ME) return "";
+    if (!FR){ loadFriends().then(() => { if (route === "calendar") renderCal(); }); }
+    const fr = (FR ? FR.profiles : []).filter(p => p.user_id !== ME.id);
+    const cnt = uid => (FR ? FR.items : []).filter(i => i.uid === uid && !isFuture(i) && !isSoon(i)).length;
+    fr.sort((a, b) => cnt(b.user_id) - cnt(a.user_id));
+    const chip = (v, label, ava) => `<button type="button" class="c-who" data-calu="${esc(v)}" aria-pressed="${(calUid || "") === v}">${ava}<span>${esc(label)}</span></button>`;
+    return `<div class="c-whos" role="toolbar" aria-label="Чей календарь">${chip("", "Мой", avaHTML(profOf(ME.id), "xs"))}${fr.length ? chip("*", "Все вместе", `<span class="c-who-all">${ICON.people || ""}</span>`) : ""}${fr.map(p => chip(p.user_id, p.nick || "друг", avaHTML(p, "xs"))).join("")}</div>`;
+  }
   function renderCal(){
     appleHead("Календарь");
+    if (calUid) return renderCalFr();
     const first = new Date(calY, calM, 1), mName = first.toLocaleDateString("ru-RU", {month:"long"});
     const byDay = {};
     items.forEach(it => { const d = itemDate(it); if (d) (byDay[d] = byDay[d] || []).push(it); });
@@ -253,6 +295,7 @@
     }
     $("aMain").innerHTML = `<div class="c-head"><h1 class="a-h1">${esc(mName.charAt(0).toUpperCase() + mName.slice(1))} <span>${calY}</span></h1>
         <div class="c-arrows"><button type="button" class="ar" id="cPrev" aria-label="Прошлый месяц">‹</button><button type="button" id="cToday">Сегодня</button><button type="button" class="ar" id="cNext" aria-label="Следующий месяц">›</button></div></div>
+      ${calWhoBar()}
       <div class="c-sum"><span class="k"><i style="background:var(--c-game)"></i><b>${gN}</b>игр</span><span class="k"><i style="background:var(--c-kino)"></i><b>${kN}</b>кино</span>${rN ? `<span><b>${rN}</b>${plural(rN,"релиз","релиза","релизов")}</span>` : ""}${evN ? `<span class="k"><i style="background:#ff375f"></i><b>${evN}</b>${plural(evN,"встреча","встречи","встреч")}</span>` : ""}<span class="sep"></span>
         <span class="c-legend"><span><i style="background:var(--r-green)"></i>7,5+</span><span><i style="background:var(--r-yel)"></i>5–7</span><span><i style="background:var(--r-red)"></i>до 5</span></span></div>
       <div class="c-dows"><div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div></div>
@@ -262,6 +305,56 @@
     $("cNext").onclick = () => { calM++; if (calM > 11){ calM = 0; calY++; } renderCal(); };
     $("cToday").onclick = () => { const n = new Date(); calY = n.getFullYear(); calM = n.getMonth(); renderCal(); };
   }
+
+  function renderCalFr(){
+    const first = new Date(calY, calM, 1), mName = first.toLocaleDateString("ru-RU", {month:"long"});
+    const byDay = {}, ents = calEntries(), ord = {done: 0, drop: 1, watch: 2, start: 3};
+    ents.forEach(e => (byDay[e.day] = byDay[e.day] || []).push(e));
+    Object.values(byDay).forEach(a => a.sort((x, y) => (ord[x.k] - ord[y.k]) || (y.it.rating ?? -1) - (x.it.rating ?? -1)));
+    const evDay = {}; if (typeof EV !== "undefined" && EV) EV.events.forEach(e => { if (!e.starts_at) return; const k = localDate(new Date(e.starts_at)); (evDay[k] = evDay[k] || []).push(e); });
+    const evChip = e => { const t = new Date(e.starts_at); return `<button type="button" class="c-evc${evPast(e) ? " past" : ""}${e.kind === "watch" ? " w" : ""}" data-ev="${esc(e.id)}" title="${esc(e.title + " · " + evWhen(e))}">${e.kind === "watch" ? ICON.film : ICON.party}<span>${esc(e.title)}</span><small>${t.toLocaleTimeString("ru-RU", {hour: "2-digit", minute: "2-digit"})}</small></button>`; };
+    const prefix = `${calY}-${pad(calM+1)}-`, me = ents.filter(e => e.day.startsWith(prefix));
+    const n = k => me.filter(e => e.k === k).length;
+    const start = (first.getDay() + 6) % 7, days = new Date(calY, calM + 1, 0).getDate(), cells = Math.ceil((start + days) / 7) * 7, td = today();
+    let h = "";
+    for (let i = 0; i < cells; i++){
+      const d = new Date(calY, calM, i - start + 1), key = localDate(d), es = byDay[key] || [], c = Math.min(es.length, 4), ee = evDay[key] || [];
+      const tiles = es.slice(0, 4).map((e, j) => calTile(e, j === 3 && es.length > 4 ? `<span class="c-more">+${es.length - 3}</span>` : "")).join("");
+      h += `<div class="c-day${d.getMonth() !== calM ? " out" : ""}${key === td ? " today" : ""}${c ? " has" : ""}${ee.length ? " has-ev" : ""}" data-day="${key}"><span class="c-num">${d.getDate()}</span>${ee.length ? `<div class="c-evs">${ee.map(evChip).join("")}</div>` : ""}${c ? `<div class="c-tiles n${c}">${tiles}</div>` : ""}</div>`;
+    }
+    const all = calUid === "*", who = all ? "" : nickOf(calUid);
+    $("aMain").innerHTML = `<div class="c-head"><h1 class="a-h1">${esc(mName.charAt(0).toUpperCase() + mName.slice(1))} <span>${calY}</span></h1>
+        <div class="c-arrows"><button type="button" class="ar" id="cPrev" aria-label="Прошлый месяц">‹</button><button type="button" id="cToday">Сегодня</button><button type="button" class="ar" id="cNext" aria-label="Следующий месяц">›</button></div></div>
+      ${calWhoBar()}
+      <div class="c-sum"><span class="k"><i style="background:var(--c-game)"></i><b>${n("start")}</b>${plural(n("start"), "начал", "начал", "начал")} играть</span><span class="k"><i style="background:var(--r-green)"></i><b>${n("done")}</b>прошёл</span>${n("drop") ? `<span class="k"><i style="background:var(--r-red)"></i><b>${n("drop")}</b>дроп</span>` : ""}<span class="k"><i style="background:var(--c-kino)"></i><b>${n("watch")}</b>посмотрел</span>
+        ${!FR ? `<span>Загружаю…</span>` : !me.length ? `<span>${all ? "В этом месяце у всех тихо" : `У ${esc(who)} в этом месяце пусто`}</span>` : ""}</div>
+      <div class="c-dows"><div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div></div>
+      <div class="c-grid c-grid-fr" id="cGrid">${h}</div>
+      <p class="c-tip">${all ? "Аватарка на обложке — чья запись. " : ""}Зелёная галочка — прошёл, «ДРОП» — бросил, без значка — начал играть или посмотрел. Клик по обложке открывает карточку.</p>`;
+    $("cPrev").onclick = () => { calM--; if (calM < 0){ calM = 11; calY--; } renderCal(); };
+    $("cNext").onclick = () => { calM++; if (calM > 11){ calM = 0; calY++; } renderCal(); };
+    $("cToday").onclick = () => { const t = new Date(); calY = t.getFullYear(); calM = t.getMonth(); renderCal(); };
+  }
+  function calOpenFr(key){ const [uid, id] = key.split("/"); if (ME && uid === ME.id) openItem(id); else friendItemSheet(key); }
+  function calFrDaySheet(day){
+    const ord = {done: 0, drop: 1, watch: 2, start: 3}, list = calEntries().filter(e => e.day === day).sort((x, y) => (ord[x.k] - ord[y.k]));
+    if (!list.length) return;
+    const s = openSheet(`<h3>${parseD(day).toLocaleDateString("ru-RU", {weekday: "long", day: "numeric", month: "long"}).replace(/^./, c => c.toUpperCase())}</h3>
+      <p class="sub">${list.length} ${plural(list.length, "запись", "записи", "записей")}</p>
+      <div class="cds">${list.map(e => `<button class="cds-c" data-cfi="${esc(calKey(e))}">${posterHTML(e.it, {tgt: false})}<span class="ti">${esc(e.it.title)}</span><small>${avaHTML(profOf(e.it.uid), "xs")} ${esc(nickOf(e.it.uid))} ${esc(CAL_K[e.k])}</small></button>`).join("")}</div>`, {wide: true});
+    s.el.addEventListener("click", ev => { const b = ev.target.closest("[data-cfi]"); if (!b) return; ev.stopPropagation(); s.close(); setTimeout(() => calOpenFr(b.dataset.cfi), 60); }, true);
+  }
+  document.addEventListener("click", e => {
+    if (route !== "calendar" || !$("aMain").contains(e.target)) return;
+    const w = e.target.closest && e.target.closest("[data-calu]");
+    if (w){ calUid = w.dataset.calu || null; renderCal(); return; }
+    if (!calUid) return;
+    if (e.target.closest("[data-ev]")) return;
+    const t = e.target.closest("[data-cfi]"); if (t){ calOpenFr(t.dataset.cfi); return; }
+    const d = e.target.closest(".c-day.has"); if (!d) return;
+    const list = calEntries().filter(x => x.day === d.dataset.day);
+    if (list.length > 1) calFrDaySheet(d.dataset.day); else if (list[0]) calOpenFr(calKey(list[0]));
+  });
 
   // 3.2: день с несколькими играми и фильмами — окно со всеми карточками
   function calDaySheet(day){
@@ -273,6 +366,6 @@
       <div class="cds">${list.map(it => `<button class="cds-c" data-id="${esc(it.id)}">${posterHTML(it, {tgt: false})}<span class="ti">${esc(it.title)}</span><small><span class="kd ${isGame(it) ? "g" : "k"}">${isGame(it) ? ICON.pad : ICON.film}</span>${esc(lbl(it))}</small></button>`).join("")}</div>`, {wide: true});
     s.el.addEventListener("click", e => { if (e.target.closest("[data-id]")) s.close(); }, true);
   }
-  document.addEventListener("click", e => { if (route !== "calendar" || $("aMain").contains(e.target) === false) return; const d = e.target.closest && e.target.closest(".c-day.has"); if (!d || e.target.closest("[data-drag]") || e.target.closest("[data-ev]")) return;
+  document.addEventListener("click", e => { if (route !== "calendar" || calUid || $("aMain").contains(e.target) === false) return; const d = e.target.closest && e.target.closest(".c-day.has"); if (!d || e.target.closest("[data-drag]") || e.target.closest("[data-ev]")) return;
     const n = items.filter(i => itemDate(i) === d.dataset.day).length; if (n > 1) calDaySheet(d.dataset.day); else { const it = items.find(i => itemDate(i) === d.dataset.day); if (it) openItem(it.id); } });
 
