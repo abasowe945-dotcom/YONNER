@@ -595,3 +595,5 @@ body.cs-docked .cs-rgs{grid-template-columns:1fr}
 .cs-rg select{width:100%;padding:9px 10px;border-radius:10px;border:0;background:rgba(127,127,127,.18);color:inherit;font:inherit}
 .cs-rg span em{font-style:normal;opacity:.65;font-size:12px}
 .cs-rg:has(select){grid-column:1/-1}
+/* 7.22: статистика шапки профиля — подпись и отдельная строка про прогресс */
+.pf-stats small{display:block;margin-top:1px;font:600 12px/1.2 var(--ios);color:var(--ac,#9ab);opacity:.9}
