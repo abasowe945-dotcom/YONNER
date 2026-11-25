@@ -39,6 +39,7 @@
   function csWeeks(uid){ let n = 0, ws = v6WeekStart(V6_START + "-01"); const cur = v6WeekStart(); for (; ws <= cur; ws = addDays(ws, 7)) if (v6Tasks(uid, ws).every(t => t.done)) n++; return n; }
   const csStats = uid => { if (!FR) return null; const g = FR.items.filter(i => i.uid === uid && isGame(i));
     return {lvl: csLevel(uid).lv, streak: csMaxStreak(uid), drops: g.filter(i => gStatus(i.status) === "dropped").length, first: v6FirstN(uid), cup: v6Cups(uid).length, top3: v6Hall().filter(h => h.top.some(x => x.p.user_id === uid)).length, weeks: csWeeks(uid), done: g.filter(i => gStatus(i.status) === "done").length}; };
+  const csAdm = uid => !!(IS_ADMIN && ME && uid === ME.id); // админу на своём профиле всё открыто
   const csOk = (u, st) => { u = u || {t: "free"}; if (u.t === "free") return true; if (!st) return false; if (u.t === "cup" || u.t === "top3") return st[u.t] >= 1; return (st[u.t] || 0) >= (u.n || 1); };
   const csNeed = u => { u = u || {}; return u.t === "lvl" ? `откроется на ${u.n} уровне` : u.t === "streak" ? `серия ${u.n} ${plural(u.n, "день", "дня", "дней")} подряд` : u.t === "drops" ? `дропни ${u.n} ${plural(u.n, "игру", "игры", "игр")}` : u.t === "first" ? `первооткрыватель ${u.n} раз` : u.t === "cup" ? "выиграй сезон" : u.t === "top3" ? "попади в тройку сезона" : u.t === "weeks" ? `закрой все задания недели ${u.n === 1 ? "один раз" : u.n + " раза"}` : u.t === "done" ? `пройди ${u.n} ${plural(u.n, "игру", "игры", "игр")}` : ""; };
   const csFrames = () => (COSM || []).filter(c => c.kind === "frame");
@@ -77,7 +78,8 @@
   function csOf(p){
     const c = csCosm(p), st = FR ? csStats(p.user_id) : null;
     const th = csThemesAll().find(x => x.id === c.theme), fx = CS_FX.find(x => x.id === c.fx), fr = csFrames().find(x => x.id === c.frame);
-    return {theme: th && csOk(th.u, st) ? th : null, fx: fx && fx.id && csOk(fx.u, st) ? fx : null, frame: fr && csOk(fr.unlock, st) ? fr : null, layout: Array.isArray(c.layout) ? c.layout : null, hide: Array.isArray(c.hide) ? c.hide : []};
+    const ok = u => csAdm(p.user_id) || csOk(u, st);
+    return {theme: th && ok(th.u) ? th : null, fx: fx && fx.id && ok(fx.u) ? fx : null, frame: fr && ok(fr.unlock) ? fr : null, layout: Array.isArray(c.layout) ? c.layout : null, hide: Array.isArray(c.hide) ? c.hide : []};
   }
   // ---- для renderProfile: класс темы, рамка, порядок блоков
   function csPfAttrs(p){ if (!COSM && !COSM_OFF) loadCosm(); const o = csOf(p), t = o.theme;
@@ -126,8 +128,9 @@
 
   // ---- окно «Оформление»
   let csTab = "theme";
-  function csSheet(){
+  function csSheet(again){
     if (!ME) return; if (!COSM && !COSM_OFF) loadCosm();
+    if ((!FR || FR.failed) && !again){ toast("Считаю твои достижения…"); loadFriends(true).then(() => csSheet(true)); return; } // пока данные не пришли, всё казалось закрытым
     const p = myProf(), st = csStats(ME.id), L = csLevel(ME.id);
     let cur = {theme: "base", fx: "", frame: "", layout: CS_FLOORS.map(x => x[0]), hide: [], ...((p && p.cosm) || {})};
     cur.txt = JSON.parse(JSON.stringify(cur.txt || {})); cur.hdr = cur.hdr ? {...cur.hdr} : null;
@@ -137,8 +140,8 @@
       <div class="cs-tabs" id="csT"></div><div id="csB"></div>
       <div class="acts" style="margin-top:16px"><button class="ib blue" id="csOk">Сохранить</button><button class="ib" id="csNo">Отмена</button><label class="cs-fxoff"><input type="checkbox" id="csFxOff" ${lsGet("nexus_fx_off") === "1" ? "checked" : ""}>Не показывать мне эффекты в чужих профилях</label></div>`, {wide: true, onClose: () => { CS_PREV = null; if (lr) cancelAnimationFrame(lr); if (cur.hdr && cur.hdr.blob) URL.revokeObjectURL(cur.hdr.blob); if (route === "home") render(); }});
     const q = sel => s.el.querySelector(sel);
-    const lock = u => !csOk(u, st);
-    const card = (on, locked, prev, t, d, u, attr) => `<button type="button" class="cs-c${on ? " on" : ""}${locked ? " lk" : ""}" ${locked ? "disabled" : attr}>${prev}<b>${esc(t)}</b><small>${locked ? esc(csNeed(u)) : esc(d || "")}</small></button>`;
+    const lock = u => !(IS_ADMIN || csOk(u, st));
+    const card = (on, locked, prev, t, d, u, attr) => `<button type="button" class="cs-c${on ? " on" : ""}${locked ? " lk" : ""}" ${locked ? "disabled" : attr}>${prev}<b>${esc(t)}</b><small>${locked ? esc(csNeed(u)) + (u && st && st[u.t] != null && u.n ? ` — сейчас ${st[u.t]} из ${u.n}` : "") : esc(d || "")}</small></button>`;
     const draw = () => {
       q("#csT").innerHTML = [["theme", "Темы"], ["hdr", "Шапка"], ["txt", "Шрифты"], ["frame", "Рамки"], ["fx", "Эффекты"], ["layout", "Блоки"]].map(([k, l]) => `<button type="button" data-cst="${k}" aria-pressed="${csTab === k}">${l}</button>`).join("");
       let h = "";
