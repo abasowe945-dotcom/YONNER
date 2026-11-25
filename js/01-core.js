@@ -241,34 +241,35 @@
 
   // ================= 7.1: меню слева сворачивается до иконок =================
   // Кнопка внизу меню или Ctrl+B (на маке Cmd+B). Выбор запоминается, класс sb-c ставится ещё до отрисовки (скрипт в начале index.html).
+  // 7.2: свёрнутое меню выдвигается поверх страницы, пока на нём мышка (класс sb-peek), и прячется, когда её увели.
   const sbIsC = () => document.documentElement.classList.contains("sb-c");
+  const sbMob = () => matchMedia("(max-width:900px)").matches;
   function sbBtnHTML(){
     const c = sbIsC();
-    return `<button type="button" class="sb-tg" id="sbTg" aria-expanded="${!c}" aria-label="${c ? "Развернуть меню" : "Свернуть меню"}" data-tip="${c ? "Развернуть меню · Ctrl+B" : ""}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/><path class="ch" d="m16 10-2 2 2 2"/></svg><span>${c ? "Развернуть" : "Свернуть"}</span><kbd>Ctrl B</kbd></button>`;
+    return `<button type="button" class="sb-tg" id="sbTg" aria-expanded="${!c}" aria-label="${c ? "Закрепить меню открытым" : "Свернуть меню"}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/><path class="ch" d="m16 10-2 2 2 2"/></svg><span>${c ? "Закрепить" : "Свернуть"}</span><kbd>Ctrl B</kbd></button>`;
   }
-  const sbTip = document.createElement("div"); sbTip.className = "sb-tip"; sbTip.setAttribute("aria-hidden", "true"); document.body.appendChild(sbTip);
-  const sbTipOff = () => sbTip.classList.remove("on");
-  function sbTipOn(el){
-    if (!sbIsC() || !el || !el.dataset.tip || matchMedia("(max-width:900px)").matches){ sbTipOff(); return; }
-    const r = el.getBoundingClientRect(); sbTip.textContent = el.dataset.tip; sbTip.style.top = Math.round(r.top + r.height / 2) + "px"; sbTip.classList.add("on");
+  let sbPeekT = 0;
+  function sbPeek(on, delay){
+    clearTimeout(sbPeekT);
+    sbPeekT = setTimeout(() => { if (on && (!sbIsC() || sbMob())) return; document.documentElement.classList.toggle("sb-peek", on); }, delay);
   }
   function sbToggle(){
-    const c = !sbIsC(); document.documentElement.classList.toggle("sb-c", c); sbTipOff();
+    const c = !sbIsC(); clearTimeout(sbPeekT); document.documentElement.classList.remove("sb-peek"); document.documentElement.classList.toggle("sb-c", c);
     try { localStorage.setItem("nexus_sb", c ? "1" : "0"); } catch(e){ /* ожидаемо: приватный режим */ }
     const b = $("sbTg"); if (b) b.outerHTML = sbBtnHTML();
     setTimeout(() => dispatchEvent(new Event("resize")), 300); // карусели и карта подстраиваются под новую ширину
   }
   $("tabbar").addEventListener("click", e => { if (e.target.closest("#sbTg")) sbToggle(); });
-  $("tabbar").addEventListener("mouseover", e => sbTipOn(e.target.closest("[data-tip]")));
-  $("tabbar").addEventListener("mouseleave", sbTipOff);
-  $("tabbar").addEventListener("focusin", e => { if (e.target.matches(":focus-visible")) sbTipOn(e.target.closest("[data-tip]")); });
-  $("tabbar").addEventListener("focusout", sbTipOff);
-  $("tabbar").addEventListener("scroll", sbTipOff, {passive: true});
-  addEventListener("hashchange", sbTipOff);
+  // небольшая задержка: меню не дёргается, если мышка просто пролетела мимо
+  $("tabbar").addEventListener("pointerenter", e => { if (e.pointerType === "mouse") sbPeek(true, 140); });
+  $("tabbar").addEventListener("pointerleave", e => { if (e.pointerType === "mouse") sbPeek(false, 260); });
+  $("tabbar").addEventListener("focusin", e => { if (e.target.matches(":focus-visible")) sbPeek(true, 0); });
+  $("tabbar").addEventListener("focusout", e => { if (!$("tabbar").contains(e.relatedTarget) && !$("tabbar").matches(":hover")) sbPeek(false, 0); });
   document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && document.documentElement.classList.contains("sb-peek")){ sbPeek(false, 0); return; }
     if (e.code !== "KeyB" || !(e.ctrlKey || e.metaKey) || e.shiftKey || e.altKey || e.repeat) return;
     const tg = e.target; if (tg && tg.closest && tg.closest("input,textarea,select,[contenteditable]:not([contenteditable=\"false\"])")) return;
-    if (matchMedia("(max-width:900px)").matches) return;
+    if (sbMob()) return;
     e.preventDefault(); sbToggle();
   });
 
