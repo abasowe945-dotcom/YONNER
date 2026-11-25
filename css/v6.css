@@ -598,3 +598,14 @@ body.cs-docked .cs-rgs{grid-template-columns:1fr}
 /* 7.22: статистика шапки профиля — подпись и отдельная строка про прогресс */
 .pf-stats small{display:block;margin-top:1px;font:600 12px/1.2 var(--ios);color:var(--ac,#9ab);opacity:.9}
 .v6-tk .tx small.d{opacity:.5;font-size:11px;line-height:1.35;margin-top:3px}
+/* 7.26: статус в профиле */
+.d7-st{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:14px;min-width:0}
+.d7-stp{display:inline-flex;align-items:center;gap:7px;max-width:100%;padding:7px 13px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.07);color:inherit;font:600 13px/1.2 var(--ios);cursor:default}
+.d7-stp[data-pfst]{cursor:pointer}.d7-stp[data-pfst]:hover{background:rgba(255,255,255,.12)}
+.d7-stp i{font-style:normal;font-size:16px}.d7-stp span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.d7-stp.mus{border-color:color-mix(in srgb,var(--ac,#0a84ff) 55%,transparent)}
+.st-em{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.st-em button{width:40px;height:40px;border-radius:12px;border:1px solid rgba(127,127,127,.3);background:none;font-size:20px;cursor:pointer}
+.st-em button[aria-pressed="true"]{background:rgba(10,132,255,.22);border-color:#0a84ff}
+.st-q{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.st-q .ib{font-size:12px;padding:6px 10px}

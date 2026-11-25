@@ -221,7 +221,7 @@
     q("#csOk").onclick = async () => { const b = q("#csOk"); b.disabled = true; lsSet("nexus_fx_off", q("#csFxOff").checked ? "1" : "0");
       try {
         if (hdrFile && cur.hdr){ b.textContent = "Загружаю шапку…"; cur.hdr.img = (await assets.upload(hdrFile, {type: hdrFile.type})).id; hdrFile = null; }
-        const out = {...cur, hdr: cur.hdr ? {img: cur.hdr.img, h: cur.hdr.h, dim: cur.hdr.dim, x: cur.hdr.x, y: cur.hdr.y, blur: cur.hdr.blur} : null};
+        const out = {...cur, st: (MEP && MEP.cosm && MEP.cosm.st) || undefined, hdr: cur.hdr ? {img: cur.hdr.img, h: cur.hdr.h, dim: cur.hdr.dim, x: cur.hdr.x, y: cur.hdr.y, blur: cur.hdr.blur} : null};
         Object.keys(out.txt || {}).forEach(k => { const v = out.txt[k]; if (!v || !(v.f || csCol(v.c) || csNum(v.s, 60, 220, 100) !== 100)) delete out.txt[k]; });
         if (await saveProf({cosm: out})){ saved = true; toast("Оформление сохранено"); s.close(); }
       } catch(err){ toast(err && err.code ? upErr(err) : "Не сохранилось"); if (!(err && err.code)) logErr("оформление: сохранение", err); }
@@ -304,6 +304,27 @@
     };
     step();
   }
+  // 7.26: окно статуса профиля
+  const ST_EMO = ["🎧", "🎮", "🍿", "📚", "💀", "😴", "🔥", "🥀", "🤡", "🚫", "💻", "🍺", "😭", "🗿"], ST_Q = ["Слушаю музыку", "Не беспокоить, качаю скилл", "Залип в игру", "Устал, отдыхаю", "Ищу с кем сыграть"];
+  function stSheet(){
+    const cur = (MEP && MEP.cosm && MEP.cosm.st) || {}; let emo = cur.e || "";
+    const s = openSheet(`<h3>Статус</h3><p class="sub">Виден всем в твоём профиле под ником.</p>
+      <div class="st-em" id="stE">${ST_EMO.map(e => `<button type="button" data-e="${e}" aria-pressed="${emo === e}">${e}</button>`).join("")}</div>
+      <label class="v6-fl">Статус<input id="stT" maxlength="60" placeholder="Например: не беспокоить, качаю скилл" value="${esc(cur.t || "")}"></label>
+      <div class="st-q">${ST_Q.map(t => `<button type="button" class="ib" data-q="${esc(t)}">${esc(t)}</button>`).join("")}</div>
+      <label class="v6-fl">🎧 Слушаю сейчас<input id="stM" maxlength="60" placeholder="Исполнитель — трек" value="${esc(cur.m || "")}"></label>
+      <label class="v6-fl">Сбросить через<select id="stU"><option value="0">Не сбрасывать</option><option value="24">Сутки</option><option value="168">Неделю</option></select></label>
+      <div class="acts"><button class="ib blue" id="stOk">Сохранить</button><button class="ib" id="stClr">Убрать статус</button></div>`);
+    const q = sel => s.el.querySelector(sel);
+    q("#stE").onclick = e => { const b = e.target.closest("[data-e]"); if (!b) return; emo = emo === b.dataset.e ? "" : b.dataset.e; q("#stE").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x.dataset.e === emo)); };
+    s.el.querySelector(".st-q").onclick = e => { const b = e.target.closest("[data-q]"); if (b) q("#stT").value = b.dataset.q; };
+    const save = async st => { const cosm = {...((MEP && MEP.cosm) || {})}; if (st) cosm.st = st; else delete cosm.st;
+      if (await saveProf({cosm})){ toast(st ? "Статус сохранён" : "Статус убран"); s.close(); } };
+    q("#stOk").onclick = () => { const t = q("#stT").value.trim().slice(0, 60), m = q("#stM").value.trim().slice(0, 60), h = +q("#stU").value;
+      save(t || m ? {e: emo, t, m, until: h ? Date.now() + h * 36e5 : 0} : null); };
+    q("#stClr").onclick = () => save(null);
+  }
+  document.addEventListener("click", e => { if (e.target.closest && e.target.closest("[data-pfst]") && ME) stSheet(); });
   const CS_FR_GUIDE = `<div class="cs-gd"><b>Памятка по файлам рамок</b>
     <ul><li><b>Формат:</b> PNG или WebP с прозрачностью. Анимация: WebP (лучше всего), APNG или GIF.</li>
     <li><b>Размер картинки:</b> квадрат 512×512 (можно 400–1024, но строго квадрат).</li>
