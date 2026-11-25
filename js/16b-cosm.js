@@ -42,7 +42,13 @@
   const csAdm = uid => !!(IS_ADMIN && ME && uid === ME.id); // админу на своём профиле всё открыто
   const csOk = (u, st) => { u = u || {t: "free"}; if (u.t === "free") return true; if (!st) return false; if (u.t === "cup" || u.t === "top3") return st[u.t] >= 1; return (st[u.t] || 0) >= (u.n || 1); };
   const csNeed = u => { u = u || {}; return u.t === "lvl" ? `откроется на ${u.n} уровне` : u.t === "streak" ? `серия ${u.n} ${plural(u.n, "день", "дня", "дней")} подряд` : u.t === "drops" ? `дропни ${u.n} ${plural(u.n, "игру", "игры", "игр")}` : u.t === "first" ? `первооткрыватель ${u.n} раз` : u.t === "cup" ? "выиграй сезон" : u.t === "top3" ? "попади в тройку сезона" : u.t === "weeks" ? `закрой все задания недели ${u.n === 1 ? "один раз" : u.n + " раза"}` : u.t === "done" ? `пройди ${u.n} ${plural(u.n, "игру", "игры", "игр")}` : ""; };
-  const csFrames = () => (COSM || []).filter(c => c.kind === "frame");
+  const csFrAll = () => (COSM || []).filter(c => c.kind === "frame");
+  // 7.20: личные рамки — data.users: список uid, кому рамка доступна; пусто — всем
+  const csFrAud = f => { const a = f && f.data && f.data.users; return Array.isArray(a) && a.length ? a : null; };
+  const csFrFor = (f, uid) => { const a = csFrAud(f); return !a || a.includes(uid); };
+  const csFrames = () => csFrAll().filter(f => IS_ADMIN || csFrFor(f, ME && ME.id)); // что видно в окне выбора
+  const csAudHTML = sel => FR && FR.profiles.length ? `<div class="cs-aud"><b>Для кого</b><small>Никого не отмечай — рамка для всех (по условию открытия). Отметь людей — рамка станет личной, только для них и без условий.</small><div class="cs-aud-l">${FR.profiles.map(x => `<label><input type="checkbox" data-aud="${esc(x.user_id)}"${(sel || []).includes(x.user_id) ? " checked" : ""}> ${esc(x.nick || "?")}</label>`).join("")}</div></div>` : "";
+  const csAudRead = root => [...root.querySelectorAll("[data-aud]:checked")].map(i => i.dataset.aud);
   const csThemesAll = () => [...CS_THEMES, ...(COSM || []).filter(c => c.kind === "theme").map(c => ({id: "db:" + c.id, t: c.title, d: (c.data && c.data.d) || "", u: c.unlock, db: c}))];
   // ================= 7.0: шапка-картинка/гифка и шрифты разделов =================
   const CS_FONTS = [["", "Как на сайте"], ["Unbounded", "Unbounded", "800"], ["Russo One", "Russo One"], ["Rubik Mono One", "Rubik Mono"], ["Press Start 2P", "Пиксельный"], ["Oswald", "Oswald", "700"], ["Montserrat Alternates", "Montserrat Alt", "800"], ["Comfortaa", "Comfortaa", "700"], ["Playfair Display", "Playfair", "800"], ["Ruslan Display", "Ruslan"], ["Lobster", "Lobster"], ["Pacifico", "Pacifico"], ["Caveat", "Caveat", "700"], ["Bad Script", "Bad Script"], ["Neucha", "Neucha"], ["JetBrains Mono", "JetBrains Mono", "700"]];
@@ -77,9 +83,9 @@
   // что человек надел — с проверкой, что это у него открыто (чужое не покажем)
   function csOf(p){
     const c = csCosm(p), st = FR ? csStats(p.user_id) : null;
-    const th = csThemesAll().find(x => x.id === c.theme), fx = CS_FX.find(x => x.id === c.fx), fr = csFrames().find(x => x.id === c.frame);
+    const th = csThemesAll().find(x => x.id === c.theme), fx = CS_FX.find(x => x.id === c.fx), fr = csFrAll().find(x => x.id === c.frame);
     const ok = u => csAdm(p.user_id) || csOk(u, st);
-    return {theme: th && ok(th.u) ? th : null, fx: fx && fx.id && ok(fx.u) ? fx : null, frame: fr && ok(fr.unlock) ? fr : null, layout: Array.isArray(c.layout) ? c.layout : null, hide: Array.isArray(c.hide) ? c.hide : []};
+    return {theme: th && ok(th.u) ? th : null, fx: fx && fx.id && ok(fx.u) ? fx : null, frame: fr && (csFrFor(fr, p.user_id) || csAdm(p.user_id)) && ok(fr.unlock) ? fr : null, layout: Array.isArray(c.layout) ? c.layout : null, hide: Array.isArray(c.hide) ? c.hide : []};
   }
   // ---- для renderProfile: класс темы, рамка, порядок блоков
   function csPfAttrs(p){ if (!COSM && !COSM_OFF) loadCosm(); const o = csOf(p), t = o.theme;
@@ -87,7 +93,7 @@
     if (t.db){ const d = t.db.data || {}; return {cls: " v6t v6t-db" + (d.style ? " v6t-" + esc(d.style) : ""), style: `${d.ac ? `--ac:${esc(d.ac)};--tac:${esc(d.ac)};` : ""}${t.db.img ? `--tbg:url('${publicUrl(t.db.img)}');` : ""}`}; }
     return {cls: " v6t v6t-" + t.id, style: ""}; }
   // 7.19: масштаб и сдвиг рамки подгоняет админ при загрузке (data.s — % от аватарки, x/y — сдвиг в %)
-  const csFrGeo = f => { const d = (f && f.data) || {}; return {s: csNum(d.s, 60, 220, 128), x: csNum(d.x, -40, 40, 0), y: csNum(d.y, -40, 40, 0)}; };
+  const csFrGeo = f => { const d = (f && f.data) || {}; return {s: csNum(d.s, 60, 300, 128), x: csNum(d.x, -40, 40, 0), y: csNum(d.y, -40, 40, 0)}; };
   const csFrPrev = f => { const g = csFrGeo(f), a = 62; return ` style="width:${Math.round(a * g.s / 100)}px;height:${Math.round(a * g.s / 100)}px;left:calc(50% + ${(a * g.x / 100).toFixed(1)}px);top:calc(50% + ${(a * g.y / 100).toFixed(1)}px)"`; };
   function csFrameHTML(p){ const f = csOf(p).frame; if (!f || !f.img) return ""; const g = csFrGeo(f);
     return `<img class="v6-frame" alt="" src="${publicUrl(f.img)}" draggable="false" style="width:${g.s}%;height:${g.s}%;left:${50 + g.x}%;top:${50 + g.y}%">`; }
@@ -152,7 +158,7 @@
       q("#csT").innerHTML = [["theme", "Темы"], ["hdr", "Шапка"], ["txt", "Шрифты"], ["frame", "Рамки"], ["fx", "Эффекты"], ["layout", "Блоки"]].map(([k, l]) => `<button type="button" data-cst="${k}" aria-pressed="${csTab === k}">${l}</button>`).join("");
       let h = "";
       if (csTab === "theme") h = `<div class="cs-g">${csThemesAll().map(t => card(cur.theme === t.id, lock(t.u), `<span class="cs-pv v6t-pv-${t.db ? "db" : t.id}" style="${t.db && t.db.img ? `background-image:url('${publicUrl(t.db.img)}')` : ""}${t.db && t.db.data && t.db.data.ac ? `;--tac:${esc(t.db.data.ac)}` : ""}"><i></i><i></i><i></i></span>`, t.t, t.d, t.u, `data-csv="theme:${esc(t.id)}"`)).join("")}</div>${IS_ADMIN && !COSM_OFF ? `<button type="button" class="ib cs-adm" data-csadd="theme">+ Своя тема (фон и цвет)</button>` : ""}`;
-      else if (csTab === "frame") h = COSM_OFF ? `<p class="a-sub">Рамки появятся после обновления базы.</p>` : `<div class="cs-g">${card(!cur.frame, false, `<span class="cs-pv fr">${avaHTML(p, "big")}</span>`, "Без рамки", "", null, `data-csv="frame:"`)}${csFrames().map(f => card(cur.frame === f.id, lock(f.unlock), `<span class="cs-pv fr">${avaHTML(p, "big")}<img alt="" src="${publicUrl(f.img)}"${csFrPrev(f)}></span>`, f.title, (f.data && f.data.d) || "", f.unlock, `data-csv="frame:${esc(f.id)}"`)).join("")}</div>${csFrames().length ? "" : `<p class="a-sub">Рамок пока нет — их рисует и загружает админ.</p>`}${IS_ADMIN ? `<button type="button" class="ib cs-adm" data-csadd="frame">+ Загрузить рамки</button>${csFrames().length ? `<div class="cs-fadj"><small>Подогнать масштаб и сдвиг:</small>${csFrames().map(f => `<button type="button" class="ib" data-csfadj="${esc(f.id)}">${esc(f.title)}</button>`).join("")}</div>` : ""}` : ""}`;
+      else if (csTab === "frame") h = COSM_OFF ? `<p class="a-sub">Рамки появятся после обновления базы.</p>` : `<div class="cs-g">${card(!cur.frame, false, `<span class="cs-pv fr">${avaHTML(p, "big")}</span>`, "Без рамки", "", null, `data-csv="frame:"`)}${csFrames().map(f => card(cur.frame === f.id, lock(f.unlock), `<span class="cs-pv fr">${avaHTML(p, "big")}<img alt="" src="${publicUrl(f.img)}"${csFrPrev(f)}></span>`, f.title, (f.data && f.data.d) || "", f.unlock, `data-csv="frame:${esc(f.id)}"`)).join("")}</div>${csFrames().length ? "" : `<p class="a-sub">Рамок пока нет — их рисует и загружает админ.</p>`}${IS_ADMIN ? `<button type="button" class="ib cs-adm" data-csadd="frame">+ Загрузить рамки</button>${csFrames().length ? `<div class="cs-fadj"><small>Подогнать масштаб и сдвиг:</small>${csFrames().map(f => `<button type="button" class="ib" data-csfadj="${esc(f.id)}">${esc(f.title)}${csFrAud(f) ? " · личная" : ""}</button>`).join("")}</div>` : ""}` : ""}`;
       else if (csTab === "fx") h = `<div class="cs-g">${CS_FX.map(f => card(cur.fx === f.id, lock(f.u), `<span class="cs-pv fx fx-${f.id || "none"}"></span>`, f.t, f.d, f.u, `data-csv="fx:${esc(f.id)}"`)).join("")}</div><p class="a-sub" style="margin-top:8px">Эффекты не грузят телефон: на слабых экранах частиц меньше, а при «уменьшении движения» их нет совсем.</p>`;
       else if (csTab === "hdr"){ const d = cur.hdr || {}, has = !!(d.img || d.blob), H = has ? csHdr({cosm: {hdr: d}}) : null;
         h = `<p class="a-sub">Картинка или гифка во всю шапку профиля — поверх фона профиля. GIF до 12 МБ, обычные картинки любые (сожмём сами).</p>
@@ -227,6 +233,7 @@
       <label class="v6-fl">Название${kind === "frame" ? " (для нескольких файлов — из имён файлов)" : ""}<input id="caT" maxlength="40"${kind === "frame" ? ` placeholder="Пусто — возьму из имени файла"` : ""}></label><label class="v6-fl">Описание<input id="caD" maxlength="80"></label>
       <label class="v6-fl">${kind === "frame" ? "Картинка рамки" : "Фон (картинка)"}<input type="file" id="caF"${kind === "frame" ? " multiple" : ""} accept="image/png,image/webp,image/apng,image/gif${kind === "theme" ? ",image/jpeg" : ""}"></label>
       ${kind === "theme" ? `<label class="v6-fl">Цвет акцента<input type="color" id="caC" value="#ff375f"></label><label class="v6-fl">Стиль карточек<select id="caS">${CS_THEMES.filter(t => t.id !== "base").map(t => `<option value="${t.id}">${esc(t.t)}</option>`).join("")}</select></label>` : ""}
+      ${kind === "frame" ? csAudHTML([]) : ""}
       <label class="v6-fl">Как открывается<select id="caU">${UN.map(([k, l]) => `<option value="${k}">${l}</option>`).join("")}</select></label><label class="v6-fl">Сколько нужно (уровень, дней, раз)<input id="caN" type="number" min="1" value="3"></label>
       <div class="acts"><button class="ib blue" id="caOk">Загрузить</button><button class="ib" id="caNo">Отмена</button></div>`);
     const q = sel => s.el.querySelector(sel);
@@ -235,7 +242,7 @@
       const files = [...q("#caF").files], t0 = q("#caT").value.trim();
       if (kind === "theme"){ if (!t0){ toast("Дай название"); return; } }
       else { if (!files.length){ toast("Выбери картинки рамок"); return; } if (files.length === 1 && !t0 && !files[0].name){ toast("Дай название"); return; } }
-      const b = q("#caOk"), u = q("#caU").value, unlock = u === "free" || u === "cup" || u === "top3" ? {t: u} : {t: u, n: Math.max(1, +q("#caN").value || 1)}, made = [];
+      const b = q("#caOk"), u = q("#caU").value, aud = kind === "frame" ? csAudRead(s.el) : [], unlock = aud.length || u === "free" || u === "cup" || u === "top3" ? {t: aud.length ? "free" : u} : {t: u, n: Math.max(1, +q("#caN").value || 1)}, made = [];
       b.disabled = true; b.textContent = "Загружаю…";
       try {
         const list = kind === "theme" ? [files[0] || null] : files;
@@ -246,7 +253,7 @@
           const base = f ? f.name.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ").trim() : "";
           const title = (kind === "frame" && (list.length === 1 ? t0 : "") || base || t0 || "Рамка").slice(0, 40);
           const id = (kind === "frame" ? "fr_" : "th_") + Date.now().toString(36) + (n ? "_" + n : "");
-          const row = {id, kind, title, img, data: {d: q("#caD").value.trim(), ...(kind === "theme" ? {ac: q("#caC").value, style: q("#caS").value} : {})}, unlock};
+          const row = {id, kind, title, img, data: {d: q("#caD").value.trim(), ...(aud.length ? {users: aud} : {}), ...(kind === "theme" ? {ac: q("#caC").value, style: q("#caS").value} : {})}, unlock};
           const {error} = await SB.from("cosmetics").insert(row); if (error) throw error;
           COSM = [...(COSM || []), {...row, created_at: now()}]; made.push(id);
         }
@@ -264,8 +271,9 @@
       const f = list[i], p = myProf(), cur = {...csFrGeo(f)}, last = i === list.length - 1; let moved = false;
       const s = openSheet(`<h3>Рамка «${esc(f.title)}»${list.length > 1 ? ` · ${i + 1} из ${list.length}` : ""}</h3><p class="sub">Подгони рамку под аватарку так, как она будет в профиле у всех.</p>
         <div class="cs-fa"><div class="pf-ava has-frame v6s-${avaShape(p)}">${avaBigHTML(p)}<img class="v6-frame" id="faImg" alt="" src="${publicUrl(f.img)}" draggable="false"></div></div>
-        <div class="cs-rgs">${[["s", "Масштаб", 60, 220, 1, "%"], ["y", "Сдвиг вверх-вниз", -40, 40, 1, "%"], ["x", "Сдвиг влево-вправо", -40, 40, 1, "%"]].map(([k, l, a, b2, st, u]) => `<label class="cs-rg"><span>${l}<em data-fav="${k}">${cur[k]}${u}</em></span><input type="range" min="${a}" max="${b2}" step="${st}" value="${cur[k]}" data-far="${k}"></label>`).join("")}</div>
-        <div class="acts"><button class="ib blue" id="faOk">${last ? "Сохранить" : "Сохранить и дальше"}</button><button class="ib" id="faSkip">${last ? "Закрыть" : "Пропустить"}</button><button class="ib" id="faReset">Сбросить</button></div>`,
+        <div class="cs-rgs">${[["s", "Масштаб", 60, 300, 1, "%"], ["y", "Сдвиг вверх-вниз", -40, 40, 1, "%"], ["x", "Сдвиг влево-вправо", -40, 40, 1, "%"]].map(([k, l, a, b2, st, u]) => `<label class="cs-rg"><span>${l}<em data-fav="${k}">${cur[k]}${u}</em></span><input type="range" min="${a}" max="${b2}" step="${st}" value="${cur[k]}" data-far="${k}"></label>`).join("")}</div>
+        ${csAudHTML(csFrAud(f))}
+        <div class="acts"><button class="ib blue" id="faOk">${last ? "Сохранить" : "Сохранить и дальше"}</button><button class="ib" id="faSkip">${last ? "Закрыть" : "Пропустить"}</button><button class="ib" id="faReset">Сбросить</button><button class="ib red" id="faDel">Удалить рамку</button></div>`,
         {onClose: () => { if (!moved){ moved = true; done && done(); } }});
       const q = sel => s.el.querySelector(sel), paint = () => { const im = q("#faImg"); im.style.width = im.style.height = cur.s + "%"; im.style.left = (50 + cur.x) + "%"; im.style.top = (50 + cur.y) + "%";
         ["s", "x", "y"].forEach(k => { q(`[data-fav="${k}"]`).textContent = cur[k] + "%"; q(`[data-far="${k}"]`).value = cur[k]; }); };
@@ -273,11 +281,16 @@
       s.el.addEventListener("input", e => { const k = e.target.dataset && e.target.dataset.far; if (!k) return; cur[k] = +e.target.value; paint(); });
       q("#faReset").onclick = () => { Object.assign(cur, {s: 128, x: 0, y: 0}); paint(); };
       const next = () => { moved = true; s.close(); i++; step(); };
+      q("#faDel").onclick = async () => { if (!confirm(`Удалить рамку «${f.title}»? Она пропадёт у всех, кто её носит.`)) return;
+        const {error} = await SB.from("cosmetics").delete().eq("id", f.id);
+        if (error){ logErr("удаление рамки", error); toast("Не удалилось: " + error.message); return; }
+        COSM = (COSM || []).filter(x => x.id !== f.id); toast("Рамка удалена"); next(); };
       q("#faSkip").onclick = () => { if (last){ s.close(); return; } next(); };
       q("#faOk").onclick = async () => { const b = q("#faOk"); b.disabled = true;
-        const data = {...(f.data || {}), s: cur.s, x: cur.x, y: cur.y}, {error} = await SB.from("cosmetics").update({data}).eq("id", f.id);
+        const aud = csAudRead(s.el), data = {...(f.data || {}), s: cur.s, x: cur.x, y: cur.y}; delete data.users; if (aud.length) data.users = aud;
+        const patch = aud.length ? {data, unlock: {t: "free"}} : {data}, {error} = await SB.from("cosmetics").update(patch).eq("id", f.id);
         if (error){ logErr("подгонка рамки", error); toast("Не сохранилось: " + error.message); b.disabled = false; return; }
-        f.data = data; toast("Рамка подогнана"); if (last){ moved = true; s.close(); done && done(); } else next(); };
+        f.data = data; if (patch.unlock) f.unlock = patch.unlock; toast("Рамка подогнана"); if (last){ moved = true; s.close(); done && done(); } else next(); };
     };
     step();
   }

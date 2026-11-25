@@ -579,3 +579,11 @@ body.cs-docked .cs-rgs{grid-template-columns:1fr}
 .cs-fa .pf-ava{position:relative;width:200px;height:200px;margin:0}
 .cs-fa .pf-ava>.fr-ava,.cs-fa .pf-ava>span:first-child{width:100%!important;height:100%!important}
 .cs-fadj{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px}.cs-fadj small{width:100%;opacity:.7}
+/* 7.20: рамки могут выходить за аватарку (общее правило img{max-width:100%} их обрезало), личные рамки */
+.v6-frame{max-width:none!important;max-height:none!important}
+.cs-pv.fr img{max-width:none!important;max-height:none!important}
+.cs-fa{padding:90px 0 80px}
+.cs-aud{margin:10px 0;padding:10px 12px;border-radius:12px;background:rgba(127,127,127,.12);font-size:13px}
+.cs-aud small{display:block;opacity:.7;margin:3px 0 6px;line-height:1.35}
+.cs-aud-l{display:flex;flex-wrap:wrap;gap:6px 14px;max-height:130px;overflow:auto}
+.cs-aud-l label{display:flex;align-items:center;gap:6px;cursor:pointer}
