@@ -673,6 +673,7 @@
     return `<button class="pf-fd${showWho ? "" : " solo"}" ${attr}>${showWho ? avaHTML(profOf(e.uid), "sm") : ""}<span class="t">${showWho ? `<b class="nk">${esc(frNick(e.uid))}</b> ` : ""}<span class="vb">${e.verb}</span> <b>${esc(t)}</b><small>${agoTxt(e.d)} · ${e.rd ? esc((RTYPE[e.rd.type] || "книга").toLowerCase()) : isGame(e.it) ? "игра" : esc((KTYPES[e.it.type] || "кино").toLowerCase())}</small></span>${r}${cov}</button>`;
   };
   function topHTML3(n){
+    if (typeof v6Top === "function") return v6Top(n);
     if (!FR) return `<p class="pf-mute">Загружаю…</p>`;
     const since = Date.now() - 30 * 864e5, by = new Map();
     FR.profiles.forEach(p => by.set(p.user_id, {p: ME && p.user_id === ME.id ? {...p, ...myProf()} : p, n: 0, lib: 0, last: ""}));
@@ -737,10 +738,10 @@
     const bg = p.bg ? publicUrl(p.bg) : null, dim = p.bg_dim ?? 45; PF_BG = p.bg ? {img: p.bg, m: p.bg_m || null, dim} : null;
     const feed = mine ? pfEvents(null, false).slice(0, 14) : pfEvents(uid, true).slice(0, 14);
     const head = `<section class="pf-head">
-        <div class="pf-ava">${avaHTML(p, "big")}</div>
+        <div class="pf-ava v6s-${avaShape(p)}">${avaBigHTML(p)}</div>
         <div class="pf-id">
           <h1>${esc(p.nick || NICK)}</h1>
-          <div class="pf-tags">${p.pid ? `<button class="pf-pid" type="button" data-pid="${esc(p.pid)}" title="Скопировать ID">ID <b>${esc(p.pid)}</b></button>` : ""}${since ? `<span>в NEXUS с ${esc(since)}</span>` : ""}${bdN ? `<span>${ICON.cake}${bdLabel(p.birthday)}${bdN.days === 0 ? " — сегодня!" : bdN.days === 1 ? " — завтра" : ""}</span>` : ""}</div>
+          <div class="pf-tags">${typeof v6Tags === "function" ? v6Tags(mine ? ME.id : uid) : ""}${p.pid ? `<button class="pf-pid" type="button" data-pid="${esc(p.pid)}" title="Скопировать ID">ID <b>${esc(p.pid)}</b></button>` : ""}${since ? `<span>в NEXUS с ${esc(since)}</span>` : ""}${bdN ? `<span>${ICON.cake}${bdLabel(p.birthday)}${bdN.days === 0 ? " — сегодня!" : bdN.days === 1 ? " — завтра" : ""}</span>` : ""}</div>
           <div class="pf-on${!mine && lastEv && agoTxt(lastEv.d) === "сегодня" ? " live" : ""}">${mine ? "Это ты" : lastEv ? `был ${agoTxt(lastEv.d)}` : "пока ничего не добавил"}${c.pct != null ? ` · совпадение вкусов <b class="${pctCls(c.pct)}">${c.pct}%</b>` : ""}</div>
         </div>
         <div class="pf-lvl" title="Уровень растёт за каждые 5 записей на полках"><span>Уровень</span><b style="--p:${L.pct}">${L.lv}</b></div>
@@ -767,8 +768,8 @@
         ${show("Сейчас читаю", nowR.length || null, rack(nowR, "read:now", "Ничего не отметил", true), {cls: "shelf", act: R("rnow", nowR)})}
         ${show("Прочитанные", doneR.length || null, rack(doneR, null, "Пока ничего не дочитал"), {cls: "shelf", act: R("rdone", doneR)})}
       </section>`;
-    const side = `<aside class="pf-side">${mine ? `<div class="v6-d-only">${evNextCard()}</div>` : ""}
-        <div class="pf-card"><h3>${ICON.trophy}Рейтинг активности<small>30 дней</small></h3>${topHTML3(10)}</div>
+    const side = `<aside class="pf-side">${mine ? `<div class="v6-d-only">${evNextCard()}</div>${v6TasksCard()}${v6NagCard()}${v6RxCard()}` : ""}
+        <div class="pf-card"><h3>${ICON.trophy}Рейтинг<small>сезон месяца</small></h3>${topHTML3(10)}</div>
         <div class="pf-card"><h3>${ICON.people}${mine ? "Лента друзей" : "Активность"}${mine ? `<small><a href="#people">вся ›</a></small>` : ""}</h3>${FR ? (feed.length ? `<div class="pf-feed">${feed.map(e => pfFeedRow(e, mine)).join("")}</div>` : `<p class="pf-mute">Пока тихо.</p>`) : `<p class="pf-mute">Загружаю…</p>`}</div>
         ${c.pct != null ? `<div class="pf-card"><h3>${HEART_O}Совпадение вкусов<small>${c.common.length} общих</small></h3><div class="pf-cmp"><b class="${pctCls(c.pct)}">${c.pct}%</b>${[...c.common].sort((a, b) => a.d - b.d).slice(0, 4).map(x => `<div class="r"><span>${esc(x.f.title)}</span><span>${num1(x.m.rating)} / ${num1(x.f.rating)}</span></div>`).join("")}</div></div>` : ""}
       </aside>`;
@@ -970,7 +971,7 @@
       return e.soc ? `<li class="fg-e"><time>${esc(feedTime(e.ts))}</time><button class="fg-t" data-actref="${esc(e.ref || "")}"><span class="vb">${esc(e.verb)}</span>${e.title ? ` <b>${esc(e.title)}</b>` : ""}${e.verb.includes(e.tag) ? "" : ` <em>${esc(e.tag)}</em>`}${e.q ? `<small class="fg-q">«${esc(e.q)}»</small>` : ""}</button></li>`
         : e.slop ? `<li class="fg-e"><time>${esc(feedTime(e.ts))}</time><button class="fg-t" data-slopgo="${esc(e.slop)}"><span class="vb">${esc(e.verb)}</span> <b>${esc(e.title)}</b> <em>СЛОП</em></button></li>`
         : e.join ? `<li class="fg-e"><time>${esc(feedTime(e.ts))}</time><span class="vb">${esc(e.verb)}</span></li>`
-        : `<li class="fg-e"><time>${esc(feedTime(e.ts))}</time><button class="fg-t" ${e.rd ? `data-frd="${esc(e.uid + "/" + e.rd.id)}"` : `data-fi="${esc(e.uid + "/" + e.it.id)}"`}><span class="vb">${esc(e.verb)}</span> <b>${esc(evTitle(e))}</b> <em>${esc(evKind(e))}</em>${r != null ? ` <span class="fg-r ${rateCls(r)}">${num1(r)}</span>` : ""}</button></li>`; };
+        : `<li class="fg-e"><time>${esc(feedTime(e.ts))}</time><button class="fg-t" ${e.rd ? `data-frd="${esc(e.uid + "/" + e.rd.id)}"` : `data-fi="${esc(e.uid + "/" + e.it.id)}"`}><span class="vb">${esc(e.verb)}</span> <b>${esc(evTitle(e))}</b> <em>${esc(evKind(e))}</em>${r != null ? ` <span class="fg-r ${rateCls(r)}">${num1(r)}</span>` : ""}${e.it && v6IsFirst(e.uid, e.it.id) ? `<span class="v6-first" title="Первым на сайте добавил это">первым на сайте</span>` : ""}</button>${e.it ? v6Rx(e.uid, e.it.id) : ""}</li>`; };
     return `<article class="fg"><button class="fg-a" data-user="${esc(g.uid)}">${avaHTML(p)}</button>
       <div class="fg-b"><div class="fg-h"><button class="fg-n" data-user="${esc(g.uid)}">${esc(p.nick || "кто-то")}</button><span class="fg-d">${esc(feedAgo(g.ts))}</span>${g.ev.length > 1 ? `<span class="fg-c">${g.ev.length} ${plural(g.ev.length, "действие", "действия", "действий")}</span>` : ""}</div>
         <ul class="fg-l fg-tl">${shown.map(li).join("")}</ul>

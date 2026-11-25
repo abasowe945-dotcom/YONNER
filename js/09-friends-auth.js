@@ -23,6 +23,12 @@
   const avaHTML = (p, size) => { p = p || {}; size = size === true ? "big" : (size || "");
     const inner = p.avatar ? `<img alt="" src="${publicUrl(p.avatar)}" loading="lazy" onerror="this.remove()">` : p.ava_animal && ANIMALS[p.ava_animal] ? animalSVG(p.ava_animal) : esc((p.nick || "?").slice(0, 1).toUpperCase());
     return `<span class="fr-ava${size ? " " + size : ""}" style="background:${avaBg(p)}" title="${esc(p.nick || "")}">${inner}</span>`; };
+  // 6.1: большой аватар в профиле — своя форма и свой кадр; везде ещё остаётся маленький квадрат
+  const avaShape = p => { const c = p && p.ava_cfg; return c && ["square", "round", "circle", "portrait"].includes(c.shape) ? c.shape : "square"; };
+  const avaBigHTML = p => { p = p || {}; const c = p.ava_cfg, sh = avaShape(p); if (!c) return avaHTML(p, "big");
+    const src = p.avatar ? (p.avatar_full || p.avatar) : null;
+    if (!src) return avaHTML(p, "big").replace('class="fr-ava big"', `class="fr-ava big v6-shape-${sh}"`);
+    return `<span class="fr-ava big v6-shape-${sh}" style="background:${avaBg(p)}" title="${esc(p.nick || "")}"><img alt="" src="${publicUrl(src)}" style="${p.avatar_full && c.big ? posStyle(c.big) : ""}" onerror="this.remove()"></span>`; };
   let MEP = null; // мой профиль: ник, фото, зверь, цвет
   const myProf = () => ({user_id: ME ? ME.id : "", nick: NICK, ...(MEP || {})});
   const profOf = uid => uid === (ME && ME.id) ? myProf() : (FR && FR.profiles.find(x => x.user_id === uid)) || {user_id: uid, nick: "?"};
@@ -30,9 +36,12 @@
   function avaSheet(first){
     return new Promise(res => {
       let st = {avatar: (MEP && MEP.avatar) || null, ava_animal: (MEP && MEP.ava_animal) || null, ava_color: (MEP && MEP.ava_color) || AVA_COLORS[Math.floor(Math.random() * AVA_COLORS.length)]}, file = null;
+      // 6.1: форма в профиле и два кадра — большой для профиля, маленький квадрат для остального сайта
+      const c0 = (MEP && MEP.ava_cfg) || {}; let cfg = {shape: c0.shape || "square", big: {x: 50, y: 50, s: 1, ...(c0.big || {})}, sm: {x: 50, y: 50, s: 1, ...(c0.sm || {})}}, smMoved = false, fileUrl = null;
+      const fullSrc = () => file ? fileUrl : MEP && MEP.avatar_full && st.avatar ? publicUrl(MEP.avatar_full) : st.avatar ? publicUrl(st.avatar) : null;
       const prevP = () => ({...myProf(), ...st, avatar: file ? null : st.avatar});
       const s = openSheet(`<h3>${first ? "Выбери аватарку" : "Аватар"}</h3><p class="sub">Видна друзьям в ленте, в профиле, у релизов и в совместной рулетке. Фото можно перетащить сюда или вставить через Ctrl+V.</p>
-        <div class="av-prev" id="avPrev"></div>
+        <div class="av-prev" id="avPrev"></div><div id="v6Ava"></div>
         <div class="acts"><label class="ib" for="avF">Загрузить фото</label><input type="file" id="avF" accept="image/*" hidden><button class="ib" id="avRm" ${st.avatar ? "" : "hidden"}>Убрать фото</button></div>
         <div class="av-lb">Или зверь</div><div class="av-grid" id="avA"></div>
         <div class="av-lb">Цвет фона</div><div class="av-cols" id="avC">${AVA_COLORS.map(c => `<button style="background:${c}" data-c="${c}" aria-label="Цвет"></button>`).join("")}</div>
@@ -43,10 +52,22 @@
         q("#avA").innerHTML = [["", "Буква"], ...Object.entries(ANIMALS).map(([k, v]) => [k, v[0]])].map(([k, l]) => `<button data-a="${k}" title="${l}" aria-pressed="${!file && !st.avatar && (st.ava_animal || "") === k}">${avaHTML({...myProf(), avatar: null, ava_animal: k || null, ava_color: st.ava_color})}</button>`).join("");
         q("#avC").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.c === st.ava_color));
         q("#avRm").hidden = !(st.avatar || file);
+        const src = fullSrc(), canSm = !!(file || (MEP && MEP.avatar_full && st.avatar));
+        q("#v6Ava").innerHTML = `<div class="av-lb">Форма в профиле</div><div class="v6-shp">${[["square", "Квадрат"], ["round", "Скруглённый"], ["circle", "Круг"], ["portrait", "Прямоугольник"]].map(([k, l]) => `<button type="button" data-shp="${k}" aria-pressed="${cfg.shape === k}"><i class="v6-si ${k}"></i>${l}</button>`).join("")}</div>
+          ${src ? `<div class="v6-crops"><div class="v6-cw"><div class="v6-crop shape-${cfg.shape}" data-crop="big"><img alt="" src="${src}" style="${posStyle(cfg.big)}" draggable="false"></div><span>В профиле</span><input type="range" min="1" max="3" step=".02" value="${cfg.big.s}" data-zoom="big" aria-label="Масштаб в профиле"></div>
+            <div class="v6-cw"><div class="v6-crop sq${canSm ? "" : " off"}" data-crop="sm"><img alt="" src="${src}" style="${posStyle(canSm ? cfg.sm : {})}" draggable="false"></div><span>Везде на сайте</span>${canSm ? `<input type="range" min="1" max="3" step=".02" value="${cfg.sm.s}" data-zoom="sm" aria-label="Масштаб на сайте">` : `<small>Чтобы выбрать кадр, загрузи фото заново</small>`}</div></div><p class="v6-hint">Двигай картинку пальцем или мышкой, масштаб — ползунком. В ленте, рейтинге и комментариях аватар всегда маленький квадрат.</p>` : ""}`;
       };
+      q("#v6Ava").addEventListener("click", e => { const b = e.target.closest("[data-shp]"); if (!b) return; cfg.shape = b.dataset.shp; draw(); });
+      q("#v6Ava").addEventListener("input", e => { const z = e.target.closest("[data-zoom]"); if (!z) return; const k = z.dataset.zoom; cfg[k].s = +z.value; if (k === "sm") smMoved = true; const im = q(`[data-crop="${k}"] img`); if (im) im.style.cssText = posStyle(cfg[k]); });
+      let drag = null;
+      q("#v6Ava").addEventListener("pointerdown", e => { const f = e.target.closest("[data-crop]"); if (!f || f.classList.contains("off")) return; e.preventDefault(); const k = f.dataset.crop; drag = {k, f, x: e.clientX, y: e.clientY, p: {...cfg[k]}}; f.setPointerCapture(e.pointerId); });
+      q("#v6Ava").addEventListener("pointermove", e => { if (!drag) return; const r = drag.f.getBoundingClientRect(), c = cfg[drag.k];
+        c.x = Math.max(0, Math.min(100, drag.p.x - (e.clientX - drag.x) / r.width * 100 / c.s * 1.6)); c.y = Math.max(0, Math.min(100, drag.p.y - (e.clientY - drag.y) / r.height * 100 / c.s * 1.6));
+        if (drag.k === "sm") smMoved = true; const im = drag.f.querySelector("img"); if (im) im.style.cssText = posStyle(c); });
+      q("#v6Ava").addEventListener("pointerup", () => { drag = null; });
       q("#avA").onclick = e => { const b = e.target.closest("[data-a]"); if (!b) return; st.ava_animal = b.dataset.a || null; st.avatar = null; file = null; draw(); };
       q("#avC").onclick = e => { const b = e.target.closest("[data-c]"); if (!b) return; st.ava_color = b.dataset.c; draw(); };
-      const takeAva = f => { if (f && f.type.startsWith("image/")){ file = f; draw(); } };
+      const takeAva = f => { if (f && f.type.startsWith("image/")){ file = f; fileUrl = URL.createObjectURL(f); cfg.big = {x: 50, y: 50, s: 1}; cfg.sm = {x: 50, y: 50, s: 1}; smMoved = true; draw(); } };
       q("#avF").onchange = e => takeAva(e.target.files[0]);
       pasteTarget = takeAva; bindDrop(q("#avPrev"), takeAva); bindDrop(s.el, takeAva);
       q("#avRm").onclick = () => { st.avatar = null; file = null; draw(); };
@@ -54,7 +75,10 @@
       q("#avOk").onclick = async () => {
         const btn = q("#avOk"); btn.disabled = true; btn.textContent = "Сохраняю…";
         try {
-          if (file) st.avatar = await squareUpload(file);
+          if (file){ st.avatar = await squareUpload(file, cfg.sm); st.avatar_full = await fullUpload(file); }
+          else if (smMoved && MEP && MEP.avatar_full && st.avatar){ try { st.avatar = await squareUpload(publicUrl(MEP.avatar_full), cfg.sm); } catch(err){ logErr("кадр аватарки", err); toast("Кадр для сайта не обновился — загрузи фото заново"); } }
+          if (!st.avatar) st.avatar_full = null;
+          st.ava_cfg = cfg;
           if (await saveProf(st)){ toast("Аватар обновлён"); res(st); s.close(); }
         } catch(e){ toast("Не получилось загрузить фото"); }
         btn.disabled = false; btn.textContent = first ? "Готово" : "Сохранить";
@@ -62,17 +86,27 @@
       draw();
     });
   }
-  async function squareUpload(file){
-    const img = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = URL.createObjectURL(file); });
+  async function squareUpload(file, pos){
+    const img = await new Promise((ok, no) => { const i = new Image(); i.crossOrigin = "anonymous"; i.onload = () => ok(i); i.onerror = no; i.src = file instanceof Blob ? URL.createObjectURL(file) : file; });
     const S = 320, c = document.createElement("canvas"); c.width = c.height = S;
-    const m = Math.min(img.naturalWidth, img.naturalHeight);
-    c.getContext("2d").drawImage(img, (img.naturalWidth - m) / 2, (img.naturalHeight - m) / 2, m, m, 0, 0, S, S);
+    const p = {x: 50, y: 50, s: 1, ...(pos || {})}, iw = img.naturalWidth, ih = img.naturalHeight, k = Math.max(S / iw, S / ih), dw = iw * k, dh = ih * k;
+    const ox = (S - dw) * p.x / 100, oy = (S - dh) * p.y / 100, cx = S * p.x / 100, cy = S * p.y / 100, x = c.getContext("2d"); x.imageSmoothingQuality = "high";
+    x.drawImage(img, cx + (ox - cx) * p.s, cy + (oy - cy) * p.s, dw * p.s, dh * p.s); // 6.1: кадр, выбранный вручную (как у обложек)
     const blob = await new Promise(ok => c.toBlob(ok, "image/jpeg", .88));
+    return (await assets.upload(blob, {type: "image/jpeg"})).id;
+  }
+  // 6.1: большая копия аватарки для профиля (до 1200 px по длинной стороне)
+  async function fullUpload(file){
+    const img = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = URL.createObjectURL(file); });
+    const k = Math.min(1, 1200 / Math.max(img.naturalWidth, img.naturalHeight)), c = document.createElement("canvas"); c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+    c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+    const blob = await new Promise(ok => c.toBlob(ok, "image/jpeg", .9));
     return (await assets.upload(blob, {type: "image/jpeg"})).id;
   }
   async function saveProf(patch){
     const row = {user_id: ME.id, nick: NICK, ...patch};
-    const {error} = await SB.from("profiles").upsert(row);
+    let {error} = await SB.from("profiles").upsert(row);
+    if (error && /avatar_full|ava_cfg/.test(error.message || "")){ delete row.avatar_full; delete row.ava_cfg; delete patch.avatar_full; delete patch.ava_cfg; ({error} = await SB.from("profiles").upsert(row)); if (!error) toast("Аватар сохранён, а форма заработает после обновления базы"); }
     if (error){ toast("Не сохранилось: " + error.message); return false; }
     MEP = {...(MEP || {}), ...patch};
     if (FR){ const p = FR.profiles.find(x => x.user_id === ME.id); if (p) Object.assign(p, patch); else FR.profiles.push(row); }

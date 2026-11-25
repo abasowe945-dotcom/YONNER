@@ -364,7 +364,7 @@
     $("aMain").innerHTML = `<h1 class="a-h1">Активность</h1><p class="a-sub">${others.length ? `${others.length} ${plural(others.length, "человек", "человека", "человек")} на NEXUS кроме тебя. Видно всё, кроме заметок и причин дропа.` : "Пока здесь никого, кроме тебя. Скинь друзьям ссылку на сайт."}</p>
       <div class="fb">
         <aside class="fb-col fb-l">${eventsCard()}${placesCard()}${recCard()}${tlCard()}${bdH}</aside>
-        <section class="fb-feed-w">${watchCard()}<div class="act-tabs" role="tablist"><button data-acttab="wall" aria-pressed="${actTab === "wall"}">${ICON.chat}Стена${WALL && WALL.posts.length ? `<small>${WALL.posts.length}</small>` : ""}</button><button data-acttab="feed" aria-pressed="${actTab === "feed"}">${ICON.people}Лента друзей</button></div>${actTab === "feed" ? feedCard() : wallCard()}</section>
+        <section class="fb-feed-w">${v6WeekCard()}${watchCard()}<div class="act-tabs" role="tablist"><button data-acttab="wall" aria-pressed="${actTab === "wall"}">${ICON.chat}Стена${WALL && WALL.posts.length ? `<small>${WALL.posts.length}</small>` : ""}</button><button data-acttab="feed" aria-pressed="${actTab === "feed"}">${ICON.people}Лента друзей</button></div>${actTab === "feed" ? feedCard() : wallCard()}</section>
         <aside class="fb-col fb-r"><div class="fb-card plain"><h3>Друзья<small>${others.length}</small></h3>${others.length ? `<div class="fl">${friendsH}</div>` : `<p class="a-sub" style="margin:0;font-size:13px">Скинь ссылку на сайт — тут появятся друзья и что они делали.</p>`}</div>${bookCard()}</aside>
       </div>`;
     document.querySelectorAll('[data-stack="1"]').forEach(wireStack);

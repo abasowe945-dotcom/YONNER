@@ -1006,3 +1006,28 @@ select r.place_id,
   r.user_id, r.taste, r.interior, r.price, r.beer, r.comment, r.updated_at, r.updated_at
 from public.place_ratings r
 where not exists (select 1 from public.place_reviews x where x.place_id = r.place_id and x.user_id = r.user_id);
+
+-- ===== 6.1: реакции на записи друзей («база», «тоже хочу», «кринж», «помянем») =====
+create table if not exists public.item_reactions (
+  owner      uuid not null references auth.users (id) on delete cascade,
+  item_id    text not null,
+  user_id    uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  kind       text not null check (kind in ('base','want','cringe','skull')),
+  created_at timestamptz not null default now(),
+  primary key (owner, item_id, user_id, kind)
+);
+create index if not exists item_reactions_user_idx on public.item_reactions (user_id);
+create index if not exists item_reactions_owner_idx on public.item_reactions (owner, created_at desc);
+alter table public.item_reactions enable row level security;
+drop policy if exists ir_select on public.item_reactions;
+drop policy if exists ir_insert on public.item_reactions;
+drop policy if exists ir_delete on public.item_reactions;
+create policy ir_select on public.item_reactions for select to authenticated using (true);
+create policy ir_insert on public.item_reactions for insert to authenticated with check ((select auth.uid()) = user_id and owner <> (select auth.uid()));
+create policy ir_delete on public.item_reactions for delete to authenticated using ((select auth.uid()) = user_id);
+revoke all on public.item_reactions from anon;
+grant select, insert, delete on public.item_reactions to authenticated;
+
+-- ===== 6.1: форма аватарки — отдельный кадр для профиля =====
+alter table public.profiles add column if not exists avatar_full text;
+alter table public.profiles add column if not exists ava_cfg jsonb;

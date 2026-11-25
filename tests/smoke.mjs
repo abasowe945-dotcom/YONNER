@@ -16,6 +16,7 @@ function fixtures(nItemsFriend) {
     public_items: items, is_nexus_admin: true,
     // живая лента: всё от друга, свежее
     events: [{id: "e1", owner: FUID, title: "Шашлыки", created_at: now, kind: "meet"}, {id: "e2", owner: FUID, title: "ДР СК", created_at: now, kind: "meet", starts_at: new Date(Date.now() + 3 * 864e5).toISOString()}, {id: "e3", owner: UID, title: "Прошлая встреча", created_at: now, kind: "meet", starts_at: new Date(Date.now() - 5 * 864e5).toISOString()}],
+    item_reactions: [{owner: FUID, item_id: "x", user_id: UID, kind: "base", created_at: now}],
     event_members: [{event_id: "e1", user_id: UID, status: "going", updated_at: now}],
     event_posts: [{id: "ep1", event_id: "e1", user_id: FUID, body: "Беру мангал", created_at: now}],
     event_post_likes: [],

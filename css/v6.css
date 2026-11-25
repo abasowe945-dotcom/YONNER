@@ -166,3 +166,66 @@
 @media (prefers-reduced-motion:reduce){.v6-pc .poster,.v6-mi .poster{transition:none!important}}
 .v6-mi .poster,.v6-lr .th .poster{background:#26262b}
 .v6-mi .poster .ph,.v6-lr .th .poster .ph{font-size:0!important}
+
+/* ================= 6.1: форма аватарки ================= */
+.fr-ava[class*="v6-shape-"]{overflow:hidden}
+.fr-ava[class*="v6-shape-"] img{width:100%;height:100%;object-fit:cover}
+.pf-ava.v6s-round{border-radius:30px}.pf-ava.v6s-round .fr-ava,.pf-ava.v6s-round .fr-ava img{border-radius:26px!important}
+.pf-ava.v6s-circle{border-radius:50%}.pf-ava.v6s-circle .fr-ava,.pf-ava.v6s-circle .fr-ava img{border-radius:50%!important}
+.pf-ava.v6s-portrait .fr-ava{height:auto!important;aspect-ratio:3/4}
+.v6-shp{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.v6-shp button{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 4px;border:1px solid rgba(127,127,127,.25);border-radius:12px;background:none;color:inherit;font:700 12px Manrope,sans-serif;cursor:pointer}
+.v6-shp button[aria-pressed="true"]{border-color:#0a84ff;background:rgba(10,132,255,.12)}
+.v6-si{display:block;width:26px;height:26px;background:currentColor;opacity:.75;border-radius:3px}
+.v6-si.round{border-radius:8px}.v6-si.circle{border-radius:50%}.v6-si.portrait{width:21px;height:28px}
+.v6-crops{display:flex;gap:18px;align-items:flex-end;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.v6-cw{display:flex;flex-direction:column;align-items:center;gap:8px;font:700 12px Manrope,sans-serif}
+.v6-cw input[type=range]{width:130px}
+.v6-cw small{max-width:130px;text-align:center;opacity:.6;font-weight:500}
+.v6-crop{position:relative;width:150px;height:150px;overflow:hidden;background:#222;cursor:grab;touch-action:none;box-shadow:0 0 0 2px rgba(255,255,255,.15)}
+.v6-crop img{width:100%;height:100%;object-fit:cover;pointer-events:none;user-select:none}
+.v6-crop.shape-square{border-radius:8px}.v6-crop.shape-round{border-radius:30px}.v6-crop.shape-circle{border-radius:50%}.v6-crop.shape-portrait{height:200px;border-radius:8px}
+.v6-crop.sq{width:84px;height:84px;border-radius:10px}
+.v6-crop.off{cursor:default;opacity:.7}
+.v6-hint{margin:10px 0 0;font-size:12px;opacity:.6;text-align:center}
+
+/* ================= 6.1: рейтинг, серия, задания, реакции, итоги ================= */
+.v6-tt{display:flex;gap:2px;padding:3px;margin:0 0 8px;border-radius:10px;background:rgba(127,127,127,.12)}
+.v6-tt button{flex:1;height:30px;border:0;border-radius:8px;background:none;color:inherit;opacity:.65;font:700 12px Manrope,sans-serif;cursor:pointer}
+.v6-tt button[aria-selected="true"]{opacity:1;background:rgba(127,127,127,.22)}
+.pf-top.v6 .v6-pts{margin-left:auto;font:800 15px/1 Manrope,sans-serif;font-variant-numeric:tabular-nums;padding-left:8px}
+.v6-st{display:inline-flex;align-items:center;gap:2px;margin-left:6px;color:#ff9f0a;font:800 11px/1 Manrope,sans-serif;vertical-align:middle}
+.v6-st svg{width:12px;height:12px}
+.v6-st.big{font-size:18px;margin:0}.v6-st.big svg{width:20px;height:20px}
+.v6-note{margin:8px 2px 2px;font-size:11.5px;line-height:1.4;opacity:.6}
+.v6-hall{display:flex;flex-direction:column;gap:3px;padding:8px 4px;border-bottom:1px solid rgba(127,127,127,.15);font-size:13px}
+.v6-hall b{display:flex;align-items:center;gap:6px;text-transform:capitalize}.v6-hall b svg{width:16px;height:16px;color:#ffd60a}
+.v6-hall .r1{font-weight:800;color:#ffd60a}
+.v6-tag{display:inline-flex;align-items:center;gap:5px}
+.v6-tag svg{width:14px;height:14px}
+.v6-tag.fire{color:#ff9f0a}.v6-tag.cup{color:#ffd60a;text-transform:none}.v6-tag.flag{color:#64d2ff}
+.v6-tasks h3 svg,.v6-nag h3 svg,.v6-rxc h3 svg{width:16px;height:16px}
+.v6-tk{display:grid;grid-template-columns:22px minmax(0,1fr);grid-template-rows:auto auto;column-gap:8px;row-gap:5px;padding:7px 2px}
+.v6-tk .ck{grid-row:1/3;width:20px;height:20px;border-radius:6px;border:2px solid rgba(127,127,127,.45);display:flex;align-items:center;justify-content:center;font:900 12px/1 Manrope,sans-serif;color:#0e0e10}
+.v6-tk.ok .ck{background:#30d158;border-color:#30d158}
+.v6-tk .tx{font:700 13px/1.25 Manrope,sans-serif}.v6-tk .tx small{display:block;font-weight:500;font-size:11.5px;opacity:.6;margin-top:2px}
+.v6-tk.ok .tx{opacity:.65}
+.v6-tk .bar{grid-column:2;height:4px;border-radius:4px;background:rgba(127,127,127,.2);overflow:hidden}.v6-tk .bar i{display:block;height:100%;background:#30d158}
+.v6-tk-f{display:flex;align-items:center;gap:10px;margin-top:6px;padding-top:8px;border-top:1px solid rgba(127,127,127,.15);font-size:12px;opacity:.85}
+.v6-nag h3{display:flex;align-items:center}.v6-x{margin-left:auto;width:26px;height:26px;border:0;border-radius:8px;background:none;color:inherit;opacity:.6;cursor:pointer;display:flex;align-items:center;justify-content:center}.v6-x svg{width:14px;height:14px}
+.v6-ng{display:flex;align-items:center;gap:10px;width:100%;padding:8px 4px;border:0;border-radius:10px;background:none;color:inherit;text-align:left;cursor:pointer;font:500 13px/1.35 Manrope,sans-serif}
+.v6-ng:hover{background:rgba(127,127,127,.1)}
+.v6-ng b{flex:none;min-width:34px;height:34px;border-radius:10px;background:rgba(255,159,10,.18);color:#ff9f0a;display:flex;align-items:center;justify-content:center;font:800 15px Manrope,sans-serif}
+.v6-rxr{display:flex;align-items:center;gap:8px;width:100%;padding:6px 2px;border:0;background:none;color:inherit;text-align:left;cursor:pointer;font:500 13px/1.3 Manrope,sans-serif}
+.v6-rxr small{display:block;font-size:11px;opacity:.55}
+.v6-rx{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0 2px 0}
+.v6-rxb{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 8px;border:1px solid rgba(127,127,127,.28);border-radius:999px;background:none;color:inherit;font:700 11px/1 Manrope,sans-serif;opacity:.75;cursor:pointer}
+.v6-rxb b{font-weight:800}
+.v6-rxb:hover{opacity:1}
+.v6-rxb[aria-pressed="true"]{opacity:1;background:rgba(10,132,255,.18);border-color:#0a84ff;color:#64b5ff}
+.v6-rxb.ro{cursor:default}
+.v6-first{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;background:rgba(100,210,255,.15);color:#64d2ff;font:800 10.5px/1.6 Manrope,sans-serif;vertical-align:middle}
+.v6-week ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:13.5px;line-height:1.35}
+.v6-week h3 svg{width:18px;height:18px;color:#ffd60a}
+.fg-e>.v6-rx{grid-column:2;margin:-4px 0 4px}
+.fg-e .v6-rxb:not([aria-pressed="true"]){opacity:.45}.fg-e:hover .v6-rxb{opacity:.85}.fg-e .v6-rxb:hover{opacity:1}
