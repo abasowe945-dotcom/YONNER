@@ -62,8 +62,8 @@
   function csHdr(p){ const h = csCosm(p).hdr; if (!h || !(h.img || h.blob)) return null;
     return {url: h.blob || publicUrl(h.img), h: ["s", "m", "l", "xl"].includes(h.h) ? h.h : "m", dim: csNum(h.dim, 0, 90, 35), x: csNum(h.x, 0, 100, 50), y: csNum(h.y, 0, 100, 50), blur: csNum(h.blur, 0, 16, 0)}; }
   // шрифты, размеры и цвета разделов — стили только внутри профиля
-  function csCss(p){ const T = csCosm(p).txt; if (!T || typeof T !== "object") return "";
-    const S = "#aMain .pf", H = `${S} .pf-head`;
+  function csCss(p, root){ const T = csCosm(p).txt; if (!T || typeof T !== "object") return "";
+    const S = root || "#aMain .pf", H = `${S} .pf-head`;
     const sel = {nick: `${H} .pf-id h1`, head: `${H} .d7-k,${H} .d7-k *,${H} .d7-row,${H} .d7-row *,${H} .d7-play .lbl`, fh: `${S} .pf-fh h2`, box: `${S} .pf-box>header h3`};
     let css = ""; const fams = [];
     CS_SECS.forEach(([k]) => { const v = T[k]; if (!v || typeof v !== "object") return;
@@ -128,8 +128,6 @@
 
   // ---- окно «Оформление»
   let csTab = "theme";
-  // 7.14: строка-образец под каждым разделом — видно шрифт, размер и цвет прямо в окне, не только за ним
-  const csSmp = v => { v = v || {}; const fam = csFam(v.f), col = csCol(v.c), sz = csNum(v.s, 60, 220, 100); return `${fam ? `font-family:${fam};` : ""}${col ? `color:${col};` : ""}font-size:${Math.round(18 * sz / 100)}px`; };
   function csSheet(again){
     if (!ME) return; if (!COSM && !COSM_OFF) loadCosm();
     if ((!FR || FR.failed) && !again){ toast("Считаю твои достижения…"); loadFriends(true).then(() => csSheet(true)); return; } // пока данные не пришли, всё казалось закрытым
@@ -157,11 +155,22 @@
           ${has ? `<div class="cs-lbl">Высота</div><div class="cs-tabs cs-hh">${CS_HH.map(([k, l]) => `<button type="button" data-cshh="${k}" aria-pressed="${H.h === k}">${l}</button>`).join("")}</div>
           <div class="cs-rgs">${[["dim", "Затемнение", 0, 90, 5, H.dim, "%"], ["y", "Сдвиг вверх-вниз", 0, 100, 1, H.y, "%"], ["x", "Сдвиг влево-вправо", 0, 100, 1, H.x, "%"], ["blur", "Размытие", 0, 16, 1, H.blur, "px"]].map(([k, l, a, b, st, v, u]) => `<label class="cs-rg"><span>${l}<em data-csrv="${k}">${v}${u}</em></span><input type="range" min="${a}" max="${b}" step="${st}" value="${v}" data-csr="${k}" data-u="${u}"></label>`).join("")}</div>` : ""}`; }
       else if (csTab === "txt"){ const T = cur.txt; csFontLoad(CS_FONTS.map(f => f[0]));
-        h = `<p class="a-sub">Шрифт, размер и цвет для ника и каждого раздела профиля. «Все заголовки разделов» — для всех сразу, отдельный раздел его перебивает. Изменения видно за окном сразу.</p><div class="cs-ft">${CS_SECS.map(([k, l]) => { const v = T[k] || {}, s = csNum(v.s, 60, 220, 100), dirty = v.f || csCol(v.c) || s !== 100;
-          return `<div class="cs-fr${k === "box" || k === "nick" ? " big" : ""}"><b>${esc(l)}</b><select data-csf="${k}" aria-label="Шрифт: ${esc(l)}">${CS_FONTS.map(([f, n]) => `<option value="${esc(f)}"${f === (v.f || "") ? " selected" : ""}${f ? ` style="font-family:${esc(csFam(f))}"` : ""}>${esc(n)}</option>`).join("")}</select><label class="cs-sz" title="Размер"><input type="range" min="60" max="${k === "nick" ? 160 : 220}" step="10" value="${s}" data-css="${k}" aria-label="Размер: ${esc(l)}"><em>${s}%</em></label><label class="cs-cl${csCol(v.c) ? "" : " def"}" title="Цвет"><input type="color" value="${csCol(v.c) || "#ffffff"}" data-csc="${k}" aria-label="Цвет: ${esc(l)}"></label><button type="button" class="cs-x" data-csx="${k}" ${dirty ? "" : "disabled"} title="Как было">×</button><div class="cs-smp" data-cssm="${k}" style="${esc(csSmp(v))}">${esc(k === "nick" ? (p.nick || NICK) : l)} — Аа Бб 123</div></div>`; }).join("")}</div>`; }
+        h = `<p class="a-sub">Шрифт, размер и цвет для ника и каждого раздела профиля. «Все заголовки разделов» — для всех сразу, отдельный раздел его перебивает. Ниже сразу видно, как это будет выглядеть у тебя в профиле — в твоей теме и с выбранным цветом.</p>${pvBox()}<div class="cs-ft">${CS_SECS.map(([k, l]) => { const v = T[k] || {}, s = csNum(v.s, 60, 220, 100), dirty = v.f || csCol(v.c) || s !== 100;
+          return `<div class="cs-fr${k === "box" || k === "nick" ? " big" : ""}"><b>${esc(l)}</b><select data-csf="${k}" aria-label="Шрифт: ${esc(l)}">${CS_FONTS.map(([f, n]) => `<option value="${esc(f)}"${f === (v.f || "") ? " selected" : ""}${f ? ` style="font-family:${esc(csFam(f))}"` : ""}>${esc(n)}</option>`).join("")}</select><label class="cs-sz" title="Размер"><input type="range" min="60" max="${k === "nick" ? 160 : 220}" step="10" value="${s}" data-css="${k}" aria-label="Размер: ${esc(l)}"><em>${s}%</em></label><label class="cs-cl${csCol(v.c) ? "" : " def"}" title="Цвет"><input type="color" value="${csCol(v.c) || "#ffffff"}" data-csc="${k}" aria-label="Цвет: ${esc(l)}"></label><button type="button" class="cs-x" data-csx="${k}" ${dirty ? "" : "disabled"} title="Как было">×</button></div>`; }).join("")}</div>`; }
       else h = `<p class="a-sub">Порядок блоков в профиле. Стрелками двигай, ненужное прячь.</p><div class="cs-lay">${cur.layout.filter(k => CS_FLOORS.some(f => f[0] === k)).concat(CS_FLOORS.map(f => f[0]).filter(k => !cur.layout.includes(k))).map((k, i, a) => `<div class="cs-lr${cur.hide.includes(k) ? " off" : ""}"><b>${esc(CS_FLOORS.find(f => f[0] === k)[1])}</b><button type="button" data-csmv="${k}:-1" ${i ? "" : "disabled"} aria-label="Выше">↑</button><button type="button" data-csmv="${k}:1" ${i < a.length - 1 ? "" : "disabled"} aria-label="Ниже">↓</button><button type="button" data-cshd="${k}" aria-label="${cur.hide.includes(k) ? "Показать" : "Спрятать"}">${cur.hide.includes(k) ? "показать" : "спрятать"}</button></div>`).join("")}</div>`;
       q("#csB").innerHTML = h; hpPaint();
     };
+    // 7.17: живой макет профиля: твоя тема, фон, шапка, аватарка и настоящие стили разделов; шрифты, размер и цвет меняются на нём сразу
+    const pvBox = () => { const at = csPfAttrs(p), H = csHdr(p), nk = p.nick || NICK, g = MYITEMS.filter(i => isGame(i) && inLib(i)).map(i => i.title).filter(Boolean);
+      const t = n => g[n] || ["Название игры", "Ещё одна игра", "Третья игра"][n], pb = p.bg ? `background:linear-gradient(rgba(0,0,0,${(p.bg_dim ?? 45) / 100}),rgba(0,0,0,${(p.bg_dim ?? 45) / 100})),url('${esc(publicUrl(p.bg))}') center/cover;` : "";
+      const row = ks => `<div class="cs-pvr">${ks.map(x => `<span class="cs-pvc"><i></i><span class="ti">${esc(x)}</span></span>`).join("")}</div>`;
+      return `<div class="cs-live" style="${pb}"><div id="csPrevCss">${csCss(p, "#csPrev")}</div><div class="pf${at.cls}" id="csPrev" style="${at.style}">
+        <section class="pf-head d7${H ? " has-hb hb-" + H.h : ""}">${H ? `<div class="d7-hb" aria-hidden="true"><i style="background-image:url('${esc(H.url)}');background-position:${H.x}% ${H.y}%;${H.blur ? `filter:blur(${H.blur}px);inset:-${H.blur * 2}px;` : ""}"></i></div><div class="d7-dim" style="--dim:${H.dim / 100}"></div>` : ""}
+          <div class="d7-top"><div class="pf-ava v6s-${avaShape(p)}">${avaBigHTML(p)}</div><div class="pf-id"><div class="d7-k"><span>ИГРОК</span><span class="pf-lvl">УРОВЕНЬ ${L.lv}</span></div><h1>${esc(nk)}</h1><div class="d7-row"><span>Сейчас играю: ${esc(t(0))}</span></div></div></div></section>
+        <div class="pf-fh"><h2>Игры</h2></div>
+        <section class="pf-box" data-sk="gfav"><header><h3>Любимые игры<small>3</small></h3></header>${row([t(0), t(1), t(2)])}</section>
+        <section class="pf-box" data-sk="gdone"><header><h3>Пройденные<small>2</small></h3></header>${row([t(1), t(2)])}</section></div></div>`; };
+    const pvRefresh = () => { const w = q("#csPrevCss"); if (w) w.innerHTML = csCss(p, "#csPrev"); };
     const hpPaint = () => { const I = q("#csHpI"); if (!I || !cur.hdr) return; const H = csHdr({cosm: {hdr: cur.hdr}}); if (!H) return;
       Object.assign(I.style, {backgroundImage: `url('${H.url}')`, backgroundPosition: `${H.x}% ${H.y}%`, filter: H.blur ? `blur(${H.blur}px)` : "", inset: H.blur ? `-${H.blur * 2}px` : "0"}); q("#csHpD").style.setProperty("--dim", H.dim / 100);
       q("#csHp").className = "cs-hp hb-" + H.h; };
@@ -180,7 +189,7 @@
       if (el.dataset.csf != null) v.f = el.value || undefined;
       else if (el.dataset.css != null){ v.s = +el.value; el.nextElementSibling.textContent = el.value + "%"; }
       else { v.c = el.value; el.parentElement.classList.remove("def"); }
-      const x = q(`[data-csx="${k}"]`); if (x) x.disabled = false; const sm = q(`[data-cssm="${k}"]`); if (sm) sm.style.cssText = csSmp(v); live(); });
+      const x = q(`[data-csx="${k}"]`); if (x) x.disabled = false; pvRefresh(); live(); });
     s.el.addEventListener("click", async e => {
       const t = e.target.closest("[data-cst]"); if (t){ csTab = t.dataset.cst; draw(); return; }
       const v = e.target.closest("[data-csv]"); if (v){ const [k, ...rest] = v.dataset.csv.split(":"); cur[k] = rest.join(":"); draw(); live(); return; }
