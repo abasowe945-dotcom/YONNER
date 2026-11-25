@@ -370,8 +370,10 @@
       return r;
     } catch(e){
       if (init && init.signal && init.signal.aborted) throw e;
+      // пробуем напрямую; «прокси лежит» запоминаем, только если напрямую сработало (иначе в России без VPN отрежем себе единственный путь)
+      const r = await fetch(input, init);
       pxDownUntil = Date.now() + 60e3; logErr("прокси к базе", e);
-      return fetch(input, init);
+      return r;
     }
   }
   const publicUrl = path => viaPx(`${SB_BASE}/storage/v1/object/public/media/${String(path).split("/").map(encodeURIComponent).join("/")}`);
@@ -499,7 +501,8 @@
     SB.rpc("is_nexus_admin").then(r => { IS_ADMIN = !!r && r.data === true; if (IS_ADMIN && route === "more") render(); }, e => logErr("проверка админа", e));
     let {data: prof, error: pe} = await SB.from("profiles").select("nick,avatar,ava_animal,ava_color,birthday,pid,bg,bg_m,bg_dim,work").eq("user_id", user.id).maybeSingle();
     if (pe) ({data: prof, error: pe} = await SB.from("profiles").select("nick,avatar,ava_animal,ava_color,birthday,pid,bg,bg_m,bg_dim").eq("user_id", user.id).maybeSingle());
-    if (pe) ({data: prof} = await SB.from("profiles").select("nick,avatar,ava_animal,ava_color,birthday").eq("user_id", user.id).maybeSingle());
+    if (pe) ({data: prof, error: pe} = await SB.from("profiles").select("nick,avatar,ava_animal,ava_color,birthday").eq("user_id", user.id).maybeSingle());
+    if (pe && !prof){ netFail(); return; } // база не ответила — это не «новый пользователь», ника не спрашиваем
     if (prof && prof.nick){ setNick(prof.nick); MEP = prof; setTimeout(patchPopup, 1500); setTimeout(askBday, 50); } else { lsSet("nexus_patch_seen", PATCHES[0].v); lsSet("nexus_patch_pop", PATCHES[0].v); await nickSheet(true); MEP = {nick: NICK, ...(nickSheet.bday ? {birthday: nickSheet.bday} : {})}; assets = makeBackend(SB, user.id).assets; await avaSheet(true); }
     const be = makeBackend(SB, user.id); db = be.db; assets = be.assets; canWrite = !FV;
     const timer = setTimeout(netFail, 12000);

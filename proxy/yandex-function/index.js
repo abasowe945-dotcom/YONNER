@@ -14,12 +14,13 @@ const DROP_REQ = new Set(["host", "origin", "referer", "cookie", "content-length
 // заголовки ответа, которые не отдаём браузеру
 const DROP_RES = new Set(["content-encoding", "content-length", "transfer-encoding", "connection", "set-cookie", "server", "via", "alt-svc", "strict-transport-security", "report-to", "nel"]);
 
-function cors(origin){
+function cors(origin, reqHeaders){
   const o = ORIGINS.includes(origin) ? origin : ORIGINS[0];
   return {
     "Access-Control-Allow-Origin": o, "Vary": "Origin",
     "Access-Control-Allow-Methods": "GET, POST, PATCH, PUT, DELETE, HEAD, OPTIONS",
-    "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info, prefer, range, range-unit, accept-profile, content-profile, x-upsert, cache-control, accept",
+    // что браузер просит в предзапросе, то и разрешаем (supabase-js добавляет свои заголовки, например x-supabase-api-version)
+    "Access-Control-Allow-Headers": reqHeaders || "authorization, apikey, content-type, x-client-info, x-supabase-api-version, prefer, range, range-unit, accept-profile, content-profile, x-upsert, cache-control, accept",
     "Access-Control-Expose-Headers": "content-range, content-type, x-total-count, preference-applied, etag, location",
     "Access-Control-Max-Age": "86400"
   };
@@ -27,7 +28,7 @@ function cors(origin){
 
 module.exports.handler = async function (event) {
   const H = {}; for (const [k, v] of Object.entries(event.headers || {})) H[k.toLowerCase()] = v;
-  const method = (event.httpMethod || "GET").toUpperCase(), base = cors(H.origin || "");
+  const method = (event.httpMethod || "GET").toUpperCase(), base = cors(H.origin || "", H["access-control-request-headers"]);
   if (method === "OPTIONS") return {statusCode: 204, headers: base, body: ""};
 
   const p = (event.queryStringParameters || {}).p || "";
