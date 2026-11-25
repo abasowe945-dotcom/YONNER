@@ -272,7 +272,7 @@
     const step = () => {
       if (i >= list.length){ done && done(); return; }
       const f = list[i], p = myProf(), cur = {...csFrGeo(f)}, last = i === list.length - 1; let moved = false;
-      const s = openSheet(`<h3>Рамка «${esc(f.title)}»${list.length > 1 ? ` · ${i + 1} из ${list.length}` : ""}</h3><p class="sub">Подгони рамку под аватарку так, как она будет в профиле у всех.</p>
+      const s = openSheet(`<h3>Рамка «${esc(f.title)}»${list.length > 1 ? ` · ${i + 1} из ${list.length}` : ""}</h3><p class="sub">Подгони рамку под аватарку так, как она будет в профиле у всех. Тащи рамку мышкой, колесо — масштаб.</p>
         <div class="cs-fa"><div class="pf-ava has-frame v6s-${avaShape(p)}">${avaBigHTML(p)}<img class="v6-frame" id="faImg" alt="" src="${publicUrl(f.img)}" draggable="false"></div></div>
         <div class="cs-rgs">${[["s", "Масштаб", 60, 300, 1, "%"], ["y", "Сдвиг вверх-вниз", -40, 40, 1, "%"], ["x", "Сдвиг влево-вправо", -40, 40, 1, "%"], ["o", "Прозрачность", 10, 100, 1, "%"]].map(([k, l, a, b2, st, u]) => `<label class="cs-rg"><span>${l}<em data-fav="${k}">${cur[k]}${u}</em></span><input type="range" min="${a}" max="${b2}" step="${st}" value="${cur[k]}" data-far="${k}"></label>`).join("")}
           <label class="cs-rg"><span>Как ложится на аватарку<em>для VHS, шума, свечения</em></span><select data-farb>${CS_BLEND.map(([v, l]) => `<option value="${v}"${cur.b === v ? " selected" : ""}>${l}</option>`).join("")}</select></label></div>
@@ -282,6 +282,12 @@
       const q = sel => s.el.querySelector(sel), paint = () => { const im = q("#faImg"); im.style.width = im.style.height = cur.s + "%"; im.style.left = (50 + cur.x) + "%"; im.style.top = (50 + cur.y) + "%"; im.style.mixBlendMode = cur.b; im.style.opacity = cur.o / 100;
         ["s", "x", "y", "o"].forEach(k => { q(`[data-fav="${k}"]`).textContent = cur[k] + "%"; q(`[data-far="${k}"]`).value = cur[k]; }); };
       paint();
+      // 7.24: рамку можно тащить мышкой прямо на аватарке, колесо — масштаб
+      const box = q(".cs-fa .pf-ava"); let fd = null; box.style.cursor = "grab"; box.style.touchAction = "none";
+      box.addEventListener("pointerdown", e => { if (e.button) return; e.preventDefault(); box.setPointerCapture(e.pointerId); fd = {x: e.clientX, y: e.clientY, p: {...cur}}; box.style.cursor = "grabbing"; });
+      box.addEventListener("pointermove", e => { if (!fd) return; const r = box.getBoundingClientRect(); cur.x = Math.max(-40, Math.min(40, Math.round(fd.p.x + (e.clientX - fd.x) / r.width * 100))); cur.y = Math.max(-40, Math.min(40, Math.round(fd.p.y + (e.clientY - fd.y) / r.height * 100))); paint(); });
+      const fend = () => { fd = null; box.style.cursor = "grab"; }; box.addEventListener("pointerup", fend); box.addEventListener("pointercancel", fend);
+      box.addEventListener("wheel", e => { e.preventDefault(); cur.s = Math.max(60, Math.min(300, Math.round(cur.s - e.deltaY * 0.1))); paint(); }, {passive: false});
       s.el.addEventListener("input", e => { if (e.target.matches("[data-farb]")){ cur.b = e.target.value; paint(); return; } const k = e.target.dataset && e.target.dataset.far; if (!k) return; cur[k] = +e.target.value; paint(); });
       q("#faReset").onclick = () => { Object.assign(cur, {s: 128, x: 0, y: 0, o: 100, b: "normal"}); q("[data-farb]").value = "normal"; paint(); };
       const next = () => { moved = true; s.close(); i++; step(); };
