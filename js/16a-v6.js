@@ -99,17 +99,17 @@
   }
   // ---- задания недели
   const V6T = [
-    {id: "rate", t: "Оцени 3 записи", n: 3, f: (a) => a.filter(x => (x.k === "add" || x.k === "edit") && x.rated).length},
-    {id: "add", t: "Добавь 3 новые игры, фильма или книги", n: 3, f: (a) => a.filter(x => x.k === "add" || x.k === "read").length},
-    {id: "fin", t: "Пройди или досмотри что-нибудь", n: 1, f: (a) => a.filter(x => x.k === "fin" || x.k === "readfin").length},
-    {id: "post", t: "Напиши пост на стене", n: 1, f: (a) => a.filter(x => x.k === "post").length},
-    {id: "rx", t: "Отреагируй на 3 записи друзей", n: 3, f: (a) => a.filter(x => x.k === "rxgive").length},
-    {id: "days", t: "Будь активен 4 дня из 7", n: 4, f: (a) => new Set(a.map(x => x.d)).size},
-    {id: "com", t: "Оставь 3 комментария (стена, мероприятия, тир-листы, СЛОП)", n: 3, f: (a) => a.filter(x => x.k === "comment").length},
-    {id: "evp", t: "Напиши на стене мероприятия", n: 1, f: (a) => a.filter(x => x.k === "comment" && x.src === "event").length},
-    {id: "upd", t: "Обнови 3 записи: статус, оценку или дату", n: 3, f: (a) => a.filter(x => (x.k === "edit" && x.it) || x.k === "readedit" || x.k === "readfin").length},
-    {id: "vote", t: "Проголосуй в опросе СЛОПа", n: 1, f: (a) => a.filter(x => x.k === "vote").length},
-    {id: "tl", t: "Создай или поправь тир-лист", n: 1, f: (a) => a.filter(x => x.k === "tl").length},
+    {id: "rate", d: "Поставь оценку записи на своей полке: когда добавляешь или в карточке. Считаются оценки, которые ты поставил на этой неделе.", t: "Оцени 3 записи", n: 3, f: (a) => a.filter(x => (x.k === "add" || x.k === "edit") && x.rated).length},
+    {id: "add", d: "Добавь на свою полку любые три новые игры, фильма, сериала или книги. Импорт списком не считается.", t: "Добавь 3 новые игры, фильма или книги", n: 3, f: (a) => a.filter(x => x.k === "add" || x.k === "read").length},
+    {id: "fin", d: "Отметь игру пройденной, фильм или сериал просмотренным или книгу прочитанной.", t: "Пройди или досмотри что-нибудь", n: 1, f: (a) => a.filter(x => x.k === "fin" || x.k === "readfin").length},
+    {id: "post", d: "Напиши любой пост на общей стене.", t: "Напиши пост на стене", n: 1, f: (a) => a.filter(x => x.k === "post").length},
+    {id: "rx", d: "Поставь эмодзи-реакцию (💀 🔥 👀 и т.д.) на записи друзей в ленте. На свои записи реакции не считаются.", t: "Отреагируй на 3 записи друзей", n: 3, f: (a) => a.filter(x => x.k === "rxgive").length},
+    {id: "days", d: "Заходи и делай хоть что-то: добавь, оцени, напиши, отреагируй. Дни нужны разные, не обязательно подряд.", t: "Будь активен 4 дня из 7", n: 4, f: (a) => new Set(a.map(x => x.d)).size},
+    {id: "com", d: "Комментарии в любом месте: стена, мероприятия, тир-листы, СЛОП. Любые три.", t: "Оставь 3 комментария (стена, мероприятия, тир-листы, СЛОП)", n: 3, f: (a) => a.filter(x => x.k === "comment").length},
+    {id: "evp", d: "Открой любое мероприятие и напиши на его стене.", t: "Напиши на стене мероприятия", n: 1, f: (a) => a.filter(x => x.k === "comment" && x.src === "event").length},
+    {id: "upd", d: "Измени у своих записей статус, оценку или дату. Три правки, импорт не считается.", t: "Обнови 3 записи: статус, оценку или дату", n: 3, f: (a) => a.filter(x => (x.k === "edit" && x.it) || x.k === "readedit" || x.k === "readfin").length},
+    {id: "vote", d: "Это быстрое голосование на минуту: в СЛОПе кнопка «Не можете выбрать?» → «Голосование». Его запускает любой из вас, голос засчитывается. Если никто не запускал, запусти сам и проголосуй.", t: "Проголосуй в голосовании СЛОПа", n: 1, f: (a) => a.filter(x => x.k === "vote").length},
+    {id: "tl", d: "Создай новый тир-лист или сохрани правку в своём.", t: "Создай или поправь тир-лист", n: 1, f: (a) => a.filter(x => x.k === "tl").length},
   ];
   function v6Tasks(uid, ws = v6WeekStart()){
     const we = addDays(ws, 6); let h = 0; for (const c of ws) h = (h * 31 + c.charCodeAt(0)) >>> 0;
@@ -186,7 +186,7 @@
     const t = v6Tasks(ME.id), done = t.filter(x => x.done).length, ws = v6WeekStart(), we = addDays(ws, 6), st = v6Streak(ME.id);
     const left = Math.round((parseD(we) - parseD(today())) / 864e5) + 1;
     return `<div class="pf-card v6-tasks"><h3>${ICON.target || ""}Задания недели<small>${done}/3</small></h3>
-      ${t.map(x => `<div class="v6-tk${x.done ? " ok" : ""}"><span class="ck">${x.done ? "✓" : ""}</span><span class="tx">${esc(x.t)}<small>${x.v} из ${x.n} · +${V6W.task} очков</small></span><span class="bar"><i style="width:${x.v / x.n * 100}%"></i></span></div>`).join("")}
+      ${t.map(x => `<div class="v6-tk${x.done ? " ok" : ""}"><span class="ck">${x.done ? "✓" : ""}</span><span class="tx">${esc(x.t)}<small>${x.v} из ${x.n} · +${V6W.task} очков</small>${x.d ? `<small class="d">${esc(x.d)}</small>` : ""}</span><span class="bar"><i style="width:${x.v / x.n * 100}%"></i></span></div>`).join("")}
       <div class="v6-tk-f"><span class="v6-st big">${FIRE_I}${st}</span><span>${st ? `${st} ${plural(st, "день", "дня", "дней")} подряд` : "Серия не начата"} · новые задания через ${left} ${plural(left, "день", "дня", "дней")}</span></div></div>`;
   }
   let v6NagHide = null;
