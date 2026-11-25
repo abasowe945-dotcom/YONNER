@@ -313,3 +313,6 @@
 .pf.v6t-vhs .pf-head::after{right:auto;left:50%;transform:translateX(-50%);top:10px}
 .pf.v6t-manga .pf-stats>*{background:#f4f1ea!important;border-color:#111!important}
 @media (max-width:900px){.pf.v6t-vhs .pf-head::after{display:none}}
+.v6-favn{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-top:6px}
+.v6-favn button{height:52px;border:1px solid rgba(127,127,127,.3);border-radius:12px;background:none;color:inherit;font:800 20px Manrope,sans-serif;cursor:pointer}
+.v6-favn button[aria-pressed="true"]{background:#0a84ff;border-color:#0a84ff;color:#fff}

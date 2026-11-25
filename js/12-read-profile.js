@@ -715,10 +715,9 @@
     const gDate = it => it.finishedAt || it.date || null;
     const byDate = list => [...list].sort((a, b) => (gDate(b) || "").localeCompare(gDate(a) || ""));
     const big = (it, sub, drop) => `<button class="v6-pc${drop ? " v6-drop" : ""}" ${at(it)} title="${esc(it.title)}">${posterHTML(it, {tgt: false, badge: !drop})}${drop ? `<span class="v6-stamp">ДРОП</span>` : ""}<span class="ti">${esc(it.title)}</span>${sub ? `<small>${sub}</small>` : ""}</button>`;
-    const favBlock = (list, key) => { if (!list.length) return empty(mine ? "Пока не выбрал любимые" : "Пока не выбрал любимые", key);
-      const top = list.slice(0, 6), rest = list.slice(6);
-      return `<div class="v6-top">${top.map((it, i) => big(it, `<b>#${i + 1}</b>${typeof it.rating === "number" ? ` · <span class="r ${rateCls(it.rating)}">${num1(it.rating)}</span>` : ""}`)).join("")}</div>
-        ${rest.length ? `<div class="v6-mini">${rest.slice(0, 14).map(it => `<button class="v6-mi" ${at(it)} title="${esc(it.title)}">${posterHTML(it, {tgt: false, rate: false, badge: false})}</button>`).join("")}${rest.length > 14 ? `<span class="v6-more">+${rest.length - 14}</span>` : ""}</div>` : ""}`; };
+    const favN = Math.max(1, Math.min(6, +((p.cosm && p.cosm.favN) || 6)));
+    const favBlock = (list, key) => { if (!list.length) return empty("Пока не выбрал любимые", key);
+      return `<div class="v6-top">${list.slice(0, favN).map((it, i) => big(it, `<b>#${i + 1}</b>${typeof it.rating === "number" ? ` · <span class="r ${rateCls(it.rating)}">${num1(it.rating)}</span>` : ""}`)).join("")}</div>`; };
     const lastBlock = (list, txt, drop) => list.length ? `<div class="v6-top">${byDate(list).slice(0, 6).map(it => big(it, gDate(it) ? fmtShort(gDate(it)) : "без даты", drop)).join("")}</div>` : empty(txt);
     const allBtn = (k, n, l) => n > 0 ? `<button class="pf-mini v6-all-b" type="button" data-v6all="${k}${mine ? "" : ":" + esc(uid)}">${l} · ${n}</button>` : "";
     const fh = (ic, title, href, kind) => `<div class="pf-fh"><span class="ic">${ic}</span><h2>${title}</h2><span class="pf-fh-r"><button class="pf-fh-b upd" type="button" data-upd="${kind}${mine ? "" : ":" + esc(uid)}">${ICON.clock}Обновления</button><a href="${href}">вся полка ›</a></span></div>`;
@@ -751,7 +750,7 @@
       </section>`;
     const games = `<section class="pf-floor fl-g">${fh(ICON.games, "Игры", mine ? "#games" : `#fv:${esc(uid)}:games`, "games")}
         ${show("Сейчас играю", nowG.length || null, nowG.length ? `<div class="pf-now">${nowG.map(i => `<button class="pf-nw" ${mine ? `data-id="${esc(i.id)}"` : `data-fi="${esc(uid + "/" + i.id)}"`}>${i.cover ? `<span class="bgx" style="--bg:url('${publicUrl(i.cover)}')"></span>` : ""}${posterHTML(i, {tgt: false, rate: false})}<span class="t"><small>${esc(stTxt(i))}${i.date ? ` · с ${fmtShort(i.date)}` : ""}</small><b>${esc(i.title)}</b><span>${esc(genres(i).slice(0, 3).join(", "))}</span></span></button>`).join("")}${mine ? `<button class="pf-nw-add" type="button" data-pfpick="games:now">${ICON.plus}</button>` : ""}</div>` : empty(mine ? "Выбери, во что играешь сейчас — это увидят друзья" : "Ничего не отметил", "games:now"), {cls: "now", act: (mine && nowG.length ? `<button class="pf-mini" data-pfpick="games:now">${ICON.edit}Изменить</button>` : "") + R("gnow", nowG)})}
-        ${show("Любимые игры", favG.length || null, favBlock(favG, "games:fav"), {cls: "fav v6", act: (mine ? `<button class="pf-mini" type="button" data-pfpick="games:fav">${ICON.plus}Добавить</button>` : "") + R("gfav", favG) + allBtn("gfav", favG.length, "Все любимые")})}
+        ${show("Любимые игры", favG.length || null, favBlock(favG, "games:fav"), {cls: "fav v6", act: (mine ? `<button class="pf-mini" type="button" data-pfpick="games:fav">${ICON.plus}Добавить</button><button class="pf-mini" type="button" data-favn="1" title="Сколько показывать">${favN} из ${favG.length}</button>` : "") + R("gfav", favG) + allBtn("gfav", favG.length, "Показать все")})}
         ${show("Пройденные", doneG.length || null, lastBlock(doneG, mine ? "Пройденные игры появятся здесь с датой" : "Пока ничего не прошёл"), {cls: "v6", act: allBtn("gdone", doneG.length, "Показать все")})}
         ${ytG.length ? show("Прошёл на YouTube", ytG.length, lastBlock(ytG, ""), {cls: "yt-b v6", act: allBtn("gyt", ytG.length, "Показать все")}) : ""}
         ${show("Дроп", dropG.length || null, lastBlock(dropG, mine ? "Брошенные игры встанут сюда — серые, с красным штампом" : "Ничего не бросал", true), {cls: "drop-b v6", act: allBtn("gdrop", dropG.length, "Показать все")})}
@@ -1090,4 +1089,15 @@
       body = `<div class="v6-list">${list.map(it => `<button class="v6-lr${k === "gdrop" ? " v6-drop" : ""}" ${at(it)}><span class="th">${posterHTML(it, {tgt: false, rate: false, badge: false})}</span><span class="t"><b>${esc(it.title)}</b><small>${esc(genres(it).slice(0, 3).join(", ") || "")}</small></span><span class="d"><small>${dl}</small><b>${gDate(it) ? esc(fmtDate(String(gDate(it)).slice(0, 10))) : "без даты"}</b></span><span class="sc ${typeof it.rating === "number" ? rateCls(it.rating) : "none"}">${typeof it.rating === "number" ? num1(it.rating) : "—"}</span></button>`).join("")}</div>`; }
     const s = openSheet(`<h3>${T}</h3><p class="sub">${list0.length} ${plural(list0.length, "игра", "игры", "игр")}${k === "gfav" ? " · в твоём порядке" : " · от свежих к старым"}</p>${body}`, {wide: true});
     s.el.addEventListener("click", x => { if (x.target.closest("[data-id],[data-fi]")) s.close(); }, true);
+  });
+
+  // 6.2.2: сколько любимых игр показывать на главной (1–6), остальные — под «Показать все»
+  document.addEventListener("click", e => {
+    const b = e.target.closest && e.target.closest("[data-favn]"); if (!b || !ME) return;
+    const cur = Math.max(1, Math.min(6, +((MEP && MEP.cosm && MEP.cosm.favN) || 6)));
+    const s = openSheet(`<h3>Любимые игры на главной</h3><p class="sub">Сколько показывать крупно. Остальные будут под кнопкой «Показать все». Порядок меняется кнопкой «Расставить».</p>
+      <div class="v6-favn">${[1, 2, 3, 4, 5, 6].map(n => `<button type="button" data-n="${n}" aria-pressed="${n === cur}">${n}</button>`).join("")}</div>`);
+    s.el.addEventListener("click", async x => { const n = x.target.closest("[data-n]"); if (!n) return;
+      const cosm = {...((MEP && MEP.cosm) || {}), favN: +n.dataset.n};
+      if (await saveProf({cosm})){ toast("Готово"); s.close(); } });
   });
