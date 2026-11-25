@@ -561,3 +561,12 @@
 .cs-pvc{display:flex;flex-direction:column;gap:5px;width:84px;min-width:0}
 .cs-pvc i{display:block;height:54px;border-radius:8px;background:linear-gradient(135deg,rgba(127,127,127,.35),rgba(127,127,127,.12))}
 .cs-pvc .ti{font-size:11px;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* 7.18: окно оформления прижато вправо, профиль виден рядом */
+.sh-wrap.cs-dock{justify-content:flex-end;align-items:stretch;padding:0;pointer-events:none}
+.sh-wrap.cs-dock .sh-bg{display:none}
+.sh-wrap.cs-dock .sh{pointer-events:auto;width:min(460px,38vw);max-height:none;height:100%;border-radius:0;transform:translateX(40px);box-shadow:-20px 0 60px rgba(0,0,0,.45)}
+.sh-wrap.cs-dock.on .sh{transform:none}
+body.cs-docked .cs-live{display:none}
+body.cs-docked .cs-fr{grid-template-columns:minmax(0,1fr) 34px 28px;grid-template-areas:"t c x" "f f f" "s s s";gap:8px}
+body.cs-docked .cs-fr>b{grid-area:t}body.cs-docked .cs-fr select{grid-area:f}body.cs-docked .cs-fr .cs-sz{grid-area:s}body.cs-docked .cs-fr .cs-cl{grid-area:c}body.cs-docked .cs-fr .cs-x{grid-area:x}
+body.cs-docked .cs-rgs{grid-template-columns:1fr}
