@@ -62,11 +62,12 @@
   function v6Acts(uid){
     if (!FR) return [];
     const ck = [FR.at, WALL ? WALL.at : 0, V6RX ? V6RX.length : -1, typeof EV !== "undefined" && EV ? EV.posts.length : -1, typeof TLC !== "undefined" && TLC ? TLC.length : -1, typeof SL !== "undefined" && SL ? SL.comments.length + "/" + SL.pvotes.length : -1, (FR.tierlists || []).length].join("|");
-    if (!v6ActCache || v6ActCache.k !== ck) v6ActCache = {k: ck, m: new Map()};
+    if (!v6ActCache || v6ActCache.k !== ck || v6ActCache.mi !== MYITEMS) v6ActCache = {k: ck, mi: MYITEMS, m: new Map()};
     if (v6ActCache.m.has(uid)) return v6ActCache.m.get(uid);
     const out = [], imps = new Set(), td = today();
-    for (const it of FR.items){
-      if (it.uid !== uid) continue;
+    const isMe = !!ME && uid === ME.id; // свои записи берём живые (MYITEMS): общая загрузка друзей обновляется не сразу, и новая запись не считалась
+    for (const it of (isMe ? MYITEMS : FR.items)){
+      if (!isMe && it.uid !== uid) continue;
       const cd = v6Day(it.createdAt || it._upd), ud = v6Day(it._upd || it.updatedAt), fd = it.noDate ? "" : v6Day(it.finishedAt);
       if (String(it.via || "").startsWith("import")){
         const k = cd + "|" + it.via; if (cd && !imps.has(k)){ imps.add(k); out.push({d: cd, p: V6W.imp, k: "imp"}); }

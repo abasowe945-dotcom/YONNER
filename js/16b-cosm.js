@@ -37,7 +37,7 @@
   const csLevel = uid => { const xp = csXp(uid), lv = 1 + Math.floor(xp / 30); return {lv, xp, pct: (xp % 30) / 30 * 100, next: lv * 30}; };
   function csMaxStreak(uid){ const days = [...new Set(v6Acts(uid).map(a => a.d))].sort(); let best = 0, cur = 0, prev = ""; days.forEach(d => { cur = prev && addDays(prev, 1) === d ? cur + 1 : 1; best = Math.max(best, cur); prev = d; }); return best; }
   function csWeeks(uid){ let n = 0, ws = v6WeekStart(V6_START + "-01"); const cur = v6WeekStart(); for (; ws <= cur; ws = addDays(ws, 7)) if (v6Tasks(uid, ws).every(t => t.done)) n++; return n; }
-  const csStats = uid => { if (!FR) return null; const g = FR.items.filter(i => i.uid === uid && isGame(i));
+  const csStats = uid => { if (!FR) return null; const g = (ME && uid === ME.id ? MYITEMS : FR.items.filter(i => i.uid === uid)).filter(isGame);
     return {lvl: csLevel(uid).lv, streak: csMaxStreak(uid), drops: g.filter(i => gStatus(i.status) === "dropped").length, first: v6FirstN(uid), cup: v6Cups(uid).length, top3: v6Hall().filter(h => h.top.some(x => x.p.user_id === uid)).length, weeks: csWeeks(uid), done: g.filter(i => gStatus(i.status) === "done").length}; };
   const csAdm = uid => !!(IS_ADMIN && ME && uid === ME.id); // админу на своём профиле всё открыто
   const csOk = (u, st) => { u = u || {t: "free"}; if (u.t === "free") return true; if (!st) return false; if (u.t === "cup" || u.t === "top3") return st[u.t] >= 1; return (st[u.t] || 0) >= (u.n || 1); };
