@@ -49,7 +49,8 @@
   // ---- все действия человека с очками
   function v6Acts(uid){
     if (!FR) return [];
-    if (!v6ActCache || v6ActCache.at !== FR.at || v6ActCache.w !== (WALL ? WALL.at : 0) || v6ActCache.r !== (V6RX ? V6RX.length : -1)) v6ActCache = {at: FR.at, w: WALL ? WALL.at : 0, r: V6RX ? V6RX.length : -1, m: new Map()};
+    const ck = [FR.at, WALL ? WALL.at : 0, V6RX ? V6RX.length : -1, typeof EV !== "undefined" && EV ? EV.posts.length : -1, typeof TLC !== "undefined" && TLC ? TLC.length : -1, typeof SL !== "undefined" && SL ? SL.comments.length + "/" + SL.pvotes.length : -1, (FR.tierlists || []).length].join("|");
+    if (!v6ActCache || v6ActCache.k !== ck) v6ActCache = {k: ck, m: new Map()};
     if (v6ActCache.m.has(uid)) return v6ActCache.m.get(uid);
     const out = [], imps = new Set(), td = today();
     for (const it of FR.items){
@@ -72,7 +73,13 @@
       if (ud && ud > cd) out.push({d: ud, p: r.status === "done" ? V6W.readFin : V6W.edit, k: r.status === "done" ? "readfin" : "readedit"});
     }
     if (WALL){ WALL.posts.forEach(x => { if (x.user_id === uid) out.push({d: v6Day(x.created_at), p: V6W.post, k: "post"}); });
-      WALL.comments.forEach(x => { if (x.user_id === uid) out.push({d: v6Day(x.created_at), p: V6W.comment, k: "comment"}); }); }
+      WALL.comments.forEach(x => { if (x.user_id === uid) out.push({d: v6Day(x.created_at), p: V6W.comment, k: "comment", src: "wall"}); }); }
+    // 7.13: комментарием считается любой — на стене, в мероприятии, под тир-листом, в СЛОПе
+    if (typeof EV !== "undefined" && EV) EV.posts.forEach(x => { if (x.user_id === uid) out.push({d: v6Day(x.created_at), p: V6W.comment, k: "comment", src: "event"}); });
+    if (typeof TLC !== "undefined" && TLC) TLC.forEach(x => { if (x.user_id === uid) out.push({d: v6Day(x.created_at), p: V6W.comment, k: "comment", src: "tl"}); });
+    if (typeof SL !== "undefined" && SL){ SL.comments.forEach(x => { if (x.user_id === uid) out.push({d: v6Day(x.created_at), p: V6W.comment, k: "comment", src: "slop"}); });
+      SL.pvotes.forEach(x => { if (x.user_id === uid && x.created_at) out.push({d: v6Day(x.created_at), p: 0, k: "vote"}); }); }
+    (FR.tierlists || []).forEach(x => { if (x.user_id === uid) out.push({d: v6Day(x.updated_at || x.created_at), p: 0, k: "tl"}); });
     if (V6RX){ V6RX.forEach(x => { if (x.owner === uid && x.user_id !== uid) out.push({d: v6Day(x.created_at), p: V6W.rx, k: "rxgot"}); if (x.user_id === uid) out.push({d: v6Day(x.created_at), p: 0, k: "rxgive"}); }); }
     const res = out.filter(a => a.d && a.d <= td);
     v6ActCache.m.set(uid, res); return res;
@@ -83,13 +90,17 @@
     {id: "add", t: "Добавь 3 новые игры, фильма или книги", n: 3, f: (a) => a.filter(x => x.k === "add" || x.k === "read").length},
     {id: "fin", t: "Пройди или досмотри что-нибудь", n: 1, f: (a) => a.filter(x => x.k === "fin" || x.k === "readfin").length},
     {id: "post", t: "Напиши пост на стене", n: 1, f: (a) => a.filter(x => x.k === "post").length},
-    {id: "rx", t: "Отреагируй на 5 записей друзей", n: 5, f: (a) => a.filter(x => x.k === "rxgive").length},
+    {id: "rx", t: "Отреагируй на 3 записи друзей", n: 3, f: (a) => a.filter(x => x.k === "rxgive").length},
     {id: "days", t: "Будь активен 4 дня из 7", n: 4, f: (a) => new Set(a.map(x => x.d)).size},
-    {id: "com", t: "Оставь 3 комментария", n: 3, f: (a) => a.filter(x => x.k === "comment").length},
+    {id: "com", t: "Оставь 3 комментария (стена, мероприятия, тир-листы, СЛОП)", n: 3, f: (a) => a.filter(x => x.k === "comment").length},
+    {id: "evp", t: "Напиши на стене мероприятия", n: 1, f: (a) => a.filter(x => x.k === "comment" && x.src === "event").length},
+    {id: "upd", t: "Обнови 3 записи: статус, оценку или дату", n: 3, f: (a) => a.filter(x => (x.k === "edit" && x.it) || x.k === "readedit" || x.k === "readfin").length},
+    {id: "vote", t: "Проголосуй в опросе СЛОПа", n: 1, f: (a) => a.filter(x => x.k === "vote").length},
+    {id: "tl", t: "Создай или поправь тир-лист", n: 1, f: (a) => a.filter(x => x.k === "tl").length},
   ];
   function v6Tasks(uid, ws = v6WeekStart()){
     const we = addDays(ws, 6); let h = 0; for (const c of ws) h = (h * 31 + c.charCodeAt(0)) >>> 0;
-    const pool = V6T.filter(t => t.id !== "rx" || !V6RX_OFF), pick = [];
+    const pool = V6T.filter(t => (t.id !== "rx" || !V6RX_OFF) && (t.id !== "vote" || (typeof SL !== "undefined" && SL && SL.polls.length))), pick = [];
     for (let i = 0; pick.length < 3 && i < 40; i++){ const t = pool[(h + i) % pool.length]; if (!pick.includes(t)) pick.push(t); }
     const acts = v6Acts(uid).filter(a => a.d >= ws && a.d <= we);
     return pick.map(t => { const v = Math.min(t.n, t.f(acts)); return {...t, v, done: v >= t.n}; });
