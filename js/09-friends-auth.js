@@ -358,7 +358,10 @@
   const PROXY = String(window.NEXUS_PROXY || "").trim().replace(/\/$/, "");
   const SB_BASE = String(CFG.SUPABASE_URL || "").replace(/\/$/, "");
   let pxDownUntil = 0;
-  const pxOn = () => !!PROXY && Date.now() >= pxDownUntil;
+  // прокси выключен вручную (?px=0 — насовсем, ?px=1 — снова включить) или сайт сам ушёл напрямую после неудачной загрузки (до конца вкладки)
+  try { const q = /[?&]px=([01])/.exec(location.search); if (q) localStorage.setItem("nexus_px", q[1]); } catch(_){ /* ожидаемо: localStorage закрыт (приватный режим) */ }
+  const pxOff = () => { try { return localStorage.getItem("nexus_px") === "0" || sessionStorage.getItem("nexus_px_off") === "1"; } catch(_){ return false; } };
+  const pxOn = () => !!PROXY && !pxOff() && Date.now() >= pxDownUntil;
   const viaPx = url => pxOn() && SB_BASE && url.startsWith(SB_BASE + "/") ? PROXY + "?p=" + encodeURIComponent(url.slice(SB_BASE.length)) : url;
   // для клиента Supabase: всё через прокси, а если он лежит — минуту напрямую
   async function pxFetch(input, init){

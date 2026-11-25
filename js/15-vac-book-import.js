@@ -674,7 +674,10 @@
   // если данные не дошли за 12 секунд — говорим прямо, а не показываем пустой профиль
   let bootWD = 0, netShown = false;
   function netFail(){
-    if (netShown || itemsLoaded) return; netShown = true;
+    if (netShown || itemsLoaded) return;
+    // через прокси не загрузилось — один раз пробуем напрямую (с VPN или без блокировок так быстрее и надёжнее)
+    if (PROXY && pxOn()){ try { sessionStorage.setItem("nexus_px_off", "1"); location.reload(); return; } catch(_){ /* ожидаемо: sessionStorage закрыт — покажем окно */ } }
+    netShown = true;
     let el = $("netFail"); if (!el){ el = document.createElement("div"); el.id = "netFail"; document.body.appendChild(el); }
     el.innerHTML = `<div class="nf-box" role="alertdialog" aria-label="Нет связи с базой"><div class="nf-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8.8a15 15 0 0 1 4.2-2.6M22 8.8A15 15 0 0 0 10.5 5.1"/><path d="M5 12.6a10 10 0 0 1 3.5-2M19 12.6a10 10 0 0 0-2.4-1.7"/><path d="M8.5 16.4a5 5 0 0 1 7 0"/><circle cx="12" cy="20" r="1"/><path d="m3 3 18 18"/></svg></div>
       <h3>Нет связи с базой NEXUS</h3>
@@ -685,7 +688,7 @@
       <div class="nf-acts"><button type="button" class="ib blue" id="nfR">Обновить</button><button type="button" class="ib" id="nfW">Подождать ещё</button></div></div>`;
     el.hidden = false; document.body.classList.add("nf-on");
     // «Обновить» ещё и сбрасывает сохранённые старые файлы сайта, чтобы телефон не сидел на прошлой версии
-    $("nfR").onclick = async () => { try { const rs = await navigator.serviceWorker.getRegistrations(); await Promise.all(rs.map(r => r.unregister())); if (window.caches){ const ks = await caches.keys(); await Promise.all(ks.map(k => caches.delete(k))); } } catch(_){ /* ожидаемо: нет service worker (приватный режим и т. п.) */ } location.reload(); };
+    $("nfR").onclick = async () => { try { sessionStorage.removeItem("nexus_px_off"); } catch(_){ /* ожидаемо */ } try { const rs = await navigator.serviceWorker.getRegistrations(); await Promise.all(rs.map(r => r.unregister())); if (window.caches){ const ks = await caches.keys(); await Promise.all(ks.map(k => caches.delete(k))); } } catch(_){ /* ожидаемо: нет service worker (приватный режим и т. п.) */ } location.reload(); };
     netDiag($("nfD"));
     $("nfW").onclick = () => { el.hidden = true; document.body.classList.remove("nf-on"); netShown = false; clearTimeout(bootWD); bootWD = setTimeout(netFail, 15000); };
   }
@@ -694,7 +697,16 @@
     if (!d) return;
     const t = async u => { const t0 = performance.now(); try { const r = await fetch(u, {cache: "no-store", signal: AbortSignal.timeout(8000)}); return "ответил за " + Math.round(performance.now() - t0) + " мс (код " + r.status + ")"; } catch(e){ return "не ответил (" + ((e && e.name) || "ошибка") + ")"; } };
     const [px, dr] = await Promise.all([PROXY ? t(PROXY + "?p=" + encodeURIComponent("/auth/v1/health")) : Promise.resolve("выключен"), t(SB_BASE + "/auth/v1/health")]);
-    d.textContent = "Версия сайта " + NEXUS_VER + ". Прокси: " + px + ". Напрямую: " + dr + ".";
+    d.textContent = "Версия сайта " + NEXUS_VER + ". Прокси: " + px + ". Напрямую: " + dr + (pxOff() ? ". Режим: напрямую." : ".");
+    // то же, но с твоим входом: что именно не проходит
+    try {
+      const {data: {session}} = await Promise.race([SB.auth.getSession(), new Promise((_, no) => setTimeout(() => no(new Error("getSession завис")), 8000))]);
+      if (!session){ d.textContent += " Вход: сессии нет."; return; }
+      const hd = {apikey: CFG.SUPABASE_ANON_KEY, authorization: "Bearer " + session.access_token};
+      const q = async base => { const t0 = performance.now(); try { const r = await fetch(base, {headers: hd, cache: "no-store", signal: AbortSignal.timeout(10000)}); const tx = await r.text(); return r.status + ", " + Math.round(tx.length / 1024) + " КБ, " + Math.round(performance.now() - t0) + " мс"; } catch(e){ return "не ответил (" + ((e && e.name) || "ошибка") + ")"; } };
+      const path = "/rest/v1/profiles?select=nick&limit=1", [a2, b2] = await Promise.all([PROXY ? q(PROXY + "?p=" + encodeURIComponent(path)) : Promise.resolve("выключен"), q(SB_BASE + path)]);
+      d.textContent += " Со входом: прокси " + a2 + "; напрямую " + b2 + ".";
+    } catch(e){ d.textContent += " Вход: " + ((e && e.message) || "ошибка") + "."; }
   }
   function netOk(){ clearTimeout(bootWD); netShown = false; const el = $("netFail"); if (el){ el.hidden = true; document.body.classList.remove("nf-on"); } }
 
