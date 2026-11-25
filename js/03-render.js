@@ -8,10 +8,10 @@
     else if (r.w === "wKino") renderKino();
     else if (r.w === "wSlop") renderSlop();
     else if (r.w === "wPlaces") renderPlaces();
-    else ({soon:renderSoon, calendar:renderCal, more:renderMore, vacation:renderVac, recap:renderRecap, drops:renderDrops, money:renderMoney, ach:renderAch, patch:renderPatch, people:renderPeople, user:() => renderProfile(viewUid), event:renderEvent, watch:renderWatch, home:() => renderProfile(null), read:renderRead, watchcal:() => renderWatchCal()})[route]();
+    else ({soon:renderSoon, calendar:renderCal, events:renderEvents, more:renderMore, vacation:renderVac, recap:renderRecap, drops:renderDrops, money:renderMoney, ach:renderAch, patch:renderPatch, people:renderPeople, user:() => renderProfile(viewUid), event:renderEvent, watch:renderWatch, home:() => renderProfile(null), read:renderRead, watchcal:() => renderWatchCal()})[route]();
     document.body.dataset.route = route;
     fillMeSlots(); applySecBg(); wireCarousels(); wireHScrolls(); document.querySelectorAll('[data-pile="1"]').forEach(wirePile); document.querySelectorAll('[data-stack="1"]').forEach(wireStack); syncHead(); renderFw(); syncBell();
-    renderTabbar();
+    renderTabbar(); if (typeof workTick === "function") workTick();
     if (tierKind) renderTiers();
   }
   function readHash(){ const h = decodeURIComponent(location.hash.slice(1));

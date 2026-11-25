@@ -756,14 +756,14 @@
         ${show("Сейчас читаю", nowR.length || null, rack(nowR, "read:now", "Ничего не отметил", true), {cls: "shelf", act: R("rnow", nowR)})}
         ${show("Прочитанные", doneR.length || null, rack(doneR, null, "Пока ничего не дочитал"), {cls: "shelf", act: R("rdone", doneR)})}
       </section>`;
-    const side = `<aside class="pf-side">
+    const side = `<aside class="pf-side">${mine ? `<div class="v6-d-only">${evNextCard()}</div>` : ""}
         <div class="pf-card"><h3>${ICON.trophy}Рейтинг активности<small>30 дней</small></h3>${topHTML3(10)}</div>
         <div class="pf-card"><h3>${ICON.people}${mine ? "Лента друзей" : "Активность"}${mine ? `<small><a href="#people">вся ›</a></small>` : ""}</h3>${FR ? (feed.length ? `<div class="pf-feed">${feed.map(e => pfFeedRow(e, mine)).join("")}</div>` : `<p class="pf-mute">Пока тихо.</p>`) : `<p class="pf-mute">Загружаю…</p>`}</div>
         ${c.pct != null ? `<div class="pf-card"><h3>${HEART_O}Совпадение вкусов<small>${c.common.length} общих</small></h3><div class="pf-cmp"><b class="${pctCls(c.pct)}">${c.pct}%</b>${[...c.common].sort((a, b) => a.d - b.d).slice(0, 4).map(x => `<div class="r"><span>${esc(x.f.title)}</span><span>${num1(x.m.rating)} / ${num1(x.f.rating)}</span></div>`).join("")}</div></div>` : ""}
       </aside>`;
     box.innerHTML = `<div class="pf${bg ? " has-bg" : ""}" style="--ac:${esc(p.ava_color || avaBg(p))}">
       ${head}
-      <div class="pf-cols"><div class="pf-main">${games}${kino}${books}${tlFloor(mine ? ME.id : uid, mine, g, k)}${scFloor(mine ? ME.id : uid, mine)}</div>${side}</div></div>`;
+      <div class="pf-cols"><div class="pf-main">${mine ? `<button type="button" class="v6-work" id="workHome" data-worksheet="1" hidden></button><div class="v6-m-only">${evNextCard()}</div>` : ""}${games}${kino}${books}${tlFloor(mine ? ME.id : uid, mine, g, k)}${scFloor(mine ? ME.id : uid, mine)}</div>${side}</div></div>`;
     wireHScrolls();
   }
 

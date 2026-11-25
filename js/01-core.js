@@ -10,15 +10,15 @@
   const KCOL = {playing:"#7cc4ff", done:"#9be15d", paused:"#f2d43a", dropped:"#ff8a86"};
   const kLab = it => { const n = kNorm(it); return {l: n === "done" ? (isSerT(it.type) ? "Досмотрено" : "Просмотрено") : n === "paused" ? "Отложено" : n === "dropped" ? "Брошено" : "Смотрю", c: KCOL[n]}; };
   const TIERS = [["S","#ff5f57"],["A","#ff9f0a"],["B","#ffd60a"],["C","#30d158"],["D","#64d2ff"]];
-  const TAB_ORDER = ["home","games","kino","read","slop","calendar","people","more"];
+  const TAB_ORDER = ["home","games","kino","read","slop","people","events","calendar","more"];
   const ROUTES = {
     home:{w:"wApple",theme:"cal",tab:"home"}, read:{w:"wApple",theme:"cal",tab:"read"}, watch:{w:"wApple",theme:"cal",tab:"people"}, watchcal:{w:"wApple",theme:"cal",tab:"people"},
     games:{w:"wGames",theme:"games",tab:"games"}, "games-future":{w:"wGames",theme:"games",tab:"games"},
     kino:{w:"wKino",theme:"kino",tab:"kino"}, "kino-future":{w:"wKino",theme:"kino",tab:"kino"},
-    calendar:{w:"wApple",theme:"cal",tab:"calendar"},
+    calendar:{w:"wApple",theme:"cal",tab:"calendar"}, events:{w:"wApple",theme:"cal",tab:"events"},
     slop:{w:"wSlop",theme:"games",tab:"slop"},
     places:{w:"wPlaces",theme:"games",tab:"people"},
-    more:{w:"wApple",theme:"cal",tab:"more"}, vacation:{w:"wApple",theme:"cal",tab:"more"}, recap:{w:"wApple",theme:"cal",tab:"more"}, drops:{w:"wApple",theme:"cal",tab:"more"}, money:{w:"wApple",theme:"cal",tab:"more"}, ach:{w:"wApple",theme:"cal",tab:"more"}, patch:{w:"wApple",theme:"cal",tab:"more"}, people:{w:"wApple",theme:"cal",tab:"people"}, user:{w:"wApple",theme:"cal",tab:"people"}, event:{w:"wApple",theme:"cal",tab:"people"}
+    more:{w:"wApple",theme:"cal",tab:"more"}, vacation:{w:"wApple",theme:"cal",tab:"more"}, recap:{w:"wApple",theme:"cal",tab:"more"}, drops:{w:"wApple",theme:"cal",tab:"more"}, money:{w:"wApple",theme:"cal",tab:"more"}, ach:{w:"wApple",theme:"cal",tab:"more"}, patch:{w:"wApple",theme:"cal",tab:"more"}, people:{w:"wApple",theme:"cal",tab:"people"}, user:{w:"wApple",theme:"cal",tab:"people"}, event:{w:"wApple",theme:"cal",tab:"events"}
   };
   const I = (d, extra = "") => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ${extra}>${d}</svg>`;
   const ICON = {
@@ -211,13 +211,24 @@
 
   // ================= нижняя панель =================
   function renderTabbar(){
-    const cur = FV ? "people" : (ROUTES[route] || ROUTES.games).tab, ac = activeContract();
+    // 6.0: на ПК — меню слева с группами, на телефоне — пять вкладок снизу
+    const tab = (ROUTES[route] || ROUTES.games).tab, ac = activeContract();
     const invN = typeof myInvites === "function" && EV ? myInvites().length : 0;
+    const curD = FV ? "people" : route === "places" ? "places" : tab;
+    const curM = FV ? "people" : ["games", "kino", "read"].includes(tab) ? "shelf" : ["places", "events"].includes(curD) ? "people" : tab === "calendar" ? "more" : tab;
+    const mob = matchMedia("(max-width:900px)").matches, cur = mob ? curM : curD;
+    const SHELF_I = I('<rect x="3" y="4" width="5" height="16" rx="1"/><rect x="10" y="4" width="5" height="16" rx="1"/><path d="m17 5 3.5 14.5"/>');
+    const DOT = {games: "var(--c-game,#34d1bf)", kino: "var(--c-kino,#a78bfa)", read: "#f5b544"};
+    const t = (k, l, cls = "", href = k, ic = ICON[k]) => `<a class="tab ${cls}" href="#${href}" data-tab="${k}" ${cur === k ? 'aria-current="page"' : ""}>${ic}<span>${l}</span>${DOT[k] ? `<i class="sb-dot" style="background:${DOT[k]}"></i>` : ""}${k === "games" && ac ? '<i class="dot"></i>' : ""}${k === "people" && invN ? `<i class="dot n">${invN}</i>` : ""}${k === "events" && invN ? `<i class="dot n">${invN}</i>` : ""}</a>`;
     const tb = $("tabbar"), lens0 = tb.querySelector(".tb-lens"), x0 = lens0 ? lens0.style.transform : "";
-    tb.innerHTML = `<i class="tb-lens now" style="transform:${x0}"></i>` + [["home","Главная"],["games","Игры"],["kino","Кино"],["read","Читалка"],["slop","СЛОП"],["calendar","Календарь"],["people","Активность"],["more","Ещё"]].map(([k,l]) =>
-      `<a class="tab" href="#${k}" data-tab="${k}" ${cur === k ? 'aria-current="page"' : ""}>${ICON[k]}<span>${l}</span>${k === "games" && ac ? '<i class="dot"></i>' : ""}${k === "people" && invN ? `<i class="dot n">${invN}</i>` : ""}</a>`).join("");
+    tb.innerHTML = `<i class="tb-lens now" style="transform:${x0}"></i><a class="sb-logo" href="#home">NEXUS</a>` + t("home", "Главная") +
+      `<div class="sb-grp">Полка</div>` + t("games", "Игры", "d") + t("kino", "Кино и сериалы", "d") + t("read", "Читалка", "d") + t("shelf", "Полка", "m", "games", SHELF_I) +
+      `<div class="sb-grp">Вместе</div>` + t("slop", "СЛОП") + t("people", "Активность") + t("events", "Мероприятия", "d", "events", ICON.party) + t("places", "Заведения", "d", "places", ICON.pin) + t("calendar", "Календарь", "d") +
+      `<div class="sb-sp"></div>` + t("more", "Ещё");
+    const ms = $("mShelf"); if (ms){ const k = ["games", "kino", "read"].includes(tab) ? tab : ""; ms.innerHTML = [["games", "Игры"], ["kino", "Кино"], ["read", "Читалка"]].map(([h, l]) => `<a href="#${h}"${k === h ? ' aria-current="page"' : ""}>${l}</a>`).join(""); }
     placeLens();
   }
+  matchMedia("(max-width:900px)").addEventListener("change", () => renderTabbar());
   function placeLens(){
     const tb = $("tabbar"), lens = tb.querySelector(".tb-lens"), a = tb.querySelector('[aria-current="page"]'); if (!lens) return;
     if (!a){ lens.style.opacity = 0; return; }

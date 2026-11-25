@@ -1,6 +1,7 @@
   // ================= 2.1: шапка — тема, патчноуты =================
   function syncHead(){
     const d = $("pnBtn") && $("pnBtn").querySelector(".dot"); if (d) d.hidden = !patchUnseen();
+    const md = $("ghMenuBtn") && $("ghMenuBtn").querySelector(".dot"); if (md) md.hidden = !patchUnseen();
     const light = document.documentElement.dataset.mode === "light", b = $("modeBtn");
     if (b && b.dataset.m !== String(light)){ b.dataset.m = String(light); b.innerHTML = light ? ICON.moon : ICON.sun; b.title = light ? "Тёмная тема" : "Светлая тема"; }
   }
@@ -261,6 +262,7 @@
           <button class="ios-row" data-pw="1"><span class="ic" style="background:${GRAD.gray}">${ICON.key}</span><span class="t">Пароль</span><span class="chev">›</span></button>
         </div>
       </div>
+      <div class="ios-card v6-m-only" style="margin-top:14px"><button class="ios-row" data-go="calendar"><span class="ic" style="background:${GRAD.red}">${ICON.calendar}</span><span class="t">Календарь</span><span class="chev">›</span></button><button class="ios-row" data-go="events"><span class="ic" style="background:${GRAD.pink}">${ICON.party}</span><span class="t">Мероприятия</span><span class="chev">›</span></button><button class="ios-row" data-go="places"><span class="ic" style="background:${GRAD.orange}">${ICON.pin}</span><span class="t">Заведения</span><span class="chev">›</span></button></div>
       <div class="ios-h">Разделы</div>
       <div class="ios-home">${Object.entries(A).map(([key, F]) => `<button class="ios-fold" data-fold="${key}"><span class="box">${F.apps.slice(0, 4).map(a => `<span class="ai" style="--g:${a.g}">${a.i}</span>`).join("")}</span><span class="lb">${F.t}<small>${F.apps.length} ${plural(F.apps.length, "раздел", "раздела", "разделов")}${F.apps.some(a => a.b) ? " · есть новое" : ""}</small></span></button>`).join("")}</div>`;
   }
@@ -578,3 +580,20 @@
   const richText = s => linkMentions(esc(s).replace(EMO_RE, ch => emoSpan(EMO.find(x => x[1] === ch)[0])));
   const onlyEmo = s => { const t = String(s || "").replace(EMO_RE, "").trim(); return !t && String(s || "").trim().length > 0; };
 
+
+  // ================= 6.0: меню настроек в шапке =================
+  (function(){
+    const menu = $("ghMenu"), btn = $("ghMenuBtn"); if (!menu || !btn) return;
+    const rows = [["pnBtn", "Патчноуты"], ["modeBtn", "Тема"], ["sndBtn", "Звуки"], ["bgBtn", "Фон этой страницы"]];
+    rows.forEach(([id, l]) => { const b = $(id); if (!b) return; const r = document.createElement("div"); r.className = "gh-mi"; r.setAttribute("role", "menuitem"); r.tabIndex = -1; b.tabIndex = 0; r.appendChild(b); const t = document.createElement("span"); t.textContent = l; r.appendChild(t); r.addEventListener("click", e => { if (!b.contains(e.target)) b.click(); }); menu.appendChild(r); });
+    const ex = (l, ic, fn) => { const r = document.createElement("button"); r.type = "button"; r.className = "gh-mi"; r.setAttribute("role", "menuitem"); r.innerHTML = `<span class="gh-ic">${ic}</span><span>${l}</span>`; r.addEventListener("click", fn); menu.appendChild(r); };
+    ex("Рабочий день", ICON.clock || "", () => { close(); if (typeof workSheet === "function") workSheet(); });
+    ex("Все настройки", ICON.more, () => { close(); go("more"); });
+    const open = () => { menu.hidden = false; btn.setAttribute("aria-expanded", "true"); const f = menu.querySelector("a,button"); if (f) f.focus({preventScroll: true}); };
+    function close(){ if (menu.hidden) return; menu.hidden = true; btn.setAttribute("aria-expanded", "false"); }
+    btn.addEventListener("click", e => { e.stopPropagation(); menu.hidden ? open() : close(); });
+    menu.addEventListener("click", e => { if (e.target.closest("#pnBtn,#bgBtn") || e.target.closest(".gh-mi > span")) setTimeout(close, 0); });
+    document.addEventListener("click", e => { if (!menu.contains(e.target) && e.target !== btn) close(); });
+    document.addEventListener("keydown", e => { if (e.key === "Escape") close(); });
+    window.addEventListener("hashchange", close);
+  })();

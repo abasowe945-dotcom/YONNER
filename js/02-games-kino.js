@@ -104,11 +104,13 @@
   const workCfg = () => { let w = null; try { w = MEP && MEP.work; } catch(_){ /* ожидаемо: профиль ещё не загружен */ } return {...WORK_DEF, ...(w || {})}; };
   const hm = s => { const [a, b] = String(s || "0:0").split(":").map(Number); return (a || 0) * 60 + (b || 0); };
   function workTick(){ const el = $("workT"); if (!el) return; const d = new Date(), wd = d.getDay(), W = workCfg(), end = new Date(d), em = hm(W.end); end.setHours(Math.floor(em / 60), em % 60, 0, 0);
-    if (!W.on || !W.days.includes(wd) || d.getHours() * 60 + d.getMinutes() < hm(W.start) - 60){ el.hidden = true; return; }
+    if (!W.on || !W.days.includes(wd) || d.getHours() * 60 + d.getMinutes() < hm(W.start) - 60){ el.hidden = true; workHome(el); return; }
     el.hidden = false; const left = Math.floor((end - d) / 1000), p2 = n => String(n).padStart(2, "0");
     const html = left > 0 ? `<i aria-hidden="true">👨‍💻</i><span><small>ОСТАЛОСЬ РАБОТАТЬ</small><b>${Math.floor(left / 3600)}:${p2(Math.floor(left / 60) % 60)}:${p2(left % 60)}</b></span>`
       : `<i aria-hidden="true">🍻</i><span><small class="ok">СМЕНА ОКОНЧЕНА</small><b class="ok">свобода</b></span>`;
-    el.classList.toggle("done", left <= 0); el.title = (left > 0 ? `До конца рабочего дня (${W.end})` : "Рабочий день окончен") + " · нажми, чтобы настроить"; if (el.innerHTML !== html) el.innerHTML = html; }
+    el.classList.toggle("done", left <= 0); el.title = (left > 0 ? `До конца рабочего дня (${W.end})` : "Рабочий день окончен") + " · нажми, чтобы настроить"; if (el.innerHTML !== html) el.innerHTML = html; workHome(el); }
+  // 6.0: на телефоне таймер живёт плашкой на главной
+  function workHome(src){ const h = $("workHome"); if (!h) return; h.hidden = src.hidden; h.classList.toggle("done", src.classList.contains("done")); if (h.innerHTML !== src.innerHTML) h.innerHTML = src.innerHTML; }
   setTimeout(workTick, 0); setInterval(workTick, 1000);
   const WD_NAMES = [[1, "Пн"], [2, "Вт"], [3, "Ср"], [4, "Чт"], [5, "Пт"], [6, "Сб"], [0, "Вс"]];
   function workSheet(){
@@ -235,19 +237,23 @@
     const byDay = {};
     items.forEach(it => { const d = itemDate(it); if (d) (byDay[d] = byDay[d] || []).push(it); });
     Object.values(byDay).forEach(a => a.sort((x,y) => (relOn(x) - relOn(y)) || (y.rating ?? -1) - (x.rating ?? -1)));
+    // 6.0: мероприятия и ГО ПОСМОТРИМ в календаре — и прошедшие, и будущие
+    const evDay = {}; if (typeof EV !== "undefined"){ if (!EV && ME) loadEvents(); if (EV) EV.events.forEach(e => { if (!e.starts_at) return; const k = localDate(new Date(e.starts_at)); (evDay[k] = evDay[k] || []).push(e); }); }
+    const evChip = e => { const t = new Date(e.starts_at), past = evPast(e); return `<button type="button" class="c-evc${past ? " past" : ""}${e.kind === "watch" ? " w" : ""}" data-ev="${esc(e.id)}" title="${esc(e.title + " · " + evWhen(e))}">${e.kind === "watch" ? ICON.film : ICON.party}<span>${esc(e.title)}</span><small>${t.toLocaleTimeString("ru-RU", {hour: "2-digit", minute: "2-digit"})}</small></button>`; };
     const prefix = `${calY}-${pad(calM+1)}-`;
+    const evN = Object.keys(evDay).filter(k => k.startsWith(prefix)).reduce((a, k) => a + evDay[k].length, 0);
     const mi = items.filter(it => (itemDate(it) || "").startsWith(prefix));
     const gN = mi.filter(i => isGame(i) && !relOn(i)).length, kN = mi.filter(i => !isGame(i) && !relOn(i)).length, rN = mi.filter(relOn).length;
     const start = (first.getDay() + 6) % 7, days = new Date(calY, calM + 1, 0).getDate(), cells = Math.ceil((start + days) / 7) * 7, td = today();
     let h = "";
     for (let i = 0; i < cells; i++){
-      const d = new Date(calY, calM, i - start + 1), key = localDate(d), evs = byDay[key] || [], n = Math.min(evs.length, 4);
+      const d = new Date(calY, calM, i - start + 1), key = localDate(d), evs = byDay[key] || [], n = Math.min(evs.length, 4), ee = evDay[key] || [];
       const tiles = evs.slice(0, 4).map((it, j) => tileHTML(it, j === 3 && evs.length > 4 ? `<span class="c-more">+${evs.length - 3}</span>` : "")).join("");
-      h += `<div class="c-day${d.getMonth() !== calM ? " out" : ""}${key === td ? " today" : ""}${n ? " has" : ""}" data-day="${key}"><span class="c-num">${d.getDate()}</span>${n ? `<div class="c-tiles n${n}">${tiles}</div>` : ""}</div>`;
+      h += `<div class="c-day${d.getMonth() !== calM ? " out" : ""}${key === td ? " today" : ""}${n ? " has" : ""}${ee.length ? " has-ev" : ""}" data-day="${key}"><span class="c-num">${d.getDate()}</span>${ee.length ? `<div class="c-evs">${ee.map(evChip).join("")}</div>` : ""}${n ? `<div class="c-tiles n${n}">${tiles}</div>` : ""}</div>`;
     }
     $("aMain").innerHTML = `<div class="c-head"><h1 class="a-h1">${esc(mName.charAt(0).toUpperCase() + mName.slice(1))} <span>${calY}</span></h1>
         <div class="c-arrows"><button type="button" class="ar" id="cPrev" aria-label="Прошлый месяц">‹</button><button type="button" id="cToday">Сегодня</button><button type="button" class="ar" id="cNext" aria-label="Следующий месяц">›</button></div></div>
-      <div class="c-sum"><span class="k"><i style="background:var(--c-game)"></i><b>${gN}</b>игр</span><span class="k"><i style="background:var(--c-kino)"></i><b>${kN}</b>кино</span>${rN ? `<span><b>${rN}</b>${plural(rN,"релиз","релиза","релизов")}</span>` : ""}<span class="sep"></span>
+      <div class="c-sum"><span class="k"><i style="background:var(--c-game)"></i><b>${gN}</b>игр</span><span class="k"><i style="background:var(--c-kino)"></i><b>${kN}</b>кино</span>${rN ? `<span><b>${rN}</b>${plural(rN,"релиз","релиза","релизов")}</span>` : ""}${evN ? `<span class="k"><i style="background:#ff375f"></i><b>${evN}</b>${plural(evN,"встреча","встречи","встреч")}</span>` : ""}<span class="sep"></span>
         <span class="c-legend"><span><i style="background:var(--r-green)"></i>7,5+</span><span><i style="background:var(--r-yel)"></i>5–7</span><span><i style="background:var(--r-red)"></i>до 5</span></span></div>
       <div class="c-dows"><div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div></div>
       <div class="c-grid" id="cGrid">${h}</div>
@@ -267,6 +273,6 @@
       <div class="cds">${list.map(it => `<button class="cds-c" data-id="${esc(it.id)}">${posterHTML(it, {tgt: false})}<span class="ti">${esc(it.title)}</span><small><span class="kd ${isGame(it) ? "g" : "k"}">${isGame(it) ? ICON.pad : ICON.film}</span>${esc(lbl(it))}</small></button>`).join("")}</div>`, {wide: true});
     s.el.addEventListener("click", e => { if (e.target.closest("[data-id]")) s.close(); }, true);
   }
-  document.addEventListener("click", e => { if (route !== "calendar" || $("aMain").contains(e.target) === false) return; const d = e.target.closest && e.target.closest(".c-day.has"); if (!d || e.target.closest("[data-drag]")) return;
+  document.addEventListener("click", e => { if (route !== "calendar" || $("aMain").contains(e.target) === false) return; const d = e.target.closest && e.target.closest(".c-day.has"); if (!d || e.target.closest("[data-drag]") || e.target.closest("[data-ev]")) return;
     const n = items.filter(i => itemDate(i) === d.dataset.day).length; if (n > 1) calDaySheet(d.dataset.day); else { const it = items.find(i => itemDate(i) === d.dataset.day); if (it) openItem(it.id); } });
 

@@ -92,17 +92,52 @@
     const th = e => { const s = evStart(e); return `<span class="ev-th" style="--g:${e.photo ? "#2c2c2e" : evBg(e)}">${e.photo ? evImg(e) : s ? `<small>${MON[s.getMonth()]}</small><b>${s.getDate()}</b>` : `<b>?</b>`}</span>`; };
     const row = e => { const go_ = evMem(e.id).filter(m => m.status === "going"); return `<button class="ev-row${evPast(e) ? " past" : ""}" data-ev="${esc(e.id)}">${th(e)}<span class="t"><b>${esc(e.title)}</b><small>${esc(evIn(e) || evWhen(e))}${go_.length ? ` · ${go_.length} ${plural(go_.length, "идёт", "идут", "идут")}` : ""}</small></span>${go_.length ? avaStack(go_.map(m => m.user_id), 3) : ""}</button>`; };
     const note = "Notification" in window && Notification.permission === "default" ? `<button class="ev-note" data-notif="1">Включить уведомления о приглашениях</button>` : "";
-    return `<div class="fb-card ev-card"><h3>${ICON.party} Мероприятия<button class="ev-add" data-evnew="1" title="Создать мероприятие" aria-label="Создать мероприятие">+</button></h3>
+    return `<div class="fb-card ev-card"><h3>${ICON.party} Мероприятия<a class="v6-all" href="#events">все ›</a><button class="ev-add" data-evnew="1" title="Создать мероприятие" aria-label="Создать мероприятие">+</button></h3>
       ${inv.filter(m => evById(m.event_id).kind !== "watch").map(m => { const e = evById(m.event_id); return `<div class="ev-inv"><div class="k">${esc(frNick(m.invited_by || e.owner))} зовёт</div>${row(e)}<div class="acts"><button class="ib green" data-rsvp="${esc(e.id)}:going">Иду</button><button class="ib" data-rsvp="${esc(e.id)}:not">Езжайте</button></div></div>`; }).join("")}
       <div class="ev-scroll">${up.filter(e => !inv.some(m => m.event_id === e.id)).map(row).join("")}</div>${past.length ? `<details class="ev-arch"><summary>Архив<small>${past.length} ${plural(past.length, "прошедшее", "прошедших", "прошедших")}</small></summary><div class="ev-scroll">${past.map(row).join("")}</div></details>` : ""}
       ${EV.events.some(e => e.kind !== "watch") ? "" : `<p class="a-sub" style="margin:0 0 10px;font-size:13px">Пока ничего не запланировано. Кино, катка, шашлыки — позови всех.</p><button class="ib blue bd-set" data-evnew="1">Создать мероприятие</button>`}
       ${note}</div>`;
   }
+  // 6.0: ближайшие мероприятия — на главной и на своей странице
+  const evDaysTo = e => { const s = evStart(e); return s ? Math.round((parseD(localDate(s)) - parseD(today())) / 864e5) : null; };
+  const evBig = e => { const d = evDaysTo(e); if (d === null) return {n: "?", l: ""}; if (d < 0) return {n: "", l: "прошло"}; if (d === 0) return {n: "0", l: evIn(e)}; return {n: String(d), l: plural(d, "день", "дня", "дней")}; };
+  function evTile(e, o = {}){
+    const s = evStart(e), mem = evMem(e.id), go_ = mem.filter(m => m.status === "going"), my = evMy(e.id), b = evBig(e), past = evPast(e);
+    const MON = ["янв", "фев", "мар", "апр", "мая", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"];
+    const myL = my ? (my.status === "going" ? `<span class="v6-ev-me go">Ты идёшь</span>` : my.status === "not" ? `<span class="v6-ev-me no">Не идёшь</span>` : `<span class="v6-ev-me inv">Зовут тебя</span>`) : "";
+    return `<button type="button" class="v6-ev${past ? " past" : ""}${o.big ? " big" : ""}" data-ev="${esc(e.id)}">
+      <span class="v6-ev-ph" style="--g:${e.photo ? "#2c2c2e" : evBg(e)}">${e.photo ? evImg(e) : ""}<span class="v6-ev-d">${s ? `<b>${s.getDate()}</b><small>${MON[s.getMonth()]}</small>` : `<b>?</b>`}</span></span>
+      <span class="v6-ev-t"><b>${esc(e.title)}</b><small>${esc(evWhen(e))}${e.place ? " · " + esc(e.place) : ""}</small><span class="v6-ev-m">${go_.length ? avaStack(go_.map(m => m.user_id), 4) : ""}<span>${go_.length ? `${go_.length} ${plural(go_.length, "идёт", "идут", "идут")}` : "пока никто не отметился"}</span>${myL}</span></span>
+      ${past ? "" : `<span class="v6-ev-c"><b>${b.n}</b><small>${esc(b.l)}</small></span>`}</button>`;
+  }
+  function evNextCard(){
+    if (!EV){ loadEvents(); return `<div class="pf-card v6-evn"><h3>${ICON.party}Ближайшие мероприятия</h3><p class="pf-mute">Загружаю…</p></div>`; }
+    const up = EV.events.filter(e => e.kind !== "watch" && !evPast(e)).sort((a, b) => (a.starts_at || "9").localeCompare(b.starts_at || "9"));
+    return `<div class="pf-card v6-evn"><h3>${ICON.party}Ближайшие мероприятия<small><a href="#events">все ›</a></small></h3>
+      ${up.length ? up.slice(0, 3).map(e => evTile(e)).join("") : `<p class="pf-mute">Ничего не запланировано.</p>`}
+      <button type="button" class="v6-ev-add" data-evnew="1">${ICON.plus || "+"}Создать мероприятие</button></div>`;
+  }
+  function renderEvents(){
+    appleHead("Мероприятия", `<button class="a-link" data-go="people">‹ Активность</button>`);
+    if (!ME){ $("aMain").innerHTML = `<div class="a-empty" style="margin-top:20px"><b>Нужно войти</b></div>`; return; }
+    if (!EV){ $("aMain").innerHTML = `<p class="a-sub">Загружаю…</p>`; loadEvents(); return; }
+    const all = EV.events.filter(e => e.kind !== "watch");
+    const inv = myInvites().filter(m => evById(m.event_id).kind !== "watch").map(m => m.event_id);
+    const up = all.filter(e => !evPast(e)).sort((a, b) => (a.starts_at || "9").localeCompare(b.starts_at || "9"));
+    const past = all.filter(e => evPast(e)).sort((a, b) => b.starts_at.localeCompare(a.starts_at));
+    const byM = {}; past.forEach(e => { const k = e.starts_at.slice(0, 7); (byM[k] = byM[k] || []).push(e); });
+    const MN = ["январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"];
+    $("aMain").innerHTML = `<div class="v6-evp"><div class="v6-evp-h"><h1 class="a-h1">Мероприятия</h1><span class="sp"></span><a class="ib" href="#calendar">${ICON.calendar}В календаре</a><button type="button" class="ib blue" data-evnew="1">${ICON.plus || "+"}Создать</button></div>
+      ${inv.length ? `<h2 class="v6-evp-s">Тебя зовут<span>${inv.length}</span></h2>${inv.map(id => { const e = evById(id); return `<div class="v6-ev-inv">${evTile(e, {big: true})}<div class="acts"><button class="ib green" data-rsvp="${esc(e.id)}:going">Иду</button><button class="ib" data-rsvp="${esc(e.id)}:not">Езжайте без меня</button></div></div>`; }).join("")}` : ""}
+      <h2 class="v6-evp-s">Скоро<span>${up.filter(e => !inv.includes(e.id)).length}</span></h2>
+      ${up.filter(e => !inv.includes(e.id)).length ? `<div class="v6-ev-list">${up.filter(e => !inv.includes(e.id)).map(e => evTile(e, {big: true})).join("")}</div>` : `<div class="a-empty"><b>Ничего не запланировано</b>Кино, катка, шашлыки, ДР — позови всех.</div>`}
+      ${past.length ? `<h2 class="v6-evp-s">Прошедшие<span>${past.length}</span></h2>${Object.keys(byM).map(k => `<div class="v6-evp-m">${MN[+k.slice(5) - 1]} ${k.slice(0, 4)}</div><div class="v6-ev-list">${byM[k].map(e => evTile(e)).join("")}</div>`).join("")}` : ""}</div>`;
+  }
   const vkDate = ts => { const d = new Date(ts), t = d.toLocaleTimeString("ru-RU", {hour: "2-digit", minute: "2-digit"}), k = localDate(d);
     return (k === today() ? "сегодня" : k === addDays(today(), -1) ? "вчера" : d.toLocaleDateString("ru-RU", {day: "numeric", month: "long"})) + " в " + t; };
   let wallDraft = {id: null, text: "", file: null};
   function renderEvent(){
-    appleHead("Мероприятие", `<button class="a-link" data-go="people">‹ Активность</button>`);
+    appleHead("Мероприятие", `<button class="a-link" data-go="events">‹ Мероприятия</button>`);
     if (!ME){ $("aMain").innerHTML = `<div class="a-empty" style="margin-top:20px"><b>Нужно войти</b></div>`; return; }
     if (!EV){ $("aMain").innerHTML = `<p class="a-sub">Загружаю…</p>`; loadEvents(); return; }
     const e = evById(viewEv);

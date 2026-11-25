@@ -15,7 +15,7 @@ function fixtures(nItemsFriend) {
     profiles: [{user_id: UID, nick: "TESTER", created_at: now}, {user_id: FUID, nick: "FRIEND", created_at: now}],
     public_items: items, is_nexus_admin: true,
     // живая лента: всё от друга, свежее
-    events: [{id: "e1", owner: FUID, title: "Шашлыки", created_at: now, kind: "meet"}],
+    events: [{id: "e1", owner: FUID, title: "Шашлыки", created_at: now, kind: "meet"}, {id: "e2", owner: FUID, title: "ДР СК", created_at: now, kind: "meet", starts_at: new Date(Date.now() + 3 * 864e5).toISOString()}, {id: "e3", owner: UID, title: "Прошлая встреча", created_at: now, kind: "meet", starts_at: new Date(Date.now() - 5 * 864e5).toISOString()}],
     event_members: [{event_id: "e1", user_id: UID, status: "going", updated_at: now}],
     event_posts: [{id: "ep1", event_id: "e1", user_id: FUID, body: "Беру мангал", created_at: now}],
     event_post_likes: [],
@@ -38,7 +38,7 @@ function fixtures(nItemsFriend) {
     place_dish_rates: [{dish_id: "d1", user_id: FUID, score: 9, updated_at: now}, {dish_id: "d2", user_id: FUID, score: 3, updated_at: now}], place_wants: [], items: [{id: "m1", user_id: UID, data: {title: "Моя игра", kind: "game", status: "playing", added: now}}],
   };
 }
-const routes = ["#home", "#games", "#games-future", "#kino", "#kino-future", "#read", "#slop", "#places", "#people", "#more", "#calendar", "#vacation", "#patch", "#user:" + FUID];
+const routes = ["#home", "#games", "#games-future", "#kino", "#kino-future", "#read", "#slop", "#places", "#people", "#more", "#calendar", "#events", "#event:e1", "#event:e2", "#vacation", "#patch", "#user:" + FUID];
 async function run() {
   const exe = process.env.CHROME_PATH || undefined;
   const browser = await pw.chromium.launch({executablePath: exe, args: ["--no-sandbox"]});
