@@ -681,10 +681,20 @@
       <p>Сайт открылся, но твои данные до него не доходят. Похоже, провайдер режет соединение с сервером базы — в России такое бывает без VPN.</p>
       <p><b>Ничего не пропало:</b> игры, фильмы и всё остальное лежат на месте, их просто не видно.</p>
       <ol><li>Включи VPN</li><li>Нажми «Обновить»</li></ol>
+      <p id="nfD" style="font-size:12px;opacity:.7">Проверяю связь…</p>
       <div class="nf-acts"><button type="button" class="ib blue" id="nfR">Обновить</button><button type="button" class="ib" id="nfW">Подождать ещё</button></div></div>`;
     el.hidden = false; document.body.classList.add("nf-on");
-    $("nfR").onclick = () => location.reload();
+    // «Обновить» ещё и сбрасывает сохранённые старые файлы сайта, чтобы телефон не сидел на прошлой версии
+    $("nfR").onclick = async () => { try { const rs = await navigator.serviceWorker.getRegistrations(); await Promise.all(rs.map(r => r.unregister())); if (window.caches){ const ks = await caches.keys(); await Promise.all(ks.map(k => caches.delete(k))); } } catch(_){ /* ожидаемо: нет service worker (приватный режим и т. п.) */ } location.reload(); };
+    netDiag($("nfD"));
     $("nfW").onclick = () => { el.hidden = true; document.body.classList.remove("nf-on"); netShown = false; clearTimeout(bootWD); bootWD = setTimeout(netFail, 15000); };
+  }
+  // что видит этот браузер: ответили ли прокси и база напрямую (чтобы с телефона было понятно, где обрыв)
+  async function netDiag(d){
+    if (!d) return;
+    const t = async u => { const t0 = performance.now(); try { const r = await fetch(u, {cache: "no-store", signal: AbortSignal.timeout(8000)}); return "ответил за " + Math.round(performance.now() - t0) + " мс (код " + r.status + ")"; } catch(e){ return "не ответил (" + ((e && e.name) || "ошибка") + ")"; } };
+    const [px, dr] = await Promise.all([PROXY ? t(PROXY + "?p=" + encodeURIComponent("/auth/v1/health")) : Promise.resolve("выключен"), t(SB_BASE + "/auth/v1/health")]);
+    d.textContent = "Версия сайта " + NEXUS_VER + ". Прокси: " + px + ". Напрямую: " + dr + ".";
   }
   function netOk(){ clearTimeout(bootWD); netShown = false; const el = $("netFail"); if (el){ el.hidden = true; document.body.classList.remove("nf-on"); } }
 
