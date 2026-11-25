@@ -1,0 +1,49 @@
+name: Библиотеки и шрифты к себе
+# Скачивает библиотеки (Supabase, MapLibre) и шрифты Google в папку vendor/,
+# чтобы сайт не зависел от чужих CDN, которые режут провайдеры. Запуск: Actions → этот workflow → Run workflow.
+on:
+  workflow_dispatch:
+  push:
+    paths: ['.github/workflows/vendor.yml']
+permissions:
+  contents: write
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Библиотеки
+        run: |
+          set -e
+          mkdir -p vendor
+          curl -fsSL -o vendor/supabase.min.js https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js
+          curl -fsSL -o vendor/jszip.min.js https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js
+          curl -fsSL -o vendor/maplibre-gl.js https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.1/dist/maplibre-gl.js
+          curl -fsSL -o vendor/maplibre-gl.css https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.1/dist/maplibre-gl.css
+          ls -la vendor
+      - name: Шрифты
+        run: |
+          set -e
+          mkdir -p vendor/fonts
+          UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
+          curl -fsSL -A "$UA" -o /tmp/fonts.css "https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&family=Unbounded:wght@700;900&display=swap"
+          python3 - <<'EOF'
+          import re, hashlib, urllib.request
+          css = open('/tmp/fonts.css').read()
+          def get(m):
+              url = m.group(1)
+              name = hashlib.sha1(url.encode()).hexdigest()[:16] + '.woff2'
+              urllib.request.urlretrieve(url, 'vendor/fonts/' + name)
+              return 'url(' + name + ')'
+          css = re.sub(r'url\((https://fonts\.gstatic\.com/[^)]+)\)', get, css)
+          open('vendor/fonts/fonts.css', 'w').write(css)
+          print(css.count('@font-face'), 'шрифтов')
+          EOF
+          ls vendor/fonts | wc -l
+      - name: Сохраняю в репозиторий
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898699+github-actions[bot]@users.noreply.github.com"
+          git add vendor
+          git diff --cached --quiet && echo "без изменений" || (git commit -m "vendor: библиотеки и шрифты у себя" && git push)
