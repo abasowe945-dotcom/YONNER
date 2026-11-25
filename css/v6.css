@@ -415,3 +415,61 @@
   .cs-fr{grid-template-columns:minmax(0,1fr) 34px 28px;grid-template-areas:"t c x" "f f f" "s s s";gap:8px}
   .cs-fr>b{grid-area:t}.cs-fr select{grid-area:f}.cs-fr .cs-sz{grid-area:s}.cs-fr .cs-cl{grid-area:c}.cs-fr .cs-x{grid-area:x}
 }
+
+/* ================= 7.1: меню слева сворачивается до иконок ================= */
+.sb-tg,.sb-tip{display:none}
+@media (min-width:901px){
+  :root{--sbw:232px;--sb-ease:cubic-bezier(.2,.8,.2,1)}
+  :root.sb-c{--sbw:72px}
+  body{padding-left:var(--sbw);transition:padding-left .26s var(--sb-ease)}
+  body .tabbar{width:var(--sbw);overflow-x:hidden;transition:width .26s var(--sb-ease)}
+  body .tabbar .tab{position:relative;white-space:nowrap;overflow:hidden;transition:padding .26s var(--sb-ease),background .15s,color .15s}
+  body .tabbar .tab span{transition:opacity .14s}
+  body .tabbar .tab svg{flex:none}
+  body .tabbar .tab .sb-dot,body .tabbar .tab .dot{transition:left .26s var(--sb-ease),right .26s var(--sb-ease),top .26s var(--sb-ease)}
+  .sb-logo{display:flex!important;align-items:baseline;white-space:nowrap;overflow:hidden;transition:padding .26s var(--sb-ease)}
+  .sb-lr{display:inline-block;max-width:5em;overflow:hidden;transition:max-width .26s var(--sb-ease),opacity .16s}
+  .sb-grp{position:relative;white-space:nowrap;transition:color .14s}
+  .sb-grp::after{content:"";position:absolute;left:14px;right:14px;top:calc(50% + 5px);height:1px;background:rgba(127,127,127,.28);opacity:0;transition:opacity .2s}
+
+  .sb-tg{display:flex;align-items:center;gap:12px;flex:none;width:100%;height:40px;margin-top:6px;padding:0 12px;border:0;border-radius:10px;background:none;color:#8b8b94;font:600 13px/1 Manrope,var(--ios),sans-serif;white-space:nowrap;overflow:hidden;cursor:pointer;transition:padding .26s var(--sb-ease),background .15s,color .15s}
+  .sb-tg:hover{background:rgba(255,255,255,.08);color:var(--sb-on,#f2f2f3)}
+  :root[data-mode="light"] .sb-tg:hover{background:rgba(0,0,0,.05);--sb-on:#141416}
+  .sb-tg svg{flex:none;width:20px;height:20px}
+  .sb-tg .ch{transform-box:fill-box;transform-origin:center;transition:transform .26s var(--sb-ease)}
+  .sb-tg span,.sb-tg kbd{transition:opacity .14s}
+  .sb-tg kbd{margin-left:auto;padding:3px 6px;border-radius:6px;background:rgba(127,127,127,.16);font:700 10px/1 Manrope,sans-serif;letter-spacing:.04em;color:inherit;opacity:.75}
+  .sb-tg:focus-visible,body .tabbar .tab:focus-visible{outline:2px solid rgba(10,132,255,.7);outline-offset:-2px}
+
+  /* свёрнуто: только иконки по одной оси */
+  :root.sb-c body .tabbar .tab,:root.sb-c .sb-tg{padding:0 14px}
+  :root.sb-c body .tabbar .tab span,:root.sb-c .sb-tg span,:root.sb-c .sb-tg kbd{opacity:0;pointer-events:none}
+  :root.sb-c .sb-tg .ch{transform:rotate(180deg)}
+  :root.sb-c .sb-logo{padding-left:14px;padding-right:14px}
+  :root.sb-c .sb-lr{max-width:0;opacity:0}
+  :root.sb-c .sb-grp{color:transparent}
+  :root.sb-c .sb-grp::after{opacity:1}
+  :root.sb-c body .tabbar .tab .sb-dot{position:absolute;left:40px;top:9px;margin:0;width:7px;height:7px;box-shadow:0 0 0 2px var(--sb-ring,rgba(14,14,16,.9))}
+  :root.sb-c body .tabbar .tab .dot{left:38px;right:auto;top:8px;transform:none}
+  :root.sb-c body .tabbar .tab .dot.n{left:32px;top:4px}
+  :root[data-mode="light"].sb-c body .tabbar .tab .sb-dot{--sb-ring:rgba(244,244,246,.95)}
+
+  /* подсказка с названием раздела у свёрнутого меню */
+  .sb-tip{display:block;position:fixed;z-index:96;left:calc(var(--sbw) + 8px);top:0;padding:7px 11px;border-radius:9px;background:rgba(30,30,34,.97);border:1px solid rgba(255,255,255,.1);box-shadow:0 10px 30px rgba(0,0,0,.4);color:#f2f2f3;font:700 13px/1 Manrope,var(--ios),sans-serif;white-space:nowrap;pointer-events:none;opacity:0;transform:translate(-4px,-50%);transition:opacity .12s,transform .12s}
+  .sb-tip.on{opacity:1;transform:translate(0,-50%)}
+  :root[data-mode="light"] .sb-tip{background:#fff;color:#141416;border-color:rgba(0,0,0,.1);box-shadow:0 10px 30px rgba(0,0,0,.16)}
+}
+@media (prefers-reduced-motion:reduce){
+  body,body .tabbar,body .tabbar .tab,.sb-lr,.sb-tg,.sb-tg .ch,.sb-tip{transition:none!important}
+}
+
+/* ================= 7.1: «Активность» — лента крутится сама, страница отдельно ================= */
+/* Раньше боковые колонки были прилипшими и выше экрана: низ (книга жалоб) был недоступен, пока не докрутишь ленту.
+   Теперь лента — своё окно высотой с экран: колесо над ней крутит ленту, над остальным — всю страницу. */
+@media (min-width:721px){
+  .fb-l,.fb-r{position:static}
+  .fb-feed-w{position:sticky;top:calc(var(--ghh,64px) + 14px);max-height:calc(100vh - var(--ghh,64px) - 28px);max-height:calc(100dvh - var(--ghh,64px) - 28px);overflow-y:auto;overscroll-behavior:contain;margin:-6px;padding:6px;border-radius:20px;scrollbar-width:thin;scrollbar-color:rgba(127,127,127,.35) transparent}
+  .fb-feed-w::-webkit-scrollbar{width:8px}
+  .fb-feed-w::-webkit-scrollbar-thumb{background:rgba(127,127,127,.35);border-radius:8px;border:2px solid transparent;background-clip:padding-box}
+  .fb-feed-w::-webkit-scrollbar-track{background:transparent}
+}

@@ -219,12 +219,12 @@
     const mob = matchMedia("(max-width:900px)").matches, cur = mob ? curM : curD;
     const SHELF_I = I('<rect x="3" y="4" width="5" height="16" rx="1"/><rect x="10" y="4" width="5" height="16" rx="1"/><path d="m17 5 3.5 14.5"/>');
     const DOT = {games: "var(--c-game,#34d1bf)", kino: "var(--c-kino,#a78bfa)", read: "#f5b544"};
-    const t = (k, l, cls = "", href = k, ic = ICON[k]) => `<a class="tab ${cls}" href="#${href}" data-tab="${k}" ${cur === k ? 'aria-current="page"' : ""}>${ic}<span>${l}</span>${DOT[k] ? `<i class="sb-dot" style="background:${DOT[k]}"></i>` : ""}${k === "games" && ac ? '<i class="dot"></i>' : ""}${k === "people" && invN ? `<i class="dot n">${invN}</i>` : ""}${k === "events" && invN ? `<i class="dot n">${invN}</i>` : ""}</a>`;
+    const t = (k, l, cls = "", href = k, ic = ICON[k]) => `<a class="tab ${cls}" href="#${href}" data-tab="${k}" data-tip="${l}" ${cur === k ? 'aria-current="page"' : ""}>${ic}<span>${l}</span>${DOT[k] ? `<i class="sb-dot" style="background:${DOT[k]}"></i>` : ""}${k === "games" && ac ? '<i class="dot"></i>' : ""}${k === "people" && invN ? `<i class="dot n">${invN}</i>` : ""}${k === "events" && invN ? `<i class="dot n">${invN}</i>` : ""}</a>`;
     const tb = $("tabbar"), lens0 = tb.querySelector(".tb-lens"), x0 = lens0 ? lens0.style.transform : "";
-    tb.innerHTML = `<i class="tb-lens now" style="transform:${x0}"></i><a class="sb-logo" href="#home">NEXUS</a>` + t("home", "Главная") +
+    tb.innerHTML = `<i class="tb-lens now" style="transform:${x0}"></i><a class="sb-logo" href="#home" aria-label="NEXUS — на главную"><span>N</span><span class="sb-lr">EXUS</span></a>` + t("home", "Главная") +
       `<div class="sb-grp">Полка</div>` + t("games", "Игры", "d") + t("kino", "Кино и сериалы", "d") + t("read", "Читалка", "d") + t("shelf", "Полка", "m", "games", SHELF_I) +
       `<div class="sb-grp">Вместе</div>` + t("slop", "СЛОП") + t("people", "Активность") + t("events", "Мероприятия", "d", "events", ICON.party) + t("places", "Заведения", "d", "places", ICON.pin) + t("calendar", "Календарь", "d") +
-      `<div class="sb-sp"></div>` + t("more", "Ещё");
+      `<div class="sb-sp"></div>` + t("more", "Ещё") + sbBtnHTML();
     const ms = $("mShelf"); if (ms){ const k = ["games", "kino", "read"].includes(tab) ? tab : ""; ms.innerHTML = [["games", "Игры"], ["kino", "Кино"], ["read", "Читалка"]].map(([h, l]) => `<a href="#${h}"${k === h ? ' aria-current="page"' : ""}>${l}</a>`).join(""); }
     placeLens();
   }
@@ -238,6 +238,39 @@
   }
   addEventListener("resize", () => { const l = $("tabbar").querySelector(".tb-lens"); if (l){ l.classList.add("now"); placeLens(); } });
   $("tabbar").addEventListener("click", e => { const t = e.target.closest(".tab"); if (!t) return; t.classList.remove("bounce"); void t.offsetWidth; t.classList.add("bounce"); });
+
+  // ================= 7.1: меню слева сворачивается до иконок =================
+  // Кнопка внизу меню или Ctrl+B (на маке Cmd+B). Выбор запоминается, класс sb-c ставится ещё до отрисовки (скрипт в начале index.html).
+  const sbIsC = () => document.documentElement.classList.contains("sb-c");
+  function sbBtnHTML(){
+    const c = sbIsC();
+    return `<button type="button" class="sb-tg" id="sbTg" aria-expanded="${!c}" aria-label="${c ? "Развернуть меню" : "Свернуть меню"}" data-tip="${c ? "Развернуть меню · Ctrl+B" : ""}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/><path class="ch" d="m16 10-2 2 2 2"/></svg><span>${c ? "Развернуть" : "Свернуть"}</span><kbd>Ctrl B</kbd></button>`;
+  }
+  const sbTip = document.createElement("div"); sbTip.className = "sb-tip"; sbTip.setAttribute("aria-hidden", "true"); document.body.appendChild(sbTip);
+  const sbTipOff = () => sbTip.classList.remove("on");
+  function sbTipOn(el){
+    if (!sbIsC() || !el || !el.dataset.tip || matchMedia("(max-width:900px)").matches){ sbTipOff(); return; }
+    const r = el.getBoundingClientRect(); sbTip.textContent = el.dataset.tip; sbTip.style.top = Math.round(r.top + r.height / 2) + "px"; sbTip.classList.add("on");
+  }
+  function sbToggle(){
+    const c = !sbIsC(); document.documentElement.classList.toggle("sb-c", c); sbTipOff();
+    try { localStorage.setItem("nexus_sb", c ? "1" : "0"); } catch(e){ /* ожидаемо: приватный режим */ }
+    const b = $("sbTg"); if (b) b.outerHTML = sbBtnHTML();
+    setTimeout(() => dispatchEvent(new Event("resize")), 300); // карусели и карта подстраиваются под новую ширину
+  }
+  $("tabbar").addEventListener("click", e => { if (e.target.closest("#sbTg")) sbToggle(); });
+  $("tabbar").addEventListener("mouseover", e => sbTipOn(e.target.closest("[data-tip]")));
+  $("tabbar").addEventListener("mouseleave", sbTipOff);
+  $("tabbar").addEventListener("focusin", e => { if (e.target.matches(":focus-visible")) sbTipOn(e.target.closest("[data-tip]")); });
+  $("tabbar").addEventListener("focusout", sbTipOff);
+  $("tabbar").addEventListener("scroll", sbTipOff, {passive: true});
+  addEventListener("hashchange", sbTipOff);
+  document.addEventListener("keydown", e => {
+    if (e.code !== "KeyB" || !(e.ctrlKey || e.metaKey) || e.shiftKey || e.altKey || e.repeat) return;
+    const tg = e.target; if (tg && tg.closest && tg.closest("input,textarea,select,[contenteditable]:not([contenteditable=\"false\"])")) return;
+    if (matchMedia("(max-width:900px)").matches) return;
+    e.preventDefault(); sbToggle();
+  });
 
   // ================= цена, таймер, релизы, колесо оценки =================
   const KZT_PER_RUB = 5.46; // официальный курс Нацбанка РК на 7 ноября 2026

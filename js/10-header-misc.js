@@ -361,12 +361,14 @@
       ${soon.length ? `<div class="bd-list">${soon.map(({p, n}) => `<button class="bd-row${n.days === 0 ? " now" : ""}" ${p.user_id !== ME.id ? `data-user="${esc(p.user_id)}"` : 'data-bdset="1"'}>${avaHTML(p)}<span class="t">${esc(p.user_id === ME.id ? "Ты" : p.nick)}<small>${bdLabel(p.birthday)}${n.age && p.user_id === ME.id ? ` · исполнится ${n.age}` : ""}</small></span><span class="w">${n.days === 0 ? "сегодня" : n.days === 1 ? "завтра" : `через ${n.days} ${plural(n.days, "день", "дня", "дней")}`}</span></button>`).join("")}</div>`
         : `<p class="a-sub" style="margin:10px 0 0;font-size:13px">Пока никто не указал день рождения.</p>`}
       ${myBd ? "" : `<button class="ib blue bd-set" data-bdset="1">Указать свой</button>`}</div>`;
+    const fw0 = document.querySelector(".fb-feed-w"), fst = fw0 && fw0.dataset.tab === actTab ? fw0.scrollTop : 0; // 7.1: лента крутится отдельно — помним, где был
     $("aMain").innerHTML = `<h1 class="a-h1">Активность</h1><p class="a-sub">${others.length ? `${others.length} ${plural(others.length, "человек", "человека", "человек")} на NEXUS кроме тебя. Видно всё, кроме заметок и причин дропа.` : "Пока здесь никого, кроме тебя. Скинь друзьям ссылку на сайт."}</p>
       <div class="fb">
         <aside class="fb-col fb-l">${eventsCard()}${placesCard()}${recCard()}${tlCard()}${bdH}</aside>
-        <section class="fb-feed-w">${v6WeekCard()}${watchCard()}<div class="act-tabs" role="tablist"><button data-acttab="wall" aria-pressed="${actTab === "wall"}">${ICON.chat}Стена${WALL && WALL.posts.length ? `<small>${WALL.posts.length}</small>` : ""}</button><button data-acttab="feed" aria-pressed="${actTab === "feed"}">${ICON.people}Лента друзей</button></div>${actTab === "feed" ? feedCard() : wallCard()}</section>
+        <section class="fb-feed-w" data-tab="${actTab}">${v6WeekCard()}${watchCard()}<div class="act-tabs" role="tablist"><button data-acttab="wall" aria-pressed="${actTab === "wall"}">${ICON.chat}Стена${WALL && WALL.posts.length ? `<small>${WALL.posts.length}</small>` : ""}</button><button data-acttab="feed" aria-pressed="${actTab === "feed"}">${ICON.people}Лента друзей</button></div>${actTab === "feed" ? feedCard() : wallCard()}</section>
         <aside class="fb-col fb-r"><div class="fb-card plain"><h3>Друзья<small>${others.length}</small></h3>${others.length ? `<div class="fl">${friendsH}</div>` : `<p class="a-sub" style="margin:0;font-size:13px">Скинь ссылку на сайт — тут появятся друзья и что они делали.</p>`}</div>${bookCard()}</aside>
       </div>`;
+    if (fst){ const fw1 = document.querySelector(".fb-feed-w"); if (fw1) fw1.scrollTop = fst; }
     document.querySelectorAll('[data-stack="1"]').forEach(wireStack);
     wireWall3(); wireBook(); if (actTab === "wall" && !WALL) loadWall();
     if (fid){ const n = $(fid); if (n){ n.focus({preventScroll: true}); try { n.setSelectionRange(fsel[0], fsel[1]); } catch(_){ /* ожидаемо: поле без курсора */ } } } if (Math.abs(scrollY - sy) > 2) scrollTo(0, sy);
