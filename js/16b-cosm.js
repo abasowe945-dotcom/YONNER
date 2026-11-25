@@ -128,6 +128,8 @@
 
   // ---- окно «Оформление»
   let csTab = "theme";
+  // 7.14: строка-образец под каждым разделом — видно шрифт, размер и цвет прямо в окне, не только за ним
+  const csSmp = v => { v = v || {}; const fam = csFam(v.f), col = csCol(v.c), sz = csNum(v.s, 60, 220, 100); return `${fam ? `font-family:${fam};` : ""}${col ? `color:${col};` : ""}font-size:${Math.round(18 * sz / 100)}px`; };
   function csSheet(again){
     if (!ME) return; if (!COSM && !COSM_OFF) loadCosm();
     if ((!FR || FR.failed) && !again){ toast("Считаю твои достижения…"); loadFriends(true).then(() => csSheet(true)); return; } // пока данные не пришли, всё казалось закрытым
@@ -156,7 +158,7 @@
           <div class="cs-rgs">${[["dim", "Затемнение", 0, 90, 5, H.dim, "%"], ["y", "Сдвиг вверх-вниз", 0, 100, 1, H.y, "%"], ["x", "Сдвиг влево-вправо", 0, 100, 1, H.x, "%"], ["blur", "Размытие", 0, 16, 1, H.blur, "px"]].map(([k, l, a, b, st, v, u]) => `<label class="cs-rg"><span>${l}<em data-csrv="${k}">${v}${u}</em></span><input type="range" min="${a}" max="${b}" step="${st}" value="${v}" data-csr="${k}" data-u="${u}"></label>`).join("")}</div>` : ""}`; }
       else if (csTab === "txt"){ const T = cur.txt; csFontLoad(CS_FONTS.map(f => f[0]));
         h = `<p class="a-sub">Шрифт, размер и цвет для ника и каждого раздела профиля. «Все заголовки разделов» — для всех сразу, отдельный раздел его перебивает. Изменения видно за окном сразу.</p><div class="cs-ft">${CS_SECS.map(([k, l]) => { const v = T[k] || {}, s = csNum(v.s, 60, 220, 100), dirty = v.f || csCol(v.c) || s !== 100;
-          return `<div class="cs-fr${k === "box" || k === "nick" ? " big" : ""}"><b>${esc(l)}</b><select data-csf="${k}" aria-label="Шрифт: ${esc(l)}">${CS_FONTS.map(([f, n]) => `<option value="${esc(f)}"${f === (v.f || "") ? " selected" : ""}${f ? ` style="font-family:${esc(csFam(f))}"` : ""}>${esc(n)}</option>`).join("")}</select><label class="cs-sz" title="Размер"><input type="range" min="60" max="${k === "nick" ? 160 : 220}" step="10" value="${s}" data-css="${k}" aria-label="Размер: ${esc(l)}"><em>${s}%</em></label><label class="cs-cl${csCol(v.c) ? "" : " def"}" title="Цвет"><input type="color" value="${csCol(v.c) || "#ffffff"}" data-csc="${k}" aria-label="Цвет: ${esc(l)}"></label><button type="button" class="cs-x" data-csx="${k}" ${dirty ? "" : "disabled"} title="Как было">×</button></div>`; }).join("")}</div>`; }
+          return `<div class="cs-fr${k === "box" || k === "nick" ? " big" : ""}"><b>${esc(l)}</b><select data-csf="${k}" aria-label="Шрифт: ${esc(l)}">${CS_FONTS.map(([f, n]) => `<option value="${esc(f)}"${f === (v.f || "") ? " selected" : ""}${f ? ` style="font-family:${esc(csFam(f))}"` : ""}>${esc(n)}</option>`).join("")}</select><label class="cs-sz" title="Размер"><input type="range" min="60" max="${k === "nick" ? 160 : 220}" step="10" value="${s}" data-css="${k}" aria-label="Размер: ${esc(l)}"><em>${s}%</em></label><label class="cs-cl${csCol(v.c) ? "" : " def"}" title="Цвет"><input type="color" value="${csCol(v.c) || "#ffffff"}" data-csc="${k}" aria-label="Цвет: ${esc(l)}"></label><button type="button" class="cs-x" data-csx="${k}" ${dirty ? "" : "disabled"} title="Как было">×</button><div class="cs-smp" data-cssm="${k}" style="${esc(csSmp(v))}">${esc(k === "nick" ? (p.nick || NICK) : l)} — Аа Бб 123</div></div>`; }).join("")}</div>`; }
       else h = `<p class="a-sub">Порядок блоков в профиле. Стрелками двигай, ненужное прячь.</p><div class="cs-lay">${cur.layout.filter(k => CS_FLOORS.some(f => f[0] === k)).concat(CS_FLOORS.map(f => f[0]).filter(k => !cur.layout.includes(k))).map((k, i, a) => `<div class="cs-lr${cur.hide.includes(k) ? " off" : ""}"><b>${esc(CS_FLOORS.find(f => f[0] === k)[1])}</b><button type="button" data-csmv="${k}:-1" ${i ? "" : "disabled"} aria-label="Выше">↑</button><button type="button" data-csmv="${k}:1" ${i < a.length - 1 ? "" : "disabled"} aria-label="Ниже">↓</button><button type="button" data-cshd="${k}" aria-label="${cur.hide.includes(k) ? "Показать" : "Спрятать"}">${cur.hide.includes(k) ? "показать" : "спрятать"}</button></div>`).join("")}</div>`;
       q("#csB").innerHTML = h; hpPaint();
     };
@@ -178,7 +180,7 @@
       if (el.dataset.csf != null) v.f = el.value || undefined;
       else if (el.dataset.css != null){ v.s = +el.value; el.nextElementSibling.textContent = el.value + "%"; }
       else { v.c = el.value; el.parentElement.classList.remove("def"); }
-      const x = q(`[data-csx="${k}"]`); if (x) x.disabled = false; live(); });
+      const x = q(`[data-csx="${k}"]`); if (x) x.disabled = false; const sm = q(`[data-cssm="${k}"]`); if (sm) sm.style.cssText = csSmp(v); live(); });
     s.el.addEventListener("click", async e => {
       const t = e.target.closest("[data-cst]"); if (t){ csTab = t.dataset.cst; draw(); return; }
       const v = e.target.closest("[data-csv]"); if (v){ const [k, ...rest] = v.dataset.csv.split(":"); cur[k] = rest.join(":"); draw(); live(); return; }

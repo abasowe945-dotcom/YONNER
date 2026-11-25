@@ -1080,3 +1080,7 @@ alter table public.tierlist_comments replica identity full;
 do $$ begin alter publication supabase_realtime add table public.tierlist_comments; exception when duplicate_object then null; end $$;
 alter table public.notifications drop constraint if exists notifications_kind_check;
 alter table public.notifications add constraint notifications_kind_check check (kind in ('mention_post','mention_comment','comment','invite','mention_event','tier_reply','book_comment','suggest','suggest_ok','slop_plan','slop_poll','place_want','place_visit','tier_comment'));
+
+-- ===== 7.14: эмодзи-реакции на записи (kind вида e_skull, e_rose...) =====
+alter table public.item_reactions drop constraint if exists item_reactions_kind_check;
+alter table public.item_reactions add constraint item_reactions_kind_check check (kind in ('base','want','cringe','skull') or kind ~ '^e_[a-z0-9]{1,12}$');

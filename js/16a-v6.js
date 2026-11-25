@@ -13,6 +13,9 @@
 
   // ---- реакции на записи друзей (таблица item_reactions)
   const V6RK = [["base", "база"], ["want", "тоже хочу"], ["cringe", "кринж"], ["skull", "помянем"]];
+  // 7.14: обычные эмодзи-реакции (в базе kind = e_...); меню открывается кнопкой «+»
+  const V6RE = [["e_skull", "💀"], ["e_cry", "😭"], ["e_rose", "🥀"], ["e_clown", "🤡"], ["e_fire", "🔥"], ["e_eyes", "👀"], ["e_goat", "🐐"], ["e_100", "💯"], ["e_salute", "🫡"], ["e_nerd", "🤓"], ["e_moai", "🗿"], ["e_cap", "🧢"]];
+  let v6RxSheet = null;
   async function v6LoadRx(force){
     if (!SB || !ME || V6RX_OFF) return;
     if (V6RX && !force) return; if (v6RxLoading) return v6RxLoading;
@@ -31,7 +34,9 @@
     if (mine && !rows.length) return "";
     return `<span class="v6-rx">${V6RK.map(([k, l]) => { const n = rows.filter(x => x.kind === k).length, on = rows.some(x => x.kind === k && x.user_id === ME.id);
       if (mine && !n) return ""; return mine ? `<span class="v6-rxb ro" title="${esc(rows.filter(x => x.kind === k).map(x => frNick(x.user_id)).join(", "))}">${l}<b>${n}</b></span>`
-        : `<button type="button" class="v6-rxb" data-v6rx="${esc(owner + "|" + itemId + "|" + k)}" aria-pressed="${on}">${l}${n ? `<b>${n}</b>` : ""}</button>`; }).join("")}</span>`;
+        : `<button type="button" class="v6-rxb" data-v6rx="${esc(owner + "|" + itemId + "|" + k)}" aria-pressed="${on}">${l}${n ? `<b>${n}</b>` : ""}</button>`; }).join("")}${V6RE.map(([k, l]) => { const n = rows.filter(x => x.kind === k).length, on = rows.some(x => x.kind === k && x.user_id === ME.id); if (!n) return "";
+      return mine ? `<span class="v6-rxb ro" title="${esc(rows.filter(x => x.kind === k).map(x => frNick(x.user_id)).join(", "))}">${l}<b>${n}</b></span>`
+        : `<button type="button" class="v6-rxb em" data-v6rx="${esc(owner + "|" + itemId + "|" + k)}" aria-pressed="${on}">${l}<b>${n}</b></button>`; }).join("")}${mine ? "" : `<button type="button" class="v6-rxb em plus" data-v6rxp="${esc(owner + "|" + itemId)}" aria-label="Другие реакции" title="Другие реакции">＋</button>`}</span>`;
   }
   document.addEventListener("click", async e => {
     const b = e.target.closest && e.target.closest("[data-v6rx]"); if (!b || !ME) return;
@@ -40,10 +45,17 @@
     b.disabled = true;
     const q = on ? SB.from("item_reactions").delete().match({owner, item_id, kind, user_id: ME.id}) : SB.from("item_reactions").insert({owner, item_id, kind});
     const {error} = await q;
-    if (error){ logErr("реакция на запись", error); toast("Не сохранилось: " + error.message); b.disabled = false; return; }
+    if (error){ if (error.code === "23514" || /item_reactions_kind_check/.test(error.message || "")) toast("Эмодзи-реакции заработают после обновления базы — напиши админу"); else { logErr("реакция на запись", error); toast("Не сохранилось: " + error.message); } b.disabled = false; return; }
     if (on) V6RX = V6RX.filter(x => !(x.owner === owner && x.item_id === item_id && x.kind === kind && x.user_id === ME.id));
     else { V6RX.push({owner, item_id, kind, user_id: ME.id, created_at: now()}); if (typeof SND !== "undefined" && SND.on && SND.pop) SND.pop(); }
     v6ActCache = null; render();
+    if (v6RxSheet){ try { v6RxSheet.close(); } catch(_){ /* ожидаемо: окно уже закрыто */ } v6RxSheet = null; }
+  }, true);
+  document.addEventListener("click", e => {
+    const pb = e.target.closest && e.target.closest("[data-v6rxp]"); if (!pb || !ME || !V6RX) return;
+    e.preventDefault(); e.stopPropagation();
+    const [owner, itemId] = pb.dataset.v6rxp.split("|"), mineK = new Set(V6RX.filter(x => x.owner === owner && x.item_id === itemId && x.user_id === ME.id).map(x => x.kind));
+    v6RxSheet = openSheet(`<h3>Реакция</h3><div class="v6-rxg">${V6RE.map(([k, l]) => `<button type="button" class="v6-rxe" data-v6rx="${esc(owner + "|" + itemId + "|" + k)}" aria-pressed="${mineK.has(k)}" aria-label="${l}">${l}</button>`).join("")}</div>`, {onClose: () => { v6RxSheet = null; }});
   }, true);
 
   // ---- все действия человека с очками
@@ -199,7 +211,7 @@
     if (!ME || V6RX_OFF) return ""; if (!V6RX){ v6LoadRx(); return ""; }
     const got = V6RX.filter(x => x.owner === ME.id && x.user_id !== ME.id).sort((a, b) => String(b.created_at).localeCompare(String(a.created_at))).slice(0, 6);
     if (!got.length) return "";
-    const L = Object.fromEntries(V6RK);
+    const L = Object.fromEntries([...V6RK, ...V6RE]);
     return `<div class="pf-card v6-rxc"><h3>${ICON.people}Реакции на твои записи</h3>${got.map(x => { const it = MYITEMS.find(i => i.id === x.item_id); return `<button type="button" class="v6-rxr" ${it ? `data-id="${esc(it.id)}"` : ""}>${avaHTML(profOf(x.user_id), "sm")}<span><b>${esc(frNick(x.user_id))}</b> — «${esc(L[x.kind] || x.kind)}» на <b>${esc(it ? it.title : "запись")}</b><small>${esc(agoTs(x.created_at))}</small></span></button>`; }).join("")}</div>`;
   }
   // ---- итоги недели (в «Активности»)
