@@ -583,7 +583,7 @@
     const all = tlcOf(id), ids = new Set(all.map(c => c.id)), tl = tlById(id), ownTl = !!(ME && tl && tl.user_id === ME.id);
     const top = all.filter(c => !c.parent_id || !ids.has(c.parent_id));
     const one = (c, sub) => { const p = profOf(c.user_id), canDel = !!ME && (c.user_id === ME.id || ownTl);
-      return `<div class="tlcm${sub ? " sub" : ""}">${avaHTML(p, "sm")}<div class="b"><div class="h"><b>${esc(p.nick || "кто-то")}</b>${tl && c.user_id === tl.user_id ? `<span class="au">автор</span>` : ""}<small>${esc(agoTs(c.created_at))}</small></div><p>${linkMentions(esc(c.body)).replace(/\n/g, "<br>")}</p><div class="a"><button type="button" data-tlcrep="${esc(sub ? c.parent_id : c.id)}" data-tlcnick="${esc(p.nick || "")}" data-tlcfor="${esc(id)}">Ответить</button>${canDel ? `<button type="button" data-tlcdel="${esc(c.id)}">Удалить</button>` : ""}</div></div></div>`; };
+      return `<div class="tlcm${sub ? " sub" : ""}">${avaHTML(p, "sm")}<div class="b"><div class="h"><b>${esc(p.nick || "кто-то")}</b>${tl && c.user_id === tl.user_id ? `<span class="au">автор</span>` : ""}<small>${esc(agoTs(c.created_at))}</small></div><p>${richText(c.body).replace(/\n/g, "<br>")}</p><div class="a"><button type="button" data-tlcrep="${esc(sub ? c.parent_id : c.id)}" data-tlcnick="${esc(p.nick || "")}" data-tlcfor="${esc(id)}">Ответить</button>${canDel ? `<button type="button" data-tlcdel="${esc(c.id)}">Удалить</button>` : ""}</div></div></div>`; };
     return top.length ? top.map(c => one(c) + all.filter(x => x.parent_id === c.id).map(x => one(x, true)).join("")).join("") : `<p class="sub tlc-0">Пока тихо. Скажи, кто тут сидит в тире не по заслугам.</p>`;
   }
   function tlcHTML(id){

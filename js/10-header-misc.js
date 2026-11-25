@@ -579,7 +579,7 @@
     <linearGradient id="emP" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a5683a"/><stop offset="1" stop-color="#5d3416"/></linearGradient></defs></svg>`);
   const emoSpan = k => `<span class="emo" title="${(EMO.find(x => x[0] === k) || [])[2] || ""}"><svg viewBox="0 0 64 64">${EMO_SVG[k]}</svg></span>`;
   const EMO_RE = new RegExp(EMO.map(x => x[1]).join("|"), "g");
-  const richText = s => linkMentions(esc(s).replace(EMO_RE, ch => emoSpan(EMO.find(x => x[1] === ch)[0])));
+  const richText = s => linkMentions(esc(s).replace(EMO_RE, ch => emoSpan(EMO.find(x => x[1] === ch)[0]))).replace(/⟦img:([\w\/.\-]+)⟧/g, (_, id) => `<img class="cm-img" src="${publicUrl(id)}" alt="" data-vkimg="${id}" loading="lazy">`); // ⟦img:путь⟧ — фото в комментарии (7.16)
   const onlyEmo = s => { const t = String(s || "").replace(EMO_RE, "").trim(); return !t && String(s || "").trim().length > 0; };
 
 
