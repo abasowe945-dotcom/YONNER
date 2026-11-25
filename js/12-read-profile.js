@@ -709,6 +709,17 @@
     const pile = (list, fn, addKey) => list.length || addKey ? railHTML("pf-rail pf-pile", list.map(fn).join("") + (addKey ? add(addKey) : "")).replace('data-hscroll="1"', 'data-hscroll="1" data-pile="1"') : "";
     const vrail = (list, sub, addKey) => list.length || addKey ? railHTML("pf-rail pf-tv", list.map(i => tvCard(i, mine ? `data-id="${esc(i.id)}"` : `data-fi="${esc(uid + "/" + i.id)}"`, sub(i))).join("") + (addKey ? add(addKey) : "")) : "";
     const dropCard = it => `<button class="pf-c gdrop" ${mine ? `data-id="${esc(it.id)}"` : `data-fi="${esc(uid + "/" + it.id)}"`}>${posterHTML(it, {tgt: false, badge: false})}<span class="stamp">ДРОП</span><span class="ti">${esc(it.title)}</span><small>${it.finishedAt || it.date ? `брошена ${fmtShort(it.finishedAt || it.date)}` : "брошена"}</small></button>`;
+    // 6.0.2: витрина как в лаунчере — топ-6 крупно, остальные значками, всё — по кнопке
+    const at = it => mine ? `data-id="${esc(it.id)}"` : `data-fi="${esc(uid + "/" + it.id)}"`;
+    const gDate = it => it.finishedAt || it.date || null;
+    const byDate = list => [...list].sort((a, b) => (gDate(b) || "").localeCompare(gDate(a) || ""));
+    const big = (it, sub, drop) => `<button class="v6-pc${drop ? " v6-drop" : ""}" ${at(it)} title="${esc(it.title)}">${posterHTML(it, {tgt: false, badge: !drop})}${drop ? `<span class="v6-stamp">ДРОП</span>` : ""}<span class="ti">${esc(it.title)}</span>${sub ? `<small>${sub}</small>` : ""}</button>`;
+    const favBlock = (list, key) => { if (!list.length) return empty(mine ? "Пока не выбрал любимые" : "Пока не выбрал любимые", key);
+      const top = list.slice(0, 6), rest = list.slice(6);
+      return `<div class="v6-top">${top.map((it, i) => big(it, `<b>#${i + 1}</b>${typeof it.rating === "number" ? ` · <span class="r ${rateCls(it.rating)}">${num1(it.rating)}</span>` : ""}`)).join("")}</div>
+        ${rest.length ? `<div class="v6-mini">${rest.slice(0, 14).map(it => `<button class="v6-mi" ${at(it)} title="${esc(it.title)}">${posterHTML(it, {tgt: false, rate: false, badge: false})}</button>`).join("")}${rest.length > 14 ? `<span class="v6-more">+${rest.length - 14}</span>` : ""}</div>` : ""}`; };
+    const lastBlock = (list, txt, drop) => list.length ? `<div class="v6-top">${byDate(list).slice(0, 6).map(it => big(it, gDate(it) ? fmtShort(gDate(it)) : "без даты", drop)).join("")}</div>` : empty(txt);
+    const allBtn = (k, n, l) => n > 0 ? `<button class="pf-mini v6-all-b" type="button" data-v6all="${k}${mine ? "" : ":" + esc(uid)}">${l} · ${n}</button>` : "";
     const fh = (ic, title, href, kind) => `<div class="pf-fh"><span class="ic">${ic}</span><h2>${title}</h2><span class="pf-fh-r"><button class="pf-fh-b upd" type="button" data-upd="${kind}${mine ? "" : ":" + esc(uid)}">${ICON.clock}Обновления</button><a href="${href}">вся полка ›</a></span></div>`;
     // ---- кино
     const favK = shelfOf("kfav", k), nowK = shelfOf("know", k), seenK = shelfOf("kseen", k), planK = shelfOf("kplan", k);
@@ -739,10 +750,10 @@
       </section>`;
     const games = `<section class="pf-floor fl-g">${fh(ICON.games, "Игры", mine ? "#games" : `#fv:${esc(uid)}:games`, "games")}
         ${show("Сейчас играю", nowG.length || null, nowG.length ? `<div class="pf-now">${nowG.map(i => `<button class="pf-nw" ${mine ? `data-id="${esc(i.id)}"` : `data-fi="${esc(uid + "/" + i.id)}"`}>${i.cover ? `<span class="bgx" style="--bg:url('${publicUrl(i.cover)}')"></span>` : ""}${posterHTML(i, {tgt: false, rate: false})}<span class="t"><small>${esc(stTxt(i))}${i.date ? ` · с ${fmtShort(i.date)}` : ""}</small><b>${esc(i.title)}</b><span>${esc(genres(i).slice(0, 3).join(", "))}</span></span></button>`).join("")}${mine ? `<button class="pf-nw-add" type="button" data-pfpick="games:now">${ICON.plus}</button>` : ""}</div>` : empty(mine ? "Выбери, во что играешь сейчас — это увидят друзья" : "Ничего не отметил", "games:now"), {cls: "now", act: (mine && nowG.length ? `<button class="pf-mini" data-pfpick="games:now">${ICON.edit}Изменить</button>` : "") + R("gnow", nowG)})}
-        ${show("Любимые игры", favG.length || null, favG.length || mine ? pile(favG, i => card(i, esc(stTxt(i))), "games:fav") : empty("Пока не выбрал любимые"), {cls: "fav", act: R("gfav", favG)})}
-        ${show("Пройденные", doneG.length || null, doneG.length ? pile(doneG, i => card(i, (i.finishedAt || i.date) ? `пройдена ${fmtShort(i.finishedAt || i.date)}` : "пройдена", " done")) : empty(mine ? "Пройденные игры появятся здесь с медалью" : "Пока ничего не прошёл"), {act: R("gdone", doneG)})}
-        ${ytG.length ? show("Прошёл на YouTube", ytG.length, pile(ytG, i => card(i, (i.finishedAt || i.date) ? `посмотрел ${fmtShort(i.finishedAt || i.date)}` : "посмотрел прохождение", " yt")), {cls: "yt-b", act: R("gyt", ytG)}) : ""}
-        ${show("Дроп", dropG.length || null, dropG.length ? pile(dropG, dropCard) : empty(mine ? "Брошенные игры встанут сюда — серые, с красным штампом" : "Ничего не бросал"), {cls: "drop-b", act: R("gdrop", dropG)})}
+        ${show("Любимые игры", favG.length || null, favBlock(favG, "games:fav"), {cls: "fav v6", act: (mine ? `<button class="pf-mini" type="button" data-pfpick="games:fav">${ICON.plus}Добавить</button>` : "") + R("gfav", favG) + allBtn("gfav", favG.length, "Все любимые")})}
+        ${show("Пройденные", doneG.length || null, lastBlock(doneG, mine ? "Пройденные игры появятся здесь с датой" : "Пока ничего не прошёл"), {cls: "v6", act: allBtn("gdone", doneG.length, "Показать все")})}
+        ${ytG.length ? show("Прошёл на YouTube", ytG.length, lastBlock(ytG, ""), {cls: "yt-b v6", act: allBtn("gyt", ytG.length, "Показать все")}) : ""}
+        ${show("Дроп", dropG.length || null, lastBlock(dropG, mine ? "Брошенные игры встанут сюда — серые, с красным штампом" : "Ничего не бросал", true), {cls: "drop-b v6", act: allBtn("gdrop", dropG.length, "Показать все")})}
       </section>`;
     const kino = `<section class="pf-floor fl-k">${fh(ICON.kino, "Кино и сериалы", mine ? "#kino" : `#fv:${esc(uid)}:kino`, "kino")}
         ${show("Любимые фильмы и сериалы", favK.length || null, favK.length || mine ? vrail(favK, i => esc([KTYPES[i.type], i.year].filter(Boolean).join(" · ")), "kino:fav") : empty("Пока не выбрал любимые"), {cls: "fav", act: R("kfav", favK)})}
@@ -1062,3 +1073,19 @@
     return wLoading;
   }
 
+
+  // 6.0.2: «Показать все» — любимые сеткой, пройденные и дроп списком с датой и оценкой
+  document.addEventListener("click", e => {
+    const b = e.target.closest && e.target.closest("[data-v6all]"); if (!b) return;
+    const [k, uid] = b.dataset.v6all.split(":"), mine = !uid;
+    const its = mine ? MYITEMS : frItems(uid), list0 = shelfOf(k, its.filter(isGame));
+    const at = it => mine ? `data-id="${esc(it.id)}"` : `data-fi="${esc(uid + "/" + it.id)}"`;
+    const gDate = it => it.finishedAt || it.date || null;
+    const T = {gfav: "Любимые игры", gdone: "Пройденные игры", gdrop: "Дроп", gyt: "Прошёл на YouTube"}[k] || "Игры";
+    let body;
+    if (k === "gfav") body = `<div class="v6-allg">${list0.map((it, i) => `<button class="v6-pc" ${at(it)}>${posterHTML(it, {tgt: false})}<span class="ti">${esc(it.title)}</span><small><b>#${i + 1}</b></small></button>`).join("")}</div>`;
+    else { const list = [...list0].sort((a, b2) => (gDate(b2) || "").localeCompare(gDate(a) || "")); const dl = k === "gdrop" ? "брошена" : k === "gyt" ? "посмотрел" : "пройдена";
+      body = `<div class="v6-list">${list.map(it => `<button class="v6-lr${k === "gdrop" ? " v6-drop" : ""}" ${at(it)}><span class="th">${posterHTML(it, {tgt: false, rate: false, badge: false})}</span><span class="t"><b>${esc(it.title)}</b><small>${esc(genres(it).slice(0, 3).join(", ") || "")}</small></span><span class="d"><small>${dl}</small><b>${gDate(it) ? esc(fmtDate(String(gDate(it)).slice(0, 10))) : "без даты"}</b></span><span class="sc ${typeof it.rating === "number" ? rateCls(it.rating) : "none"}">${typeof it.rating === "number" ? num1(it.rating) : "—"}</span></button>`).join("")}</div>`; }
+    const s = openSheet(`<h3>${T}</h3><p class="sub">${list0.length} ${plural(list0.length, "игра", "игры", "игр")}${k === "gfav" ? " · в твоём порядке" : " · от свежих к старым"}</p>${body}`, {wide: true});
+    s.el.addEventListener("click", x => { if (x.target.closest("[data-id],[data-fi]")) s.close(); }, true);
+  });

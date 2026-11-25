@@ -125,3 +125,44 @@
   :root[data-mode="light"] body .tabbar .tab:hover{background:rgba(0,0,0,.05)}
   :root[data-mode="light"] body .tabbar .tab[aria-current="page"]{background:rgba(255,255,255,.75);box-shadow:0 1px 3px rgba(0,0,0,.08)}
 }
+
+/* ================= 6.0.2: любимые, пройденные, дроп — как в лаунчере ================= */
+.pf-box.v6 .v6-top{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px;padding:4px 0 2px}
+.v6-pc{display:flex;flex-direction:column;gap:6px;min-width:0;padding:0;border:0;background:none;color:inherit;text-align:left;cursor:pointer;font:500 13px/1.25 Manrope,var(--ios),sans-serif}
+.v6-pc .poster{width:100%;border-radius:10px!important;box-shadow:0 4px 14px rgba(0,0,0,.35)!important;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease!important;animation:none!important}
+.v6-pc:hover .poster,.v6-pc:focus-visible .poster{transform:translateY(-3px)!important;box-shadow:0 10px 24px rgba(0,0,0,.45),0 0 0 2px rgba(255,255,255,.22)!important;filter:brightness(1.06)}
+.v6-pc .ti{font-weight:700;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.v6-pc small{font-size:12px;opacity:.65;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.v6-pc small b{opacity:1;font-weight:800}
+.v6-pc small .r.green{color:#30d158}.v6-pc small .r.yellow{color:#ffd60a}.v6-pc small .r.red{color:#ff6961}
+.v6-pc.v6-drop .poster{filter:grayscale(1) brightness(.75)}
+.v6-pc.v6-drop{position:relative}
+.v6-stamp{position:absolute;left:50%;top:34%;transform:translate(-50%,-50%) rotate(-12deg);padding:2px 8px;border:2px solid #ff453a;border-radius:6px;color:#ff453a;font:800 13px/1.2 Manrope,sans-serif;letter-spacing:.08em;background:rgba(0,0,0,.55);pointer-events:none}
+.v6-mini{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid rgba(127,127,127,.15)}
+.v6-mi{width:44px;flex:none;padding:0;border:0;background:none;cursor:pointer}
+.v6-mi .poster{border-radius:6px!important;box-shadow:none!important;transition:transform .15s ease,opacity .15s!important;opacity:.85;animation:none!important}
+.v6-mi:hover .poster{transform:translateY(-2px)!important;opacity:1}
+.v6-more{display:flex;align-items:center;justify-content:center;width:44px;height:66px;border-radius:6px;background:rgba(127,127,127,.14);font:800 12px Manrope,sans-serif;opacity:.8}
+.v6-all-b{font-weight:800}
+.v6-allg{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:16px 12px}
+.v6-list{display:flex;flex-direction:column;gap:2px}
+.v6-lr{display:grid;grid-template-columns:44px minmax(0,1fr) auto 52px;align-items:center;gap:12px;width:100%;padding:8px;border:0;border-radius:12px;background:none;color:inherit;text-align:left;cursor:pointer;font:500 14px/1.25 Manrope,var(--ios),sans-serif}
+.v6-lr:hover{background:rgba(127,127,127,.1)}
+.v6-lr .th .poster{width:44px;border-radius:6px!important;box-shadow:none!important;animation:none!important}
+.v6-lr.v6-drop .th .poster{filter:grayscale(1)}
+.v6-lr .t{display:flex;flex-direction:column;gap:2px;min-width:0}
+.v6-lr .t b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.v6-lr .t small{font-size:12px;opacity:.6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.v6-lr .d{display:flex;flex-direction:column;align-items:flex-end;gap:2px;white-space:nowrap}
+.v6-lr .d small{font-size:11px;opacity:.55}
+.v6-lr .d b{font-size:13px}
+.v6-lr .sc{justify-self:end;min-width:44px;text-align:center;padding:5px 0;border-radius:8px;font:800 15px/1 Manrope,sans-serif;color:#0e0e10}
+.v6-lr .sc.green{background:#30d158}.v6-lr .sc.yellow{background:#ffd60a}.v6-lr .sc.red{background:#ff6961}.v6-lr .sc.none{background:rgba(127,127,127,.2);color:inherit}
+@media (max-width:900px){
+  .pf-box.v6 .v6-top{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 10px}
+  .v6-lr{grid-template-columns:40px minmax(0,1fr) auto 44px;gap:10px;padding:6px 4px}
+  .v6-lr .th .poster{width:40px}
+}
+@media (prefers-reduced-motion:reduce){.v6-pc .poster,.v6-mi .poster{transition:none!important}}
+.v6-mi .poster,.v6-lr .th .poster{background:#26262b}
+.v6-mi .poster .ph,.v6-lr .th .poster .ph{font-size:0!important}
