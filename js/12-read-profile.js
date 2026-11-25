@@ -635,7 +635,8 @@
   const isoDay = v => v ? String(v).slice(0, 10) : "";
 
   // ================= 3.0: профиль в стиле Steam — главная и профиль друга =================
-  const PF_COLS = "user_id,nick,avatar,ava_animal,ava_color,birthday,created_at,pid,bg,bg_m,bg_dim";
+  const PF_COLS = "user_id,nick,avatar,ava_animal,ava_color,birthday,created_at,pid,bg,bg_m,bg_dim"; // без новых колонок — запасной вариант, если базу ещё не обновили
+  const PF_COLS_FULL = PF_COLS + ",cosm,avatar_full,ava_cfg"; // оформление профиля и большая аватарка
   let pfPend = null, PF_BG = null; // «добавить новую и сразу в любимые / сейчас играю»; фон открытого профиля
   const frReads = uid => FR && FR.reads ? FR.reads.filter(r => r.uid === uid) : [];
   const rNorm = s => s === "reading" ? "reading" : s === "done" ? "done" : s === "dropped" ? "dropped" : "plan";

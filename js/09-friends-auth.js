@@ -125,7 +125,8 @@
     if (frLoading) return frLoading;
     frLoading = (async () => {
       try {
-        let [pr, it, rd, sc, tq] = await Promise.all([fetchAll(() => SB.from("profiles").select(PF_COLS), ["user_id"]), fetchAll(() => SB.rpc("public_items"), ["user_id", "id"]), fetchAll(() => SB.from("reads").select("id,user_id,data,updated_at"), ["user_id", "id"]), fetchAll(() => SB.from("showcases").select("*"), ["id"]), fetchAll(() => SB.from("tierlists").select("*").order("updated_at", {ascending: false}), ["id"])]);
+        let [pr, it, rd, sc, tq] = await Promise.all([fetchAll(() => SB.from("profiles").select(PF_COLS_FULL), ["user_id"]), fetchAll(() => SB.rpc("public_items"), ["user_id", "id"]), fetchAll(() => SB.from("reads").select("id,user_id,data,updated_at"), ["user_id", "id"]), fetchAll(() => SB.from("showcases").select("*"), ["id"]), fetchAll(() => SB.from("tierlists").select("*").order("updated_at", {ascending: false}), ["id"])]);
+        if (pr.error) pr = await fetchAll(() => SB.from("profiles").select(PF_COLS), ["user_id"]);
         if (pr.error) pr = await fetchAll(() => SB.from("profiles").select("user_id,nick,avatar,ava_animal,ava_color,birthday,created_at"), ["user_id"]);
         if (pr.error) throw pr.error; if (it.error) throw it.error;
         FR = {at: Date.now(), profiles: pr.data || [], items: (it.data || []).map(r => ({...(r.data || {}), id: r.id, uid: r.user_id, _upd: r.updated_at})), reads: rd && !rd.error ? (rd.data || []).map(r => ({...(r.data || {}), id: r.id, uid: r.user_id, _upd: r.updated_at})) : [], showcases: sc && !sc.error ? (sc.data || []).map(x => ({...x, entries: Array.isArray(x.entries) ? x.entries : []})) : [], tierlists: tq && !tq.error ? (tq.data || []).map(x => ({...x, tiers: Array.isArray(x.tiers) ? x.tiers : [], pool: Array.isArray(x.pool) ? x.pool : []})) : []};
@@ -505,7 +506,8 @@
   async function start(user){
     ME = user; flushErr();
     SB.rpc("is_nexus_admin").then(r => { IS_ADMIN = !!r && r.data === true; if (IS_ADMIN && route === "more") render(); }, e => logErr("проверка админа", e));
-    let {data: prof, error: pe} = await SB.from("profiles").select("nick,avatar,ava_animal,ava_color,birthday,pid,bg,bg_m,bg_dim,work").eq("user_id", user.id).maybeSingle();
+    let {data: prof, error: pe} = await SB.from("profiles").select("nick,avatar,ava_animal,ava_color,birthday,pid,bg,bg_m,bg_dim,work,cosm,avatar_full,ava_cfg").eq("user_id", user.id).maybeSingle();
+    if (pe) ({data: prof, error: pe} = await SB.from("profiles").select("nick,avatar,ava_animal,ava_color,birthday,pid,bg,bg_m,bg_dim,work").eq("user_id", user.id).maybeSingle());
     if (pe) ({data: prof, error: pe} = await SB.from("profiles").select("nick,avatar,ava_animal,ava_color,birthday,pid,bg,bg_m,bg_dim").eq("user_id", user.id).maybeSingle());
     if (pe) ({data: prof, error: pe} = await SB.from("profiles").select("nick,avatar,ava_animal,ava_color,birthday").eq("user_id", user.id).maybeSingle());
     if (pe && !prof){ netFail(); return; } // база не ответила — это не «новый пользователь», ника не спрашиваем
