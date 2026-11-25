@@ -86,7 +86,11 @@
     if (!t || t.id === "base") return {cls: "", style: ""};
     if (t.db){ const d = t.db.data || {}; return {cls: " v6t v6t-db" + (d.style ? " v6t-" + esc(d.style) : ""), style: `${d.ac ? `--ac:${esc(d.ac)};--tac:${esc(d.ac)};` : ""}${t.db.img ? `--tbg:url('${publicUrl(t.db.img)}');` : ""}`}; }
     return {cls: " v6t v6t-" + t.id, style: ""}; }
-  function csFrameHTML(p){ const f = csOf(p).frame; return f && f.img ? `<img class="v6-frame" alt="" src="${publicUrl(f.img)}" draggable="false">` : ""; }
+  // 7.19: масштаб и сдвиг рамки подгоняет админ при загрузке (data.s — % от аватарки, x/y — сдвиг в %)
+  const csFrGeo = f => { const d = (f && f.data) || {}; return {s: csNum(d.s, 60, 220, 128), x: csNum(d.x, -40, 40, 0), y: csNum(d.y, -40, 40, 0)}; };
+  const csFrPrev = f => { const g = csFrGeo(f), a = 62; return ` style="width:${Math.round(a * g.s / 100)}px;height:${Math.round(a * g.s / 100)}px;left:calc(50% + ${(a * g.x / 100).toFixed(1)}px);top:calc(50% + ${(a * g.y / 100).toFixed(1)}px)"`; };
+  function csFrameHTML(p){ const f = csOf(p).frame; if (!f || !f.img) return ""; const g = csFrGeo(f);
+    return `<img class="v6-frame" alt="" src="${publicUrl(f.img)}" draggable="false" style="width:${g.s}%;height:${g.s}%;left:${50 + g.x}%;top:${50 + g.y}%">`; }
   function csOrder(p, floors){ const o = csOf(p), keys = CS_FLOORS.map(x => x[0]), ord = (o.layout || keys).filter(k => keys.includes(k)); keys.forEach(k => { if (!ord.includes(k)) ord.push(k); });
     return ord.filter(k => !o.hide.includes(k)).map(k => floors[k] || "").join(""); }
 
@@ -148,7 +152,7 @@
       q("#csT").innerHTML = [["theme", "Темы"], ["hdr", "Шапка"], ["txt", "Шрифты"], ["frame", "Рамки"], ["fx", "Эффекты"], ["layout", "Блоки"]].map(([k, l]) => `<button type="button" data-cst="${k}" aria-pressed="${csTab === k}">${l}</button>`).join("");
       let h = "";
       if (csTab === "theme") h = `<div class="cs-g">${csThemesAll().map(t => card(cur.theme === t.id, lock(t.u), `<span class="cs-pv v6t-pv-${t.db ? "db" : t.id}" style="${t.db && t.db.img ? `background-image:url('${publicUrl(t.db.img)}')` : ""}${t.db && t.db.data && t.db.data.ac ? `;--tac:${esc(t.db.data.ac)}` : ""}"><i></i><i></i><i></i></span>`, t.t, t.d, t.u, `data-csv="theme:${esc(t.id)}"`)).join("")}</div>${IS_ADMIN && !COSM_OFF ? `<button type="button" class="ib cs-adm" data-csadd="theme">+ Своя тема (фон и цвет)</button>` : ""}`;
-      else if (csTab === "frame") h = COSM_OFF ? `<p class="a-sub">Рамки появятся после обновления базы.</p>` : `<div class="cs-g">${card(!cur.frame, false, `<span class="cs-pv fr">${avaHTML(p, "big")}</span>`, "Без рамки", "", null, `data-csv="frame:"`)}${csFrames().map(f => card(cur.frame === f.id, lock(f.unlock), `<span class="cs-pv fr">${avaHTML(p, "big")}<img alt="" src="${publicUrl(f.img)}"></span>`, f.title, (f.data && f.data.d) || "", f.unlock, `data-csv="frame:${esc(f.id)}"`)).join("")}</div>${csFrames().length ? "" : `<p class="a-sub">Рамок пока нет — их рисует и загружает админ.</p>`}${IS_ADMIN ? `<button type="button" class="ib cs-adm" data-csadd="frame">+ Загрузить рамку</button>` : ""}`;
+      else if (csTab === "frame") h = COSM_OFF ? `<p class="a-sub">Рамки появятся после обновления базы.</p>` : `<div class="cs-g">${card(!cur.frame, false, `<span class="cs-pv fr">${avaHTML(p, "big")}</span>`, "Без рамки", "", null, `data-csv="frame:"`)}${csFrames().map(f => card(cur.frame === f.id, lock(f.unlock), `<span class="cs-pv fr">${avaHTML(p, "big")}<img alt="" src="${publicUrl(f.img)}"${csFrPrev(f)}></span>`, f.title, (f.data && f.data.d) || "", f.unlock, `data-csv="frame:${esc(f.id)}"`)).join("")}</div>${csFrames().length ? "" : `<p class="a-sub">Рамок пока нет — их рисует и загружает админ.</p>`}${IS_ADMIN ? `<button type="button" class="ib cs-adm" data-csadd="frame">+ Загрузить рамки</button>${csFrames().length ? `<div class="cs-fadj"><small>Подогнать масштаб и сдвиг:</small>${csFrames().map(f => `<button type="button" class="ib" data-csfadj="${esc(f.id)}">${esc(f.title)}</button>`).join("")}</div>` : ""}` : ""}`;
       else if (csTab === "fx") h = `<div class="cs-g">${CS_FX.map(f => card(cur.fx === f.id, lock(f.u), `<span class="cs-pv fx fx-${f.id || "none"}"></span>`, f.t, f.d, f.u, `data-csv="fx:${esc(f.id)}"`)).join("")}</div><p class="a-sub" style="margin-top:8px">Эффекты не грузят телефон: на слабых экранах частиц меньше, а при «уменьшении движения» их нет совсем.</p>`;
       else if (csTab === "hdr"){ const d = cur.hdr || {}, has = !!(d.img || d.blob), H = has ? csHdr({cosm: {hdr: d}}) : null;
         h = `<p class="a-sub">Картинка или гифка во всю шапку профиля — поверх фона профиля. GIF до 12 МБ, обычные картинки любые (сожмём сами).</p>
@@ -201,6 +205,7 @@
       if (e.target.closest("[data-cshx]")){ if (cur.hdr && cur.hdr.blob) URL.revokeObjectURL(cur.hdr.blob); cur.hdr = null; hdrFile = null; draw(); live(); return; }
       const hh = e.target.closest("[data-cshh]"); if (hh){ cur.hdr.h = hh.dataset.cshh; draw(); live(); return; }
       const cx = e.target.closest("[data-csx]"); if (cx){ delete cur.txt[cx.dataset.csx]; draw(); live(); return; }
+      const fa = e.target.closest("[data-csfadj]"); if (fa){ csFrameAdjust([fa.dataset.csfadj], () => draw()); return; }
       const ad = e.target.closest("[data-csadd]"); if (ad){ csAdmin(ad.dataset.csadd, () => draw()); return; }
     });
     q("#csNo").onclick = () => s.close();
@@ -217,25 +222,80 @@
   // админ: загрузить рамку или свою тему
   function csAdmin(kind, done){
     const UN = [["free", "Сразу всем"], ["lvl", "Уровень"], ["streak", "Серия дней"], ["weeks", "Закрытые недели заданий"], ["first", "Первооткрыватель"], ["drops", "Дропы"], ["done", "Пройдено игр"], ["top3", "Тройка сезона"], ["cup", "Победа в сезоне"]];
-    const s = openSheet(`<h3>${kind === "frame" ? "Новая рамка" : "Новая тема"}</h3><p class="sub">${kind === "frame" ? "Квадратная картинка 512×512 с прозрачной серединой: PNG, WebP или анимированный APNG/WebP. Аватар займёт центральные 78%." : "Фон профиля и цвет акцента. Стиль карточек — от одной из встроенных тем."}</p>
-      <label class="v6-fl">Название<input id="caT" maxlength="40"></label><label class="v6-fl">Описание<input id="caD" maxlength="80"></label>
-      <label class="v6-fl">${kind === "frame" ? "Картинка рамки" : "Фон (картинка)"}<input type="file" id="caF" accept="image/png,image/webp,image/apng,image/gif${kind === "theme" ? ",image/jpeg" : ""}"></label>
+    const s = openSheet(`<h3>${kind === "frame" ? "Новая рамка" : "Новая тема"}</h3><p class="sub">${kind === "frame" ? "Можно выбрать сразу несколько файлов — после загрузки каждую рамку подгонишь по аватарке." : "Фон профиля и цвет акцента. Стиль карточек — от одной из встроенных тем."}</p>
+      ${kind === "frame" ? CS_FR_GUIDE : ""}
+      <label class="v6-fl">Название${kind === "frame" ? " (для нескольких файлов — из имён файлов)" : ""}<input id="caT" maxlength="40"${kind === "frame" ? ` placeholder="Пусто — возьму из имени файла"` : ""}></label><label class="v6-fl">Описание<input id="caD" maxlength="80"></label>
+      <label class="v6-fl">${kind === "frame" ? "Картинка рамки" : "Фон (картинка)"}<input type="file" id="caF"${kind === "frame" ? " multiple" : ""} accept="image/png,image/webp,image/apng,image/gif${kind === "theme" ? ",image/jpeg" : ""}"></label>
       ${kind === "theme" ? `<label class="v6-fl">Цвет акцента<input type="color" id="caC" value="#ff375f"></label><label class="v6-fl">Стиль карточек<select id="caS">${CS_THEMES.filter(t => t.id !== "base").map(t => `<option value="${t.id}">${esc(t.t)}</option>`).join("")}</select></label>` : ""}
       <label class="v6-fl">Как открывается<select id="caU">${UN.map(([k, l]) => `<option value="${k}">${l}</option>`).join("")}</select></label><label class="v6-fl">Сколько нужно (уровень, дней, раз)<input id="caN" type="number" min="1" value="3"></label>
       <div class="acts"><button class="ib blue" id="caOk">Загрузить</button><button class="ib" id="caNo">Отмена</button></div>`);
     const q = sel => s.el.querySelector(sel);
     q("#caNo").onclick = () => s.close();
     q("#caOk").onclick = async () => {
-      const f = q("#caF").files[0], t = q("#caT").value.trim(); if (!t){ toast("Дай название"); return; } if (kind === "frame" && !f){ toast("Выбери картинку рамки"); return; }
-      const b = q("#caOk"); b.disabled = true; b.textContent = "Загружаю…";
+      const files = [...q("#caF").files], t0 = q("#caT").value.trim();
+      if (kind === "theme"){ if (!t0){ toast("Дай название"); return; } }
+      else { if (!files.length){ toast("Выбери картинки рамок"); return; } if (files.length === 1 && !t0 && !files[0].name){ toast("Дай название"); return; } }
+      const b = q("#caOk"), u = q("#caU").value, unlock = u === "free" || u === "cup" || u === "top3" ? {t: u} : {t: u, n: Math.max(1, +q("#caN").value || 1)}, made = [];
+      b.disabled = true; b.textContent = "Загружаю…";
       try {
-        const img = f ? (await assets.upload(f, {type: f.type})).id : null, u = q("#caU").value;
-        const row = {id: (kind === "frame" ? "fr_" : "th_") + Date.now().toString(36), kind, title: t, img, data: {d: q("#caD").value.trim(), ...(kind === "theme" ? {ac: q("#caC").value, style: q("#caS").value} : {})}, unlock: u === "free" || u === "cup" || u === "top3" ? {t: u} : {t: u, n: Math.max(1, +q("#caN").value || 1)}};
-        const {error} = await SB.from("cosmetics").insert(row); if (error) throw error;
-        COSM = [...(COSM || []), {...row, created_at: now()}]; toast("Добавлено в каталог"); s.close(); done && done();
+        const list = kind === "theme" ? [files[0] || null] : files;
+        for (let n = 0; n < list.length; n++){
+          const f = list[n]; if (list.length > 1) b.textContent = `Загружаю ${n + 1} из ${list.length}…`;
+          if (f && f.size > 8 * 1024 * 1024){ toast(`«${f.name}» тяжелее 8 МБ — пропускаю`); continue; }
+          const img = f ? (await assets.upload(f, {type: f.type})).id : null;
+          const base = f ? f.name.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ").trim() : "";
+          const title = (kind === "frame" && (list.length === 1 ? t0 : "") || base || t0 || "Рамка").slice(0, 40);
+          const id = (kind === "frame" ? "fr_" : "th_") + Date.now().toString(36) + (n ? "_" + n : "");
+          const row = {id, kind, title, img, data: {d: q("#caD").value.trim(), ...(kind === "theme" ? {ac: q("#caC").value, style: q("#caS").value} : {})}, unlock};
+          const {error} = await SB.from("cosmetics").insert(row); if (error) throw error;
+          COSM = [...(COSM || []), {...row, created_at: now()}]; made.push(id);
+        }
+        toast(made.length > 1 ? `Добавлено рамок: ${made.length}` : "Добавлено в каталог"); s.close();
+        if (kind === "frame" && made.length) csFrameAdjust(made, done); else done && done();
       } catch(err){ logErr("загрузка оформления", err); toast("Не получилось: " + (err.message || err)); b.disabled = false; b.textContent = "Загрузить"; }
     };
   }
+  // подгонка рамки под аватарку: масштаб и сдвиг, по очереди для всех только что загруженных
+  function csFrameAdjust(ids, done){
+    const list = ids.map(id => csFrames().find(f => f.id === id)).filter(Boolean); if (!list.length){ done && done(); return; }
+    let i = 0;
+    const step = () => {
+      if (i >= list.length){ done && done(); return; }
+      const f = list[i], p = myProf(), cur = {...csFrGeo(f)}, last = i === list.length - 1; let moved = false;
+      const s = openSheet(`<h3>Рамка «${esc(f.title)}»${list.length > 1 ? ` · ${i + 1} из ${list.length}` : ""}</h3><p class="sub">Подгони рамку под аватарку так, как она будет в профиле у всех.</p>
+        <div class="cs-fa"><div class="pf-ava has-frame v6s-${avaShape(p)}">${avaBigHTML(p)}<img class="v6-frame" id="faImg" alt="" src="${publicUrl(f.img)}" draggable="false"></div></div>
+        <div class="cs-rgs">${[["s", "Масштаб", 60, 220, 1, "%"], ["y", "Сдвиг вверх-вниз", -40, 40, 1, "%"], ["x", "Сдвиг влево-вправо", -40, 40, 1, "%"]].map(([k, l, a, b2, st, u]) => `<label class="cs-rg"><span>${l}<em data-fav="${k}">${cur[k]}${u}</em></span><input type="range" min="${a}" max="${b2}" step="${st}" value="${cur[k]}" data-far="${k}"></label>`).join("")}</div>
+        <div class="acts"><button class="ib blue" id="faOk">${last ? "Сохранить" : "Сохранить и дальше"}</button><button class="ib" id="faSkip">${last ? "Закрыть" : "Пропустить"}</button><button class="ib" id="faReset">Сбросить</button></div>`,
+        {onClose: () => { if (!moved){ moved = true; done && done(); } }});
+      const q = sel => s.el.querySelector(sel), paint = () => { const im = q("#faImg"); im.style.width = im.style.height = cur.s + "%"; im.style.left = (50 + cur.x) + "%"; im.style.top = (50 + cur.y) + "%";
+        ["s", "x", "y"].forEach(k => { q(`[data-fav="${k}"]`).textContent = cur[k] + "%"; q(`[data-far="${k}"]`).value = cur[k]; }); };
+      paint();
+      s.el.addEventListener("input", e => { const k = e.target.dataset && e.target.dataset.far; if (!k) return; cur[k] = +e.target.value; paint(); });
+      q("#faReset").onclick = () => { Object.assign(cur, {s: 128, x: 0, y: 0}); paint(); };
+      const next = () => { moved = true; s.close(); i++; step(); };
+      q("#faSkip").onclick = () => { if (last){ s.close(); return; } next(); };
+      q("#faOk").onclick = async () => { const b = q("#faOk"); b.disabled = true;
+        const data = {...(f.data || {}), s: cur.s, x: cur.x, y: cur.y}, {error} = await SB.from("cosmetics").update({data}).eq("id", f.id);
+        if (error){ logErr("подгонка рамки", error); toast("Не сохранилось: " + error.message); b.disabled = false; return; }
+        f.data = data; toast("Рамка подогнана"); if (last){ moved = true; s.close(); done && done(); } else next(); };
+    };
+    step();
+  }
+  const CS_FR_GUIDE = `<div class="cs-gd"><b>Памятка по файлам рамок</b>
+    <ul><li><b>Формат:</b> PNG или WebP с прозрачностью. Анимация: WebP (лучше всего), APNG или GIF.</li>
+    <li><b>Размер картинки:</b> квадрат 512×512 (можно 400–1024, но строго квадрат).</li>
+    <li><b>Центр прозрачный:</b> аватарка видна сквозь рамку. По умолчанию рамка в 1,28 раза больше аватарки, потом подгонишь масштабом.</li>
+    <li><b>Вес:</b> до 500 КБ для статики, до 1,5 МБ для анимации. Больше 8 МБ сайт не примет.</li>
+    <li><b>Несколько файлов:</b> выбирай сразу пачкой, название берётся из имени файла.</li></ul>
+    <details><summary>Гайд по анимированным рамкам</summary>
+      <ul><li><b>Какой формат выбрать:</b> анимированный WebP: мягкие края, лёгкий. APNG: тоже мягкие края, но тяжелее. GIF: прозрачность только «есть/нет», края рваные, для рамок плох.</li>
+      <li><b>Длина и кадры:</b> цикл 2–4 секунды, 15–24 кадра/с (до 60–90 кадров всего). Первый и последний кадр должны совпадать, иначе будет рывок в конце круга.</li>
+      <li><b>Как сделать:</b> нарисуй в After Effects, Photoshop (таймлайн), Blender или Procreate и экспортируй PNG-последовательность с прозрачным фоном (кадры frame_001.png, frame_002.png…).</li>
+      <li><b>Собрать в WebP:</b> онлайн на ezgif.com (раздел PNG → WebP / APNG) или командой <code>ffmpeg -framerate 24 -i frame_%03d.png -c:v libwebp -loop 0 -q:v 75 frame.webp</code></li>
+      <li><b>Собрать в APNG:</b> <code>ffmpeg -framerate 24 -i frame_%03d.png -plays 0 -f apng frame.apng</code></li>
+      <li><b>Не перегружай:</b> много сложных свечений и частиц раздувают вес и греют телефон. Лучше простое кольцо с одним бегущим бликом.</li>
+      <li><b>Проверка:</b> после загрузки открой подгонку и посмотри на аватарке. Если тормозит, уменьши до 400×400 или убери кадры.</li></ul>
+    </details></div>`;
   document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-cosm]"); if (b) csSheet(); });
 
   // ---- «Открыто новое» — один раз на каждую вещь

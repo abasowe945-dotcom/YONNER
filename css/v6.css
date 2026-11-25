@@ -570,3 +570,12 @@ body.cs-docked .cs-live{display:none}
 body.cs-docked .cs-fr{grid-template-columns:minmax(0,1fr) 34px 28px;grid-template-areas:"t c x" "f f f" "s s s";gap:8px}
 body.cs-docked .cs-fr>b{grid-area:t}body.cs-docked .cs-fr select{grid-area:f}body.cs-docked .cs-fr .cs-sz{grid-area:s}body.cs-docked .cs-fr .cs-cl{grid-area:c}body.cs-docked .cs-fr .cs-x{grid-area:x}
 body.cs-docked .cs-rgs{grid-template-columns:1fr}
+/* 7.19: загрузка и подгонка рамок */
+.cs-gd{margin:8px 0 12px;padding:10px 12px;border-radius:12px;background:rgba(127,127,127,.12);font-size:13px;line-height:1.45}
+.cs-gd ul{margin:6px 0 0;padding-left:18px}.cs-gd li{margin:3px 0}
+.cs-gd details{margin-top:8px}.cs-gd summary{cursor:pointer;font-weight:700}
+.cs-gd code{display:block;margin:4px 0;padding:6px 8px;border-radius:8px;background:rgba(0,0,0,.35);font:12px/1.4 ui-monospace,monospace;word-break:break-all;user-select:all}
+.cs-fa{display:flex;justify-content:center;padding:34px 0 28px}
+.cs-fa .pf-ava{position:relative;width:200px;height:200px;margin:0}
+.cs-fa .pf-ava>.fr-ava,.cs-fa .pf-ava>span:first-child{width:100%!important;height:100%!important}
+.cs-fadj{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px}.cs-fadj small{width:100%;opacity:.7}
