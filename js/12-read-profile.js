@@ -54,7 +54,7 @@
     if (rLoading) return rLoading;
     rLoading = (async () => { const {data, error} = await fetchAll(() => SB.from("reads").select("id,data,updated_at").eq("user_id", ME.id), ["user_id", "id"]);
       READS = error ? (READS || []) : (data || []).map(r => ({...r.data, id: r.id, _upd: r.updated_at})); rLoading = null;
-      if (route === "read" || route === "home") render(); return READS; })();
+      if (route === "read" || route === "home" || route === "calendar") render(); return READS; })();
     return rLoading;
   }
   async function saveRead(r){
@@ -684,7 +684,7 @@
     if (WALL){ WALL.posts.forEach(x => { const r = by.get(x.user_id); if (r) seen(r, x.created_at); }); WALL.comments.forEach(x => { const r = by.get(x.user_id); if (r) seen(r, x.created_at); }); }
     const t = [...by.values()].sort((a, b) => b.n - a.n || b.lib - a.lib).slice(0, n), mx = Math.max(1, ...t.map(x => x.n));
     return `<ol class="pf-top">${t.map(({p, n: k, lib, last}, i) => { const me = ME && p.user_id === ME.id, mins = last ? (Date.now() - Date.parse(last)) / 6e4 : 1e9;
-      return `<li><button class="pf-tr${me ? " me" : ""}" ${me ? 'data-go="home"' : `data-user="${esc(p.user_id)}"`}><span class="n r${i + 1}">${i + 1}</span><span class="pf-av">${avaHTML(p)}${mins < 30 ? '<i class="on" title="обновлял только что"></i>' : mins < 1440 ? '<i class="rc" title="обновлял сегодня"></i>' : ""}</span><span class="t"><b>${esc(p.nick)}${me ? " <em>ты</em>" : ""}</b><small>${last ? `<span class="upd${mins < 1440 ? " fresh" : ""}">обновлял ${esc(agoTs(last))}${mins >= 1 && mins < 1440 ? " назад" : ""}</span> · ` : ""}${k} ${plural(k, "действие", "действия", "действий")} · ${lib} на полках</small><span class="bar"><i style="width:${Math.round(k / mx * 100)}%"></i></span></span><span class="lv" title="Уровень">${pfLevel(lib).lv}</span></button></li>`; }).join("")}</ol>`;
+      return `<li><button class="pf-tr${me ? " me" : ""}" ${me ? 'data-go="home"' : `data-user="${esc(p.user_id)}"`}><span class="n r${i + 1}">${i + 1}</span><span class="pf-av">${avaHTML(p)}${mins < 30 ? '<i class="on" title="обновлял только что"></i>' : mins < 1440 ? '<i class="rc" title="обновлял сегодня"></i>' : ""}</span><span class="t"><b>${esc(p.nick)}${me ? " <em>ты</em>" : ""}</b><small>${last ? `<span class="upd${mins < 1440 ? " fresh" : ""}">обновлял ${esc(agoTs(last))}${mins >= 1 && mins < 1440 ? " назад" : ""}</span> · ` : ""}${k} ${plural(k, "действие", "действия", "действий")} · ${lib} на полках</small>${stLine(p)}<span class="bar"><i style="width:${Math.round(k / mx * 100)}%"></i></span></span><span class="lv" title="Уровень">${pfLevel(lib).lv}</span></button></li>`; }).join("")}</ol>`;
   }
   function renderProfile(uid){
     const mine = !uid || (ME && uid === ME.id); PF_BG = null;
@@ -984,7 +984,7 @@
         : e.join ? `<li class="fg-e"><time>${esc(feedTime(e.ts))}</time><span class="vb">${esc(e.verb)}</span></li>`
         : `<li class="fg-e"><time>${esc(feedTime(e.ts))}</time><button class="fg-t" ${e.rd ? `data-frd="${esc(e.uid + "/" + e.rd.id)}"` : `data-fi="${esc(e.uid + "/" + e.it.id)}"`}><span class="vb">${esc(e.verb)}</span> <b>${esc(evTitle(e))}</b> <em>${esc(evKind(e))}</em>${r != null ? ` <span class="fg-r ${rateCls(r)}">${num1(r)}</span>` : ""}${e.it && v6IsFirst(e.uid, e.it.id) ? `<span class="v6-first" title="Первым на сайте добавил это">первым на сайте</span>` : ""}</button>${e.it ? v6Rx(e.uid, e.it.id) : ""}</li>`; };
     return `<article class="fg"><button class="fg-a" data-user="${esc(g.uid)}">${avaHTML(p)}</button>
-      <div class="fg-b"><div class="fg-h"><button class="fg-n" data-user="${esc(g.uid)}">${esc(p.nick || "кто-то")}</button><span class="fg-d">${esc(feedAgo(g.ts))}</span>${g.ev.length > 1 ? `<span class="fg-c">${g.ev.length} ${plural(g.ev.length, "действие", "действия", "действий")}</span>` : ""}</div>
+      <div class="fg-b"><div class="fg-h"><button class="fg-n" data-user="${esc(g.uid)}">${esc(p.nick || "кто-то")}</button><span class="fg-d">${esc(feedAgo(g.ts))}</span>${g.ev.length > 1 ? `<span class="fg-c">${g.ev.length} ${plural(g.ev.length, "действие", "действия", "действий")}</span>` : ""}</div>${stLine(p)}
         <ul class="fg-l fg-tl">${shown.map(li).join("")}</ul>
         ${rest > 0 ? `<button class="fg-all" data-fgrp="${i}">Ещё ${rest} ${plural(rest, "действие", "действия", "действий")} — показать все</button>` : ""}
       </div></article>`;

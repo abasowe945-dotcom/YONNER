@@ -344,7 +344,7 @@
     // друзья справа
     const friendsH = others.map(o => { const mins = o.ts ? (Date.now() - Date.parse(o.ts)) / 6e4 : 1e9, dot = mins < 20 ? "on" : mins < 1440 ? "rc" : "";
       return `<button class="fl-i" data-user="${esc(o.p.user_id)}"><span class="av">${avaHTML(o.p)}<i class="${dot}" title="${dot === "on" ? "только что был на сайте" : dot === "rc" ? "был сегодня" : ""}"></i></span>
-        <span class="t"><b>${esc(o.p.nick)}<span>${o.ts ? agoTs(o.ts) : ""}</span></b><small>${o.last ? `${verbOf(o.last)} <em>${esc(o.last.title)}</em>` : "пока ничего не добавил"}</small></span>${o.c.pct != null ? `<span class="fr-pct ${pctCls(o.c.pct)}" title="Совпадение оценок">${o.c.pct}%</span>` : ""}</button>`; }).join("");
+        <span class="t"><b>${esc(o.p.nick)}<span>${o.ts ? agoTs(o.ts) : ""}</span></b><small>${o.last ? `${verbOf(o.last)} <em>${esc(o.last.title)}</em>` : "пока ничего не добавил"}</small>${stLine(o.p)}</span>${o.c.pct != null ? `<span class="fr-pct ${pctCls(o.c.pct)}" title="Совпадение оценок">${o.c.pct}%</span>` : ""}</button>`; }).join("");
     // дни рождения
     const people = FR.profiles.map(p => p.user_id === ME.id ? {...p, ...myProf()} : p).filter(p => p.birthday);
     const first = new Date(bdY, bdM, 1), st = (first.getDay() + 6) % 7, dim = new Date(bdY, bdM + 1, 0).getDate();

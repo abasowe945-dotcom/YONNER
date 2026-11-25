@@ -32,6 +32,9 @@
     const src = p.avatar ? (p.avatar_full || p.avatar) : null;
     if (!src) return avaHTML(p, "big").replace('class="fr-ava big"', `class="fr-ava big v6-shape-${sh}"`);
     return `<span class="fr-ava big v6-shape-${sh}" style="background:${avaBg(p)}" title="${esc(p.nick || "")}"><img alt="" src="${publicUrl(avaGif(p, "big") || src)}" style="${avaGif(p, "big") ? posStyle(c.gp) : p.avatar_full && c.big ? posStyle(c.big) : ""}" onerror="this.remove()"></span>`; };
+  // 7.27: статус профиля (cosm.st) — для строк в «Активности», в ленте и в списке друзей
+  const stOf = p => { const s = p && p.cosm && p.cosm.st; return s && (!s.until || s.until > Date.now()) && (s.t || s.m) ? s : null; };
+  const stLine = p => { const s = stOf(p); return s ? `<span class="st-ln">${s.t ? `${s.e ? esc(s.e) + " " : ""}${esc(s.t)}` : ""}${s.t && s.m ? " · " : ""}${s.m ? `🎧 ${esc(s.m)}` : ""}</span>` : ""; };
   let MEP = null; // мой профиль: ник, фото, зверь, цвет
   const myProf = () => ({user_id: ME ? ME.id : "", nick: NICK, ...(MEP || {})});
   const profOf = uid => uid === (ME && ME.id) ? myProf() : (FR && FR.profiles.find(x => x.user_id === uid)) || {user_id: uid, nick: "?"};

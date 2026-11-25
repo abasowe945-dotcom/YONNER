@@ -224,7 +224,27 @@
   }
 
   // ---------- календарь ----------
+  // 7.27: книги в календаре и фильтр по типу
+  let calType = ""; // "" — всё, game, kino, book
+  const CAL_TYPES = [["", "Всё"], ["game", "Игры"], ["kino", "Кино"], ["book", "Книги"]];
+  const calTypeBar = () => `<div class="c-types" role="toolbar" aria-label="Что показывать">${CAL_TYPES.map(([k, l]) => `<button type="button" data-calt="${k}" aria-pressed="${calType === k}">${l}</button>`).join("")}</div>`;
+  const calKeep = it => !calType || (calType === "game" ? isGame(it) : calType === "kino" ? !isGame(it) && !it._book : !!it._book);
+  const CAL_ORD = {done: 0, drop: 1, read: 1.5, watch: 2, readstart: 2.5, start: 3};
+  function calReads(){
+    if (!ME) return []; if (!READS) loadReads();
+    const mine = (READS || []).map(r => ({...r, uid: ME.id})), fr = ((FR && FR.reads) || []).filter(r => r.uid !== ME.id);
+    return !calUid ? mine : calUid === "*" ? [...mine, ...fr] : calUid === ME.id ? mine : fr.filter(r => r.uid === calUid);
+  }
+  const calBookDay = r => r.status === "done" ? (r.noDate ? null : r.doneAt || null) : r.status === "reading" ? ((r.createdAt || r._upd) ? localDate(new Date(r.createdAt || r._upd)) : null) : null;
+  const calBooks = () => calReads().map(r => { const d = calBookDay(r); return d ? {it: {...r, _book: true, rating: r.myRating}, day: d, k: r.status === "done" ? "read" : "readstart"} : null; }).filter(Boolean).filter(e => calKeep(e.it));
+  function bookTile(r, extra, attr, who, lab){
+    const src = r.cover ? publicUrl(r.cover) : r.coverUrl, img = src ? `<img alt="" src="${esc(src)}">` : `<div class="nm">${esc(r.title)}</div>`;
+    const rate = typeof r.myRating === "number" ? `<span class="c-rate ${rateCls(r.myRating)}">${num1(r.myRating)}</span>` : "";
+    return `<div class="c-t book c-fr" ${attr} title="${esc(r.title + " · " + lab)}">${img}${who ? `<span class="c-who-a">${avaHTML(profOf(r.uid), "xs")}</span>` : ""}<span class="c-kind">${ICON.read}</span>${rate}${extra || ""}</div>`;
+  }
+  function calOpenBook(key){ const [uid, id] = key.split("/"); if (ME && uid === ME.id){ const r = (READS || []).find(x => x.id === id); if (r) readSheet(r); } else friendReadSheet(key); }
   function tileHTML(it, extra){
+    if (it._book) return bookTile(it, extra, `data-cbk="${esc(it.uid + "/" + it.id)}"`, false, it.status === "done" ? "прочитал" : "начал читать");
     const g = isGame(it), soon = relOn(it);
     const img = it.cover ? `<img alt="" src="${blobUrl(it.cover)}" style="${posStyle(it.coverPos)}">` : `<div class="nm">${esc(it.title)}</div>`;
     const lbl = soon ? "Релиз" : g ? "Начал играть" : kinoDateLabel(it);
@@ -251,11 +271,12 @@
         if (fin) out.push({it, day: fin, k: s === "done" ? "done" : "drop"});
       } else { const d = itemDate(it); if (d) out.push({it, day: d, k: "watch"}); }
     });
-    return out;
+    return [...out.filter(e => calKeep(e.it)), ...calBooks()];
   }
-  const CAL_K = {start: "начал играть", done: "прошёл", drop: "дропнул", watch: "посмотрел"};
-  const calKey = e => e.it.uid + "/" + e.it.id;
+  const CAL_K = {start: "начал играть", done: "прошёл", drop: "дропнул", watch: "посмотрел", read: "прочитал", readstart: "начал читать"};
+  const calKey = e => (e.it._book ? "b:" : "") + e.it.uid + "/" + e.it.id;
   function calTile(e, extra){
+    if (e.it._book) return bookTile(e.it, extra, `data-cfi="${esc(calKey(e))}"`, calUid === "*", nickOf(e.it.uid) + " " + CAL_K[e.k]);
     const it = e.it, g = isGame(it);
     const img = it.cover ? `<img alt="" src="${blobUrl(it.cover)}" style="${posStyle(it.coverPos)}">` : `<div class="nm">${esc(it.title)}</div>`;
     const rate = e.k !== "start" && typeof it.rating === "number" ? `<span class="c-rate ${rateCls(it.rating)}">${num1(it.rating)}</span>` : "";
@@ -277,14 +298,15 @@
     if (calUid) return renderCalFr();
     const first = new Date(calY, calM, 1), mName = first.toLocaleDateString("ru-RU", {month:"long"});
     const byDay = {};
-    items.forEach(it => { const d = itemDate(it); if (d) (byDay[d] = byDay[d] || []).push(it); });
+    items.forEach(it => { if (!calKeep(it)) return; const d = itemDate(it); if (d) (byDay[d] = byDay[d] || []).push(it); });
+    const bks = calBooks(); bks.forEach(e => (byDay[e.day] = byDay[e.day] || []).push(e.it));
     Object.values(byDay).forEach(a => a.sort((x,y) => (relOn(x) - relOn(y)) || (y.rating ?? -1) - (x.rating ?? -1)));
     // 6.0: мероприятия и ГО ПОСМОТРИМ в календаре — и прошедшие, и будущие
     const evDay = {}; if (typeof EV !== "undefined"){ if (!EV && ME) loadEvents(); if (EV) EV.events.forEach(e => { if (!e.starts_at) return; const k = localDate(new Date(e.starts_at)); (evDay[k] = evDay[k] || []).push(e); }); }
     const evChip = e => { const t = new Date(e.starts_at), past = evPast(e); return `<button type="button" class="c-evc${past ? " past" : ""}${e.kind === "watch" ? " w" : ""}" data-ev="${esc(e.id)}" title="${esc(e.title + " · " + evWhen(e))}">${e.kind === "watch" ? ICON.film : ICON.party}<span>${esc(e.title)}</span><small>${t.toLocaleTimeString("ru-RU", {hour: "2-digit", minute: "2-digit"})}</small></button>`; };
     const prefix = `${calY}-${pad(calM+1)}-`;
     const evN = Object.keys(evDay).filter(k => k.startsWith(prefix)).reduce((a, k) => a + evDay[k].length, 0);
-    const mi = items.filter(it => (itemDate(it) || "").startsWith(prefix));
+    const mi = items.filter(it => calKeep(it) && (itemDate(it) || "").startsWith(prefix)), bN = bks.filter(e => e.day.startsWith(prefix)).length;
     const gN = mi.filter(i => isGame(i) && !relOn(i)).length, kN = mi.filter(i => !isGame(i) && !relOn(i)).length, rN = mi.filter(relOn).length;
     const start = (first.getDay() + 6) % 7, days = new Date(calY, calM + 1, 0).getDate(), cells = Math.ceil((start + days) / 7) * 7, td = today();
     let h = "";
@@ -295,8 +317,8 @@
     }
     $("aMain").innerHTML = `<div class="c-head"><h1 class="a-h1">${esc(mName.charAt(0).toUpperCase() + mName.slice(1))} <span>${calY}</span></h1>
         <div class="c-arrows"><button type="button" class="ar" id="cPrev" aria-label="Прошлый месяц">‹</button><button type="button" id="cToday">Сегодня</button><button type="button" class="ar" id="cNext" aria-label="Следующий месяц">›</button></div></div>
-      ${calWhoBar()}
-      <div class="c-sum"><span class="k"><i style="background:var(--c-game)"></i><b>${gN}</b>игр</span><span class="k"><i style="background:var(--c-kino)"></i><b>${kN}</b>кино</span>${rN ? `<span><b>${rN}</b>${plural(rN,"релиз","релиза","релизов")}</span>` : ""}${evN ? `<span class="k"><i style="background:#ff375f"></i><b>${evN}</b>${plural(evN,"встреча","встречи","встреч")}</span>` : ""}<span class="sep"></span>
+      ${calWhoBar()}${calTypeBar()}
+      <div class="c-sum"><span class="k"><i style="background:var(--c-game)"></i><b>${gN}</b>игр</span><span class="k"><i style="background:var(--c-kino)"></i><b>${kN}</b>кино</span>${bN ? `<span class="k"><i style="background:#bf5af2"></i><b>${bN}</b>${plural(bN, "книга", "книги", "книг")}</span>` : ""}${rN ? `<span><b>${rN}</b>${plural(rN,"релиз","релиза","релизов")}</span>` : ""}${evN ? `<span class="k"><i style="background:#ff375f"></i><b>${evN}</b>${plural(evN,"встреча","встречи","встреч")}</span>` : ""}<span class="sep"></span>
         <span class="c-legend"><span><i style="background:var(--r-green)"></i>7,5+</span><span><i style="background:var(--r-yel)"></i>5–7</span><span><i style="background:var(--r-red)"></i>до 5</span></span></div>
       <div class="c-dows"><div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div></div>
       <div class="c-grid" id="cGrid">${h}</div>
@@ -308,7 +330,7 @@
 
   function renderCalFr(){
     const first = new Date(calY, calM, 1), mName = first.toLocaleDateString("ru-RU", {month:"long"});
-    const byDay = {}, ents = calEntries(), ord = {done: 0, drop: 1, watch: 2, start: 3};
+    const byDay = {}, ents = calEntries(), ord = CAL_ORD;
     ents.forEach(e => (byDay[e.day] = byDay[e.day] || []).push(e));
     Object.values(byDay).forEach(a => a.sort((x, y) => (ord[x.k] - ord[y.k]) || (y.it.rating ?? -1) - (x.it.rating ?? -1)));
     const evDay = {}; if (typeof EV !== "undefined" && EV) EV.events.forEach(e => { if (!e.starts_at) return; const k = localDate(new Date(e.starts_at)); (evDay[k] = evDay[k] || []).push(e); });
@@ -325,8 +347,8 @@
     const all = calUid === "*", who = all ? "" : nickOf(calUid);
     $("aMain").innerHTML = `<div class="c-head"><h1 class="a-h1">${esc(mName.charAt(0).toUpperCase() + mName.slice(1))} <span>${calY}</span></h1>
         <div class="c-arrows"><button type="button" class="ar" id="cPrev" aria-label="Прошлый месяц">‹</button><button type="button" id="cToday">Сегодня</button><button type="button" class="ar" id="cNext" aria-label="Следующий месяц">›</button></div></div>
-      ${calWhoBar()}
-      <div class="c-sum"><span class="k"><i style="background:var(--c-game)"></i><b>${n("start")}</b>${plural(n("start"), "начал", "начал", "начал")} играть</span><span class="k"><i style="background:var(--r-green)"></i><b>${n("done")}</b>прошёл</span>${n("drop") ? `<span class="k"><i style="background:var(--r-red)"></i><b>${n("drop")}</b>дроп</span>` : ""}<span class="k"><i style="background:var(--c-kino)"></i><b>${n("watch")}</b>посмотрел</span>
+      ${calWhoBar()}${calTypeBar()}
+      <div class="c-sum">${n("read") ? `<span class="k"><i style="background:#bf5af2"></i><b>${n("read")}</b>${plural(n("read"), "книга прочитана", "книги прочитаны", "книг прочитано")}</span>` : ""}<span class="k"><i style="background:var(--c-game)"></i><b>${n("start")}</b>${plural(n("start"), "начал", "начал", "начал")} играть</span><span class="k"><i style="background:var(--r-green)"></i><b>${n("done")}</b>прошёл</span>${n("drop") ? `<span class="k"><i style="background:var(--r-red)"></i><b>${n("drop")}</b>дроп</span>` : ""}<span class="k"><i style="background:var(--c-kino)"></i><b>${n("watch")}</b>посмотрел</span>
         ${!FR ? `<span>Загружаю…</span>` : !me.length ? `<span>${all ? "В этом месяце у всех тихо" : `У ${esc(who)} в этом месяце пусто`}</span>` : ""}</div>
       <div class="c-dows"><div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div></div>
       <div class="c-grid c-grid-fr" id="cGrid">${h}</div>
@@ -335,19 +357,21 @@
     $("cNext").onclick = () => { calM++; if (calM > 11){ calM = 0; calY++; } renderCal(); };
     $("cToday").onclick = () => { const t = new Date(); calY = t.getFullYear(); calM = t.getMonth(); renderCal(); };
   }
-  function calOpenFr(key){ const [uid, id] = key.split("/"); if (ME && uid === ME.id) openItem(id); else friendItemSheet(key); }
+  function calOpenFr(key){ if (key.startsWith("b:")){ calOpenBook(key.slice(2)); return; } const [uid, id] = key.split("/"); if (ME && uid === ME.id) openItem(id); else friendItemSheet(key); }
   function calFrDaySheet(day){
-    const ord = {done: 0, drop: 1, watch: 2, start: 3}, list = calEntries().filter(e => e.day === day).sort((x, y) => (ord[x.k] - ord[y.k]));
+    const ord = CAL_ORD, list = calEntries().filter(e => e.day === day).sort((x, y) => (ord[x.k] - ord[y.k]));
     if (!list.length) return;
     const s = openSheet(`<h3>${parseD(day).toLocaleDateString("ru-RU", {weekday: "long", day: "numeric", month: "long"}).replace(/^./, c => c.toUpperCase())}</h3>
       <p class="sub">${list.length} ${plural(list.length, "запись", "записи", "записей")}</p>
-      <div class="cds">${list.map(e => `<button class="cds-c" data-cfi="${esc(calKey(e))}">${posterHTML(e.it, {tgt: false})}<span class="ti">${esc(e.it.title)}</span><small>${avaHTML(profOf(e.it.uid), "xs")} ${esc(nickOf(e.it.uid))} ${esc(CAL_K[e.k])}</small></button>`).join("")}</div>`, {wide: true});
+      <div class="cds">${list.map(e => `<button class="cds-c" data-cfi="${esc(calKey(e))}">${e.it._book ? rCover(e.it) : posterHTML(e.it, {tgt: false})}<span class="ti">${esc(e.it.title)}</span><small>${avaHTML(profOf(e.it.uid), "xs")} ${esc(nickOf(e.it.uid))} ${esc(CAL_K[e.k])}</small></button>`).join("")}</div>`, {wide: true});
     s.el.addEventListener("click", ev => { const b = ev.target.closest("[data-cfi]"); if (!b) return; ev.stopPropagation(); s.close(); setTimeout(() => calOpenFr(b.dataset.cfi), 60); }, true);
   }
   document.addEventListener("click", e => {
     if (route !== "calendar" || !$("aMain").contains(e.target)) return;
     const w = e.target.closest && e.target.closest("[data-calu]");
     if (w){ calUid = w.dataset.calu || null; renderCal(); return; }
+    const ct = e.target.closest && e.target.closest("[data-calt]"); if (ct){ calType = ct.dataset.calt; renderCal(); return; }
+    const bk = e.target.closest && e.target.closest("[data-cbk]"); if (bk){ e.stopPropagation(); calOpenBook(bk.dataset.cbk); return; }
     if (!calUid) return;
     if (e.target.closest("[data-ev]")) return;
     const t = e.target.closest("[data-cfi]"); if (t){ calOpenFr(t.dataset.cfi); return; }
