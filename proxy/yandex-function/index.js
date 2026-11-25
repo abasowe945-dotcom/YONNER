@@ -11,7 +11,7 @@ const ORIGINS = ["https://abasowe945-dotcom.github.io", "http://localhost:8080",
 // только эти разделы Supabase, больше ничего через прокси не пускаем
 const PATHS = /^\/(rest|auth|storage|functions)\/v1\//;
 // заголовки запроса, которые не передаём дальше
-const DROP_REQ = new Set(["host", "origin", "referer", "cookie", "content-length", "accept-encoding", "connection", "x-forwarded-for", "x-forwarded-proto", "x-real-ip", "x-request-id", "x-trace-id", "x-envoy-external-address", "x-serverless-gateway-id", "uber-trace-id"]);
+const DROP_REQ = new Set(["host", "origin", "referer", "cookie", "content-length", "accept-encoding", "connection", "x-forwarded-for", "x-forwarded-proto", "x-real-ip", "x-request-id", "x-trace-id", "x-nx-auth", "x-envoy-external-address", "x-serverless-gateway-id", "uber-trace-id"]);
 // заголовки ответа, которые не отдаём браузеру
 const DROP_RES = new Set(["content-encoding", "content-length", "transfer-encoding", "connection", "set-cookie", "server", "via", "alt-svc", "strict-transport-security", "report-to", "nel"]);
 
@@ -36,6 +36,8 @@ module.exports.handler = async function (event) {
   if (!PATHS.test(p)) return {statusCode: 400, headers: base, body: "bad path"};
 
   const headers = {}; for (const [k, v] of Object.entries(H)) if (!DROP_REQ.has(k) && !k.startsWith("x-yc-") && !k.startsWith("x-forwarded")) headers[k] = v;
+  // токен приходит как x-nx-auth (шлюз Яндекса не пропускает Authorization), возвращаем настоящее имя
+  if (H["x-nx-auth"]) headers["authorization"] = H["x-nx-auth"];
   let body;
   if (!["GET", "HEAD"].includes(method) && event.body) body = event.isBase64Encoded ? Buffer.from(event.body, "base64") : event.body;
 

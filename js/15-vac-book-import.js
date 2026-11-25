@@ -703,8 +703,8 @@
       const {data: {session}} = await Promise.race([SB.auth.getSession(), new Promise((_, no) => setTimeout(() => no(new Error("getSession завис")), 8000))]);
       if (!session){ d.textContent += " Вход: сессии нет."; return; }
       const hd = {apikey: CFG.SUPABASE_ANON_KEY, authorization: "Bearer " + session.access_token};
-      const q = async base => { const t0 = performance.now(); try { const r = await fetch(base, {headers: hd, cache: "no-store", signal: AbortSignal.timeout(10000)}); const tx = await r.text(); return r.status + ", " + Math.round(tx.length / 1024) + " КБ, " + Math.round(performance.now() - t0) + " мс"; } catch(e){ return "не ответил (" + ((e && e.name) || "ошибка") + ")"; } };
-      const path = "/rest/v1/profiles?select=nick&limit=1", [a2, b2] = await Promise.all([PROXY ? q(PROXY + "?p=" + encodeURIComponent(path)) : Promise.resolve("выключен"), q(SB_BASE + path)]);
+      const q = async (base, px) => { const t0 = performance.now(); try { const r = await fetch(base, {headers: px ? {apikey: hd.apikey, "x-nx-auth": hd.authorization} : hd, cache: "no-store", signal: AbortSignal.timeout(10000)}); const tx = await r.text(); return r.status + ", " + Math.round(tx.length / 1024) + " КБ, " + Math.round(performance.now() - t0) + " мс"; } catch(e){ return "не ответил (" + ((e && e.name) || "ошибка") + ")"; } };
+      const path = "/rest/v1/profiles?select=nick&limit=1", [a2, b2] = await Promise.all([PROXY ? q(PROXY + "?p=" + encodeURIComponent(path), true) : Promise.resolve("выключен"), q(SB_BASE + path)]);
       d.textContent += " Со входом: прокси " + a2 + "; напрямую " + b2 + ".";
     } catch(e){ d.textContent += " Вход: " + ((e && e.message) || "ошибка") + "."; }
   }

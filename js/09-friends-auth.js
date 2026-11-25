@@ -368,7 +368,10 @@
     const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
     if (!pxOn() || !url.startsWith(SB_BASE + "/")) return fetch(input, init);
     try {
-      const r = await fetch(viaPx(url), init);
+      // шлюз Яндекса принимает заголовок Authorization за свой токен и отвечает 403, поэтому токен идёт под другим именем, а функция возвращает его обратно
+      const hd = new Headers((init && init.headers) || (input instanceof Request ? input.headers : undefined));
+      if (hd.has("authorization")){ hd.set("x-nx-auth", hd.get("authorization")); hd.delete("authorization"); }
+      const r = await fetch(viaPx(url), {...(init || {}), headers: hd});
       if (r.status === 502 || r.status === 503 || r.status === 504) throw new Error("прокси ответил " + r.status);
       return r;
     } catch(e){
