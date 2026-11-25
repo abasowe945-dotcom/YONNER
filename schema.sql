@@ -1051,3 +1051,32 @@ create policy cs_write on public.cosmetics for all to authenticated using (publi
 revoke all on public.cosmetics from anon;
 grant select, insert, update, delete on public.cosmetics to authenticated;
 alter table public.profiles add column if not exists cosm jsonb;
+
+-- ===== комментарии к тир-листам: к своим, к чужим и к версиям-ответам; ответы на комментарии (parent_id) =====
+create table if not exists public.tierlist_comments (
+  id uuid primary key default gen_random_uuid(),
+  tierlist_id uuid not null references public.tierlists (id) on delete cascade,
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  parent_id uuid references public.tierlist_comments (id) on delete cascade,
+  body text not null check (char_length(body) between 1 and 1000),
+  created_at timestamptz not null default now()
+);
+create index if not exists tierlist_comments_tl_idx on public.tierlist_comments (tierlist_id, created_at);
+create index if not exists tierlist_comments_user_idx on public.tierlist_comments (user_id);
+create index if not exists tierlist_comments_parent_idx on public.tierlist_comments (parent_id);
+alter table public.tierlist_comments enable row level security;
+drop policy if exists tlc_select on public.tierlist_comments;
+drop policy if exists tlc_insert on public.tierlist_comments;
+drop policy if exists tlc_delete on public.tierlist_comments;
+create policy tlc_select on public.tierlist_comments for select to authenticated using (true);
+create policy tlc_insert on public.tierlist_comments for insert to authenticated with check ((select auth.uid()) = user_id);
+-- удалить может автор комментария или хозяин тир-листа
+create policy tlc_delete on public.tierlist_comments for delete to authenticated using (
+  (select auth.uid()) = user_id
+  or exists (select 1 from public.tierlists t where t.id = tierlist_id and t.user_id = (select auth.uid())));
+revoke all on public.tierlist_comments from anon;
+grant select, insert, delete on public.tierlist_comments to authenticated;
+alter table public.tierlist_comments replica identity full;
+do $$ begin alter publication supabase_realtime add table public.tierlist_comments; exception when duplicate_object then null; end $$;
+alter table public.notifications drop constraint if exists notifications_kind_check;
+alter table public.notifications add constraint notifications_kind_check check (kind in ('mention_post','mention_comment','comment','invite','mention_event','tier_reply','book_comment','suggest','suggest_ok','slop_plan','slop_poll','place_want','place_visit','tier_comment'));

@@ -473,3 +473,35 @@
   .fb-feed-w::-webkit-scrollbar-thumb{background:rgba(127,127,127,.35);border-radius:8px;border:2px solid transparent;background-clip:padding-box}
   .fb-feed-w::-webkit-scrollbar-track{background:transparent}
 }
+
+/* ================= комментарии к тир-листам ================= */
+.tll-c[data-tlcc]{margin-left:8px;color:var(--c-dim)}
+.tll-c[data-tllc]:empty+.tll-c[data-tlcc]{margin-left:auto}
+.tlv-r .tll-c[data-tlcc]{margin-left:0}
+.tlc-n{display:inline-flex;align-items:center;gap:4px}
+.tlcb .tlc-l{display:grid;gap:2px}
+.tlcm{display:flex;gap:10px;padding:8px;border-radius:12px}
+.tlcm:hover{background:var(--c-cell-out)}
+.tlcm.sub{margin-left:40px;padding-top:6px}
+.tlcm .b{min-width:0;flex:1}
+.tlcm .h{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.tlcm .h b{font:700 14px/1.2 var(--ios)}
+.tlcm .h small{color:var(--c-dim);font:500 12px/1 var(--ios)}
+.tlcm .au{padding:2px 6px;border-radius:6px;background:rgba(10,132,255,.16);color:#4da3ff;font:700 10.5px/1.2 var(--ios);letter-spacing:.02em}
+.tlcm p{margin:3px 0 0;font:500 14px/1.45 var(--ios);overflow-wrap:anywhere;white-space:normal}
+.tlcm .a{display:flex;gap:12px;margin-top:4px;opacity:.75;transition:opacity .15s}
+.tlcm:hover .a,.tlcm:focus-within .a{opacity:1}
+.tlcm .a button{padding:0;border:0;background:none;color:var(--c-dim);font:650 12.5px/1.4 var(--ios);cursor:pointer}
+.tlcm .a button:hover{color:var(--c-fg)}
+.tlcm .a button[data-tlcdel]:hover{color:#ff6b6b}
+.tlc-0{margin:0 0 4px}
+.tlc-f{margin-top:10px}
+.tlc-in{display:flex;align-items:flex-end;gap:10px}
+.tlc-in textarea{flex:1;min-width:0;min-height:40px;max-height:180px;padding:10px 12px;border:1px solid var(--c-line);border-radius:14px;background:var(--c-cell-out);font:500 14px/1.4 var(--ios);resize:none;outline:none;transition:border-color .15s}
+.tlc-in textarea:focus{border-color:rgba(10,132,255,.6)}
+.tlc-in .ib{flex:none;height:40px}
+.tlc-in>:first-child{flex:none;margin-bottom:4px}
+.tlc-rp{display:flex;align-items:center;gap:8px;margin:0 0 6px 42px;color:var(--c-dim);font:600 12.5px/1 var(--ios)}
+.tlc-rp span{color:#4da3ff}
+.tlc-rp button{width:22px;height:22px;border:0;border-radius:50%;background:var(--c-cell-out);color:var(--c-dim);font:600 15px/1 var(--ios);cursor:pointer}
+@media (max-width:720px){.tlcm.sub{margin-left:28px}.tlc-in .ib{padding:0 12px}}

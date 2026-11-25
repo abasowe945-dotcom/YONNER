@@ -524,6 +524,7 @@
   }
   function tlView(id){
     const tl = tlById(id); if (!tl){ toast("Тир-лист не найден"); return; }
+    if (!TLC) loadTlComments();
     const root = tlRoot(tl), mine = ME && tl.user_id === ME.id, p = profOf(tl.user_id);
     const vers = tlAll().filter(x => x.reply_to === root.id && x.user_id !== root.user_id).sort(byAt("updated_at"));
     const s = openSheet(`<div class="tlv-h">${avaHTML(p, "md")}<div><h3>${esc(tl.title)}</h3><p class="sub">${esc(mine ? "твой тир-лист" : p.nick || "")}${tl.reply_to && root !== tl ? ` · версия тир-листа «${esc(root.title)}»` : ""}${tl.pinned ? " · закреплён в профиле" : ""}${tmSrc(tl)}</p></div></div>
@@ -532,7 +533,8 @@
       <div class="acts tlv-share"><button class="ib" data-tlshare="1">${ICON.link}Поделиться ссылкой</button><button class="ib" data-tlpng="1">${ICON.img}Картинкой</button></div>
       <div class="acts" style="margin-top:10px">${mine ? `<button class="ib blue" data-tle="${esc(tl.id)}">Редактировать</button><button class="ib" data-tlpin="${esc(tl.id)}">${tl.pinned ? "Открепить" : "Закрепить в профиле"}</button><button class="ib red" data-tldel="${esc(tl.id)}">Удалить</button>`
         : `<button class="ib blue" data-tlreply="${esc(tl.id)}">Ответить своей версией</button>`}${tl !== root ? `<button class="ib" data-tlv="${esc(root.id)}">Оригинал</button>` : ""}</div>
-      <div class="tlv-vers"><h4>Версии других<small>${vers.length}</small></h4>${vers.length ? vers.map(v => `<button class="tlv-r${v.id === tl.id ? " on" : ""}" data-tlv="${esc(v.id)}">${avaHTML(profOf(v.user_id), "sm")}<span class="t"><b>${esc(profOf(v.user_id).nick || "")}</b><small>${esc(v.title)} · ${esc(agoTs(v.updated_at || v.created_at))}</small></span><span class="tll-c" data-tllc="${esc(v.id)}">${tlLikeCnt(v.id)}</span><span class="th">${tlItems(v).slice(0, 4).map(x => `<img src="${esc(publicUrl(x.img))}" alt="">`).join("")}</span></button>`).join("") : `<p class="sub" style="margin:0">Пока никто не ответил своей версией.</p>`}</div>`, {wide: true});
+      ${tlcHTML(tl.id)}
+      <div class="tlv-vers"><h4>Версии других<small>${vers.length}</small></h4>${vers.length ? vers.map(v => `<button class="tlv-r${v.id === tl.id ? " on" : ""}" data-tlv="${esc(v.id)}">${avaHTML(profOf(v.user_id), "sm")}<span class="t"><b>${esc(profOf(v.user_id).nick || "")}</b><small>${esc(v.title)} · ${esc(agoTs(v.updated_at || v.created_at))}</small></span><span class="tll-c" data-tllc="${esc(v.id)}">${tlLikeCnt(v.id)}</span><span class="tll-c" data-tlcc="${esc(v.id)}">${tlcCnt(v.id)}</span><span class="th">${tlItems(v).slice(0, 4).map(x => `<img src="${esc(publicUrl(x.img))}" alt="">`).join("")}</span></button>`).join("") : `<p class="sub" style="margin:0">Пока никто не ответил своей версией.</p>`}</div>`, {wide: true});
     s.el.addEventListener("click", async e => { const b = e.target.closest("[data-tle],[data-tlpin],[data-tldel],[data-tlreply],[data-tlv],[data-tlshare],[data-tlpng]"); if (!b) return; e.stopPropagation();
       if (b.dataset.tlshare){ tlShareLink(tl); return; }
       if (b.dataset.tlpng){ tlImageSheet(tl, profOf(tl.user_id)); return; }
@@ -558,11 +560,82 @@
     const nb = document.querySelector(`[data-tllike="${id}"]`); if (nb && !on){ nb.classList.add("pop"); setTimeout(() => nb.classList.remove("pop"), 500); }
     const r = on ? await SB.from("tierlist_likes").delete().eq("tierlist_id", id).eq("user_id", ME.id) : await SB.from("tierlist_likes").upsert({tierlist_id: id, user_id: ME.id}, {onConflict: "tierlist_id,user_id", ignoreDuplicates: true});
     if (r.error){ toast("Лайк не сохранился"); loadTlLikes(); } });
+  // ================= комментарии к тир-листам: к своим, к чужим и к версиям-ответам; на комментарий можно ответить =================
+  // Ответ на ответ вешается на тот же верхний комментарий (одна ступенька вложенности) и начинается с @ника.
+  let TLC = null, tlcOff = false, tlcRt = false;
+  const TLC_I = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/></svg>';
+  async function loadTlComments(){
+    if (!SB || !ME || tlcOff) return;
+    const {data, error} = await fetchAll(() => SB.from("tierlist_comments").select("*").order("created_at", {ascending: true}), ["id"]);
+    if (error){
+      // таблицы ещё нет в базе — просто прячем блок, пока владелец не запустит SQL
+      if (error.code === "42P01" || error.code === "PGRST205" || /tierlist_comments/.test(error.message || "")){ tlcOff = true; tlcSync(); return; }
+      logErr("tlc load", error); return;
+    }
+    TLC = data || []; tlcSync();
+    if (!tlcRt){ tlcRt = true; let t = 0;
+      SB.channel("nexus-tlc").on("postgres_changes", {event: "*", schema: "public", table: "tierlist_comments"}, () => { clearTimeout(t); t = setTimeout(loadTlComments, 300); }).subscribe(); }
+  }
+  const tlcOf = id => (TLC || []).filter(c => c.tierlist_id === id);
+  const tlcCnt = id => { const n = tlcOf(id).length; return n ? `<span class="tlc-n">${TLC_I}${n}</span>` : ""; };
+  function tlcListHTML(id){
+    if (!TLC) return `<p class="sub tlc-0">Загружаю комментарии…</p>`;
+    const all = tlcOf(id), ids = new Set(all.map(c => c.id)), tl = tlById(id), ownTl = !!(ME && tl && tl.user_id === ME.id);
+    const top = all.filter(c => !c.parent_id || !ids.has(c.parent_id));
+    const one = (c, sub) => { const p = profOf(c.user_id), canDel = !!ME && (c.user_id === ME.id || ownTl);
+      return `<div class="tlcm${sub ? " sub" : ""}">${avaHTML(p, "sm")}<div class="b"><div class="h"><b>${esc(p.nick || "кто-то")}</b>${tl && c.user_id === tl.user_id ? `<span class="au">автор</span>` : ""}<small>${esc(agoTs(c.created_at))}</small></div><p>${linkMentions(esc(c.body)).replace(/\n/g, "<br>")}</p><div class="a"><button type="button" data-tlcrep="${esc(sub ? c.parent_id : c.id)}" data-tlcnick="${esc(p.nick || "")}" data-tlcfor="${esc(id)}">Ответить</button>${canDel ? `<button type="button" data-tlcdel="${esc(c.id)}">Удалить</button>` : ""}</div></div></div>`; };
+    return top.length ? top.map(c => one(c) + all.filter(x => x.parent_id === c.id).map(x => one(x, true)).join("")).join("") : `<p class="sub tlc-0">Пока тихо. Скажи, кто тут сидит в тире не по заслугам.</p>`;
+  }
+  function tlcHTML(id){
+    if (tlcOff || !ME) return "";
+    return `<div class="tlv-vers tlcb" data-tlcbox="${esc(id)}"><h4>Комментарии<small data-tlcn="${esc(id)}">${tlcOf(id).length || ""}</small></h4>
+      <div class="tlc-l" data-tlclist="${esc(id)}">${tlcListHTML(id)}</div>
+      <form class="tlc-f" data-tlcf="${esc(id)}"><div class="tlc-rp" hidden><span></span><button type="button" data-tlcx="1" aria-label="Не отвечать">×</button></div>
+        <div class="tlc-in">${avaHTML(profOf(ME.id), "sm")}<textarea maxlength="1000" rows="1" placeholder="Написать комментарий…" aria-label="Комментарий"></textarea><button class="ib blue" type="submit">Отправить</button></div></form></div>`;
+  }
+  function tlcSync(){
+    if (tlcOff){ document.querySelectorAll("[data-tlcbox]").forEach(b => b.remove()); return; }
+    document.querySelectorAll("[data-tlclist]").forEach(b => { b.innerHTML = tlcListHTML(b.dataset.tlclist); });
+    document.querySelectorAll("[data-tlcn]").forEach(b => { b.textContent = tlcOf(b.dataset.tlcn).length || ""; });
+    document.querySelectorAll("[data-tlcc]").forEach(b => { b.innerHTML = tlcCnt(b.dataset.tlcc); });
+  }
+  function tlcReply(f, parent, nick){
+    const rp = f.querySelector(".tlc-rp"), ta = f.querySelector("textarea");
+    if (!parent){ delete f.dataset.parent; rp.hidden = true; return; }
+    f.dataset.parent = parent; rp.hidden = false; rp.querySelector("span").textContent = "Ответ " + (nick ? "@" + nick : "на комментарий");
+    if (nick && !ta.value.includes("@" + nick)) ta.value = "@" + nick + " " + ta.value;
+    ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); tlcGrow(ta);
+  }
+  const tlcGrow = ta => { ta.style.height = "auto"; ta.style.height = Math.min(ta.scrollHeight, 180) + "px"; };
+  async function tlcSend(f){
+    if (!ME || !SB || f.dataset.busy) return;
+    const ta = f.querySelector("textarea"), body = ta.value.trim(), id = f.dataset.tlcf; if (!body){ ta.focus(); return; }
+    const parent = f.dataset.parent || null; f.dataset.busy = "1";
+    const {data, error} = await SB.from("tierlist_comments").insert({tierlist_id: id, user_id: ME.id, parent_id: parent, body}).select().single();
+    delete f.dataset.busy;
+    if (error){ toast("Комментарий не отправился"); logErr("tlc insert", error); return; }
+    if (data && TLC && !TLC.some(c => c.id === data.id)) TLC.push(data);
+    ta.value = ""; tlcGrow(ta); tlcReply(f, null); tlcSync(); SND.click("soft");
+    const tl = tlById(id), pc = parent && (TLC || []).find(c => c.id === parent);
+    notify([tl && tl.user_id, pc && pc.user_id, ...mentionedUids(body)], "tier_comment", "tier:" + id, body);
+  }
+  document.addEventListener("submit", e => { const f = e.target.closest && e.target.closest("[data-tlcf]"); if (!f) return; e.preventDefault(); tlcSend(f); });
+  document.addEventListener("keydown", e => { const ta = e.target; if (!ta || ta.tagName !== "TEXTAREA" || !ta.closest("[data-tlcf]")) return;
+    if (e.key === "Enter" && !e.shiftKey && !e.isComposing){ e.preventDefault(); tlcSend(ta.closest("[data-tlcf]")); } });
+  document.addEventListener("input", e => { if (e.target.tagName === "TEXTAREA" && e.target.closest("[data-tlcf]")) tlcGrow(e.target); });
+  document.addEventListener("click", async e => { const el = e.target.closest && e.target.closest("[data-tlcrep],[data-tlcdel],[data-tlcx]"); if (!el || !ME) return;
+    if (el.dataset.tlcx){ tlcReply(el.closest("[data-tlcf]"), null); return; }
+    if (el.dataset.tlcrep){ const f = document.querySelector(`[data-tlcf="${CSS.escape(el.dataset.tlcfor)}"]`); if (f) tlcReply(f, el.dataset.tlcrep, el.dataset.tlcnick); return; }
+    const cid = el.dataset.tlcdel; if (!confirm("Удалить комментарий?")) return;
+    const keep = TLC; TLC = (TLC || []).filter(c => c.id !== cid && c.parent_id !== cid); tlcSync();
+    const {error} = await SB.from("tierlist_comments").delete().eq("id", cid);
+    if (error){ TLC = keep; tlcSync(); toast("Не удалилось"); logErr("tlc delete", error); }
+  });
   function tlCard(){
     if (!FR) return "";
     const roots = tlAll().filter(x => !x.reply_to).sort(byAt("updated_at"));
     const row = t => { const n = tlAll().filter(x => x.reply_to === t.id).length, th = tlItems(t).slice(0, 4);
-      return `<button class="tlc-r" data-tlv="${esc(t.id)}"><span class="th">${th.length ? th.map(x => `<img src="${esc(publicUrl(x.img))}" alt="">`).join("") : `<i>${ICON.tiers}</i>`}</span><span class="t"><b>${esc(t.title)}</b><small>${avaHTML(profOf(t.user_id), "xs")} ${esc(nickOf(t.user_id))}${n ? ` · ${n} ${plural(n, "версия", "версии", "версий")}` : ""}</small></span><span class="tll-c" data-tllc="${esc(t.id)}">${tlLikeCnt(t.id)}</span></button>`; };
+      return `<button class="tlc-r" data-tlv="${esc(t.id)}"><span class="th">${th.length ? th.map(x => `<img src="${esc(publicUrl(x.img))}" alt="">`).join("") : `<i>${ICON.tiers}</i>`}</span><span class="t"><b>${esc(t.title)}</b><small>${avaHTML(profOf(t.user_id), "xs")} ${esc(nickOf(t.user_id))}${n ? ` · ${n} ${plural(n, "версия", "версии", "версий")}` : ""}</small></span><span class="tll-c" data-tllc="${esc(t.id)}">${tlLikeCnt(t.id)}</span><span class="tll-c" data-tlcc="${esc(t.id)}">${tlcCnt(t.id)}</span></button>`; };
     return `<div class="fb-card tlc"><h3>${ICON.tiers}Тир-листы<button class="ev-add" data-tlnew="1" title="Создать тир-лист" aria-label="Создать тир-лист">+</button></h3>
       ${roots.length ? `<div class="tlc-l">${roots.slice(0, 6).map(row).join("")}</div>${roots.length > 6 ? `<button class="ib full" data-tlall="1" style="margin-top:8px">Все ${roots.length}</button>` : ""}<button class="tlc-tm" data-tmimp="1">${ICON.down}Импорт с TierMaker</button>` : `<p class="a-sub" style="margin:0 0 10px;font-size:13px">Свой тир-лист на любую тему: картинки, тиры, подписи. Или перенеси готовый с TierMaker по ссылке. Друзья могут ответить своей версией.</p><div class="tlc-empty"><button class="ib blue bd-set" data-tlnew="1">Создать тир-лист</button><button class="ib bd-set" data-tmimp="1">${ICON.down}С TierMaker</button></div>`}</div>`;
   }

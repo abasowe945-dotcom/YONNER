@@ -492,7 +492,7 @@
     loadFriends(); loadEvents(); loadNtf(); loadSug(); loadReads().then(() => handleInbox());
     subscribeEvents(); subscribeWall(); subscribeSlop(); subscribePlaces(); subscribeVac(); subscribeNtf(); subscribeBook();
     const NEED = {people: "*", home: ["wall", "vac"], user: ["wall", "vac"], slop: ["slop"], places: ["places"], vacation: ["vac"]};
-    const LATER = [["wall", loadWall], ["vac", loadVac], ["slop", loadSlop], ["places", loadPlaces], ["tl", loadTlLikes]];
+    const LATER = [["wall", loadWall], ["vac", loadVac], ["slop", loadSlop], ["places", loadPlaces], ["tl", loadTlLikes], ["tlc", loadTlComments]];
     const need = NEED[route] || [];
     const rest = LATER.filter(([k, fn]) => { if (need === "*" || need.includes(k)){ fn(); return false; } return true; });
     setTimeout(async () => { for (const [k, fn] of rest){ try { await fn(); } catch(e){ logErr("фоновая загрузка: " + k, e); } await new Promise(r => setTimeout(r, 300)); } }, 2500);
