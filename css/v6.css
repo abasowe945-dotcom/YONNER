@@ -587,3 +587,11 @@ body.cs-docked .cs-rgs{grid-template-columns:1fr}
 .cs-aud small{display:block;opacity:.7;margin:3px 0 6px;line-height:1.35}
 .cs-aud-l{display:flex;flex-wrap:wrap;gap:6px 14px;max-height:130px;overflow:auto}
 .cs-aud-l label{display:flex;align-items:center;gap:6px;cursor:pointer}
+/* 7.21: гиф-аватар (превью), наложение рамок */
+.pf-ava.has-frame,.cs-pv.fr,.cs-fa .pf-ava{isolation:isolate}
+.av-two{display:flex;gap:18px;justify-content:center}
+.av-two>div{display:flex;flex-direction:column;align-items:center;gap:4px}
+.av-two small{opacity:.7;font-size:12px}
+.cs-rg select{width:100%;padding:9px 10px;border-radius:10px;border:0;background:rgba(127,127,127,.18);color:inherit;font:inherit}
+.cs-rg span em{font-style:normal;opacity:.65;font-size:12px}
+.cs-rg:has(select){grid-column:1/-1}

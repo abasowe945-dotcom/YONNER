@@ -20,15 +20,18 @@
   };
   const animalSVG = k => ANIMALS[k] ? `<svg viewBox="0 0 64 64" aria-hidden="true">${ANIMALS[k][1]}</svg>` : "";
   const avaBg = p => p.ava_color || avaColor(p.user_id);
+  // 7.21: гиф-аватарка — только на компе (мышь + нет «экономии движения») и только в крупных местах; на телефоне всегда обычное фото
+  const AVA_PC = (() => { try { return matchMedia("(hover: hover) and (pointer: fine)").matches && !matchMedia("(prefers-reduced-motion: reduce)").matches; } catch(e){ return false; /* ожидаемо: старый браузер без matchMedia */ } })();
+  const avaGif = (p, size) => AVA_PC && p && p.avatar && p.ava_cfg && p.ava_cfg.gif && (size === "big" || size === "md") ? p.ava_cfg.gif : null;
   const avaHTML = (p, size) => { p = p || {}; size = size === true ? "big" : (size || "");
-    const inner = p.avatar ? `<img alt="" src="${publicUrl(p.avatar)}" loading="lazy" onerror="this.remove()">` : p.ava_animal && ANIMALS[p.ava_animal] ? animalSVG(p.ava_animal) : esc((p.nick || "?").slice(0, 1).toUpperCase());
+    const inner = p.avatar ? `<img alt="" src="${publicUrl(avaGif(p, size) || p.avatar)}" loading="lazy" onerror="this.remove()">` : p.ava_animal && ANIMALS[p.ava_animal] ? animalSVG(p.ava_animal) : esc((p.nick || "?").slice(0, 1).toUpperCase());
     return `<span class="fr-ava${size ? " " + size : ""}" style="background:${avaBg(p)}" title="${esc(p.nick || "")}">${inner}</span>`; };
   // 6.1: большой аватар в профиле — своя форма и свой кадр; везде ещё остаётся маленький квадрат
   const avaShape = p => { const c = p && p.ava_cfg; return c && ["square", "round", "circle", "portrait"].includes(c.shape) ? c.shape : "square"; };
   const avaBigHTML = p => { p = p || {}; const c = p.ava_cfg, sh = avaShape(p); if (!c) return avaHTML(p, "big");
     const src = p.avatar ? (p.avatar_full || p.avatar) : null;
     if (!src) return avaHTML(p, "big").replace('class="fr-ava big"', `class="fr-ava big v6-shape-${sh}"`);
-    return `<span class="fr-ava big v6-shape-${sh}" style="background:${avaBg(p)}" title="${esc(p.nick || "")}"><img alt="" src="${publicUrl(src)}" style="${p.avatar_full && c.big ? posStyle(c.big) : ""}" onerror="this.remove()"></span>`; };
+    return `<span class="fr-ava big v6-shape-${sh}" style="background:${avaBg(p)}" title="${esc(p.nick || "")}"><img alt="" src="${publicUrl(avaGif(p, "big") || src)}" style="${p.avatar_full && c.big ? posStyle(c.big) : ""}" onerror="this.remove()"></span>`; };
   let MEP = null; // мой профиль: ник, фото, зверь, цвет
   const myProf = () => ({user_id: ME ? ME.id : "", nick: NICK, ...(MEP || {})});
   const profOf = uid => uid === (ME && ME.id) ? myProf() : (FR && FR.profiles.find(x => x.user_id === uid)) || {user_id: uid, nick: "?"};
@@ -37,18 +40,23 @@
     return new Promise(res => {
       let st = {avatar: (MEP && MEP.avatar) || null, ava_animal: (MEP && MEP.ava_animal) || null, ava_color: (MEP && MEP.ava_color) || AVA_COLORS[Math.floor(Math.random() * AVA_COLORS.length)]}, file = null;
       // 6.1: форма в профиле и два кадра — большой для профиля, маленький квадрат для остального сайта
-      const c0 = (MEP && MEP.ava_cfg) || {}; let cfg = {shape: c0.shape || "square", big: {x: 50, y: 50, s: 1, ...(c0.big || {})}, sm: {x: 50, y: 50, s: 1, ...(c0.sm || {})}}, smMoved = false, fileUrl = null;
+      const c0 = (MEP && MEP.ava_cfg) || {}; let gifFile = null, gifUrl = null, gifRm = false, cfg = {shape: c0.shape || "square", ...(c0.gif ? {gif: c0.gif} : {}), big: {x: 50, y: 50, s: 1, ...(c0.big || {})}, sm: {x: 50, y: 50, s: 1, ...(c0.sm || {})}}, smMoved = false, fileUrl = null;
       const fullSrc = () => file ? fileUrl : MEP && MEP.avatar_full && st.avatar ? publicUrl(MEP.avatar_full) : st.avatar ? publicUrl(st.avatar) : null;
       const prevP = () => ({...myProf(), ...st, avatar: file ? null : st.avatar});
       const s = openSheet(`<h3>${first ? "Выбери аватарку" : "Аватар"}</h3><p class="sub">Видна друзьям в ленте, в профиле, у релизов и в совместной рулетке. Фото можно перетащить сюда или вставить через Ctrl+V.</p>
+        <p class="sub">Можно поставить два файла: <b>фото</b> — для телефона и мелких мест, и <b>GIF</b> — он играет на компе в профиле и в крупных аватарках. Если загрузить только GIF, для телефона возьмётся его первый кадр.</p>
         <div class="av-prev" id="avPrev"></div><div id="v6Ava"></div>
         <div class="acts"><label class="ib" for="avF">Загрузить фото</label><input type="file" id="avF" accept="image/*" hidden><button class="ib" id="avRm" ${st.avatar ? "" : "hidden"}>Убрать фото</button></div>
+        <div class="acts"><label class="ib" for="avG">GIF для компа</label><input type="file" id="avG" accept="image/gif,image/webp,image/apng" hidden><button class="ib" id="avGRm" hidden>Убрать GIF</button></div>
         <div class="av-lb">Или зверь</div><div class="av-grid" id="avA"></div>
         <div class="av-lb">Цвет фона</div><div class="av-cols" id="avC">${AVA_COLORS.map(c => `<button style="background:${c}" data-c="${c}" aria-label="Цвет"></button>`).join("")}</div>
         <div class="acts" style="margin-top:18px"><button class="ib blue" id="avOk">${first ? "Готово" : "Сохранить"}</button><button class="ib" id="avNo">${first ? "Пропустить" : "Отмена"}</button></div>`, {onClose: () => res(null)});
       const q = sel => s.el.querySelector(sel);
+      const gifSrc = () => gifFile ? gifUrl : cfg.gif && !gifRm ? publicUrl(cfg.gif) : null;
       const draw = () => {
-        q("#avPrev").innerHTML = file ? `<span class="fr-ava" style="background:${st.ava_color}"><img alt="" src="${URL.createObjectURL(file)}"></span>` : avaHTML(prevP());
+        const gs = gifSrc(), still = file ? `<span class="fr-ava" style="background:${st.ava_color}"><img alt="" src="${URL.createObjectURL(file)}"></span>` : avaHTML(prevP());
+        q("#avPrev").innerHTML = gs ? `<div class="av-two"><div>${still}<small>Телефон</small></div><div><span class="fr-ava" style="background:${st.ava_color}"><img alt="" src="${gs}"></span><small>Комп (GIF)</small></div></div>` : still;
+        q("#avGRm").hidden = !gs;
         q("#avA").innerHTML = [["", "Буква"], ...Object.entries(ANIMALS).map(([k, v]) => [k, v[0]])].map(([k, l]) => `<button data-a="${k}" title="${l}" aria-pressed="${!file && !st.avatar && (st.ava_animal || "") === k}">${avaHTML({...myProf(), avatar: null, ava_animal: k || null, ava_color: st.ava_color})}</button>`).join("");
         q("#avC").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.c === st.ava_color));
         q("#avRm").hidden = !(st.avatar || file);
@@ -67,10 +75,15 @@
       q("#v6Ava").addEventListener("pointerup", () => { drag = null; });
       q("#avA").onclick = e => { const b = e.target.closest("[data-a]"); if (!b) return; st.ava_animal = b.dataset.a || null; st.avatar = null; file = null; draw(); };
       q("#avC").onclick = e => { const b = e.target.closest("[data-c]"); if (!b) return; st.ava_color = b.dataset.c; draw(); };
-      const takeAva = f => { if (f && f.type.startsWith("image/")){ file = f; fileUrl = URL.createObjectURL(f); cfg.big = {x: 50, y: 50, s: 1}; cfg.sm = {x: 50, y: 50, s: 1}; smMoved = true; draw(); } };
-      q("#avF").onchange = e => takeAva(e.target.files[0]);
+      const takePhoto = f => { file = f; fileUrl = URL.createObjectURL(f); cfg.big = {x: 50, y: 50, s: 1}; cfg.sm = {x: 50, y: 50, s: 1}; smMoved = true; gifRm = gifRm && !gifFile; draw(); };
+      const takeGif = f => { if (f.size > 6 * 1024 * 1024){ toast("GIF тяжелее 6 МБ — сожми его, иначе сайт будет тормозить"); return false; }
+        gifFile = f; gifUrl = URL.createObjectURL(f); gifRm = false; if (!file && !st.avatar) takePhoto(f); else draw(); return true; };
+      const takeAva = f => { if (!f || !f.type.startsWith("image/")) return; if (/gif|apng/.test(f.type)){ if (takeGif(f) && (file === f || st.avatar)) toast("GIF — для компа. Фото для телефона: " + (file === f ? "первый кадр GIF" : "осталось прежнее")); } else takePhoto(f); };
+      q("#avF").onchange = e => { const f = e.target.files[0]; if (!f) return; if (/gif|apng/.test(f.type)){ if (takeGif(f)) takePhoto(f); } else takeAva(f); };
+      q("#avG").onchange = e => { const f = e.target.files[0]; if (f && f.type.startsWith("image/")) takeGif(f); };
+      q("#avGRm").onclick = () => { gifFile = null; gifRm = true; draw(); };
       pasteTarget = takeAva; bindDrop(q("#avPrev"), takeAva); bindDrop(s.el, takeAva);
-      q("#avRm").onclick = () => { st.avatar = null; file = null; draw(); };
+      q("#avRm").onclick = () => { st.avatar = null; file = null; gifFile = null; gifRm = true; draw(); };
       q("#avNo").onclick = async () => { if (first && !MEP?.ava_color){ await saveProf({ava_color: st.ava_color}); } s.close(); };
       q("#avOk").onclick = async () => {
         const btn = q("#avOk"); btn.disabled = true; btn.textContent = "Сохраняю…";
@@ -78,6 +91,8 @@
           if (file){ st.avatar = await squareUpload(file, cfg.sm); st.avatar_full = await fullUpload(file); }
           else if (smMoved && MEP && MEP.avatar_full && st.avatar){ try { st.avatar = await squareUpload(publicUrl(MEP.avatar_full), cfg.sm); } catch(err){ logErr("кадр аватарки", err); toast("Кадр для сайта не обновился — загрузи фото заново"); } }
           if (!st.avatar) st.avatar_full = null;
+          if (gifFile) cfg.gif = (await assets.upload(gifFile, {type: gifFile.type || "image/gif"})).id; else if (gifRm) delete cfg.gif;
+          if (!st.avatar) delete cfg.gif;
           st.ava_cfg = cfg;
           if (await saveProf(st)){ toast("Аватар обновлён"); res(st); s.close(); }
         } catch(e){ toast("Не получилось загрузить фото"); }

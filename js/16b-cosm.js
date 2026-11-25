@@ -93,10 +93,13 @@
     if (t.db){ const d = t.db.data || {}; return {cls: " v6t v6t-db" + (d.style ? " v6t-" + esc(d.style) : ""), style: `${d.ac ? `--ac:${esc(d.ac)};--tac:${esc(d.ac)};` : ""}${t.db.img ? `--tbg:url('${publicUrl(t.db.img)}');` : ""}`}; }
     return {cls: " v6t v6t-" + t.id, style: ""}; }
   // 7.19: масштаб и сдвиг рамки подгоняет админ при загрузке (data.s — % от аватарки, x/y — сдвиг в %)
-  const csFrGeo = f => { const d = (f && f.data) || {}; return {s: csNum(d.s, 60, 300, 128), x: csNum(d.x, -40, 40, 0), y: csNum(d.y, -40, 40, 0)}; };
-  const csFrPrev = f => { const g = csFrGeo(f), a = 62; return ` style="width:${Math.round(a * g.s / 100)}px;height:${Math.round(a * g.s / 100)}px;left:calc(50% + ${(a * g.x / 100).toFixed(1)}px);top:calc(50% + ${(a * g.y / 100).toFixed(1)}px)"`; };
+  // 7.21: режим наложения и прозрачность — для рамок-эффектов поверх аватарки (VHS, шум, свечение)
+  const CS_BLEND = [["normal", "Обычное"], ["screen", "Свечение (screen)"], ["overlay", "Контраст (overlay)"], ["soft-light", "Мягкий свет"], ["hard-light", "Жёсткий свет"], ["multiply", "Затемнение (multiply)"], ["lighten", "Только светлое"], ["color-dodge", "Пересвет"], ["difference", "Разница"]];
+  const csFrGeo = f => { const d = (f && f.data) || {}; return {s: csNum(d.s, 60, 300, 128), x: csNum(d.x, -40, 40, 0), y: csNum(d.y, -40, 40, 0), o: csNum(d.o, 10, 100, 100), b: CS_BLEND.some(x => x[0] === d.b) ? d.b : "normal"}; };
+  const csFrFx = g => (g.b !== "normal" ? `mix-blend-mode:${g.b};` : "") + (g.o < 100 ? `opacity:${g.o / 100};` : "");
+  const csFrPrev = f => { const g = csFrGeo(f), a = 62; return ` style="width:${Math.round(a * g.s / 100)}px;height:${Math.round(a * g.s / 100)}px;left:calc(50% + ${(a * g.x / 100).toFixed(1)}px);top:calc(50% + ${(a * g.y / 100).toFixed(1)}px);${csFrFx(g)}"`; };
   function csFrameHTML(p){ const f = csOf(p).frame; if (!f || !f.img) return ""; const g = csFrGeo(f);
-    return `<img class="v6-frame" alt="" src="${publicUrl(f.img)}" draggable="false" style="width:${g.s}%;height:${g.s}%;left:${50 + g.x}%;top:${50 + g.y}%">`; }
+    return `<img class="v6-frame" alt="" src="${publicUrl(f.img)}" draggable="false" style="width:${g.s}%;height:${g.s}%;left:${50 + g.x}%;top:${50 + g.y}%;${csFrFx(g)}">`; }
   function csOrder(p, floors){ const o = csOf(p), keys = CS_FLOORS.map(x => x[0]), ord = (o.layout || keys).filter(k => keys.includes(k)); keys.forEach(k => { if (!ord.includes(k)) ord.push(k); });
     return ord.filter(k => !o.hide.includes(k)).map(k => floors[k] || "").join(""); }
 
@@ -271,15 +274,16 @@
       const f = list[i], p = myProf(), cur = {...csFrGeo(f)}, last = i === list.length - 1; let moved = false;
       const s = openSheet(`<h3>Рамка «${esc(f.title)}»${list.length > 1 ? ` · ${i + 1} из ${list.length}` : ""}</h3><p class="sub">Подгони рамку под аватарку так, как она будет в профиле у всех.</p>
         <div class="cs-fa"><div class="pf-ava has-frame v6s-${avaShape(p)}">${avaBigHTML(p)}<img class="v6-frame" id="faImg" alt="" src="${publicUrl(f.img)}" draggable="false"></div></div>
-        <div class="cs-rgs">${[["s", "Масштаб", 60, 300, 1, "%"], ["y", "Сдвиг вверх-вниз", -40, 40, 1, "%"], ["x", "Сдвиг влево-вправо", -40, 40, 1, "%"]].map(([k, l, a, b2, st, u]) => `<label class="cs-rg"><span>${l}<em data-fav="${k}">${cur[k]}${u}</em></span><input type="range" min="${a}" max="${b2}" step="${st}" value="${cur[k]}" data-far="${k}"></label>`).join("")}</div>
+        <div class="cs-rgs">${[["s", "Масштаб", 60, 300, 1, "%"], ["y", "Сдвиг вверх-вниз", -40, 40, 1, "%"], ["x", "Сдвиг влево-вправо", -40, 40, 1, "%"], ["o", "Прозрачность", 10, 100, 1, "%"]].map(([k, l, a, b2, st, u]) => `<label class="cs-rg"><span>${l}<em data-fav="${k}">${cur[k]}${u}</em></span><input type="range" min="${a}" max="${b2}" step="${st}" value="${cur[k]}" data-far="${k}"></label>`).join("")}
+          <label class="cs-rg"><span>Как ложится на аватарку<em>для VHS, шума, свечения</em></span><select data-farb>${CS_BLEND.map(([v, l]) => `<option value="${v}"${cur.b === v ? " selected" : ""}>${l}</option>`).join("")}</select></label></div>
         ${csAudHTML(csFrAud(f))}
         <div class="acts"><button class="ib blue" id="faOk">${last ? "Сохранить" : "Сохранить и дальше"}</button><button class="ib" id="faSkip">${last ? "Закрыть" : "Пропустить"}</button><button class="ib" id="faReset">Сбросить</button><button class="ib red" id="faDel">Удалить рамку</button></div>`,
         {onClose: () => { if (!moved){ moved = true; done && done(); } }});
-      const q = sel => s.el.querySelector(sel), paint = () => { const im = q("#faImg"); im.style.width = im.style.height = cur.s + "%"; im.style.left = (50 + cur.x) + "%"; im.style.top = (50 + cur.y) + "%";
-        ["s", "x", "y"].forEach(k => { q(`[data-fav="${k}"]`).textContent = cur[k] + "%"; q(`[data-far="${k}"]`).value = cur[k]; }); };
+      const q = sel => s.el.querySelector(sel), paint = () => { const im = q("#faImg"); im.style.width = im.style.height = cur.s + "%"; im.style.left = (50 + cur.x) + "%"; im.style.top = (50 + cur.y) + "%"; im.style.mixBlendMode = cur.b; im.style.opacity = cur.o / 100;
+        ["s", "x", "y", "o"].forEach(k => { q(`[data-fav="${k}"]`).textContent = cur[k] + "%"; q(`[data-far="${k}"]`).value = cur[k]; }); };
       paint();
-      s.el.addEventListener("input", e => { const k = e.target.dataset && e.target.dataset.far; if (!k) return; cur[k] = +e.target.value; paint(); });
-      q("#faReset").onclick = () => { Object.assign(cur, {s: 128, x: 0, y: 0}); paint(); };
+      s.el.addEventListener("input", e => { if (e.target.matches("[data-farb]")){ cur.b = e.target.value; paint(); return; } const k = e.target.dataset && e.target.dataset.far; if (!k) return; cur[k] = +e.target.value; paint(); });
+      q("#faReset").onclick = () => { Object.assign(cur, {s: 128, x: 0, y: 0, o: 100, b: "normal"}); q("[data-farb]").value = "normal"; paint(); };
       const next = () => { moved = true; s.close(); i++; step(); };
       q("#faDel").onclick = async () => { if (!confirm(`Удалить рамку «${f.title}»? Она пропадёт у всех, кто её носит.`)) return;
         const {error} = await SB.from("cosmetics").delete().eq("id", f.id);
@@ -287,7 +291,7 @@
         COSM = (COSM || []).filter(x => x.id !== f.id); toast("Рамка удалена"); next(); };
       q("#faSkip").onclick = () => { if (last){ s.close(); return; } next(); };
       q("#faOk").onclick = async () => { const b = q("#faOk"); b.disabled = true;
-        const aud = csAudRead(s.el), data = {...(f.data || {}), s: cur.s, x: cur.x, y: cur.y}; delete data.users; if (aud.length) data.users = aud;
+        const aud = csAudRead(s.el), data = {...(f.data || {}), s: cur.s, x: cur.x, y: cur.y, o: cur.o, b: cur.b}; delete data.users; if (aud.length) data.users = aud;
         const patch = aud.length ? {data, unlock: {t: "free"}} : {data}, {error} = await SB.from("cosmetics").update(patch).eq("id", f.id);
         if (error){ logErr("подгонка рамки", error); toast("Не сохранилось: " + error.message); b.disabled = false; return; }
         f.data = data; if (patch.unlock) f.unlock = patch.unlock; toast("Рамка подогнана"); if (last){ moved = true; s.close(); done && done(); } else next(); };
@@ -297,6 +301,7 @@
   const CS_FR_GUIDE = `<div class="cs-gd"><b>Памятка по файлам рамок</b>
     <ul><li><b>Формат:</b> PNG или WebP с прозрачностью. Анимация: WebP (лучше всего), APNG или GIF.</li>
     <li><b>Размер картинки:</b> квадрат 512×512 (можно 400–1024, но строго квадрат).</li>
+    <li><b>Эффект поверх аватарки (VHS, шум, свечение):</b> делай рамку на весь квадрат, пусть закрывает аватарку. В окне подгонки выбери «Как ложится на аватарку» (свечение, контраст, мягкий свет) и подкрути прозрачность.</li>
     <li><b>Центр прозрачный:</b> аватарка видна сквозь рамку. По умолчанию рамка в 1,28 раза больше аватарки, потом подгонишь масштабом.</li>
     <li><b>Вес:</b> до 500 КБ для статики, до 1,5 МБ для анимации. Больше 8 МБ сайт не примет.</li>
     <li><b>Несколько файлов:</b> выбирай сразу пачкой, название берётся из имени файла.</li></ul>
