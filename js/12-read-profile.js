@@ -701,7 +701,7 @@
     const card = (it, sub, cls = "") => `<button class="pf-c${cls}" ${mine ? `data-id="${esc(it.id)}"` : `data-fi="${esc(uid + "/" + it.id)}"`}>${posterHTML(it, {tgt: false})}<span class="ti">${esc(it.title)}</span>${sub ? `<small>${sub}</small>` : ""}</button>`;
     const add = (key, label = "Добавить") => mine ? `<button class="pf-add" type="button" data-pfpick="${key}"><i>${ICON.plus}</i><span>${label}</span></button>` : "";
     const empty = (txt, key) => `<div class="pf-empty"><span>${txt}</span>${mine && key ? `<button class="pf-eb" type="button" data-pfpick="${key}">${ICON.plus}Добавить</button>` : ""}</div>`;
-    const show = (title, n, body, o = {}) => `<section class="pf-box${o.cls ? " " + o.cls : ""}"><header><h3>${title}${n != null ? `<small>${n}</small>` : ""}</h3>${o.act || ""}</header>${body}</section>`;
+    const show = (title, n, body, o = {}) => `<section class="pf-box${o.cls ? " " + o.cls : ""}" data-sk="${CS_SEC_BY_T[title] || ""}"><header><h3>${title}${n != null ? `<small>${n}</small>` : ""}</h3>${o.act || ""}</header>${body}</section>`;
     const rail = (list, fn, addKey) => list.length || addKey ? railHTML("pf-rail", list.map(fn).join("") + (addKey ? add(addKey) : "")) : "";
     const stTxt = it => isFuture(it) ? "на будущее" : isSoon(it) ? (isGame(it) ? "ждёт релиз" : "ждёт премьеру") : isGame(it) ? GSTATUS[gStatus(it.status)].toLowerCase() : kLab(it).l.toLowerCase();
     // ---- игры
@@ -736,20 +736,27 @@
     const stats = [[g.filter(inLib).length, plural(g.filter(inLib).length, "игра", "игры", "игр")], [doneG.length, "пройдено"], [k.filter(inLib).length, "кино"], [seenK.length, "просмотрено"], [rds.length, rds.length === 1 ? "книга" : "книг"], [doneR.length, "прочитано"]];
     const bg = p.bg ? publicUrl(p.bg) : null, dim = p.bg_dim ?? 45; PF_BG = p.bg ? {img: p.bg, m: p.bg_m || null, dim} : null;
     const feed = mine ? pfEvents(null, false).slice(0, 14) : pfEvents(uid, true).slice(0, 14);
-    const head = `<section class="pf-head">
-        <div class="pf-ava v6s-${avaShape(p)}${csOf(p).frame ? " has-frame" : ""}">${avaBigHTML(p)}${csFrameHTML(p)}</div>
-        <div class="pf-id">
-          <h1>${esc(p.nick || NICK)}</h1>
-          <div class="pf-tags">${typeof v6Tags === "function" ? v6Tags(mine ? ME.id : uid) : ""}${p.pid ? `<button class="pf-pid" type="button" data-pid="${esc(p.pid)}" title="Скопировать ID">ID <b>${esc(p.pid)}</b></button>` : ""}${since ? `<span>в NEXUS с ${esc(since)}</span>` : ""}${bdN ? `<span>${ICON.cake}${bdLabel(p.birthday)}${bdN.days === 0 ? " — сегодня!" : bdN.days === 1 ? " — завтра" : ""}</span>` : ""}</div>
-          <div class="pf-on${!mine && lastEv && agoTxt(lastEv.d) === "сегодня" ? " live" : ""}">${mine ? "Это ты" : lastEv ? `был ${agoTxt(lastEv.d)}` : "пока ничего не добавил"}${c.pct != null ? ` · совпадение вкусов <b class="${pctCls(c.pct)}">${c.pct}%</b>` : ""}</div>
+    // 7.0: шапка «Журнал» — огромный ник, тонкая типографика, игры в процессе таблетками
+    const HD = csHdr(p), lb = (n, a, b) => `${n} ${plural(n, ...a)}${b != null ? `, ${b}` : ""}`;
+    const nk = p.nick || NICK, nl = [...nk].length;
+    const head = `<section class="pf-head d7${HD ? " has-hb hb-" + HD.h : ""}">
+        ${HD ? `<div class="d7-hb" aria-hidden="true"><i style="background-image:url('${esc(HD.url)}');background-position:${HD.x}% ${HD.y}%;${HD.blur ? `filter:blur(${HD.blur}px);inset:-${HD.blur * 2}px;` : ""}"></i></div><div class="d7-dim" style="--dim:${HD.dim / 100}"></div>` : ""}
+        <div class="pf-acts">${mine ? `<button class="pf-btn v6-cs-b" type="button" data-cosm="1">${ICON.palette || ICON.edit}<span>Оформление</span></button><button class="pf-btn ic" type="button" data-pfbg="1" title="Фон профиля" aria-label="Фон профиля">${ICON.wall}</button><button class="pf-btn ic" type="button" data-profile="1" title="Редактировать профиль" aria-label="Редактировать профиль">${ICON.edit}</button>${vacHas(ME.id) ? `<button class="pf-btn ic" type="button" data-vacof="${esc(ME.id)}" title="Отпуск" aria-label="Отпуск">${VC_I.palm}</button>` : ""}`
+          : `<a class="pf-btn" href="#fv:${esc(uid)}:games">${ICON.games}<span>Полка игр</span></a><a class="pf-btn" href="#fv:${esc(uid)}:kino">${ICON.kino}<span>Полка кино</span></a>${vacHas(uid) ? `<button class="pf-btn ic" type="button" data-vacof="${esc(uid)}" title="Отпуск" aria-label="Отпуск">${VC_I.palm}</button>` : ""}`}</div>
+        <div class="d7-top">
+          <div class="pf-ava v6s-${avaShape(p)}${csOf(p).frame ? " has-frame" : ""}">${avaBigHTML(p)}${csFrameHTML(p)}</div>
+          <div class="pf-id">
+            <div class="d7-k">${p.pid ? `<button class="pf-pid" type="button" data-pid="${esc(p.pid)}" title="Скопировать ID">ИГРОК № ${esc(p.pid)}</button>` : "<span>ИГРОК</span>"}<span class="pf-lvl" title="Уровень растёт за дела на сайте: 30 опыта — уровень. Сейчас ${L.xp} опыта, до следующего ${L.next - L.xp}">УРОВЕНЬ ${L.lv}<i class="d7-lb"><i style="width:${Math.round(L.pct)}%"></i></i></span>${typeof v6Tags === "function" ? v6Tags(mine ? ME.id : uid) : ""}</div>
+            <h1 style="--nl:${Math.max(3, nl)}">${esc(nk)}</h1>
+          </div>
         </div>
-        <div class="pf-lvl" title="Уровень растёт за дела на сайте: 30 опыта — уровень. Сейчас ${L.xp} опыта"><span>Уровень</span><b style="--p:${L.pct}">${L.lv}</b></div>
-        <div class="pf-acts">${mine ? `<button class="pf-btn v6-cs-b" type="button" data-cosm="1">${ICON.palette || ICON.edit}Оформление</button><button class="pf-btn" type="button" data-pfbg="1">${ICON.wall}Фон профиля</button><button class="pf-btn" type="button" data-profile="1">${ICON.edit}Редактировать профиль</button>${vacHas(ME.id) ? `<button class="pf-btn" type="button" data-vacof="${esc(ME.id)}">${VC_I.palm}Отпуск</button>` : ""}`
-          : `<a class="pf-btn" href="#fv:${esc(uid)}:games">${ICON.games}Полка игр</a><a class="pf-btn" href="#fv:${esc(uid)}:kino">${ICON.kino}Полка кино</a>${vacHas(uid) ? `<button class="pf-btn" type="button" data-vacof="${esc(uid)}">${VC_I.palm}Отпуск</button>` : ""}`}</div>
-        <div class="pf-stats">${stats.map(([v, l]) => `<span><b>${v}</b>${l}</span>`).join("")}</div>
+        <div class="d7-row">
+          <div class="pf-stats"><span><b>${g.filter(inLib).length}</b>${lb(g.filter(inLib).length, ["игра", "игры", "игр"], doneG.length + " пройдено")}</span><span><b>${k.filter(inLib).length}</b>кино, ${seenK.length} ${mine ? "видел" : "видел(а)"}</span><span><b>${rds.length}</b>${lb(rds.length, ["книга", "книги", "книг"], doneR.length + " прочитано")}</span></div>
+          <div class="pf-tags">${since ? `<span>с ${esc(since)}</span>` : ""}${bdN ? `<span>${ICON.cake}${bdLabel(p.birthday)}${bdN.days === 0 ? " — сегодня!" : bdN.days === 1 ? " — завтра" : ""}</span>` : ""}<span class="pf-on${!mine && lastEv && agoTxt(lastEv.d) === "сегодня" ? " live" : ""}">${mine ? "Это ты" : lastEv ? `был ${agoTxt(lastEv.d)}` : "пока ничего не добавил"}${c.pct != null ? ` · совпадение <b class="${pctCls(c.pct)}">${c.pct}%</b>` : ""}</span></div>
+        </div>
+        ${nowG.length || mine ? `<div class="d7-play"><span class="lbl">ИГРАЕТ</span><div class="d7-pl">${nowG.map(i => `<button class="d7-pill" type="button" ${mine ? `data-id="${esc(i.id)}"` : `data-fi="${esc(uid + "/" + i.id)}"`} title="${esc(stTxt(i))}${i.date ? ` · с ${fmtShort(i.date)}` : ""}"><span class="cv">${i.cover ? `<img alt="" loading="lazy" src="${esc(publicUrl(i.cover))}">` : esc((i.title || "?").slice(0, 1))}</span>${esc(i.title)}${/онлайн/i.test(stTxt(i)) ? '<i class="on"></i>' : ""}</button>`).join("")}${mine ? `<button class="d7-pill add" type="button" data-pfpick="games:now">${ICON.plus}${nowG.length ? "" : "Во что играешь?"}</button>${nowG.length > 1 ? R("gnow", nowG) : ""}` : ""}</div></div>` : ""}
       </section>`;
     const games = `<section class="pf-floor fl-g">${fh(ICON.games, "Игры", mine ? "#games" : `#fv:${esc(uid)}:games`, "games")}
-        ${show("Сейчас играю", nowG.length || null, nowG.length ? `<div class="pf-now">${nowG.map(i => `<button class="pf-nw" ${mine ? `data-id="${esc(i.id)}"` : `data-fi="${esc(uid + "/" + i.id)}"`}>${i.cover ? `<span class="bgx" style="--bg:url('${publicUrl(i.cover)}')"></span>` : ""}${posterHTML(i, {tgt: false, rate: false})}<span class="t"><small>${esc(stTxt(i))}${i.date ? ` · с ${fmtShort(i.date)}` : ""}</small><b>${esc(i.title)}</b><span>${esc(genres(i).slice(0, 3).join(", "))}</span></span></button>`).join("")}${mine ? `<button class="pf-nw-add" type="button" data-pfpick="games:now">${ICON.plus}</button>` : ""}</div>` : empty(mine ? "Выбери, во что играешь сейчас — это увидят друзья" : "Ничего не отметил", "games:now"), {cls: "now", act: (mine && nowG.length ? `<button class="pf-mini" data-pfpick="games:now">${ICON.edit}Изменить</button>` : "") + R("gnow", nowG)})}
         ${show("Любимые игры", favG.length || null, favBlock(favG, "games:fav"), {cls: "fav v6", act: (mine ? `<button class="pf-mini" type="button" data-pfpick="games:fav">${ICON.plus}Добавить</button><button class="pf-mini" type="button" data-favn="1" title="Сколько показывать">${favN} из ${favG.length}</button>` : "") + R("gfav", favG) + allBtn("gfav", favG.length, "Показать все")})}
         ${show("Пройденные", doneG.length || null, lastBlock(doneG, mine ? "Пройденные игры появятся здесь с датой" : "Пока ничего не прошёл"), {cls: "v6", act: allBtn("gdone", doneG.length, "Показать все")})}
         ${ytG.length ? show("Прошёл на YouTube", ytG.length, lastBlock(ytG, ""), {cls: "yt-b v6", act: allBtn("gyt", ytG.length, "Показать все")}) : ""}
@@ -773,7 +780,7 @@
         ${c.pct != null ? `<div class="pf-card"><h3>${HEART_O}Совпадение вкусов<small>${c.common.length} общих</small></h3><div class="pf-cmp"><b class="${pctCls(c.pct)}">${c.pct}%</b>${[...c.common].sort((a, b) => a.d - b.d).slice(0, 4).map(x => `<div class="r"><span>${esc(x.f.title)}</span><span>${num1(x.m.rating)} / ${num1(x.f.rating)}</span></div>`).join("")}</div></div>` : ""}
       </aside>`;
     const CSA = csPfAttrs(p);
-    box.innerHTML = `<div class="pf${bg ? " has-bg" : ""}${CSA.cls}" style="--ac:${esc(p.ava_color || avaBg(p))};${CSA.style}">
+    box.innerHTML = `<div class="pf${bg ? " has-bg" : ""}${CSA.cls}" style="--ac:${esc(p.ava_color || avaBg(p))};${CSA.style}">${csCss(p)}
       ${head}
       <div class="pf-cols"><div class="pf-main">${mine ? `<button type="button" class="v6-work" id="workHome" data-worksheet="1" hidden></button><div class="v6-m-only">${evNextCard()}</div>` : ""}${csOrder(p, {games, kino, books, tl: tlFloor(mine ? ME.id : uid, mine, g, k), sc: scFloor(mine ? ME.id : uid, mine)})}</div>${side}</div></div>`;
     wireHScrolls(); csFxApply(p); csCheckNew();
