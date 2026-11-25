@@ -34,7 +34,7 @@
       return;
     }
     const recoveryLink = /type=recovery/.test(location.hash);
-    SB = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY, {auth: {persistSession: true, autoRefreshToken: true, detectSessionInUrl: true}});
+    SB = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY, {auth: {persistSession: true, autoRefreshToken: true, detectSessionInUrl: true}, ...(PROXY ? {global: {fetch: pxFetch}} : {})});
     SB.auth.onAuthStateChange(ev => { if (ev === "PASSWORD_RECOVERY") setTimeout(() => passwordSheet(true), 600); });
     bootWD = setTimeout(netFail, 12000);
     if (recoveryLink) setTimeout(() => { if (/access_token|type=recovery/.test(location.hash)) history.replaceState(null, "", location.pathname + "#games"); }, 1500);

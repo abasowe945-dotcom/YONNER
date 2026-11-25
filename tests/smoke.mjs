@@ -49,6 +49,8 @@ async function run() {
     const errs = []; p.on("pageerror", e => errs.push("pageerror: " + e.message)); p.on("console", m => { if (m.type() === "error" && !/Failed to load resource|net::ERR/.test(m.text())) errs.push("console: " + m.text()); });
     await ctx.route("**/*", async r => {
       const u = new URL(r.request().url());
+      // настоящую библиотеку Supabase (своя копия в vendor/ или CDN) подменяем на тестовую базу
+      if (/supabase-js|vendor\/supabase\.min\.js/.test(u.pathname)) return r.fulfill({status: 200, contentType: "text/javascript", body: fs.readFileSync(path.join(ROOT, "tests/mock-supabase.js"))});
       if (u.origin === ORIGIN) { let f = decodeURIComponent(u.pathname.replace(/^\/YONNER\//, "")) || "index.html"; const fp = path.join(ROOT, f);
         if (fs.existsSync(fp) && fs.statSync(fp).isFile()) return r.fulfill({status: 200, body: fs.readFileSync(fp), contentType: MIME[path.extname(f)] || "application/octet-stream"});
         return r.fulfill({status: 404, body: ""}); }

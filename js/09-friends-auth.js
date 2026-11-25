@@ -354,7 +354,27 @@
 
   // ================= хранилище на Supabase =================
   const CFG = window.NEXUS_CONFIG || {};
-  const publicUrl = path => `${String(CFG.SUPABASE_URL).replace(/\/$/, "")}/storage/v1/object/public/media/${String(path).split("/").map(encodeURIComponent).join("/")}`;
+  // прокси к базе (proxy.js): в России Supabase режут, а сервер Яндекса — нет. Пусто — ходим напрямую.
+  const PROXY = String(window.NEXUS_PROXY || "").trim().replace(/\/$/, "");
+  const SB_BASE = String(CFG.SUPABASE_URL || "").replace(/\/$/, "");
+  let pxDownUntil = 0;
+  const pxOn = () => !!PROXY && Date.now() >= pxDownUntil;
+  const viaPx = url => pxOn() && SB_BASE && url.startsWith(SB_BASE + "/") ? PROXY + "?p=" + encodeURIComponent(url.slice(SB_BASE.length)) : url;
+  // для клиента Supabase: всё через прокси, а если он лежит — минуту напрямую
+  async function pxFetch(input, init){
+    const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+    if (!pxOn() || !url.startsWith(SB_BASE + "/")) return fetch(input, init);
+    try {
+      const r = await fetch(viaPx(url), init);
+      if (r.status === 502 || r.status === 503 || r.status === 504) throw new Error("прокси ответил " + r.status);
+      return r;
+    } catch(e){
+      if (init && init.signal && init.signal.aborted) throw e;
+      pxDownUntil = Date.now() + 60e3; logErr("прокси к базе", e);
+      return fetch(input, init);
+    }
+  }
+  const publicUrl = path => viaPx(`${SB_BASE}/storage/v1/object/public/media/${String(path).split("/").map(encodeURIComponent).join("/")}`);
   function makeBackend(sb, uid){
     const map = new Map(), listeners = []; let loaded = false;
     const snap = () => ({metadata: {fromCache: !loaded, hasPendingWrites: false}, docs: [...map].map(([id, d]) => ({id, exists: true, data: () => d}))});

@@ -7,6 +7,8 @@
 - `css/` — стили по разделам: `main.css` (общее), `vacation.css`, `book.css`, `slop.css`, `p51.css`, `places.css`.
 - `js/` — код по разделам. Обычные скрипты без модулей, грузятся по порядку номеров и видят переменные друг друга. Порядок важен: файл может сразу при загрузке вызывать только то, что объявлено в нём или в файлах с меньшим номером. `17-boot.js` всегда последний.
 - `sw.js` — service worker (офлайн и уведомления).
+- `vendor/` — свои копии библиотек и шрифтов (Supabase, JSZip, MapLibre, Google Fonts), чтобы не зависеть от чужих CDN. Обновляются workflow «Библиотеки и шрифты к себе».
+- `proxy.js` + `proxy/` — прокси к Supabase через Yandex Cloud Functions для России без VPN (см. `proxy/README.md`). Все обращения к адресу Supabase из кода — через `viaPx(...)` / `pxFetch`, не напрямую.
 - `tests/` — автотест на подменной базе. Запуск: `npm i playwright && npx playwright install chromium && node tests/smoke.mjs`. Гоняется в GitHub Actions на каждый коммит.
 
 ## Версия файлов — обязательно

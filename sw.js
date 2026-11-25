@@ -5,7 +5,7 @@
 // вход, запись и realtime — только сеть. При выходе из аккаунта кэш данных стирается.
 // АВАРИЙНЫЙ ВЫКЛЮЧАТЕЛЬ: поставь KILL = true и закоммить — service worker удалится у всех при следующем заходе.
 const KILL = false;
-const VERSION = "7.4";
+const VERSION = "7.5";
 const SITE = "nexus-site", LIBS = "nexus-libs", DATA = "nexus-data";
 
 self.addEventListener("install", () => self.skipWaiting());
@@ -31,6 +31,8 @@ self.addEventListener("fetch", e => {
     e.respondWith(networkFirst(req)); return;
   }
   if (u.hostname.endsWith(".supabase.co") && u.pathname.startsWith("/rest/v1/")){ e.respondWith(dataFirst(req)); return; }
+  // то же через прокси Яндекса (proxy.js): чтение из базы — сначала сеть, без сети — последний ответ
+  if (u.hostname === "functions.yandexcloud.net" && (u.searchParams.get("p") || "").startsWith("/rest/v1/")){ e.respondWith(dataFirst(req)); return; }
   // всё остальное (вход, запись, realtime, картинки, карта) — мимо service worker
   if (LIB_HOSTS.includes(u.hostname)) e.respondWith(cacheFirst(req, LIBS));
 });

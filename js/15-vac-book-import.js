@@ -383,7 +383,7 @@
   }
   async function impCoverId(url){
     if (!url || !assets) return null;
-    try { const r = await fetch(`${String(CFG.SUPABASE_URL).replace(/\/$/, "")}/functions/v1/import?img=${encodeURIComponent(url)}`); if (!r.ok) return null;
+    try { const r = await fetch(viaPx(`${SB_BASE}/functions/v1/import?img=${encodeURIComponent(url)}`)); if (!r.ok) return null;
       const b = await r.blob(); if (!b.type.startsWith("image/") || b.size < 800) return null; return (await assets.upload(b, {type: b.type})).id; } catch(_){ return null; }
   }
   const rKey = t => normT(t).replace(/\s+/g, "");

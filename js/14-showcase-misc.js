@@ -927,7 +927,7 @@
   });
 
   // ================= 3.9: импорт с TierMaker, ссылка и картинка тир-листа =================
-  const TM_FN = () => `${String(CFG.SUPABASE_URL).replace(/\/$/, "")}/functions/v1/tiermaker`;
+  const TM_FN = () => viaPx(`${SB_BASE}/functions/v1/tiermaker`);
   const TM_POOL_MAX = 150;
   const tmProx = u => TM_FN() + "?img=" + encodeURIComponent(u);
   const tmSrc = tl => tl && /^https:\/\/tiermaker\.com\//i.test(tl.source || "") ? ` · <a class="tlv-src" href="${esc(tl.source)}" target="_blank" rel="noopener">с TierMaker</a>` : "";

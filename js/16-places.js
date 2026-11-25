@@ -261,7 +261,7 @@
       <span class="pl-sc ${w ? "w" : plCls(s)}${!w && plFew(p.id) ? " few" : ""}"${!w && plFew(p.id) ? ' title="Мало оценок — итог подтянут к среднему по всем местам"' : ""}>${w ? "ХОТИМ" : s == null ? "—" : num1(s)}</span></button>`;
   }
   // ---- живая карта: MapLibre + тайлы OpenFreeMap, только Якутск и окрестности ----
-  const PL_LIB = "https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.1/dist/maplibre-gl";
+  const PL_LIB = "vendor/maplibre-gl"; // своя копия, без чужого CDN
   let plLibP = null, plMap = null, plTmp = null, plGeoT = 0;
   const plMks = new Map();
   function plLib(){
