@@ -2,6 +2,7 @@
 // Браузер ходит на адрес функции (сервер Яндекса в России), а функция уже сама — в Supabase.
 // Адрес вызова: https://functions.yandexcloud.net/<id функции>?p=<путь в Supabase, например /rest/v1/items?select=*>
 // Среда: Node.js 18 или новее. Точка входа: index.handler. Память: 128 МБ. Таймаут: 30 с.
+// Дополнительные настройки: включить «Одновременные вызовы экземпляра функции» и поставить 16 (иначе запросы идут по одному и сайт не успевает загрузиться).
 const zlib = require("zlib");
 
 const UPSTREAM = process.env.UPSTREAM || "https://dtlcqupalwrlcwyzrptq.supabase.co";
