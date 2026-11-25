@@ -1031,3 +1031,23 @@ grant select, insert, delete on public.item_reactions to authenticated;
 -- ===== 6.1: форма аватарки — отдельный кадр для профиля =====
 alter table public.profiles add column if not exists avatar_full text;
 alter table public.profiles add column if not exists ava_cfg jsonb;
+
+-- ===== 6.2: оформление профиля — каталог рамок и тем (добавляет только админ) =====
+create table if not exists public.cosmetics (
+  id         text primary key,
+  kind       text not null check (kind in ('frame','theme')),
+  title      text not null check (char_length(title) between 1 and 40),
+  img        text,
+  data       jsonb not null default '{}'::jsonb,
+  unlock     jsonb not null default '{"t":"free"}'::jsonb,
+  created_by uuid default auth.uid() references auth.users (id) on delete set null,
+  created_at timestamptz not null default now()
+);
+alter table public.cosmetics enable row level security;
+drop policy if exists cs_select on public.cosmetics;
+drop policy if exists cs_write on public.cosmetics;
+create policy cs_select on public.cosmetics for select to authenticated using (true);
+create policy cs_write on public.cosmetics for all to authenticated using (public.is_nexus_admin()) with check (public.is_nexus_admin());
+revoke all on public.cosmetics from anon;
+grant select, insert, update, delete on public.cosmetics to authenticated;
+alter table public.profiles add column if not exists cosm jsonb;

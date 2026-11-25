@@ -730,7 +730,7 @@
     const mag = (r, i, pg) => `<button class="rx-mag${pg ? " pg-on" : ""}" ${magAttr(r)} style="--i:${i};--tilt:${(((i * 7) % 5) - 2) * 1.1}deg">${rCover(r)}${pg && mine ? `<span class="sc-x" role="button" data-unnow="read:${esc(r.id)}" title="Убрать с полки">${ICON.x}</span>` : ""}${pg ? (r.chTotal ? `<span class="pg" title="${r.chRead || 0} из ${r.chTotal} глав"><i style="width:${Math.min(100, (r.chRead || 0) / r.chTotal * 100)}%"></i></span><span class="pg-t">${r.chRead || 0} / ${r.chTotal} гл.</span>` : `<span class="pg-t">${r.chRead ? `${r.chRead} гл.` : "читает"}</span>`) : ""}</button>`;
     const rack = (list, addKey, emptyTxt, pg) => `<div class="pf-shelf${pg ? " pg-sh" : ""}">${list.length || addKey ? railHTML("rx-hs", `${list.map((r, i) => mag(r, i, pg)).join("")}${addKey && mine ? `<button class="rx-mag rx-addm" type="button" data-pfpick="${addKey}" style="--i:${list.length}"><span class="rx-cv"><span class="ph"><b>+</b><small>Добавить</small></span></span></button>` : ""}`).replace('class="hs-in"', 'class="hs-in rx-rack"') : ""}${!list.length && !mine ? `<p class="pf-mute pf-ish">${emptyTxt}</p>` : ""}<div class="rx-plank"></div></div>`;
     // ---- шапка
-    const libN = g.filter(inLib).length + k.filter(inLib).length + rds.length, L = pfLevel(libN);
+    const libN = g.filter(inLib).length + k.filter(inLib).length + rds.length, L = csLevel(mine ? ME.id : uid);
     const bdN = p.birthday ? bdNext(p.birthday) : null, c = !mine && FR ? compat(uid) : {pct: null};
     const lastEv = !mine ? pfEvents(uid, true)[0] : null;
     const since = p.created_at ? new Date(p.created_at).toLocaleDateString("ru-RU", {day: "numeric", month: "long", year: "numeric"}).replace(/\s+г\.$/, "") : "";
@@ -738,14 +738,14 @@
     const bg = p.bg ? publicUrl(p.bg) : null, dim = p.bg_dim ?? 45; PF_BG = p.bg ? {img: p.bg, m: p.bg_m || null, dim} : null;
     const feed = mine ? pfEvents(null, false).slice(0, 14) : pfEvents(uid, true).slice(0, 14);
     const head = `<section class="pf-head">
-        <div class="pf-ava v6s-${avaShape(p)}">${avaBigHTML(p)}</div>
+        <div class="pf-ava v6s-${avaShape(p)}${csOf(p).frame ? " has-frame" : ""}">${avaBigHTML(p)}${csFrameHTML(p)}</div>
         <div class="pf-id">
           <h1>${esc(p.nick || NICK)}</h1>
           <div class="pf-tags">${typeof v6Tags === "function" ? v6Tags(mine ? ME.id : uid) : ""}${p.pid ? `<button class="pf-pid" type="button" data-pid="${esc(p.pid)}" title="Скопировать ID">ID <b>${esc(p.pid)}</b></button>` : ""}${since ? `<span>в NEXUS с ${esc(since)}</span>` : ""}${bdN ? `<span>${ICON.cake}${bdLabel(p.birthday)}${bdN.days === 0 ? " — сегодня!" : bdN.days === 1 ? " — завтра" : ""}</span>` : ""}</div>
           <div class="pf-on${!mine && lastEv && agoTxt(lastEv.d) === "сегодня" ? " live" : ""}">${mine ? "Это ты" : lastEv ? `был ${agoTxt(lastEv.d)}` : "пока ничего не добавил"}${c.pct != null ? ` · совпадение вкусов <b class="${pctCls(c.pct)}">${c.pct}%</b>` : ""}</div>
         </div>
-        <div class="pf-lvl" title="Уровень растёт за каждые 5 записей на полках"><span>Уровень</span><b style="--p:${L.pct}">${L.lv}</b></div>
-        <div class="pf-acts">${mine ? `<button class="pf-btn" type="button" data-pfbg="1">${ICON.wall}Фон профиля</button><button class="pf-btn" type="button" data-profile="1">${ICON.edit}Редактировать профиль</button>${vacHas(ME.id) ? `<button class="pf-btn" type="button" data-vacof="${esc(ME.id)}">${VC_I.palm}Отпуск</button>` : ""}`
+        <div class="pf-lvl" title="Уровень растёт за дела на сайте: 30 опыта — уровень. Сейчас ${L.xp} опыта"><span>Уровень</span><b style="--p:${L.pct}">${L.lv}</b></div>
+        <div class="pf-acts">${mine ? `<button class="pf-btn v6-cs-b" type="button" data-cosm="1">${ICON.palette || ICON.edit}Оформление</button><button class="pf-btn" type="button" data-pfbg="1">${ICON.wall}Фон профиля</button><button class="pf-btn" type="button" data-profile="1">${ICON.edit}Редактировать профиль</button>${vacHas(ME.id) ? `<button class="pf-btn" type="button" data-vacof="${esc(ME.id)}">${VC_I.palm}Отпуск</button>` : ""}`
           : `<a class="pf-btn" href="#fv:${esc(uid)}:games">${ICON.games}Полка игр</a><a class="pf-btn" href="#fv:${esc(uid)}:kino">${ICON.kino}Полка кино</a>${vacHas(uid) ? `<button class="pf-btn" type="button" data-vacof="${esc(uid)}">${VC_I.palm}Отпуск</button>` : ""}`}</div>
         <div class="pf-stats">${stats.map(([v, l]) => `<span><b>${v}</b>${l}</span>`).join("")}</div>
       </section>`;
@@ -773,10 +773,11 @@
         <div class="pf-card"><h3>${ICON.people}${mine ? "Лента друзей" : "Активность"}${mine ? `<small><a href="#people">вся ›</a></small>` : ""}</h3>${FR ? (feed.length ? `<div class="pf-feed">${feed.map(e => pfFeedRow(e, mine)).join("")}</div>` : `<p class="pf-mute">Пока тихо.</p>`) : `<p class="pf-mute">Загружаю…</p>`}</div>
         ${c.pct != null ? `<div class="pf-card"><h3>${HEART_O}Совпадение вкусов<small>${c.common.length} общих</small></h3><div class="pf-cmp"><b class="${pctCls(c.pct)}">${c.pct}%</b>${[...c.common].sort((a, b) => a.d - b.d).slice(0, 4).map(x => `<div class="r"><span>${esc(x.f.title)}</span><span>${num1(x.m.rating)} / ${num1(x.f.rating)}</span></div>`).join("")}</div></div>` : ""}
       </aside>`;
-    box.innerHTML = `<div class="pf${bg ? " has-bg" : ""}" style="--ac:${esc(p.ava_color || avaBg(p))}">
+    const CSA = csPfAttrs(p);
+    box.innerHTML = `<div class="pf${bg ? " has-bg" : ""}${CSA.cls}" style="--ac:${esc(p.ava_color || avaBg(p))};${CSA.style}">
       ${head}
-      <div class="pf-cols"><div class="pf-main">${mine ? `<button type="button" class="v6-work" id="workHome" data-worksheet="1" hidden></button><div class="v6-m-only">${evNextCard()}</div>` : ""}${games}${kino}${books}${tlFloor(mine ? ME.id : uid, mine, g, k)}${scFloor(mine ? ME.id : uid, mine)}</div>${side}</div></div>`;
-    wireHScrolls();
+      <div class="pf-cols"><div class="pf-main">${mine ? `<button type="button" class="v6-work" id="workHome" data-worksheet="1" hidden></button><div class="v6-m-only">${evNextCard()}</div>` : ""}${csOrder(p, {games, kino, books, tl: tlFloor(mine ? ME.id : uid, mine, g, k), sc: scFloor(mine ? ME.id : uid, mine)})}</div>${side}</div></div>`;
+    wireHScrolls(); csFxApply(p); csCheckNew();
   }
 
   // выбор любимых и «сейчас играю» из своей полки

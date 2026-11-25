@@ -106,7 +106,9 @@
   async function saveProf(patch){
     const row = {user_id: ME.id, nick: NICK, ...patch};
     let {error} = await SB.from("profiles").upsert(row);
-    if (error && /avatar_full|ava_cfg/.test(error.message || "")){ delete row.avatar_full; delete row.ava_cfg; delete patch.avatar_full; delete patch.ava_cfg; ({error} = await SB.from("profiles").upsert(row)); if (!error) toast("Аватар сохранён, а форма заработает после обновления базы"); }
+    if (error && /avatar_full|ava_cfg|cosm/.test(error.message || "")){ const onlyCosm = Object.keys(patch).every(k => k === "cosm"); ["avatar_full", "ava_cfg", "cosm"].forEach(k => { delete row[k]; delete patch[k]; });
+      if (onlyCosm){ toast("Оформление заработает после обновления базы — напиши админу"); return false; }
+      ({error} = await SB.from("profiles").upsert(row)); if (!error) toast("Сохранено, а новые настройки заработают после обновления базы"); }
     if (error){ toast("Не сохранилось: " + error.message); return false; }
     MEP = {...(MEP || {}), ...patch};
     if (FR){ const p = FR.profiles.find(x => x.user_id === ME.id); if (p) Object.assign(p, patch); else FR.profiles.push(row); }
