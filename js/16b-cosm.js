@@ -53,7 +53,8 @@
   const csStats = uid => { if (!FR) return null; const g = (ME && uid === ME.id ? MYITEMS : FR.items.filter(i => i.uid === uid)).filter(isGame);
     return {lvl: csLevel(uid).lv, streak: csMaxStreak(uid), drops: g.filter(i => gStatus(i.status) === "dropped").length, first: v6FirstN(uid), cup: v6Cups(uid).length, top3: v6Hall().filter(h => h.top.some(x => x.p.user_id === uid)).length, weeks: csWeeks(uid), done: g.filter(i => gStatus(i.status) === "done").length}; };
   const csAdm = uid => !!(IS_ADMIN && ME && uid === ME.id); // админу на своём профиле всё открыто
-  const csOk = (u, st) => { u = u || {t: "free"}; if (u.t === "free") return true; if (!st) return false; if (u.t === "cup" || u.t === "top3") return st[u.t] >= 1; return (st[u.t] || 0) >= (u.n || 1); };
+  // 7.34: всё оформление открыто всем сразу — без уровней, серий и кубков
+  const csOk = () => true;
   const csNeed = u => { u = u || {}; return u.t === "lvl" ? `откроется на ${u.n} уровне` : u.t === "streak" ? `серия ${u.n} ${plural(u.n, "день", "дня", "дней")} подряд` : u.t === "drops" ? `дропни ${u.n} ${plural(u.n, "игру", "игры", "игр")}` : u.t === "first" ? `первооткрыватель ${u.n} раз` : u.t === "cup" ? "выиграй сезон" : u.t === "top3" ? "попади в тройку сезона" : u.t === "weeks" ? `закрой все задания недели ${u.n === 1 ? "один раз" : u.n + " раза"}` : u.t === "done" ? `пройди ${u.n} ${plural(u.n, "игру", "игры", "игр")}` : ""; };
   const csFrAll = () => (COSM || []).filter(c => c.kind === "frame");
   // 7.20: личные рамки — data.users: список uid, кому рамка доступна; пусто — всем
@@ -175,7 +176,7 @@
     cur.txt = JSON.parse(JSON.stringify(cur.txt || {})); cur.hdr = cur.hdr ? {...cur.hdr} : null; cur.sty = JSON.parse(JSON.stringify(cur.sty || {}));
     let hdrFile = null, saved = false, lr = 0;
     const live = () => { CS_PREV = cur; if (lr) return; lr = requestAnimationFrame(() => { lr = 0; if (["home"].includes(route)) render(); }); };
-    const s = openSheet(`<h3>Оформление профиля</h3><p class="sub">Открывается само за дела на сайте, надеваешь сам. Видно всем, кто зайдёт к тебе в профиль. Сейчас у тебя <b>${L.lv} уровень</b> (${L.xp} опыта, до следующего ${L.next - L.xp}).</p>
+    const s = openSheet(`<h3>Оформление профиля</h3><p class="sub">Всё открыто — надевай что хочешь. Видно всем, кто зайдёт к тебе в профиль.</p>
       <div class="cs-tabs" id="csT"></div><div id="csB"></div>
       <div class="acts" style="margin-top:16px"><button class="ib blue" id="csOk">Сохранить</button><button class="ib red" type="button" data-csreset="all" title="Вернуть профиль к изначальному виду">Сбросить всё</button><button class="ib" id="csNo">Отмена</button><label class="cs-fxoff"><input type="checkbox" id="csFxOff" ${lsGet("nexus_fx_off") === "1" ? "checked" : ""}>Не показывать мне эффекты в чужих профилях</label></div>`, {wide: true, onClose: () => { document.body.classList.remove("cs-docked"); CS_PREV = null; if (lr) cancelAnimationFrame(lr); if (cur.hdr && cur.hdr.blob) URL.revokeObjectURL(cur.hdr.blob); if (route === "home") render(); }});
     // 7.18: на широком экране окно прижимается к правому краю, а профиль слева остаётся виден и меняется на глазах
@@ -407,5 +408,5 @@
     const open = all.filter(x => csOk(x[2], st)).map(x => x[0]);
     if (!seen){ lsSet("nexus_cs_seen", JSON.stringify(open)); return; }
     const fresh = all.filter(x => open.includes(x[0]) && !seen.includes(x[0]));
-    if (fresh.length){ lsSet("nexus_cs_seen", JSON.stringify(open)); setTimeout(() => toast(`Открыто: ${fresh.map(x => x[1]).join(", ")} — надень в «Оформлении» профиля`), 1200); }
+    if (fresh.length){ lsSet("nexus_cs_seen", JSON.stringify(open)); setTimeout(() => toast(fresh.length > 3 ? "Все темы, эффекты и рамки теперь открыты — загляни в «Оформление» профиля" : `Открыто: ${fresh.map(x => x[1]).join(", ")} — надень в «Оформлении» профиля`), 1200); }
   }
