@@ -1,9 +1,9 @@
   // ================= 7.30: конструктор профиля — блоки, раскладки, шапка, фон, трек дня, счётчики =================
   // Всё хранится в profiles.cosm: grid — раскладка и блоки, track — трек дня, cnt — счётчики, bgx — фон профиля.
   // Пока grid не задан, профиль выглядит как раньше («Лаунчер»).
-  const LY_NAME = {games: "Игры", kino: "Кино и сериалы", books: "Книги, манга, комиксы", tl: "Тир-листы", sc: "Витрины", ev: "Ближайшие мероприятия", tasks: "Задания недели", nag: "Напоминалки", rx: "Реакции на мои записи", top: "Рейтинг", feed: "Лента друзей", cmp: "Совпадение вкусов", track: "Трек дня", cnt: "Счётчики"};
+  const LY_NAME = {games: "Игры", kino: "Кино и сериалы", books: "Книги, манга, комиксы", tl: "Тир-листы", sc: "Витрины", ev: "Ближайшие мероприятия", tasks: "Задания недели", nag: "Напоминалки", rx: "Реакции на мои записи", top: "Рейтинг", feed: "Лента друзей", cmp: "Совпадение вкусов", track: "Трек дня", cnt: "Счётчики", lvl: "Уровень", lst: "Цифры профиля"};
   const LY_ONLY_ME = {ev: 1, tasks: 1, nag: 1, rx: 1}, LY_ONLY_THEM = {cmp: 1};
-  const LY_LAYS = [["launcher", "Лаунчер", "полки слева, колонка справа"], ["journal", "Журнал", "огромная шапка, блоки парами"], ["wall", "Стена", "полки во всю ширину, крупно"], ["lbx", "Летербокс", "колонка с инфой слева"], ["min", "Минимал", "одна колонка по центру"], ["comic", "Комикс", "панели с наклоном и обводкой"]];
+  const LY_LAYS = [["launcher", "Лаунчер", "полки слева, колонка справа"], ["journal", "Журнал", "огромная шапка, блоки парами"], ["wall", "Стена", "полки во всю ширину, крупно"], ["lbx", "Летербокс", "колонка с инфой слева"], ["min", "Минимал", "одна колонка по центру"], ["comic", "Комикс", "панели с наклоном и обводкой"], ["steam", "Steam", "тёмный минимал: узкая колонка, цифры справа"]];
   const LY_SIDE = ["ev", "tasks", "nag", "rx", "top", "feed", "cmp"];
   const lyB = (k, w, z) => ({k, w, z});
   const LY_PRESET = {
@@ -12,6 +12,7 @@
     wall: () => ({lay: "wall", hd: {s: "s"}, b: [lyB("games", 4, "m"), lyB("kino", 4, "m"), lyB("books", 4, "m"), lyB("ev", 1, "m"), lyB("tasks", 1, "m"), lyB("top", 1, "m"), lyB("feed", 1, "m"), lyB("cmp", 1, "m"), lyB("tl", 4, "m"), lyB("sc", 4, "m")]}),
     lbx: () => ({lay: "lbx", hd: {s: "s"}, b: [lyB("games", 4, "m"), lyB("kino", 4, "m"), lyB("books", 4, "m"), lyB("tl", 4, "m"), lyB("sc", 4, "m"), lyB("cmp", 1, "s"), lyB("ev", 1, "s"), lyB("tasks", 1, "s"), lyB("top", 1, "s"), lyB("feed", 1, "s")]}),
     min: () => ({lay: "min", hd: {a: "center"}, b: ["ev", "games", "kino", "books", "cmp", "top", "tl", "sc"].map(k => lyB(k, 4, "m"))}),
+    steam: () => ({lay: "steam", hd: {s: "s"}, b: [lyB("games", 4, "m"), lyB("kino", 4, "m"), lyB("books", 4, "m"), lyB("tl", 4, "m"), lyB("sc", 4, "m"), lyB("lvl", 1, "s"), lyB("lst", 1, "s"), lyB("ev", 1, "s"), lyB("cmp", 1, "s"), lyB("top", 1, "s"), lyB("feed", 1, "s")]}),
     comic: () => ({lay: "comic", hd: {a: "right"}, b: [lyB("games", 4, "m"), lyB("ev", 2, "m"), lyB("top", 2, "m"), lyB("kino", 2, "m"), lyB("books", 2, "m"), lyB("tasks", 2, "m"), lyB("feed", 2, "m"), lyB("cmp", 2, "m"), lyB("tl", 4, "m"), lyB("sc", 4, "m")]}),
   };
   let LY_ED = null; // черновик в режиме правки: {grid, track, cnt, bgx, files}
@@ -49,11 +50,27 @@
       else if (x.m === "until" && /^\d{4}-\d{2}-\d{2}$/.test(x.d || "")){ n = Math.max(0, -lyDays(x.d)); sub = n ? plural(n, "день", "дня", "дней") + " осталось" : "сегодня!"; }
       return `<div class="ly-c"><b>${esc(String(n ?? "—"))}</b><small>${esc(sub)}</small><span>${esc(x.l)}</span></div>`; }).join("")}</div></div>`;
   }
+  // 7.33: блоки «как в Steam» — уровень в кружке и список цифр профиля ссылками
+  function lyLvlHTML(p, mine){
+    const uid = mine ? ME.id : p.user_id; if (!uid || typeof csLevel !== "function") return "";
+    const L = csLevel(uid), tags = typeof v6Tags === "function" ? v6Tags(uid) : "";
+    return `<div class="pf-card ly-lvl"><div class="lv"><span>Уровень</span><b style="--p:${Math.round(L.pct)}">${L.lv}</b></div><small>${L.xp} опыта · до следующего ${L.next - L.xp}</small>${tags ? `<div class="tg">${tags}</div>` : ""}</div>`;
+  }
+  function lyLstHTML(p, mine){
+    const uid = mine ? ME.id : p.user_id; if (!uid) return "";
+    const its = mine ? MYITEMS : frItems(uid), rds = mine ? (READS || []) : frReads(uid), g = its.filter(isGame), k = its.filter(i => !isGame(i));
+    const tl = FR ? (FR.tierlists || []).filter(t => t.user_id === uid).length : 0;
+    const ev = typeof EV !== "undefined" && EV ? EV.members.filter(m => m.user_id === uid && m.status === "going").length : 0;
+    const pl = typeof PL !== "undefined" && PL ? new Set(PL.vm.filter(m => m.user_id === uid).map(m => { const v = PL.visits.find(x => x.id === m.visit_id); return v && v.place_id; }).filter(Boolean)).size : 0;
+    const fv = r => mine ? "#" + r : `#fv:${esc(uid)}:${r}`;
+    const rows = [["Игры", g.filter(inLib).length, fv("games")], ["Пройдено", g.filter(i => inLib(i) && gStatus(i.status) === "done").length, fv("games")], ["Фильмы и сериалы", k.filter(inLib).length, fv("kino")], ["Книги и манга", rds.length, mine ? "#read" : ""], ["Тир-листы", tl, ""], ["Мероприятия", ev, "#events"], ["Заведения", pl, "#places"]];
+    return `<div class="pf-card ly-lst">${rows.map(([l, n, h]) => h ? `<a href="${h}"><span>${l}</span><b>${n}</b></a>` : `<div><span>${l}</span><b>${n}</b></div>`).join("")}</div>`;
+  }
   function lyCols(p, mine, parts, legacy){
     const ed = lyEditing(mine); let c = lyCfg(p);
     if (!c && !ed) return {html: legacy, cls: ""};
     if (!c) c = lyNorm(LY_PRESET.launcher());
-    const body = k => k === "track" ? lyTrackHTML(p, mine, ed) : k === "cnt" ? lyCntHTML(p, mine) : parts[k] || "";
+    const body = k => k === "track" ? lyTrackHTML(p, mine, ed) : k === "cnt" ? lyCntHTML(p, mine) : k === "lvl" ? lyLvlHTML(p, mine) : k === "lst" ? lyLstHTML(p, mine) : parts[k] || "";
     const tools = (x, i) => ed ? `<div class="ly-tb"><span class="ly-h" data-lydrag="${x.k}" title="Тащи, чтобы переставить">${ICON.drag}</span><b>${esc(LY_NAME[x.k])}</b>
       ${x.z === "m" ? `<span class="ly-ws">${[1, 2, 3, 4].map(w => `<button type="button" data-lyw="${x.k}:${w}" aria-pressed="${x.w === w}" title="Ширина ${w}/4">${w}</button>`).join("")}</span>` : ""}
       <button type="button" class="ly-z" data-stbb="${x.k}" title="Свой фон за этим блоком">фон</button><button type="button" class="ly-z" data-lyz="${x.k}" title="${x.z === "m" ? "Убрать в колонку сбоку" : "Вернуть в основную часть"}">${x.z === "m" ? "в колонку" : "в основу"}</button><button type="button" class="ly-x" data-lyhide="${x.k}" title="Убрать блок" aria-label="Убрать блок">${ICON.x}</button></div>` : "";
@@ -147,6 +164,7 @@
     if (d.lyw){ const [k, w] = d.lyw.split(":"), x = g.b.find(b => b.k === k); if (x){ x.w = +w; lyMark(); lyDraw(); } return; }
     if (d.lyz){ const x = g.b.find(b => b.k === d.lyz); if (x){ x.z = x.z === "m" ? "s" : "m"; if (x.z === "m") x.w = 4; lyMark(); lyDraw(); } return; }
     if (d.lyhide){ g.b = g.b.filter(b => b.k !== d.lyhide); lyMark(); lyDraw(); return; }
+    if (d.lylay && (d.lylay === "steam" || (LY_ED.cs && LY_ED.cs.theme === "valve"))){ LY_ED.cs = {...(LY_ED.cs || {}), theme: d.lylay === "steam" ? "valve" : ((MEP && MEP.cosm && MEP.cosm.theme !== "valve" && MEP.cosm.theme) || "base")}; CS_PREV = {...((MEP && MEP.cosm) || {}), ...LY_ED.cs}; }
     if (d.lylay){ const keepHd = g.hd; LY_ED.grid = lyNorm(LY_PRESET[d.lylay]()); if (d.lylay === "launcher") LY_ED.grid.hd = keepHd && Object.keys(keepHd).length ? keepHd : LY_ED.grid.hd; lyDraw(); return; }
     if (d.lyadd){ lyAddSheet(); return; }
     if (d.lyhd){ lyHeadSheet(); return; }

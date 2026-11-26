@@ -5,7 +5,7 @@
 // вход, запись и realtime — только сеть. При выходе из аккаунта кэш данных стирается.
 // АВАРИЙНЫЙ ВЫКЛЮЧАТЕЛЬ: поставь KILL = true и закоммить — service worker удалится у всех при следующем заходе.
 const KILL = false;
-const VERSION = "7.32";
+const VERSION = "7.33.1";
 const SITE = "nexus-site", LIBS = "nexus-libs", DATA = "nexus-data";
 
 self.addEventListener("install", () => self.skipWaiting());

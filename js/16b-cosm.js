@@ -21,7 +21,8 @@
     {id: "steam", t: "Стимпанк", d: "Латунь, медь и шестерёнки", u: {t: "lvl", n: 6}, font: "Playfair Display"},
     {id: "cloud", t: "Облака", d: "Светлое небо и мягкие карточки", u: {t: "free"}, font: "Comfortaa", lite: 1},
     {id: "fairy", t: "Фея", d: "Радуга, пастель и блёстки", u: {t: "free"}, font: "Pacifico", lite: 1},
-    {id: "zoomer", t: "Зумер", d: "Кислотные цвета и стикеры", u: {t: "free"}, font: "Unbounded"},
+    {id: "zoomer", t: "Кислота", d: "Кислотные цвета, жирные тени и наклейки", u: {t: "free"}, font: "Unbounded"},
+    {id: "valve", t: "Steam", d: "Тёмный профиль как в Steam: чёрный фон, мелкий текст, ничего лишнего", u: {t: "free"}},
     {id: "geek", t: "Гик", d: "Терминал, зелёный моно-шрифт", u: {t: "free"}, font: "JetBrains Mono"},
   ];
   const CS_FX = [

@@ -359,11 +359,9 @@ body[data-route="event"] .gh .a-link{color:var(--c-ring);opacity:1}
 .pf.v6t-zoomer{--pane:#15151a;--pane-line:#000;--ac:#b6ff3b}
 .pf.v6t-zoomer .pf-head,.pf.v6t-zoomer .pf-box,.pf.v6t-zoomer .pf-card{background:#16161b!important;border:2px solid #000!important;box-shadow:5px 5px 0 #ff4fd8!important;border-radius:14px!important}
 .pf.v6t-zoomer .pf-head{background:radial-gradient(circle at 90% 20%,rgba(182,255,59,.35),transparent 30%),radial-gradient(circle at 10% 90%,rgba(255,79,216,.35),transparent 35%),#121216!important;box-shadow:7px 7px 0 #b6ff3b!important}
-.pf.v6t-zoomer .pf-head::after{content:"💀 no cap";position:absolute;right:22px;bottom:18px;padding:6px 12px;border:2px solid #000;border-radius:999px;background:#b6ff3b;color:#000;font:900 13px Unbounded,sans-serif;transform:rotate(-6deg);pointer-events:none}
 .pf.v6t-zoomer .pf-id h1{font-family:Unbounded,sans-serif!important;background:none!important;color:#b6ff3b!important;-webkit-text-fill-color:#b6ff3b;text-shadow:4px 4px 0 #ff4fd8}
 .pf.v6t-zoomer .pf-fh h2{font-family:Unbounded,sans-serif;color:#fff;background:#ff4fd8;padding:4px 10px;border:2px solid #000;border-radius:10px;transform:rotate(-1.5deg)}
 .pf.v6t-zoomer .pf-box>header h3,.pf.v6t-zoomer .pf-card h3{color:#b6ff3b}
-@media (max-width:760px){.pf.v6t-zoomer .pf-head::after{display:none}}
 /* Гик */
 .pf.v6t-geek{--pane:rgba(4,10,6,.94);--pane-line:rgba(57,255,120,.35);--ac:#39ff78}
 .pf.v6t-geek .pf-head,.pf.v6t-geek .pf-box,.pf.v6t-geek .pf-card{background:repeating-linear-gradient(0deg,rgba(57,255,120,.035) 0 1px,transparent 1px 3px),rgba(4,10,6,.95)!important;border:1px dashed rgba(57,255,120,.45)!important;border-radius:4px!important;box-shadow:0 0 20px rgba(57,255,120,.06)!important;font-family:"JetBrains Mono",ui-monospace,monospace}
@@ -635,3 +633,76 @@ body.ly-editing .st-snd{bottom:150px}
 .ly-lays .pf-btn{flex:none;height:34px;border-radius:10px}
 .ly-bacts{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.ly-bacts .pf-btn{flex:none}
 @media (max-width:760px){.ly-lays .pf-btn{position:sticky;right:0}.ly-bacts .pf-btn{flex:none}}
+
+/* ================= 7.33: тема и раскладка «Steam» ================= */
+.pf.v6t-valve{--ac:#67c1f5;--fc:#67c1f5;color:#dcdedf;font-family:Arial,Helvetica,var(--ios),sans-serif}
+.pf.v6t-valve .pf-head,.pf.v6t-valve .pf-box,.pf.v6t-valve .pf-card{background:transparent!important;border:0!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;border-radius:0!important}
+.pf.v6t-valve .pf-box,.pf.v6t-valve .pf-card{padding:0!important}
+.pf.v6t-valve .pf-head.d7{padding:8px 0 4px!important;min-height:0}
+.pf.v6t-valve .pf-head.d7 .d7-top{padding-top:0;gap:16px;align-items:flex-start}
+.pf.v6t-valve .pf-ava{background:none!important;padding:0!important;border:1px solid #3a3a3a!important;border-radius:0!important;box-shadow:none!important}
+.pf.v6t-valve .d7 .pf-ava .fr-ava{width:112px!important;height:112px!important;border-radius:0!important;font-size:46px}
+.pf.v6t-valve .pf-head.d7 .pf-id h1{order:-1;margin:0 0 4px!important;font:400 26px/1.2 Arial,Helvetica,sans-serif!important;letter-spacing:0!important;background:none!important;color:#fff!important;-webkit-text-fill-color:#fff!important;filter:none!important;text-shadow:none!important;padding:0!important}
+.pf.v6t-valve .pf-head.d7 .pf-id{display:flex;flex-direction:column}
+.pf.v6t-valve .d7-k{font:400 12px/1.5 Arial,sans-serif!important;letter-spacing:0!important;text-transform:none!important;color:#898989!important;gap:4px 12px}
+.pf.v6t-valve .d7-k .pf-lvl{color:#dcdedf!important}
+.pf.v6t-valve .d7-row{margin-top:12px!important;padding-top:0!important;border:0!important;gap:8px 22px}
+.pf.v6t-valve .d7 .pf-stats span{font:400 12px Arial,sans-serif!important;color:#898989!important}
+.pf.v6t-valve .d7 .pf-stats b{font:400 16px Arial,sans-serif!important;color:#dcdedf!important;letter-spacing:0}
+.pf.v6t-valve .d7 .pf-stats small{color:#898989!important}
+.pf.v6t-valve .d7 .pf-tags{font-size:12px;color:#898989!important}
+.pf.v6t-valve .d7-play .lbl{font:400 12px Arial,sans-serif!important;letter-spacing:0;text-transform:none;color:#898989}
+.pf.v6t-valve .d7-pill{height:30px;border-radius:2px;background:rgba(255,255,255,.06);border:0;font:400 12px Arial,sans-serif;color:#dcdedf}
+.pf.v6t-valve .d7-pill .cv{width:22px;height:22px;border-radius:2px}
+.pf.v6t-valve .pf-btn,.pf.v6t-valve .d7 .pf-acts .pf-btn{height:28px;border-radius:2px!important;border:0!important;background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.05))!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;color:#dcdedf!important;font:400 12px Arial,sans-serif!important;padding:0 10px}
+.pf.v6t-valve .d7 .pf-btn.ic{width:28px}
+.pf.v6t-valve .pf-btn:hover{background:linear-gradient(180deg,#67c1f5,#417a9b)!important;color:#fff!important}
+.pf.v6t-valve .pf-fh{border:0!important;padding:0 0 4px!important}
+.pf.v6t-valve .pf-fh .ic{display:none}
+.pf.v6t-valve .pf-fh h2{font:400 15px/1.3 Arial,sans-serif!important;color:#fff!important;text-transform:none!important;letter-spacing:0!important;background:none!important;-webkit-text-fill-color:#fff!important}
+.pf.v6t-valve .pf-fh-b,.pf.v6t-valve .pf-fh a{font:400 12px Arial,sans-serif!important;color:#898989!important;background:none!important;border:0!important;padding:0 4px}
+.pf.v6t-valve .pf-box>header h3,.pf.v6t-valve .pf-card>h3{font:400 13px/1.3 Arial,sans-serif!important;text-transform:none!important;letter-spacing:0!important;color:#898989!important}
+.pf.v6t-valve .pf-box>header h3 small,.pf.v6t-valve .pf-card>h3 small{color:#666!important}
+.pf.v6t-valve .pf-card>h3 svg,.pf.v6t-valve .pf-box>header h3 svg{display:none}
+.pf.v6t-valve .pf-mini{border-radius:2px!important;font:400 11px Arial,sans-serif!important}
+.pf.v6t-valve .pf-floor{gap:10px}
+.pf.v6t-valve .v6-pc .poster{border-radius:0!important;box-shadow:none!important}
+.pf.v6t-valve .v6-pc .ti{font:400 12px Arial,sans-serif;color:#dcdedf}
+.pf.v6t-valve .v6-pc small{font:400 11px Arial,sans-serif}
+.pf.v6t-valve .pf-empty{border:0!important;background:none!important;padding:4px 0!important;color:#666!important;font:400 12px Arial,sans-serif}
+.pf.v6t-valve .pf-tr{border-radius:0}
+.pf.v6t-valve .pf-side .pf-card+.pf-card,.pf.v6t-valve .ly-side>.ly-b+.ly-b{margin-top:6px}
+.pf.v6t-valve .ly-side .pf-card>h3:first-child{color:#57cbde!important;font-size:16px!important}
+.pf.v6t-valve .v6-tt{border-radius:2px}
+.pf.lay-steam{max-width:1020px;margin-left:auto;margin-right:auto}
+.pf.lay-steam .ly.has-side{grid-template-columns:minmax(0,1fr) 250px;gap:48px}
+.pf.lay-steam .ly-main{gap:26px}
+.pf.lay-steam .ly-side{gap:22px}
+/* блоки «Уровень» и «Цифры профиля» */
+.ly-lvl .lv{display:flex;align-items:center;gap:10px;font:400 22px Arial,var(--ios),sans-serif}
+.ly-lvl .lv b{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;border:2px solid var(--ac);font:400 15px Arial,sans-serif;background:conic-gradient(color-mix(in srgb,var(--ac) 25%,transparent) calc(var(--p) * 1%),transparent 0)}
+.ly-lvl small{display:block;margin-top:6px;font-size:12px;opacity:.6}
+.ly-lvl .tg{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;font-size:11px}
+.ly-lst{display:flex;flex-direction:column;gap:2px}
+.ly-lst>a,.ly-lst>div{display:flex;align-items:baseline;gap:10px;padding:5px 0;color:inherit;text-decoration:none;font:400 15px Arial,var(--ios),sans-serif}
+.ly-lst>a:hover span{color:var(--ac)}
+.ly-lst b{font:300 20px Arial,sans-serif;opacity:.55}
+.pf.v6t-valve .ly-lst span{color:#ebebeb}
+.v6t-pv-valve{background:#000}.v6t-pv-valve i{background:#1b1b1b;border-radius:0}.v6t-pv-valve i:first-child{background:#fff;height:10px;width:50%}
+@media (max-width:980px){.pf.lay-steam .ly.has-side{grid-template-columns:minmax(0,1fr);gap:24px}}
+@media (min-width:981px){
+  .pf.lay-steam{display:grid;grid-template-columns:minmax(0,1fr) 250px;column-gap:48px;align-items:start}
+  .pf.lay-steam>.pf-head{grid-column:1;grid-row:1}
+  .pf.lay-steam>.ly{display:contents}
+  .pf.lay-steam>.ly>.ly-main{grid-column:1;grid-row:2;margin-top:22px}
+  .pf.lay-steam>.ly>.ly-side{grid-column:2;grid-row:1/span 2;padding-top:14px}
+  .pf.lay-steam>.ly>.v6-work{grid-column:1}
+}
+.pf.v6t-valve .pf-eb{height:28px;border-radius:2px;background:rgba(255,255,255,.08)!important;color:#dcdedf!important;font:400 12px Arial,sans-serif!important;border:0!important}
+.pf.v6t-valve .d7-st .pf-eb,.pf.v6t-valve .pf-head .pf-eb{background:rgba(255,255,255,.08)!important;color:#dcdedf!important;border:0!important;border-radius:2px!important;font:400 12px Arial,sans-serif!important;height:28px}
+@media (max-width:760px){
+  .pf.v6t-valve .pf-head.d7 .pf-acts{position:static!important;order:-1;justify-content:flex-start;flex-wrap:wrap;margin:0 0 12px}
+  .pf.v6t-valve .pf-head.d7{display:flex;flex-direction:column}
+  .pf.v6t-valve .d7 .pf-ava .fr-ava{width:84px!important;height:84px!important}
+  .pf.v6t-valve .pf-head.d7 .pf-id h1{font-size:22px!important}
+}
