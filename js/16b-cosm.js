@@ -69,7 +69,7 @@
     // 7.35: узнаваемые — из фильмов, игр, манги и сайтов (похожие свободные шрифты; «лат.» — только латиница, русские буквы будут обычным шрифтом)
     ["Cinzel", "Ведьмак / Властелин колец (лат.)", "700"], ["UnifrakturMaguntia", "Готика, Dark Souls (лат.)"], ["Pirata One", "Пираты Карибского моря (лат.)"],
     ["Orbitron", "Mass Effect / космос (лат.)", "800"], ["Audiowide", "Трон (лат.)"], ["Monoton", "Очень странные дела, неон 80-х (лат.)"],
-    ["Bebas Neue", "Киноафиша (лат.)"], ["Black Ops One", "Call of Duty (лат.)"], ["Stalinist One", "Metro / СССР"],
+    ["Bebas Neue", "Киноафиша (лат.)"], ["Black Ops One", "Call of Duty"], ["Stalinist One", "Metro / СССР"],
     ["Creepster", "Хоррор (лат.)"], ["Nosifer", "Кровавый (лат.)"], ["Metal Mania", "Метал-группа (лат.)"],
     ["Bangers", "Комиксы Marvel (лат.)"], ["Dela Gothic One", "Обложка манги"], ["Shojumaru", "Самураи, Ghost of Tsushima (лат.)"],
     ["Special Elite", "Пишущая машинка, Fallout (лат.)"], ["VT323", "Терминал Pip-Boy"], ["Share Tech Mono", "Матрица, хакер (лат.)"],
