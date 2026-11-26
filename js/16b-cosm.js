@@ -65,7 +65,17 @@
   const csAudRead = root => [...root.querySelectorAll("[data-aud]:checked")].map(i => i.dataset.aud);
   const csThemesAll = () => [...CS_THEMES, ...(COSM || []).filter(c => c.kind === "theme").map(c => ({id: "db:" + c.id, t: c.title, d: (c.data && c.data.d) || "", u: c.unlock, db: c}))];
   // ================= 7.0: шапка-картинка/гифка и шрифты разделов =================
-  const CS_FONTS = [["", "Как на сайте"], ["Unbounded", "Unbounded", "800"], ["Russo One", "Russo One"], ["Rubik Mono One", "Rubik Mono"], ["Press Start 2P", "Пиксельный"], ["Oswald", "Oswald", "700"], ["Montserrat Alternates", "Montserrat Alt", "800"], ["Comfortaa", "Comfortaa", "700"], ["Playfair Display", "Playfair", "800"], ["Ruslan Display", "Ruslan"], ["Lobster", "Lobster"], ["Pacifico", "Pacifico"], ["Caveat", "Caveat", "700"], ["Bad Script", "Bad Script"], ["Neucha", "Neucha"], ["JetBrains Mono", "JetBrains Mono", "700"]];
+  const CS_FONTS = [["", "Как на сайте"], ["Unbounded", "Unbounded", "800"], ["Russo One", "Russo One"], ["Rubik Mono One", "Rubik Mono"], ["Press Start 2P", "Пиксельный"], ["Oswald", "Oswald", "700"], ["Montserrat Alternates", "Montserrat Alt", "800"], ["Comfortaa", "Comfortaa", "700"], ["Playfair Display", "Playfair", "800"], ["Ruslan Display", "Ruslan"], ["Lobster", "Lobster"], ["Pacifico", "Pacifico"], ["Caveat", "Caveat", "700"], ["Bad Script", "Bad Script"], ["Neucha", "Neucha"], ["JetBrains Mono", "JetBrains Mono", "700"],
+    // 7.35: узнаваемые — из фильмов, игр, манги и сайтов (похожие свободные шрифты; «лат.» — только латиница, русские буквы будут обычным шрифтом)
+    ["Cinzel", "Ведьмак / Властелин колец (лат.)", "700"], ["UnifrakturMaguntia", "Готика, Dark Souls (лат.)"], ["Pirata One", "Пираты Карибского моря (лат.)"],
+    ["Orbitron", "Mass Effect / космос (лат.)", "800"], ["Audiowide", "Трон (лат.)"], ["Monoton", "Очень странные дела, неон 80-х (лат.)"],
+    ["Bebas Neue", "Киноафиша (лат.)"], ["Black Ops One", "Call of Duty (лат.)"], ["Stalinist One", "Metro / СССР"],
+    ["Creepster", "Хоррор (лат.)"], ["Nosifer", "Кровавый (лат.)"], ["Metal Mania", "Метал-группа (лат.)"],
+    ["Bangers", "Комиксы Marvel (лат.)"], ["Dela Gothic One", "Обложка манги"], ["Shojumaru", "Самураи, Ghost of Tsushima (лат.)"],
+    ["Special Elite", "Пишущая машинка, Fallout (лат.)"], ["VT323", "Терминал Pip-Boy"], ["Share Tech Mono", "Матрица, хакер (лат.)"],
+    ["Silkscreen", "Minecraft, пиксели (лат.)"], ["Pixelify Sans", "Пиксели 8-бит", "700"], ["Rubik Glitch", "Глитч"],
+    ["Tektur", "Cyberpunk 2077", "700"], ["Wallpoet", "Трафарет (лат.)"], ["Kelly Slab", "Дикий Запад, Red Dead"],
+    ["Righteous", "Ретро 70-х (лат.)"], ["Permanent Marker", "Маркер на стене (лат.)"], ["Jura", "Научная фантастика", "700"], ["Yeseva One", "Глянцевый журнал"]];
   const CS_SECS = [["nick", "Ник в шапке"], ["head", "Текст шапки"], ["fh", "Названия этажей: Игры, Кино…"], ["box", "Все заголовки разделов"], ["gfav", "Любимые игры"], ["gdone", "Пройденные"], ["gyt", "Прошёл на YouTube"], ["gdrop", "Дроп"], ["kfav", "Любимые фильмы и сериалы"], ["know", "Смотрю"], ["kseen", "Просмотренные"], ["kplan", "Буду смотреть"], ["rfav", "Любимые тайтлы"], ["rnow", "Сейчас читаю"], ["rdone", "Прочитанные"]];
   const CS_SEC_BY_T = {"Любимые игры": "gfav", "Пройденные": "gdone", "Прошёл на YouTube": "gyt", "Дроп": "gdrop", "Любимые фильмы и сериалы": "kfav", "Смотрю": "know", "Просмотренные": "kseen", "Буду смотреть": "kplan", "Любимые тайтлы": "rfav", "Сейчас читаю": "rnow", "Прочитанные": "rdone"};
   const CS_HH = [["s", "Компактная"], ["m", "Обычная"], ["l", "Высокая"], ["xl", "Огромная"]];
@@ -73,11 +83,13 @@
   const csCosm = p => CS_PREV && ME && p && (!p.user_id || p.user_id === ME.id) ? CS_PREV : ((p && p.cosm) || {});
   const csNum = (v, a, b, d) => v !== "" && v != null && Number.isFinite(+v) ? Math.max(a, Math.min(b, +v)) : d;
   const csCol = c => /^#[0-9a-f]{6}$/i.test(c || "") ? c : "";
-  const csFam = f => { const x = CS_FONTS.find(a => a[0] && a[0] === f); return x ? `"${x[0]}",${/Mono|Press/.test(x[0]) ? "monospace" : /Caveat|Script|Pacifico|Lobster|Neucha/.test(x[0]) ? "cursive" : "sans-serif"}` : ""; };
+  const csFam = f => { const x = CS_FONTS.find(a => a[0] && a[0] === f); return x ? `"${x[0]}",${/Mono|Press|VT323|Silkscreen/.test(x[0]) ? "monospace" : /Caveat|Script|Pacifico|Lobster|Neucha|Marker/.test(x[0]) ? "cursive" : /Cinzel|Unifraktur|Pirata|Playfair|Yeseva|Kelly/.test(x[0]) ? "serif" : "sans-serif"}` : ""; };
   function csFontLoad(fams){
     [...new Set(fams.filter(Boolean))].forEach(f => { const x = CS_FONTS.find(a => a[0] === f), id = "csf-" + f.replace(/\W/g, ""); if (!x || document.getElementById(id)) return;
       const l = document.createElement("link"); l.rel = "stylesheet"; l.id = id; l.href = `https://fonts.googleapis.com/css2?family=${f.replace(/ /g, "+")}${x[2] ? ":wght@" + x[2] : ""}&display=swap`; document.head.appendChild(l); });
   }
+
+
   // картинка шапки: что надето (или черновик), с проверкой чисел
   function csHdr(p){ const h = csCosm(p).hdr; if (!h || !(h.img || h.blob)) return null;
     return {url: h.blob || publicUrl(h.img), h: ["s", "m", "l", "xl"].includes(h.h) ? h.h : "m", dim: csNum(h.dim, 0, 90, 35), x: csNum(h.x, 0, 100, 50), y: csNum(h.y, 0, 100, 50), blur: csNum(h.blur, 0, 16, 0)}; }
