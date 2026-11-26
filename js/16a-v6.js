@@ -113,7 +113,8 @@
   ];
   function v6Tasks(uid, ws = v6WeekStart()){
     const we = addDays(ws, 6); let h = 0; for (const c of ws) h = (h * 31 + c.charCodeAt(0)) >>> 0;
-    const pool = V6T.filter(t => (t.id !== "rx" || !V6RX_OFF) && (t.id !== "vote" || (typeof SL !== "undefined" && SL && SL.polls.length))), pick = [];
+    // 7.29: набор заданий не зависит от того, что уже успело загрузиться у смотрящего, — иначе у тебя и у друга выпадали разные задания и разные очки
+    const pool = V6T.filter(t => t.id !== "rx" || !V6RX_OFF), pick = [];
     for (let i = 0; pick.length < 3 && i < 40; i++){ const t = pool[(h + i) % pool.length]; if (!pick.includes(t)) pick.push(t); }
     const acts = v6Acts(uid).filter(a => a.d >= ws && a.d <= we);
     return pick.map(t => { const v = Math.min(t.n, t.f(acts)); return {...t, v, done: v >= t.n}; });
@@ -159,7 +160,7 @@
   // ---- рейтинг: сезон, коллекционер, зал славы
   function v6Top(n){
     if (!FR) return `<p class="pf-mute">Загружаю…</p>`;
-    if (!WALL && typeof loadWall === "function") loadWall(); if (!V6RX && !V6RX_OFF) v6LoadRx();
+    if (!WALL && typeof loadWall === "function") loadWall(); if (!V6RX && !V6RX_OFF) v6LoadRx(); v6NeedAll();
     const mon = v6Mon(today()), left = Math.round((parseD(addDays(mon + "-28", 7).slice(0, 7) + "-01") - parseD(today())) / 864e5);
     const tabs = `<div class="v6-tt" role="tablist">${[["season", "Сезон"], ["coll", "Коллекция"], ["hall", "Зал славы"]].map(([k, l]) => `<button type="button" role="tab" data-v6top="${k}" aria-selected="${v6TopTab === k}">${l}</button>`).join("")}</div>`;
     const last = uid => { let m = ""; FR.items.forEach(i => { if (i.uid === uid && (i._upd || "") > m) m = i._upd || ""; }); return m; };
@@ -179,6 +180,22 @@
     return tabs + body;
   }
   document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-v6top]"); if (!b) return; v6TopTab = b.dataset.v6top; render(); });
+  // 7.29: свежие данные для рейтинга. Записи друзей сами не прилетают (видно только свои), поэтому подтягиваем всё
+  // при возвращении на вкладку и раз в пару минут, пока открыта главная или «Активность». И догружаем то, из чего
+  // тоже складываются очки (СЛОП, комментарии к тир-листам), — иначе у разных людей выходили разные цифры.
+  let v6FreshAt = Date.now();
+  function v6Refresh(force){
+    if (!SB || !ME || document.visibilityState !== "visible") return;
+    if (!force && Date.now() - v6FreshAt < 150000) return; v6FreshAt = Date.now();
+    loadFriends(true); if (typeof loadWall === "function") loadWall(true); v6LoadRx(true);
+    if (typeof loadEvents === "function") loadEvents(true);
+  }
+  function v6NeedAll(){
+    if (typeof SL !== "undefined" && !SL && typeof loadSlop === "function" && !v6NeedAll.sl){ v6NeedAll.sl = 1; loadSlop(); }
+    if (typeof TLC !== "undefined" && !TLC && typeof tlcOff !== "undefined" && !tlcOff && typeof loadTlComments === "function" && !v6NeedAll.tl){ v6NeedAll.tl = 1; loadTlComments(); }
+  }
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && FR && Date.now() - FR.at > 60000) v6Refresh(true); });
+  setInterval(() => { if (/^(home|people|user)/.test(String(route || ""))) v6Refresh(); }, 30000);
 
   // ---- карточки на главной: задания, напоминалки, реакции на мои записи
   function v6TasksCard(){

@@ -34,9 +34,9 @@
   const go = r => { location.hash = r; };
   const rh = r => FV ? `#fv:${FV}:${r}` : "#" + r;
   function setFV(uid){
-    if (uid === FV){ if (uid) items = frItems(uid); return; }
+    if (uid === FV){ if (uid){ items = frItems(uid); frFull(uid).then(ok => { if (ok) render(); }); } return; }
     FV = uid; document.body.classList.toggle("fv", !!uid);
-    if (uid){ items = frItems(uid); canWrite = false; if (!FR) loadFriends(); }
+    if (uid){ items = frItems(uid); canWrite = false; if (!FR) loadFriends(); else frFull(uid).then(ok => { if (ok) render(); }); }
     else { items = MYITEMS; canWrite = !!(ME && db); }
   }
 

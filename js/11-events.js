@@ -37,7 +37,7 @@
         if (e.error) throw e.error; if (m.error) throw m.error; if (p.error) throw p.error;
         EV = {at: Date.now(), events: e.data || [], members: m.data || [], posts: p.data || [], likes: l.error ? [] : (l.data || [])};
       } catch(err){ logErr("загрузка мероприятий", err); if (!EV) EV = {at: Date.now(), events: [], members: [], posts: [], failed: true}; }
-      evLoading = null; checkInvites(); render();
+      evLoading = null; checkInvites(); render(); if (typeof plRedraw === "function" && typeof PL !== "undefined" && PL) plRedraw();
       if (evAgain){ evAgain = false; loadEvents(true); }
       return EV;
     })();
@@ -117,6 +117,43 @@
       ${up.length ? up.slice(0, 3).map(e => evTile(e)).join("") : `<p class="pf-mute">Ничего не запланировано.</p>`}
       <button type="button" class="v6-ev-add" data-evnew="1">${ICON.plus || "+"}Создать мероприятие</button></div>`;
   }
+  // ================= 7.29: «Мероприятия» в стиле сайта — афиша, большие карточки, заведения =================
+  const E7_MON = ["янв", "фев", "мар", "апр", "мая", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"];
+  const E7_WD = ["вс", "пн", "вт", "ср", "чт", "пт", "сб"];
+  let e7Tab = "up";
+  // заведение, к которому привязано мероприятие (если заведения ещё не загружены — догружаем)
+  function evPlace(e){
+    if (!e || !e.place_id) return null;
+    if (typeof PL === "undefined") return null;
+    if (!PL){ if (typeof loadPlaces === "function" && !evPlace.asked){ evPlace.asked = 1; loadPlaces().then(() => { if (/^event/.test(route)) render(); }); } return null; }
+    return PL.places.find(x => x.id === e.place_id) || null;
+  }
+  const evPlaceName = e => { const pl = evPlace(e); return pl ? pl.name : e.place || ""; };
+  const e7Pl = (e, cls = "") => { const pl = evPlace(e), nm = evPlaceName(e); if (!nm) return "";
+    return pl ? `<span class="e7-pl${cls}" role="link" tabindex="0" data-e7pl="${esc(pl.id)}" title="Открыть заведение">${ICON.pin}${esc(nm)}</span>` : `<span class="e7-pl plain${cls}">${ICON.pin}${esc(nm)}</span>`; };
+  function e7Card(e, o = {}){
+    const s = evStart(e), go_ = evMem(e.id).filter(m => m.status === "going"), my = evMy(e.id), past = evPast(e), d = evDaysTo(e);
+    const cd = past ? "прошло" : d === null ? "без даты" : d === 0 ? (s < new Date() ? "идёт сейчас" : "сегодня") : d === 1 ? "завтра" : `через ${d} ${plural(d, "день", "дня", "дней")}`;
+    const myL = my ? (my.status === "going" ? `<span class="e7-me go">${past ? "Был" : "Ты идёшь"}</span>` : my.status === "not" ? `<span class="e7-me no">Не иду</span>` : `<span class="e7-me inv">Зовут тебя</span>`) : "";
+    return `<button type="button" class="e7-card${past ? " past" : ""}${o.cls ? " " + o.cls : ""}" data-ev="${esc(e.id)}">
+      <span class="e7-media" style="--g:${e.photo ? "#15151a" : evBg(e)}">${e.photo ? evImg(e) : `<i class="e7-pat"></i>`}
+        <span class="e7-date">${s ? `<b>${s.getDate()}</b><small>${E7_MON[s.getMonth()]}</small>` : "<b>?</b>"}</span>
+        <span class="e7-cd${!past && d !== null && d <= 1 ? " hot" : ""}">${esc(cd)}</span></span>
+      <span class="e7-body"><b class="e7-t">${esc(e.title)}</b>
+        <small class="e7-when">${s ? `${E7_WD[s.getDay()]} · ${pad(s.getHours())}:${pad(s.getMinutes())}` : "дата не назначена"}${evPlaceName(e) ? ` · ${esc(evPlaceName(e))}` : ""}</small>
+        <span class="e7-foot">${go_.length ? avaStack(go_.map(m => m.user_id), 5) : ""}<span class="e7-n">${go_.length ? `${go_.length} ${plural(go_.length, past ? "был" : "идёт", past ? "были" : "идут", past ? "были" : "идут")}` : past ? "никто не отметился" : "пока никто"}</span>${myL}</span></span></button>`;
+  }
+  function e7Hero(e){
+    const s = evStart(e), d = evDaysTo(e), go_ = evMem(e.id).filter(m => m.status === "going"), my = evMy(e.id);
+    const big = d === null ? "?" : d <= 0 ? (s < new Date() ? "LIVE" : "0") : String(d), lab = d === null ? "дата не назначена" : d <= 0 ? (s < new Date() ? "идёт сейчас" : "сегодня") : plural(d, "день", "дня", "дней");
+    return `<section class="e7-hero" data-ev="${esc(e.id)}" role="link" tabindex="0">
+      <div class="e7-hero-bg" style="--g:${e.photo ? "#101014" : evBg(e)}">${e.photo ? `<div class="e7-hero-blur" style="background-image:url('${publicUrl(e.photo)}')"></div>${evImg(e)}` : `<i class="e7-pat"></i>`}</div>
+      <div class="e7-hero-in"><span class="e7-kick">Ближайшее</span><h2>${esc(e.title)}</h2>
+        <div class="e7-chips"><span class="e7-chip">${ICON.calendar}${esc(evWhen(e))}</span>${e7Pl(e, " e7-chip")}</div>
+        <div class="e7-hero-m">${go_.length ? avaStack(go_.map(m => m.user_id), 7) : ""}<span>${go_.length ? `${go_.length} ${plural(go_.length, "идёт", "идут", "идут")}` : "Пока никто не отметился"}</span></div>
+        <div class="e7-rsvp"><button type="button" class="e7-btn go" data-rsvp="${esc(e.id)}:going" aria-pressed="${!!my && my.status === "going"}">✓ Иду</button><button type="button" class="e7-btn" data-rsvp="${esc(e.id)}:not" aria-pressed="${!!my && my.status === "not"}">Езжайте без меня</button></div></div>
+      <div class="e7-count"><b>${big}</b><small>${esc(lab)}</small></div></section>`;
+  }
   function renderEvents(){
     appleHead("Мероприятия", `<button class="a-link" data-go="people">‹ Активность</button>`);
     if (!ME){ $("aMain").innerHTML = `<div class="a-empty" style="margin-top:20px"><b>Нужно войти</b></div>`; return; }
@@ -125,14 +162,30 @@
     const inv = myInvites().filter(m => evById(m.event_id).kind !== "watch").map(m => m.event_id);
     const up = all.filter(e => !evPast(e)).sort((a, b) => (a.starts_at || "9").localeCompare(b.starts_at || "9"));
     const past = all.filter(e => evPast(e)).sort((a, b) => b.starts_at.localeCompare(a.starts_at));
+    const mineGo = all.filter(e => { const m = evMy(e.id); return m && m.status === "going"; });
+    const hero = up.find(e => evStart(e)) || up[0] || null, rest = up.filter(e => e !== hero && !inv.includes(e.id));
     const byM = {}; past.forEach(e => { const k = e.starts_at.slice(0, 7); (byM[k] = byM[k] || []).push(e); });
-    const MN = ["январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"];
-    $("aMain").innerHTML = `<div class="v6-evp"><div class="v6-evp-h"><h1 class="a-h1">Мероприятия</h1><span class="sp"></span><a class="ib" href="#calendar">${ICON.calendar}В календаре</a><button type="button" class="ib blue" data-evnew="1">${ICON.plus || "+"}Создать</button></div>
-      ${inv.length ? `<h2 class="v6-evp-s">Тебя зовут<span>${inv.length}</span></h2>${inv.map(id => { const e = evById(id); return `<div class="v6-ev-inv">${evTile(e, {big: true})}<div class="acts"><button class="ib green" data-rsvp="${esc(e.id)}:going">Иду</button><button class="ib" data-rsvp="${esc(e.id)}:not">Езжайте без меня</button></div></div>`; }).join("")}` : ""}
-      <h2 class="v6-evp-s">Скоро<span>${up.filter(e => !inv.includes(e.id)).length}</span></h2>
-      ${up.filter(e => !inv.includes(e.id)).length ? `<div class="v6-ev-list">${up.filter(e => !inv.includes(e.id)).map(e => evTile(e, {big: true})).join("")}</div>` : `<div class="a-empty"><b>Ничего не запланировано</b>Кино, катка, шашлыки, ДР — позови всех.</div>`}
-      ${past.length ? `<h2 class="v6-evp-s">Прошедшие<span>${past.length}</span></h2>${Object.keys(byM).map(k => `<div class="v6-evp-m">${MN[+k.slice(5) - 1]} ${k.slice(0, 4)}</div><div class="v6-ev-list">${byM[k].map(e => evTile(e)).join("")}</div>`).join("")}` : ""}</div>`;
+    const MN = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
+    const tab = (k, l, n) => `<button type="button" role="tab" data-e7tab="${k}" aria-selected="${e7Tab === k}">${l}<i>${n}</i></button>`;
+    const list = e7Tab === "past" ? (past.length ? Object.keys(byM).map(k => `<div class="e7-mon"><b>${MN[+k.slice(5) - 1]}</b><span>${k.slice(0, 4)}</span><i>${byM[k].length}</i></div><div class="e7-grid">${byM[k].map(e => e7Card(e)).join("")}</div>`).join("") : `<div class="e7-empty"><b>Архив пуст</b>Прошедшие встречи соберутся здесь.</div>`)
+      : e7Tab === "mine" ? (mineGo.length ? `<div class="e7-grid">${mineGo.sort((a, b) => (b.starts_at || "").localeCompare(a.starts_at || "")).map(e => e7Card(e)).join("")}</div>` : `<div class="e7-empty"><b>Ты пока никуда не идёшь</b>Открой встречу и жми «Иду».</div>`)
+      : (rest.length ? `<div class="e7-grid">${rest.map(e => e7Card(e)).join("")}</div>` : hero ? "" : `<div class="e7-empty"><b>Ничего не запланировано</b>Кино, катка, шашлыки, ДР — позови всех.<button type="button" class="e7-btn go" data-evnew="1">${ICON.plus}Создать мероприятие</button></div>`);
+    $("aMain").innerHTML = `<div class="e7">
+      <header class="e7-top"><div class="e7-ttl"><span class="e7-kick">NEXUS // встречи</span><h1>Мероприятия</h1></div>
+        <div class="e7-stats"><span><b>${up.length}</b>скоро</span><span><b>${past.length}</b>прошло</span><span><b>${mineGo.length}</b>ты идёшь</span></div>
+        <div class="e7-acts"><a class="e7-btn" href="#calendar">${ICON.calendar}<span>Календарь</span></a><button type="button" class="e7-btn go" data-evnew="1">${ICON.plus}<span>Создать</span></button></div></header>
+      ${inv.length ? `<div class="e7-sec"><h2>Тебя зовут<i>${inv.length}</i></h2></div><div class="e7-invs">${inv.map(id => { const e = evById(id), m = evMy(id); return `<div class="e7-inv"><div class="k">${avaHTML(profOf(m.invited_by || e.owner), "sm")}<b>${esc(frNick(m.invited_by || e.owner))}</b> зовёт</div>${e7Card(e, {cls: "row"})}<div class="e7-rsvp"><button type="button" class="e7-btn go" data-rsvp="${esc(e.id)}:going">✓ Иду</button><button type="button" class="e7-btn" data-rsvp="${esc(e.id)}:not">Езжайте без меня</button></div></div>`; }).join("")}</div>` : ""}
+      ${hero && e7Tab === "up" && !inv.includes(hero.id) ? e7Hero(hero) : ""}
+      <div class="e7-tabs" role="tablist">${tab("up", "Скоро", up.length)}${tab("past", "Прошедшие", past.length)}${tab("mine", "Я иду", mineGo.length)}</div>
+      ${list}</div>`;
   }
+  document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-e7tab]"); if (!b) return; e7Tab = b.dataset.e7tab; render(); });
+  // клик по заведению в мероприятии — открываем его карточку (поверх, без ухода со страницы)
+  document.addEventListener("click", e => {
+    const b = e.target.closest && e.target.closest("[data-e7pl]"); if (!b) return;
+    e.preventDefault(); e.stopPropagation();
+    if (typeof plOpenSheet === "function" && PL) plOpenSheet(b.dataset.e7pl); else go("place:" + b.dataset.e7pl);
+  }, true);
   const vkDate = ts => { const d = new Date(ts), t = d.toLocaleTimeString("ru-RU", {hour: "2-digit", minute: "2-digit"}), k = localDate(d);
     return (k === today() ? "сегодня" : k === addDays(today(), -1) ? "вчера" : d.toLocaleDateString("ru-RU", {day: "numeric", month: "long"})) + " в " + t; };
   let wallDraft = {id: null, text: "", file: null};
@@ -148,31 +201,40 @@
     const goL = mem.filter(m => m.status === "going"), noL = mem.filter(m => m.status === "not"), invL = mem.filter(m => m.status === "invited");
     const posts = EV.posts.filter(p => p.event_id === e.id).sort((a, b) => b.created_at.localeCompare(a.created_at));
     const nick = uid => uid === ME.id ? "Ты" : profOf(uid).nick;
-    const pl = (arr, cls, t) => `<h4 class="${cls}">${t}<span>${arr.length}</span></h4>${arr.length ? arr.map(m => `<button class="p" ${m.user_id !== ME.id ? `data-user="${esc(m.user_id)}"` : ""}>${avaHTML(profOf(m.user_id))}${esc(nick(m.user_id))}${m.user_id === e.owner ? "<small>организатор</small>" : ""}</button>`).join("") : `<div class="none">никого</div>`}`;
-    const wall = `<div class="vk"><div class="vk-top"></div><div class="vk-h">Стена<span>${posts.length} ${plural(posts.length, "запись", "записи", "записей")}</span></div>
-      <div class="vk-form"><textarea id="vkT" maxlength="2000" placeholder="Написать сообщение..."></textarea>
+    const pl = evPlace(e), d = evDaysTo(e), s0 = evStart(e), past = evPast(e);
+    const big = d === null ? "?" : past ? "✓" : d <= 0 ? (s0 < new Date() ? "LIVE" : "0") : String(d), lab = d === null ? "дата не назначена" : past ? "прошло" : d <= 0 ? (s0 < new Date() ? "идёт сейчас" : "сегодня") : plural(d, "день", "дня", "дней");
+    const plSc = pl && typeof plScore === "function" ? plScore(pl.id) : null;
+    const venue = pl ? `<section class="e7-box e7-venue"><h3>${ICON.pin}Заведение</h3>
+        <button type="button" class="e7-vn" data-e7pl="${esc(pl.id)}"><span class="ph">${pl.photo && typeof plImg === "function" ? `<img alt="" src="${esc(plImg(pl))}" onerror="this.remove()">` : ICON.pin}</span>
+          <span class="t"><b>${esc(pl.name)}</b><small>${esc([typeof plKindL === "function" ? plKindL(pl.kind) : "", pl.address].filter(Boolean).join(" · "))}</small></span>
+          ${plSc != null ? `<span class="sc ${typeof plCls === "function" ? plCls(plSc) : ""}">${num1(plSc)}</span>` : `<span class="sc none">—</span>`}</button>
+        <div class="e7-vn-a"><button type="button" class="e7-btn sm" data-e7pl="${esc(pl.id)}">Карточка места</button>${pl.gis_url ? `<a class="e7-btn sm" href="${esc(pl.gis_url)}" target="_blank" rel="noopener">2ГИС</a>` : ""}</div></section>`
+      : e.place ? `<section class="e7-box e7-venue"><h3>${ICON.pin}Где</h3><p class="e7-txt">${esc(e.place)}</p><div class="e7-vn-a"><a class="e7-btn sm" href="https://yandex.ru/maps/?text=${encodeURIComponent("Якутск " + e.place)}" target="_blank" rel="noopener">На карте</a>${own ? `<button type="button" class="e7-btn sm" data-evedit="${esc(e.id)}">Привязать заведение</button>` : ""}</div></section>` : "";
+    const mrow = (arr, cls, t) => `<div class="e7-mg ${cls}"><h4>${t}<i>${arr.length}</i></h4>${arr.length ? arr.map(m => `<button type="button" class="e7-mp" ${m.user_id !== ME.id ? `data-user="${esc(m.user_id)}"` : ""}>${avaHTML(profOf(m.user_id), "sm")}<span>${esc(nick(m.user_id))}</span>${m.user_id === e.owner ? "<small>организатор</small>" : ""}</button>`).join("") : `<p class="e7-none">никого</p>`}</div>`;
+    const wall = `<section class="e7-box e7-wall vk"><h3>${ICON.chat || ""}Стена<small>${posts.length} ${plural(posts.length, "запись", "записи", "записей")}</small></h3>
+      <div class="vk-form e7-form">${avaHTML(profOf(ME.id), "sm")}<div class="e7-fw"><textarea id="vkT" maxlength="2000" placeholder="Написать на стене… @ник — позвать"></textarea>
         <div class="vk-tools"><span class="vk-emo">${EMO.map(([k, ch, l]) => `<button type="button" data-emo="${ch}" title="${l}" aria-label="${l}">${emoSpan(k)}</button>`).join("")}</span>
-          <label class="vk-att" for="vkF">прикрепить картинку</label><input type="file" id="vkF" accept="image/*" hidden><span class="vk-prev" id="vkP"></span>
-          <button type="button" class="vk-btn" id="vkGo">Отправить</button></div></div>
-      ${posts.length ? posts.map(p => `<div class="vk-post">${avaHTML(profOf(p.user_id))}<div><button class="vk-n" ${p.user_id !== ME.id ? `data-user="${esc(p.user_id)}"` : ""}>${esc(profOf(p.user_id).nick || "кто-то")}</button>
+          <label class="vk-att e7-btn sm" for="vkF">${ICON.img || ""}Картинка</label><input type="file" id="vkF" accept="image/*" hidden><span class="vk-prev" id="vkP"></span>
+          <button type="button" class="vk-btn e7-btn go sm" id="vkGo">Отправить</button></div></div></div>
+      ${posts.length ? posts.map(p => { const lk = likesOf(p.id), on = lk.some(l => l.user_id === ME.id);
+        return `<article class="vk-post e7-post">${avaHTML(profOf(p.user_id), "sm")}<div class="b"><div class="h"><button type="button" class="vk-n" ${p.user_id !== ME.id ? `data-user="${esc(p.user_id)}"` : ""}>${esc(profOf(p.user_id).nick || "кто-то")}</button><small>${vkDate(p.created_at)}</small></div>
         ${p.body ? `<div class="vk-t${onlyEmo(p.body) ? " big" : ""}">${richText(p.body)}</div>` : ""}${p.image ? `<img class="vk-img" src="${publicUrl(p.image)}" alt="" data-vkimg="${esc(p.image)}" loading="lazy">` : ""}
-        <div class="vk-d">${vkDate(p.created_at)} | ${(() => { const lk = likesOf(p.id), on = lk.some(l => l.user_id === ME.id);
-          return `<a class="vk-like${on ? " on" : ""}" data-like="${esc(p.id)}" title="${esc(lk.length ? "Понравилось: " + lk.map(l => profOf(l.user_id).nick).join(", ") : "Мне нравится")}">Мне нравится${lk.length ? ` ♥ ${lk.length}` : ""}</a>${lk.length ? `<span class="vk-lk">${lk.slice(0, 6).map(l => avaHTML(profOf(l.user_id))).join("")}</span>` : ""}`; })()}${p.user_id === ME.id || own ? ` | <a data-vkdel="${esc(p.id)}">удалить</a>` : ""}</div></div></div>`).join("") : `<div class="vk-empty">На стене пока нет записей. Напиши первым.</div>`}</div>`;
-    $("aMain").innerHTML = `<div class="evp">
-      <div class="evp-hero${e.photo ? " ph-" + evFmt(e) : ""}" style="--g:${e.photo ? "#111" : evBg(e)}">${e.photo ? (evFmt(e) === "wide" ? `<div class="evp-img">${evImg(e)}</div>` : `<div class="evp-blur" style="background-image:url('${publicUrl(e.photo)}')"></div><div class="evp-pic">${evImg(e)}</div>`) : ""}${evIn(e) ? `<span class="cd">${esc(evIn(e))}</span>` : ""}<div class="in"><div class="when">${esc(evWhen(e))}</div><h1>${esc(e.title)}</h1></div></div>
-      <div class="evp-grid"><div class="evp-a">
-        <div class="ios-card evp-info">
-          <div class="ios-row"><span class="ic" style="background:${GRAD.red}">${ICON.calendar}</span><span class="t">${esc(evWhen(e))}</span><span class="val">${esc(evIn(e))}</span></div>
-          ${e.place ? `<div class="ios-row"><span class="ic" style="background:${GRAD.green}">${ICON.pin}</span><span class="t">${esc(e.place)}</span><a href="https://yandex.ru/maps/?text=${encodeURIComponent(e.place)}" target="_blank" rel="noopener">На карте</a></div>` : ""}
-          <div class="ios-row"><span class="ic" style="background:${GRAD.violet}">${ICON.people}</span><span class="t">Организатор: <b>${esc(own ? "ты" : profOf(e.owner).nick || "кто-то")}</b></span></div>
-          ${e.descr ? `<div class="evp-desc">${richText(e.descr)}</div>` : ""}
-        </div>
-      </div><div class="evp-w">${wall}</div><div class="evp-side"><div class="ios-card">
-        ${my && my.status === "invited" ? `<div class="rsvp-k">${esc(frNick(my.invited_by || e.owner))} зовёт тебя. Пойдёшь?</div>` : ""}
-        <div class="rsvp"><button class="go" data-rsvp="${esc(e.id)}:going" aria-pressed="${!!my && my.status === "going"}">✓ Иду</button><button class="no" data-rsvp="${esc(e.id)}:not" aria-pressed="${!!my && my.status === "not"}">✕ Езжайте</button></div>
-        <div class="evp-acts"><button class="ib" data-evinv="${esc(e.id)}">Пригласить</button><button class="ib tg" data-tgcopy="event:${esc(e.id)}" title="Скопировать приглашение для Телеграма"><svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true"><path d="M21.6 4.3 18.4 19.5c-.2 1-.9 1.3-1.8.8l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.3-5 9.2-8.3c.4-.4-.1-.6-.6-.2L5.9 13.2 1 11.7c-1-.3-1.1-1 .2-1.5L20.2 2.9c.9-.3 1.7.2 1.4 1.4Z"/></svg>Для Телеграма</button>${e.photo ? `<button class="ib" data-tgposter="${esc(e.id)}" title="Скопировать картинку мероприятия — вставь в Телеграм, а текст в подпись">Картинка</button>` : ""}${own ? `<button class="ib" data-evedit="${esc(e.id)}">Изменить</button><button class="ib red" data-evdel="${esc(e.id)}">Удалить</button>` : ""}</div>
-        <div class="mem">${pl(goL, "go", "Идут")}${pl(noL, "no", "Не идут")}${pl(invL, "", "Приглашены")}</div>
-      </div></div></div></div>`;
+        <div class="vk-d"><button type="button" class="vk-like${on ? " on" : ""}" data-like="${esc(p.id)}" title="${esc(lk.length ? "Понравилось: " + lk.map(l => profOf(l.user_id).nick).join(", ") : "Мне нравится")}">♥ ${lk.length || ""}</button>${lk.length ? `<span class="vk-lk">${lk.slice(0, 6).map(l => avaHTML(profOf(l.user_id))).join("")}</span>` : ""}${p.user_id === ME.id || own ? `<button type="button" class="e7-del" data-vkdel="${esc(p.id)}">удалить</button>` : ""}</div></div></article>`; }).join("") : `<div class="vk-empty e7-none">На стене пусто. Напиши первым — кто что берёт, во сколько собираемся.</div>`}</section>`;
+    $("aMain").innerHTML = `<div class="e7p">
+      <section class="e7p-hero${e.photo ? " ph-" + evFmt(e) : ""}">
+        <div class="e7-hero-bg" style="--g:${e.photo ? "#101014" : evBg(e)}">${e.photo ? `<div class="e7-hero-blur" style="background-image:url('${publicUrl(e.photo)}')"></div>${evFmt(e) === "wide" ? evImg(e) : ""}` : `<i class="e7-pat"></i>`}</div>
+        ${e.photo && evFmt(e) !== "wide" ? `<div class="e7p-pic">${evImg(e)}</div>` : ""}
+        <div class="e7p-in"><span class="e7-kick">${esc(evWhen(e))}</span><h1>${esc(e.title)}</h1>
+          <div class="e7-chips">${e7Pl(e, " e7-chip")}<span class="e7-chip">${avaHTML(profOf(e.owner), "xs")}организатор: ${esc(own ? "ты" : profOf(e.owner).nick || "кто-то")}</span></div>
+          ${my && my.status === "invited" ? `<div class="e7-ask">${esc(frNick(my.invited_by || e.owner))} зовёт тебя. Пойдёшь?</div>` : ""}
+          <div class="e7-rsvp"><button type="button" class="e7-btn go" data-rsvp="${esc(e.id)}:going" aria-pressed="${!!my && my.status === "going"}">✓ ${past ? "Был" : "Иду"}</button><button type="button" class="e7-btn" data-rsvp="${esc(e.id)}:not" aria-pressed="${!!my && my.status === "not"}">${past ? "Не был" : "Езжайте без меня"}</button></div></div>
+        <div class="e7-count"><b>${big}</b><small>${esc(lab)}</small></div></section>
+      <div class="e7p-acts"><button type="button" class="e7-btn" data-evinv="${esc(e.id)}">${ICON.people}Пригласить</button><button type="button" class="e7-btn tg" data-tgcopy="event:${esc(e.id)}" title="Скопировать приглашение для Телеграма"><svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true"><path d="M21.6 4.3 18.4 19.5c-.2 1-.9 1.3-1.8.8l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.3-5 9.2-8.3c.4-.4-.1-.6-.6-.2L5.9 13.2 1 11.7c-1-.3-1.1-1 .2-1.5L20.2 2.9c.9-.3 1.7.2 1.4 1.4Z"/></svg>Для Телеграма</button>${e.photo ? `<button type="button" class="e7-btn" data-tgposter="${esc(e.id)}" title="Скопировать картинку мероприятия — вставь в Телеграм, а текст в подпись">${ICON.img || ""}Картинка</button>` : ""}<a class="e7-btn" href="#calendar">${ICON.calendar}Календарь</a>${own ? `<span class="sp"></span><button type="button" class="e7-btn" data-evedit="${esc(e.id)}">${ICON.edit}Изменить</button><button type="button" class="e7-btn red" data-evdel="${esc(e.id)}">Удалить</button>` : ""}</div>
+      <div class="e7p-grid"><div class="e7p-main">
+        ${e.descr ? `<section class="e7-box"><h3>${ICON.info || ""}О встрече</h3><div class="e7-txt">${richText(e.descr)}</div></section>` : ""}
+        ${venue}${wall}</div>
+        <aside class="e7p-side"><section class="e7-box e7-mem"><h3>${ICON.people}Кто идёт<small>${goL.length} из ${mem.length}</small></h3>${mrow(goL, "go", past ? "Были" : "Идут")}${mrow(invL, "inv", "Приглашены")}${mrow(noL, "no", "Не идут")}</section></aside>
+      </div></div>`;
     wireWall(e, wasF, sel);
   }
   function wireWall(e, wasF, sel){
@@ -203,8 +265,9 @@
     $("vkGo").onclick = send;
     t.addEventListener("keydown", ev => { if (ev.key === "Enter" && (ev.ctrlKey || ev.metaKey)){ ev.preventDefault(); send(); } });
   }
-  function eventSheet(e){
+  function eventSheet(e, o = {}){
     if (!ME || !assets) return;
+    let placeId = e ? e.place_id || null : o.place_id || null; const place0 = e ? e.place_id || null : null;
     const isNew = !e; let file = null, removed = false, fmt = evFmt(e), pos = {x: 50, y: 50, s: 1, ...(evPos(e) || {})}; const photo0 = e ? e.photo : null;
     let url = photo0 ? publicUrl(photo0) : "";
     const s0 = evStart(e), others = FR ? FR.profiles.filter(p => p.user_id !== ME.id) : [];
@@ -214,11 +277,28 @@
       <div class="ev-zoom" id="evZ"><label>Масштаб<input type="range" id="evS" min="1" max="3" step="0.01"></label><button type="button" class="ib" id="evRe">Сбросить</button><button type="button" class="ib" id="evCh">Заменить</button><button type="button" class="ib red" id="evRm">Убрать</button></div>
       <label class="f">Название<input class="in" id="evT" maxlength="80" placeholder="Кино в пятницу" value="${esc(e ? e.title : "")}"></label>
       <div class="ev-two"><label class="f">Дата<input class="in" type="date" id="evD" placeholder="Выбрать дату" value="${s0 ? localDate(s0) : ""}"></label><label class="f">Время<input class="in" type="time" id="evTm" value="${s0 ? pad(s0.getHours()) + ":" + pad(s0.getMinutes()) : "19:00"}"></label></div>
-      <label class="f">Место<input class="in" id="evPl" maxlength="200" placeholder="Адрес или название места" value="${esc(e ? e.place || "" : "")}"></label>
+      <div class="e7-plpk"><div class="av-lb">Заведение с карты <small>по желанию — тогда встреча появится в карточке места</small></div><div id="evPlS"></div><input class="in" id="evPlQ" placeholder="Найти заведение по названию…" autocomplete="off"><div class="e7-plst" id="evPlL"></div></div>
+      <label class="f">Место текстом<input class="in" id="evPl" maxlength="200" placeholder="Адрес, если места нет на карте" value="${esc(e ? e.place || "" : o.place_id && typeof PL !== "undefined" && PL && PL.places.find(x => x.id === o.place_id) ? PL.places.find(x => x.id === o.place_id).name : "")}"></label>
       <label class="f">Описание<textarea class="in" id="evDs" maxlength="3000" placeholder="Что будем делать, что взять с собой">${esc(e ? e.descr || "" : "")}</textarea></label>
       ${isNew && others.length ? `<div class="av-lb">Позвать друзей</div><div class="ev-pick" id="evPk">${others.map(p => `<button type="button" data-u="${esc(p.user_id)}" aria-pressed="false">${avaHTML(p)}${esc(p.nick)}</button>`).join("")}</div>` : ""}
       <div class="acts"><button class="ib blue" id="evOk">${isNew ? "Создать" : "Сохранить"}</button><button class="ib" id="evNo">Отмена</button></div>`, {wide: true});
     const q = x => s.el.querySelector(x), ph = q("#evPh");
+    // 7.29: привязка к заведению
+    const plAll = () => typeof PL !== "undefined" && PL ? PL.places : [];
+    const drawPl = () => {
+      const sel = placeId && plAll().find(x => x.id === placeId), qq = q("#evPlQ").value.trim().toLowerCase();
+      q("#evPlS").innerHTML = sel ? `<div class="e7-plsel">${sel.photo && typeof plImg === "function" ? `<img alt="" src="${esc(plImg(sel))}" onerror="this.remove()">` : `<i>${ICON.pin}</i>`}<span><b>${esc(sel.name)}</b><small>${esc([typeof plKindL === "function" ? plKindL(sel.kind) : "", sel.address].filter(Boolean).join(" · "))}</small></span><button type="button" data-plx="1" aria-label="Отвязать">${ICON.x}</button></div>` : placeId ? `<div class="e7-plsel"><span><b>Заведение</b><small>загружаю…</small></span><button type="button" data-plx="1" aria-label="Отвязать">${ICON.x}</button></div>` : "";
+      q("#evPlQ").hidden = !!placeId;
+      if (placeId){ q("#evPlL").innerHTML = ""; return; }
+      if (typeof PL === "undefined"){ q("#evPlL").innerHTML = ""; return; }
+      if (!PL){ q("#evPlL").innerHTML = `<small class="e7-none">Загружаю заведения…</small>`; if (typeof loadPlaces === "function") loadPlaces().then(() => { if (!s.closed) drawPl(); }); return; }
+      const list = plAll().filter(x => !qq || (x.name || "").toLowerCase().includes(qq) || (x.address || "").toLowerCase().includes(qq)).sort((a, b) => String(b.created_at).localeCompare(String(a.created_at))).slice(0, qq ? 12 : 8);
+      q("#evPlL").innerHTML = list.length ? list.map(x => `<button type="button" data-plid="${esc(x.id)}">${x.photo && typeof plImg === "function" ? `<img alt="" src="${esc(plImg(x))}" onerror="this.remove()">` : `<i>${ICON.pin}</i>`}<span>${esc(x.name)}</span></button>`).join("") : `<small class="e7-none">${qq ? "Ничего не нашлось — впиши место текстом ниже" : "На карте пока нет заведений"}</small>`;
+    };
+    q("#evPlQ").oninput = drawPl;
+    q("#evPlL").onclick = ev => { const b = ev.target.closest("[data-plid]"); if (!b) return; placeId = b.dataset.plid; const pl = plAll().find(x => x.id === placeId); if (pl && !q("#evPl").value.trim()) q("#evPl").value = pl.name; q("#evPlQ").value = ""; drawPl(); };
+    q("#evPlS").onclick = ev => { if (ev.target.closest("[data-plx]")){ placeId = null; drawPl(); setTimeout(() => q("#evPlQ").focus(), 20); } };
+    drawPl();
     const drawPh = () => {
       ph.className = `ev-ph f-${fmt}${url ? " has" : ""}`;
       ph.innerHTML = url ? `<img src="${url}" alt="" draggable="false" style="${posStyle(pos)}">` : `<span>Фото: перетащи, вставь Ctrl+V<br>или нажми, чтобы выбрать</span>`;
@@ -252,15 +332,21 @@
         const photo = file ? await upload(file) : removed ? null : photo0;
         const row = {title, descr: q("#evDs").value.trim() || null, place: q("#evPl").value.trim() || null, starts_at, photo,
           photo_fmt: photo ? fmt : null, photo_pos: photo ? {x: +pos.x.toFixed(1), y: +pos.y.toFixed(1), s: +(+pos.s).toFixed(3)} : null};
+        if (placeId || place0) row.place_id = placeId;
+        const noCol = er => er && /place_id/i.test((er.message || "") + (er.details || "") + (er.hint || ""));
         let id = e && e.id;
         if (isNew){
           id = crypto.randomUUID();
-          let r = await SB.from("events").insert({id, owner: ME.id, created_at: now(), ...row}); if (r.error) throw r.error;
+          let r = await SB.from("events").insert({id, owner: ME.id, created_at: now(), ...row});
+          if (r.error && noCol(r.error)){ delete row.place_id; toast("Привязка к заведению заработает после обновления базы — мероприятие создаю без неё"); r = await SB.from("events").insert({id, owner: ME.id, created_at: now(), ...row}); }
+          if (r.error) throw r.error;
           r = await SB.from("event_members").insert({event_id: id, user_id: ME.id, status: "going", updated_at: now()}); if (r.error) throw r.error;
           const inv = q("#evPk") ? [...q("#evPk").querySelectorAll('[aria-pressed="true"]')].map(b => ({event_id: id, user_id: b.dataset.u, status: "invited", invited_by: ME.id, updated_at: now()})) : [];
           if (inv.length){ r = await SB.from("event_members").insert(inv); if (r.error) toast("Мероприятие создано, но приглашения не ушли: " + r.error.message); }
           evNotified.add(id);
-        } else { const r = await SB.from("events").update(row).eq("id", id); if (r.error) throw r.error; }
+        } else { let r = await SB.from("events").update(row).eq("id", id);
+          if (r.error && noCol(r.error)){ delete row.place_id; toast("Привязка к заведению заработает после обновления базы"); r = await SB.from("events").update(row).eq("id", id); }
+          if (r.error) throw r.error; }
         s.close(); toast(isNew ? "Мероприятие создано" : "Сохранено"); await loadEvents(true); go("event:" + id);
       } catch(err){ toast("Не сохранилось: " + ((err && err.message) || err)); btn.disabled = false; btn.textContent = isNew ? "Создать" : "Сохранить"; }
     };

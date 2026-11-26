@@ -27,7 +27,11 @@
     const gif = avaGif(p, size), inner = p.avatar ? `<img alt="" src="${publicUrl(gif || p.avatar)}"${gif && p.ava_cfg.gp ? ` style="${posStyle(p.ava_cfg.gp)}"` : ""} loading="lazy" onerror="this.remove()">` : p.ava_animal && ANIMALS[p.ava_animal] ? animalSVG(p.ava_animal) : esc((p.nick || "?").slice(0, 1).toUpperCase());
     return `<span class="fr-ava${size ? " " + size : ""}" style="background:${avaBg(p)}" title="${esc(p.nick || "")}">${inner}</span>`; };
   // 6.1: большой аватар в профиле — своя форма и свой кадр; везде ещё остаётся маленький квадрат
-  const avaShape = p => { const c = p && p.ava_cfg; return c && ["square", "round", "circle", "portrait"].includes(c.shape) ? c.shape : "square"; };
+  const avaShape = p => { const c = p && p.ava_cfg; return c && ["square", "round", "circle", "portrait", "free"].includes(c.shape) ? c.shape : "square"; };
+  // 7.29: своя форма и размер аватарки в профиле — ширина, высота и скругление, тянутся мышкой
+  const AVA_BOX = {w: 132, h: 132, r: 6};
+  const avaBox = c => { const b = c && c.box || {}; const n = (v, a, z, d) => Number.isFinite(+v) ? Math.max(a, Math.min(z, +v)) : d; return {w: n(b.w, 80, 240, 132), h: n(b.h, 80, 300, 132), r: n(b.r, 0, 50, 6)}; };
+  const avaBoxStyle = p => { const c = p && p.ava_cfg; if (!c || c.shape !== "free") return ""; const b = avaBox(c); return `--aw:${b.w}px;--ah:${b.h}px;--arad:${b.r}%`; };
   const avaBigHTML = p => { p = p || {}; const c = p.ava_cfg, sh = avaShape(p); if (!c) return avaHTML(p, "big");
     const src = p.avatar ? (p.avatar_full || p.avatar) : null;
     if (!src) return avaHTML(p, "big").replace('class="fr-ava big"', `class="fr-ava big v6-shape-${sh}"`);
@@ -43,7 +47,7 @@
     return new Promise(res => {
       let st = {avatar: (MEP && MEP.avatar) || null, ava_animal: (MEP && MEP.ava_animal) || null, ava_color: (MEP && MEP.ava_color) || AVA_COLORS[Math.floor(Math.random() * AVA_COLORS.length)]}, file = null;
       // 6.1: форма в профиле и два кадра — большой для профиля, маленький квадрат для остального сайта
-      const c0 = (MEP && MEP.ava_cfg) || {}; let gifFile = null, gifUrl = null, gifRm = false, cfg = {shape: c0.shape || "square", ...(c0.gif ? {gif: c0.gif} : {}), gp: {x: 50, y: 50, s: 1, ...(c0.gp || {})}, big: {x: 50, y: 50, s: 1, ...(c0.big || {})}, sm: {x: 50, y: 50, s: 1, ...(c0.sm || {})}}, smMoved = false, fileUrl = null;
+      const c0 = (MEP && MEP.ava_cfg) || {}; let gifFile = null, gifUrl = null, gifRm = false, cfg = {shape: c0.shape || "square", box: avaBox(c0), ...(c0.gif ? {gif: c0.gif} : {}), gp: {x: 50, y: 50, s: 1, ...(c0.gp || {})}, big: {x: 50, y: 50, s: 1, ...(c0.big || {})}, sm: {x: 50, y: 50, s: 1, ...(c0.sm || {})}}, smMoved = false, fileUrl = null;
       const fullSrc = () => file ? fileUrl : MEP && MEP.avatar_full && st.avatar ? publicUrl(MEP.avatar_full) : st.avatar ? publicUrl(st.avatar) : null;
       const prevP = () => ({...myProf(), ...st, avatar: file ? null : st.avatar});
       const s = openSheet(`<h3>${first ? "Выбери аватарку" : "Аватар"}</h3><p class="sub">Видна друзьям в ленте, в профиле, у релизов и в совместной рулетке. Фото можно перетащить сюда или вставить через Ctrl+V.</p>
@@ -64,15 +68,32 @@
         q("#avC").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.c === st.ava_color));
         q("#avRm").hidden = !(st.avatar || file);
         const src = fullSrc(), canSm = !!(file || (MEP && MEP.avatar_full && st.avatar));
-        q("#v6Ava").innerHTML = `<div class="av-lb">Форма в профиле</div><div class="v6-shp">${[["square", "Квадрат"], ["round", "Скруглённый"], ["circle", "Круг"], ["portrait", "Прямоугольник"]].map(([k, l]) => `<button type="button" data-shp="${k}" aria-pressed="${cfg.shape === k}"><i class="v6-si ${k}"></i>${l}</button>`).join("")}</div>
-          ${src ? `<div class="v6-crops"><div class="v6-cw"><div class="v6-crop shape-${cfg.shape}" data-crop="big"><img alt="" src="${src}" style="${posStyle(cfg.big)}" draggable="false"></div><span>В профиле</span><input type="range" min="1" max="3" step=".02" value="${cfg.big.s}" data-zoom="big" aria-label="Масштаб в профиле"></div>
+        const bx = cfg.box, frS = cfg.shape === "free" ? ` style="width:${Math.round(150 * Math.min(1, bx.w / bx.h))}px;height:${Math.round(150 * Math.min(1, bx.h / bx.w))}px;border-radius:${bx.r}%"` : "";
+        q("#v6Ava").innerHTML = `<div class="av-lb">Форма в профиле</div><div class="v6-shp e7-shp">${[["square", "Квадрат"], ["round", "Скруглённый"], ["circle", "Круг"], ["portrait", "Прямоугольник"], ["free", "Своя"]].map(([k, l]) => `<button type="button" data-shp="${k}" aria-pressed="${cfg.shape === k}"><i class="v6-si ${k}"></i>${l}</button>`).join("")}</div>
+          <div class="e7-asz"><div class="e7-asz-st" id="avBoxSt"><div class="e7-asz-b" id="avBox" style="width:${bx.w}px;height:${bx.h}px;border-radius:${cfg.shape === "free" ? bx.r : {square: 6, round: 22, circle: 50, portrait: 6}[cfg.shape] || 6}%;background:${st.ava_color}">${src ? `<img alt="" src="${src}" draggable="false">` : ""}<i class="e7-h e7-hbr" data-avh="size" title="Тяни — размер"></i><i class="e7-h e7-htr" data-avh="rad" title="Тяни — скругление"></i></div></div>
+            <div class="e7-asz-i"><b>Размер и форма мышкой</b><small>Тяни <span class="e7-dot"></span> в правом нижнем углу — меняется размер (с Shift — без искажения пропорций). <span class="e7-dot e7-dtr"></span> в правом верхнем — скругление: к центру круглее.</small><span class="e7-asz-n" id="avBoxN">${bx.w}×${bx.h} · скругление ${bx.r}%</span>${cfg.shape === "free" ? `<button type="button" class="ib" data-avbr="1">Сбросить</button>` : ""}</div></div>
+          ${src ? `<div class="v6-crops"><div class="v6-cw"><div class="v6-crop shape-${cfg.shape}" data-crop="big"${frS}><img alt="" src="${src}" style="${posStyle(cfg.big)}" draggable="false"></div><span>В профиле</span><input type="range" min="1" max="3" step=".02" value="${cfg.big.s}" data-zoom="big" aria-label="Масштаб в профиле"></div>
             <div class="v6-cw"><div class="v6-crop sq${canSm ? "" : " off"}" data-crop="sm"><img alt="" src="${src}" style="${posStyle(canSm ? cfg.sm : {})}" draggable="false"></div><span>Везде на сайте</span>${canSm ? `<input type="range" min="1" max="3" step=".02" value="${cfg.sm.s}" data-zoom="sm" aria-label="Масштаб на сайте">` : `<small>Чтобы выбрать кадр, загрузи фото заново</small>`}</div>
-            ${gifSrc() ? `<div class="v6-cw"><div class="v6-crop shape-${cfg.shape}" data-crop="gp"><img alt="" src="${gifSrc()}" style="${posStyle(cfg.gp)}" draggable="false"></div><span>GIF на компе</span><input type="range" min="1" max="3" step=".02" value="${cfg.gp.s}" data-zoom="gp" aria-label="Масштаб GIF"></div>` : ""}</div><p class="v6-hint">Двигай картинку пальцем или мышкой, масштаб — ползунком. В ленте, рейтинге и комментариях аватар всегда маленький квадрат.</p>` : ""}`;
+            ${gifSrc() ? `<div class="v6-cw"><div class="v6-crop shape-${cfg.shape}" data-crop="gp"${frS}><img alt="" src="${gifSrc()}" style="${posStyle(cfg.gp)}" draggable="false"></div><span>GIF на компе</span><input type="range" min="1" max="3" step=".02" value="${cfg.gp.s}" data-zoom="gp" aria-label="Масштаб GIF"></div>` : ""}</div><p class="v6-hint">Двигай картинку пальцем или мышкой, масштаб — ползунком. В ленте, рейтинге и комментариях аватар всегда маленький квадрат.</p>` : ""}`;
       };
-      q("#v6Ava").addEventListener("click", e => { const b = e.target.closest("[data-shp]"); if (!b) return; cfg.shape = b.dataset.shp; draw(); });
+      q("#v6Ava").addEventListener("click", e => { if (e.target.closest("[data-avbr]")){ cfg.shape = "square"; cfg.box = {...AVA_BOX}; draw(); return; }
+        const b = e.target.closest("[data-shp]"); if (!b) return; cfg.shape = b.dataset.shp;
+        if (cfg.shape !== "free") cfg.box = {...AVA_BOX, ...(cfg.shape === "portrait" ? {h: 176} : {}), r: {square: 6, round: 22, circle: 50, portrait: 6}[cfg.shape]}; draw(); });
+      // 7.29: ручки размера и скругления
+      let hd = null;
+      q("#v6Ava").addEventListener("pointerdown", e => { const h = e.target.closest("[data-avh]"); if (!h) return; e.preventDefault(); e.stopPropagation();
+        hd = {k: h.dataset.avh, x: e.clientX, y: e.clientY, b: {...cfg.box}}; try { h.setPointerCapture(e.pointerId); } catch(_){ /* ожидаемо: указатель уже отпущен */ } q("#avBox").classList.add("on"); }, true);
+      q("#v6Ava").addEventListener("pointermove", e => { if (!hd) return; const b = cfg.box, dx = e.clientX - hd.x, dy = e.clientY - hd.y;
+        if (hd.k === "size"){ if (e.shiftKey){ const k = Math.max((hd.b.w + dx) / hd.b.w, (hd.b.h + dy) / hd.b.h); b.w = hd.b.w * k; b.h = hd.b.h * k; } else { b.w = hd.b.w + dx; b.h = hd.b.h + dy; } }
+        else b.r = hd.b.r + (dy - dx) / 2;
+        b.w = Math.round(Math.max(80, Math.min(240, b.w))); b.h = Math.round(Math.max(80, Math.min(300, b.h))); b.r = Math.round(Math.max(0, Math.min(50, b.r)));
+        cfg.shape = "free"; const el = q("#avBox"); el.style.width = b.w + "px"; el.style.height = b.h + "px"; el.style.borderRadius = b.r + "%";
+        q("#avBoxN").textContent = `${b.w}×${b.h} · скругление ${b.r}%`; q("#v6Ava").querySelectorAll("[data-shp]").forEach(x => x.setAttribute("aria-pressed", x.dataset.shp === "free")); });
+      const hEnd = () => { if (!hd) return; hd = null; draw(); };
+      q("#v6Ava").addEventListener("pointerup", hEnd); q("#v6Ava").addEventListener("pointercancel", hEnd);
       q("#v6Ava").addEventListener("input", e => { const z = e.target.closest("[data-zoom]"); if (!z) return; const k = z.dataset.zoom; cfg[k].s = +z.value; if (k === "sm") smMoved = true; const im = q(`[data-crop="${k}"] img`); if (im) im.style.cssText = posStyle(cfg[k]); });
       let drag = null;
-      q("#v6Ava").addEventListener("pointerdown", e => { const f = e.target.closest("[data-crop]"); if (!f || f.classList.contains("off")) return; e.preventDefault(); const k = f.dataset.crop; drag = {k, f, x: e.clientX, y: e.clientY, p: {...cfg[k]}}; f.setPointerCapture(e.pointerId); });
+      q("#v6Ava").addEventListener("pointerdown", e => { if (hd) return; const f = e.target.closest("[data-crop]"); if (!f || f.classList.contains("off")) return; e.preventDefault(); const k = f.dataset.crop; drag = {k, f, x: e.clientX, y: e.clientY, p: {...cfg[k]}}; f.setPointerCapture(e.pointerId); });
       q("#v6Ava").addEventListener("pointermove", e => { if (!drag) return; const r = drag.f.getBoundingClientRect(), c = cfg[drag.k];
         c.x = Math.max(0, Math.min(100, drag.p.x - (e.clientX - drag.x) / r.width * 100 / c.s * 1.6)); c.y = Math.max(0, Math.min(100, drag.p.y - (e.clientY - drag.y) / r.height * 100 / c.s * 1.6));
         if (drag.k === "sm") smMoved = true; const im = drag.f.querySelector("img"); if (im) im.style.cssText = posStyle(c); });
@@ -101,7 +122,7 @@
           if (!st.avatar) st.avatar_full = null;
           if (gifFile) cfg.gif = (await assets.upload(gifFile, {type: gifFile.type || "image/gif"})).id; else if (gifRm) delete cfg.gif;
           if (!st.avatar) delete cfg.gif;
-          st.ava_cfg = cfg;
+          st.ava_cfg = cfg.shape === "free" ? cfg : (({box, ...r}) => r)(cfg);
           if (await saveProf(st)){ toast("Аватар обновлён"); res(st); s.close(); }
         } catch(e){ toast("Не получилось загрузить фото"); }
         btn.disabled = false; btn.textContent = first ? "Готово" : "Сохранить";
@@ -148,16 +169,43 @@
     if (frLoading) return frLoading;
     frLoading = (async () => {
       try {
-        let [pr, it, rd, sc, tq] = await Promise.all([fetchAll(() => SB.from("profiles").select(PF_COLS_FULL), ["user_id"]), fetchAll(() => SB.rpc("public_items"), ["user_id", "id"]), fetchAll(() => SB.from("reads").select("id,user_id,data,updated_at"), ["user_id", "id"]), fetchAll(() => SB.from("showcases").select("*"), ["id"]), fetchAll(() => SB.from("tierlists").select("*").order("updated_at", {ascending: false}), ["id"])]);
+        let [pr, it, rd, sc, tq] = await Promise.all([fetchAll(() => SB.from("profiles").select(PF_COLS_FULL), ["user_id"]), frItemsQuery(), fetchAll(() => SB.from("reads").select("id,user_id,data,updated_at"), ["user_id", "id"]), fetchAll(() => SB.from("showcases").select("*"), ["id"]), fetchAll(() => SB.from("tierlists").select("*").order("updated_at", {ascending: false}), ["id"])]);
         if (pr.error) pr = await fetchAll(() => SB.from("profiles").select(PF_COLS), ["user_id"]);
         if (pr.error) pr = await fetchAll(() => SB.from("profiles").select("user_id,nick,avatar,ava_animal,ava_color,birthday,created_at"), ["user_id"]);
         if (pr.error) throw pr.error; if (it.error) throw it.error;
-        FR = {at: Date.now(), profiles: pr.data || [], items: (it.data || []).map(r => ({...(r.data || {}), id: r.id, uid: r.user_id, _upd: r.updated_at})), reads: rd && !rd.error ? (rd.data || []).map(r => ({...(r.data || {}), id: r.id, uid: r.user_id, _upd: r.updated_at})) : [], showcases: sc && !sc.error ? (sc.data || []).map(x => ({...x, entries: Array.isArray(x.entries) ? x.entries : []})) : [], tierlists: tq && !tq.error ? (tq.data || []).map(x => ({...x, tiers: Array.isArray(x.tiers) ? x.tiers : [], pool: Array.isArray(x.pool) ? x.pool : []})) : []};
-        if (FV) items = frItems(FV);
+        const lite = !!it.lite, full = FR && FR.full ? FR.full : new Set(); if (FR && FR.full && lite) full.clear();
+        FR = {at: Date.now(), full, profiles: pr.data || [], items: (it.data || []).map(r => ({...(r.data || {}), id: r.id, uid: r.user_id, _upd: r.updated_at, ...(lite ? {_lite: 1} : {})})), reads: rd && !rd.error ? (rd.data || []).map(r => ({...(r.data || {}), id: r.id, uid: r.user_id, _upd: r.updated_at})) : [], showcases: sc && !sc.error ? (sc.data || []).map(x => ({...x, entries: Array.isArray(x.entries) ? x.entries : []})) : [], tierlists: tq && !tq.error ? (tq.data || []).map(x => ({...x, tiers: Array.isArray(x.tiers) ? x.tiers : [], pool: Array.isArray(x.pool) ? x.pool : []})) : []};
+        if (FV){ items = frItems(FV); frFull(FV).then(ok => { if (ok) render(); }); }
       } catch(e){ logErr("загрузка друзей", e); if (force || !FR) toast("Не получилось загрузить друзей: " + (e.message || e)); if (!FR) FR = {at: Date.now(), profiles: [], items: [], failed: true}; }
       frLoading = null; render(); return FR;
     })();
     return frLoading;
+  }
+  // 7.29: записи друзей грузятся без длинных описаний (так в разы меньше данных и сайт открывается быстрее);
+  // полные записи человека догружаются, когда открываешь его полку или карточку. Пока в базе нет новой функции — грузим как раньше.
+  let FR_LITE_OFF = false;
+  async function frItemsQuery(){
+    if (!FR_LITE_OFF){
+      const r = await fetchAll(() => SB.rpc("public_items_lite"), ["user_id", "id"]);
+      if (!r.error){ r.lite = true; return r; }
+      if (/public_items_lite|PGRST202|42883|schema cache|not find/i.test((r.error.message || "") + (r.error.code || ""))) FR_LITE_OFF = true; else logErr("записи друзей (лёгкие)", r.error);
+    }
+    return fetchAll(() => SB.rpc("public_items"), ["user_id", "id"]);
+  }
+  const frFullP = new Map();
+  function frFull(uid){
+    if (!FR || !uid || FR_LITE_OFF || !FR.full || FR.full.has(uid) || !FR.items.some(i => i.uid === uid && i._lite)) return Promise.resolve(false);
+    if (frFullP.has(uid)) return frFullP.get(uid);
+    const p = (async () => {
+      const r = await fetchAll(() => SB.rpc("public_items_of", {p_uid: uid}), ["id"]);
+      frFullP.delete(uid);
+      if (r.error){ if (/public_items_of|PGRST202|42883/i.test((r.error.message || "") + (r.error.code || ""))) FR_LITE_OFF = true; else logErr("полные записи друга", r.error); return false; }
+      const by = new Map((r.data || []).map(x => [x.id, x]));
+      FR.items = FR.items.map(i => { if (i.uid !== uid) return i; const x = by.get(i.id); return x ? {...(x.data || {}), id: x.id, uid: x.user_id, _upd: x.updated_at} : i; });
+      FR.full.add(uid); if (FV === uid) items = frItems(uid);
+      return true;
+    })();
+    frFullP.set(uid, p); return p;
   }
   const frItems = uid => FR ? FR.items.filter(i => i.uid === uid) : [];
   const myKeys = () => { const s = new Set(); MYITEMS.forEach(i => frKeys(i).forEach(k => s.add(k))); s.hasIt = it => frKeys(it).some(k => s.has(k)); return s; };
@@ -209,6 +257,10 @@
   }
   function friendItemSheet(key){
     const [uid, id] = key.split("/"); const it = FR && FR.items.find(i => i.uid === uid && i.id === id); if (!it) return;
+    if (it._lite && !FR_LITE_OFF){ frFull(uid).then(ok => { if (ok) friendItemSheet(key); else friendItemSheet2(it, uid); }); return; }
+    friendItemSheet2(it, uid);
+  }
+  function friendItemSheet2(it, uid){
     const g = isGame(it), have = myKeys().hasIt(it);
     const st = isFuture(it) ? "На будущее" : isSoon(it) ? (g ? "Ждёт релиз" : "Ждёт премьеру") : g ? GSTATUS[gStatus(it.status)] : kLab(it).l;
     const dates = [it.date && !isFuture(it) ? `начал ${fmtDate(it.date)}` : "", it.finishedAt ? `закончил ${fmtDate(it.finishedAt)}` : "", it.releaseDate ? `выход ${relLabel(it)}` : (it.release ? `выход ${it.release}` : "")].filter(Boolean).join(" · ");
@@ -441,16 +493,18 @@
   }
   const publicUrl = path => viaPx(`${SB_BASE}/storage/v1/object/public/media/${String(path).split("/").map(encodeURIComponent).join("/")}`);
   function makeBackend(sb, uid){
-    const map = new Map(), listeners = []; let loaded = false;
-    const snap = () => ({metadata: {fromCache: !loaded, hasPendingWrites: false}, docs: [...map].map(([id, d]) => ({id, exists: true, data: () => d}))});
+    const map = new Map(), upd = new Map(), listeners = []; let loaded = false;
+    // 7.29: _upd — время правки строки в базе. Друзья считают очки по нему, значит и свои считаем так же, иначе у тебя и у друга выходили разные цифры
+    const noUpd = o => { if (o && typeof o === "object" && "_upd" in o){ const {_upd, ...r} = o; return r; } return o; };
+    const snap = () => ({metadata: {fromCache: !loaded, hasPendingWrites: false}, docs: [...map].map(([id, d]) => ({id, exists: true, data: () => upd.has(id) ? {...d, _upd: upd.get(id)} : d}))});
     const emit = () => listeners.forEach(f => { try { f(snap()); } catch(e){ console.error(e); } });
     async function loadAll(){
       const rows = []; let from = 0;
-      for (;;){ const {data, error} = await sb.from("items").select("id,data").eq("user_id", uid).order("id", {ascending: true}).range(from, from + 999); if (error) throw error; rows.push(...data); if (data.length < 1000) break; from += 1000; }
-      map.clear(); rows.forEach(r => map.set(r.id, r.data)); loaded = true; emit();
+      for (;;){ const {data, error} = await sb.from("items").select("id,data,updated_at").eq("user_id", uid).order("id", {ascending: true}).range(from, from + 999); if (error) throw error; rows.push(...data); if (data.length < 1000) break; from += 1000; }
+      map.clear(); upd.clear(); rows.forEach(r => { map.set(r.id, noUpd(r.data)); if (r.updated_at) upd.set(r.id, r.updated_at); }); loaded = true; emit();
     }
     sb.channel("items-" + uid).on("postgres_changes", {event: "*", schema: "public", table: "items", filter: `user_id=eq.${uid}`}, p => {
-      if (p.eventType === "DELETE"){ if (p.old && p.old.id) map.delete(p.old.id); } else if (p.new && p.new.id) map.set(p.new.id, p.new.data);
+      if (p.eventType === "DELETE"){ if (p.old && p.old.id){ map.delete(p.old.id); upd.delete(p.old.id); } } else if (p.new && p.new.id){ map.set(p.new.id, noUpd(p.new.data)); if (p.new.updated_at) upd.set(p.new.id, p.new.updated_at); }
       emit();
     }).subscribe();
     const metaCache = {}, metaL = {};
@@ -460,7 +514,7 @@
       collection(name){
         return {
           onSnapshot(next, err){ listeners.push(next); if (loaded) next(snap()); else loadAll().catch(e => err && err(fail(e))); return () => {}; },
-          async add(body){ const id = crypto.randomUUID(); map.set(id, body); emit();
+          async add(body){ body = noUpd(body); const id = crypto.randomUUID(), at = new Date().toISOString(); map.set(id, body); upd.set(id, at); emit();
             const {error} = await sb.from("items").insert({id, user_id: uid, data: body});
             if (error){ map.delete(id); emit(); throw fail(error); } return {id}; }
         };
@@ -470,9 +524,9 @@
         if (col === "items") return {
           async get(){ const d = map.get(id); return {id, exists: !!d, data: () => d}; },
           async update(patch){ const cur = map.get(id); if (!cur) throw {code: "invalid_argument", message: "нет записи"};
-            const next = {...cur, ...patch}; map.set(id, next); emit();
-            const {error} = await sb.from("items").update({data: next, updated_at: new Date().toISOString()}).eq("id", id).eq("user_id", uid);
-            if (error){ map.set(id, cur); emit(); throw fail(error); } },
+            const next = noUpd({...cur, ...patch}), at = new Date().toISOString(), was = upd.get(id); map.set(id, next); upd.set(id, at); emit();
+            const {error} = await sb.from("items").update({data: next, updated_at: at}).eq("id", id).eq("user_id", uid);
+            if (error){ map.set(id, cur); if (was) upd.set(id, was); else upd.delete(id); emit(); throw fail(error); } },
           async delete(){ const cur = map.get(id); map.delete(id); emit();
             const {error} = await sb.from("items").delete().eq("id", id).eq("user_id", uid);
             if (error){ if (cur) map.set(id, cur); emit(); throw fail(error); } }

@@ -11,6 +11,18 @@
     {id: "blood", t: "Кровь", d: "Тёмно-красная, для тех, кто не жалеет", u: {t: "drops", n: 5}},
     {id: "manga", t: "Манга", d: "Бумага, тушь и растр", u: {t: "first", n: 5}},
     {id: "gold", t: "Золото чемпиона", d: "Только для победителей сезона", u: {t: "cup"}},
+    // 7.29: новые темы
+    {id: "goth", t: "Готика", d: "Чёрный бархат, серебро и фиолет", u: {t: "free"}, font: "Playfair Display"},
+    {id: "horror", t: "Хоррор", d: "Плёночное зерно, ржавая кровь", u: {t: "drops", n: 3}, font: "Oswald"},
+    {id: "steel", t: "Сталь", d: "Шлифованный металл и заклёпки", u: {t: "lvl", n: 3}, font: "Russo One"},
+    {id: "tavern", t: "Таверна", d: "Дерево, свечи и вывеска над входом", u: {t: "free"}, font: "Lobster"},
+    {id: "fantasy", t: "Фэнтези", d: "Изумруд, золото и звёзды", u: {t: "weeks", n: 1}, font: "Ruslan Display"},
+    {id: "cyber", t: "Киберпанк", d: "Жёлтый неон, рубленые углы", u: {t: "lvl", n: 4}, font: "Russo One"},
+    {id: "steam", t: "Стимпанк", d: "Латунь, медь и шестерёнки", u: {t: "lvl", n: 6}, font: "Playfair Display"},
+    {id: "cloud", t: "Облака", d: "Светлое небо и мягкие карточки", u: {t: "free"}, font: "Comfortaa", lite: 1},
+    {id: "fairy", t: "Фея", d: "Радуга, пастель и блёстки", u: {t: "free"}, font: "Pacifico", lite: 1},
+    {id: "zoomer", t: "Зумер", d: "Кислотные цвета и стикеры", u: {t: "free"}, font: "Unbounded"},
+    {id: "geek", t: "Гик", d: "Терминал, зелёный моно-шрифт", u: {t: "free"}, font: "JetBrains Mono"},
   ];
   const CS_FX = [
     {id: "", t: "Без эффекта", u: {t: "free"}},
@@ -88,10 +100,23 @@
     return {theme: th && ok(th.u) ? th : null, fx: fx && fx.id && ok(fx.u) ? fx : null, frame: fr && (csFrFor(fr, p.user_id) || csAdm(p.user_id)) && ok(fr.unlock) ? fr : null, layout: Array.isArray(c.layout) ? c.layout : null, hide: Array.isArray(c.hide) ? c.hide : []};
   }
   // ---- для renderProfile: класс темы, рамка, порядок блоков
-  function csPfAttrs(p){ if (!COSM && !COSM_OFF) loadCosm(); const o = csOf(p), t = o.theme;
-    if (!t || t.id === "base") return {cls: "", style: ""};
-    if (t.db){ const d = t.db.data || {}; return {cls: " v6t v6t-db" + (d.style ? " v6t-" + esc(d.style) : ""), style: `${d.ac ? `--ac:${esc(d.ac)};--tac:${esc(d.ac)};` : ""}${t.db.img ? `--tbg:url('${publicUrl(t.db.img)}');` : ""}`}; }
-    return {cls: " v6t v6t-" + t.id, style: ""}; }
+  // 7.29: «Стиль» — свой акцент, скругление, свечение и кольцо аватарки, градиент ника, обводка карточек, плотность
+  const csSty = p => { const y = csCosm(p).sty; return y && typeof y === "object" ? y : {}; };
+  function csStyAttrs(p){ const y = csSty(p); let cls = "", st = "";
+    if (csCol(y.ac)) st += `--ac:${y.ac};--fc:${y.ac};`;
+    if (y.rad != null && y.rad !== ""){ cls += " cs-rad"; st += `--cs-rad:${csNum(y.rad, 0, 30, 14)}px;`; }
+    if (csCol(y.glow)){ cls += " cs-glow"; st += `--cs-glow:${y.glow};`; }
+    if (y.ring) cls += " cs-ring";
+    if (Array.isArray(y.ng) && csCol(y.ng[0]) && csCol(y.ng[1])){ cls += " cs-ng"; st += `--cs-ng1:${y.ng[0]};--cs-ng2:${y.ng[1]};`; }
+    if (y.bd) cls += " cs-bd";
+    if (y.dense) cls += " cs-dense";
+    if (y.glass) cls += " cs-glass";
+    return {cls, style: st}; }
+  function csPfAttrs(p){ if (!COSM && !COSM_OFF) loadCosm(); const o = csOf(p), t = o.theme, y = csStyAttrs(p);
+    if (!t || t.id === "base") return {cls: y.cls, style: y.style};
+    if (t.db){ const d = t.db.data || {}; return {cls: " v6t v6t-db" + (d.style ? " v6t-" + esc(d.style) : "") + y.cls, style: `${d.ac ? `--ac:${esc(d.ac)};--tac:${esc(d.ac)};` : ""}${t.db.img ? `--tbg:url('${publicUrl(t.db.img)}');` : ""}` + y.style}; }
+    if (t.font) csFontLoad([t.font]);
+    return {cls: " v6t v6t-" + t.id + (t.lite ? " v6t-lite" : "") + y.cls, style: y.style}; }
   // 7.19: масштаб и сдвиг рамки подгоняет админ при загрузке (data.s — % от аватарки, x/y — сдвиг в %)
   // 7.21: режим наложения и прозрачность — для рамок-эффектов поверх аватарки (VHS, шум, свечение)
   const CS_BLEND = [["normal", "Обычное"], ["screen", "Свечение (screen)"], ["overlay", "Контраст (overlay)"], ["soft-light", "Мягкий свет"], ["hard-light", "Жёсткий свет"], ["multiply", "Затемнение (multiply)"], ["lighten", "Только светлое"], ["color-dodge", "Пересвет"], ["difference", "Разница"]];
@@ -146,7 +171,7 @@
     if ((!FR || FR.failed) && !again){ toast("Считаю твои достижения…"); loadFriends(true).then(() => csSheet(true)); return; } // пока данные не пришли, всё казалось закрытым
     const p = myProf(), st = csStats(ME.id), L = csLevel(ME.id);
     let cur = {theme: "base", fx: "", frame: "", layout: CS_FLOORS.map(x => x[0]), hide: [], ...((p && p.cosm) || {})};
-    cur.txt = JSON.parse(JSON.stringify(cur.txt || {})); cur.hdr = cur.hdr ? {...cur.hdr} : null;
+    cur.txt = JSON.parse(JSON.stringify(cur.txt || {})); cur.hdr = cur.hdr ? {...cur.hdr} : null; cur.sty = JSON.parse(JSON.stringify(cur.sty || {}));
     let hdrFile = null, saved = false, lr = 0;
     const live = () => { CS_PREV = cur; if (lr) return; lr = requestAnimationFrame(() => { lr = 0; if (["home"].includes(route)) render(); }); };
     const s = openSheet(`<h3>Оформление профиля</h3><p class="sub">Открывается само за дела на сайте, надеваешь сам. Видно всем, кто зайдёт к тебе в профиль. Сейчас у тебя <b>${L.lv} уровень</b> (${L.xp} опыта, до следующего ${L.next - L.xp}).</p>
@@ -158,11 +183,24 @@
     const lock = u => !(IS_ADMIN || csOk(u, st));
     const card = (on, locked, prev, t, d, u, attr) => `<button type="button" class="cs-c${on ? " on" : ""}${locked ? " lk" : ""}" ${locked ? "disabled" : attr}>${prev}<b>${esc(t)}</b><small>${locked ? esc(csNeed(u)) + (u && st && st[u.t] != null && u.n ? ` — сейчас ${st[u.t]} из ${u.n}` : "") : esc(d || "")}</small></button>`;
     const draw = () => {
-      q("#csT").innerHTML = [["theme", "Темы"], ["hdr", "Шапка"], ["txt", "Шрифты"], ["frame", "Рамки"], ["fx", "Эффекты"], ["layout", "Блоки"]].map(([k, l]) => `<button type="button" data-cst="${k}" aria-pressed="${csTab === k}">${l}</button>`).join("");
+      q("#csT").innerHTML = [["theme", "Темы"], ["sty", "Стиль"], ["hdr", "Шапка"], ["txt", "Шрифты"], ["frame", "Рамки"], ["fx", "Эффекты"], ["layout", "Блоки"]].map(([k, l]) => `<button type="button" data-cst="${k}" aria-pressed="${csTab === k}">${l}</button>`).join("");
       let h = "";
       if (csTab === "theme") h = `<div class="cs-g">${csThemesAll().map(t => card(cur.theme === t.id, lock(t.u), `<span class="cs-pv v6t-pv-${t.db ? "db" : t.id}" style="${t.db && t.db.img ? `background-image:url('${publicUrl(t.db.img)}')` : ""}${t.db && t.db.data && t.db.data.ac ? `;--tac:${esc(t.db.data.ac)}` : ""}"><i></i><i></i><i></i></span>`, t.t, t.d, t.u, `data-csv="theme:${esc(t.id)}"`)).join("")}</div>${IS_ADMIN && !COSM_OFF ? `<button type="button" class="ib cs-adm" data-csadd="theme">+ Своя тема (фон и цвет)</button>` : ""}`;
       else if (csTab === "frame") h = COSM_OFF ? `<p class="a-sub">Рамки появятся после обновления базы.</p>` : `<div class="cs-g">${card(!cur.frame, false, `<span class="cs-pv fr">${avaHTML(p, "big")}</span>`, "Без рамки", "", null, `data-csv="frame:"`)}${csFrames().map(f => card(cur.frame === f.id, lock(f.unlock), `<span class="cs-pv fr">${avaHTML(p, "big")}<img alt="" src="${publicUrl(f.img)}"${csFrPrev(f)}></span>`, f.title, (f.data && f.data.d) || "", f.unlock, `data-csv="frame:${esc(f.id)}"`)).join("")}</div>${csFrames().length ? "" : `<p class="a-sub">Рамок пока нет — их рисует и загружает админ.</p>`}${IS_ADMIN ? `<button type="button" class="ib cs-adm" data-csadd="frame">+ Загрузить рамки</button>${csFrames().length ? `<div class="cs-fadj"><small>Подогнать масштаб и сдвиг:</small>${csFrames().map(f => `<button type="button" class="ib" data-csfadj="${esc(f.id)}">${esc(f.title)}${csFrAud(f) ? " · личная" : ""}</button>`).join("")}</div>` : ""}` : ""}`;
       else if (csTab === "fx") h = `<div class="cs-g">${CS_FX.map(f => card(cur.fx === f.id, lock(f.u), `<span class="cs-pv fx fx-${f.id || "none"}"></span>`, f.t, f.d, f.u, `data-csv="fx:${esc(f.id)}"`)).join("")}</div><p class="a-sub" style="margin-top:8px">Эффекты не грузят телефон: на слабых экранах частиц меньше, а при «уменьшении движения» их нет совсем.</p>`;
+      else if (csTab === "sty"){ const y = cur.sty, AC = ["#ff375f", "#ff9f0a", "#ffd60a", "#30d158", "#64d2ff", "#0a84ff", "#5e5ce6", "#bf5af2", "#ff2d55", "#e5e5ea"];
+        const tg = (k, l, d) => `<label class="cs-sw"><input type="checkbox" data-csy="${k}" ${y[k] ? "checked" : ""}><span><b>${l}</b>${d ? `<small>${d}</small>` : ""}</span></label>`;
+        h = `<p class="a-sub">Мелкие настройки поверх любой темы. Всё видно сразу в профиле слева.</p>
+          <div class="cs-sty">
+            <div class="cs-sr"><b>Цвет акцента</b><small>полоски, уровень, подчёркивания этажей</small><div class="cs-acs">${AC.map(c => `<button type="button" data-csyac="${c}" style="background:${c}" aria-pressed="${y.ac === c}" aria-label="${c}"></button>`).join("")}<input type="color" data-csyc="ac" value="${csCol(y.ac) || "#5e5ce6"}" aria-label="Свой цвет">${y.ac ? `<button type="button" class="ib" data-csyx="ac">Как в теме</button>` : ""}</div></div>
+            <div class="cs-sr"><b>Скругление карточек</b><small>${y.rad == null || y.rad === "" ? "как в теме" : y.rad + " px"}</small><div class="cs-acs"><input type="range" min="0" max="30" step="1" data-csyr="rad" value="${y.rad == null || y.rad === "" ? 14 : y.rad}">${y.rad != null && y.rad !== "" ? `<button type="button" class="ib" data-csyx="rad">Как в теме</button>` : ""}</div></div>
+            <div class="cs-sr"><b>Свечение аватарки</b><small>мягкий ореол вокруг</small><div class="cs-acs">${AC.slice(0, 8).map(c => `<button type="button" data-csyglow="${c}" style="background:${c}" aria-pressed="${y.glow === c}" aria-label="${c}"></button>`).join("")}<input type="color" data-csyc="glow" value="${csCol(y.glow) || "#0a84ff"}" aria-label="Свой цвет">${y.glow ? `<button type="button" class="ib" data-csyx="glow">Убрать</button>` : ""}</div></div>
+            <div class="cs-sr"><b>Ник градиентом</b><small>два цвета слева направо</small><div class="cs-acs"><label class="cs-sw sm"><input type="checkbox" data-csyng="1" ${Array.isArray(y.ng) ? "checked" : ""}><span>вкл</span></label><input type="color" data-csyn="0" value="${(Array.isArray(y.ng) && csCol(y.ng[0])) || "#ff375f"}"><input type="color" data-csyn="1" value="${(Array.isArray(y.ng) && csCol(y.ng[1])) || "#ffd60a"}"></div></div>
+            ${tg("ring", "Переливающееся кольцо вокруг аватарки", "медленно крутится по кругу цветом акцента")}
+            ${tg("bd", "Обводка карточек цветом акцента", "тонкая рамка вокруг каждого блока")}
+            ${tg("glass", "Матовое стекло", "карточки полупрозрачные, фон профиля просвечивает")}
+            ${tg("dense", "Плотнее", "меньше отступов — больше влезает на экран")}
+          </div>`; }
       else if (csTab === "hdr"){ const d = cur.hdr || {}, has = !!(d.img || d.blob), H = has ? csHdr({cosm: {hdr: d}}) : null;
         h = `<p class="a-sub">Картинка или гифка во всю шапку профиля — поверх фона профиля. GIF до 12 МБ, обычные картинки любые (сожмём сами).</p>
           <div class="cs-hp${has ? " hb-" + H.h : " blank"}" id="csHp" role="button" tabindex="0">${has ? `<i id="csHpI"></i><div class="d7-dim" id="csHpD"></div>` : `<span>Нажми, чтобы выбрать картинку или GIF</span>`}<b>${esc(p.nick || NICK)}</b></div>
@@ -199,6 +237,11 @@
       if (cur.hdr && cur.hdr.blob) URL.revokeObjectURL(cur.hdr.blob);
       hdrFile = f; cur.hdr = {h: "m", dim: 35, x: 50, y: 50, blur: 0, ...(cur.hdr || {}), blob: URL.createObjectURL(f)}; draw(); live(); };
     s.el.addEventListener("input", e => { const el = e.target;
+      if (el.dataset.csyc){ cur.sty[el.dataset.csyc] = el.value; live(); clearTimeout(draw.t); draw.t = setTimeout(draw, 400); return; }
+      if (el.dataset.csyr){ cur.sty.rad = +el.value; const sm = el.closest(".cs-sr").querySelector("small"); if (sm) sm.textContent = el.value + " px"; live(); return; }
+      if (el.dataset.csyn != null){ const ng = Array.isArray(cur.sty.ng) ? [...cur.sty.ng] : ["#ff375f", "#ffd60a"]; ng[+el.dataset.csyn] = el.value; cur.sty.ng = ng; live(); clearTimeout(draw.t); draw.t = setTimeout(draw, 400); return; }
+      if (el.dataset.csy){ cur.sty[el.dataset.csy] = el.checked || undefined; live(); return; }
+      if (el.dataset.csyng){ if (el.checked){ const w = s.el.querySelectorAll("[data-csyn]"); cur.sty.ng = [w[0].value, w[1].value]; } else delete cur.sty.ng; live(); return; }
       if (el.dataset.csr){ const k = el.dataset.csr; cur.hdr[k] = +el.value; const v = q(`[data-csrv="${k}"]`); if (v) v.textContent = el.value + el.dataset.u; hpPaint(); live(); return; }
       const k = el.dataset.csf || el.dataset.css || el.dataset.csc; if (!k) return; const v = cur.txt[k] = {...(cur.txt[k] || {})};
       if (el.dataset.csf != null) v.f = el.value || undefined;
@@ -207,6 +250,9 @@
       const x = q(`[data-csx="${k}"]`); if (x) x.disabled = false; pvRefresh(); live(); });
     s.el.addEventListener("click", async e => {
       const t = e.target.closest("[data-cst]"); if (t){ csTab = t.dataset.cst; draw(); return; }
+      const ya = e.target.closest("[data-csyac]"); if (ya){ cur.sty.ac = ya.dataset.csyac; draw(); live(); return; }
+      const yg = e.target.closest("[data-csyglow]"); if (yg){ cur.sty.glow = yg.dataset.csyglow; draw(); live(); return; }
+      const yx = e.target.closest("[data-csyx]"); if (yx){ delete cur.sty[yx.dataset.csyx]; draw(); live(); return; }
       const v = e.target.closest("[data-csv]"); if (v){ const [k, ...rest] = v.dataset.csv.split(":"); cur[k] = rest.join(":"); draw(); live(); return; }
       const m = e.target.closest("[data-csmv]"); if (m){ const [k, d] = m.dataset.csmv.split(":"); const a = cur.layout.filter(x => CS_FLOORS.some(f => f[0] === x)); CS_FLOORS.forEach(f => { if (!a.includes(f[0])) a.push(f[0]); }); const i = a.indexOf(k), j = i + +d; [a[i], a[j]] = [a[j], a[i]]; cur.layout = a; draw(); live(); return; }
       const hd = e.target.closest("[data-cshd]"); if (hd){ const k = hd.dataset.cshd; cur.hide = cur.hide.includes(k) ? cur.hide.filter(x => x !== k) : [...cur.hide, k]; draw(); live(); return; }

@@ -47,7 +47,7 @@
     return x >= 0 && x <= 1 && y >= 0 && y <= 1 ? {x: +x.toFixed(6), y: +y.toFixed(6)} : null; };
   const plLL = p => !p ? null : p.lat != null && p.lng != null ? [+p.lng, +p.lat] : p.x != null && p.y != null ? plLegacy(+p.x, +p.y) : null;
   // запись координат; пока база не обновлена (нет колонок lat/lng) — понятная подсказка
-  const plGeoErr = e => /lat|lng|column|PGRST204/i.test(((e && e.message) || "") + ((e && e.code) || "")) ? "Нужно обновить базу: блок 5.2 из schema.sql в Supabase" : null;
+  const plGeoErr = e => /lat|lng|column|PGRST204/i.test(((e && e.message) || "") + ((e && e.code) || "")) ? "Нужно обновить базу: блок 7.29 из schema.sql в Supabase" : null;
   const PLI = {
     bar: I('<path d="M6 5h10v14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2Z"/><path d="M16 9h2a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-2M9.5 9v8M12.5 9v8M6 5c0-1.2 1-2 2.2-2 .6-.6 1.6-1 2.8-1s2.2.4 2.8 1C15 3 16 3.8 16 5"/>'),
     rest: I('<path d="M7 3v7M4.5 3v4.5a2.5 2.5 0 0 0 5 0V3M7 10v11M17.5 3C15.5 5 15 8 15 11h2.5v10"/>'),
@@ -268,8 +268,8 @@
     if (window.maplibregl) return Promise.resolve();
     if (plLibP) return plLibP;
     plLibP = new Promise((ok, no) => {
-      if (!document.querySelector('link[data-ml]')){ const l = document.createElement("link"); l.rel = "stylesheet"; l.href = PL_LIB + ".css"; l.dataset.ml = 1; document.head.appendChild(l); }
-      const s = document.createElement("script"); s.src = PL_LIB + ".js"; s.async = true;
+      if (!document.querySelector('link[data-ml]')){ const l = document.createElement("link"); l.rel = "stylesheet"; l.href = PL_LIB + ".css?v=ml5241"; l.dataset.ml = 1; document.head.appendChild(l); }
+      const s = document.createElement("script"); s.src = PL_LIB + ".js?v=ml5241"; s.async = true;
       s.onload = () => window.maplibregl ? ok() : no(new Error("lib")); s.onerror = () => { plLibP = null; s.remove(); no(new Error("lib")); }; document.head.appendChild(s);
     });
     return plLibP;
@@ -449,6 +449,7 @@
       ${!plLL(p) ? `<div class="pld-s"><p class="pld-hint">Точки на карте нет.</p><div class="acts" style="margin-top:8px"><button type="button" class="pl-btn sm cy" data-pla="pin">Поставить точку</button></div></div>` : ""}
       ${wants.length ? `<div class="pld-s"><h4>${w ? "Хотят сходить" : "Хотят ещё"}<small>${wants.length}</small></h4><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">${avaStack(wants, 8)}<span class="pld-hint">${esc(wants.map(u => u === ME.id ? "ты" : frNick(u)).join(", "))}</span></div></div>` : ""}
       ${w ? "" : `<div class="pld-s"><h4>Оценки<small>${rates.length ? `по последней оценке каждого · вкус весит вдвое` : "пока никто не оценил"}</small></h4>${summary ? `<div class="pld-sum">${summary}</div>` : ""}<div class="pld-crit">${crit}</div>${tagsH}${few ? `<p class="pld-few">Оценок пока меньше ${PL_FEW}, поэтому итог подтянут к среднему по всем местам. Без поправки было бы ${num1(raw)}.</p>` : ""}</div>`}
+      ${plEvHTML(p)}
       <div class="pld-s"><h4>Походы<small>${vs.length}</small></h4>${vs.length ? `<div class="pld-vis">${visits}</div>` : `<p class="pld-hint">Ещё не ходили. Как сходите — жми «Мы были здесь».</p>`}</div>
       ${w && !been ? "" : `<div class="pld-s"><h4>Моя оценка${dr.vid && myVs.length ? `<small>за ${esc(plVisLabel(myVs.find(v => v.id === dr.vid)))}</small>` : ""}</h4>${myRate}</div>`}
       ${rlist ? `<div class="pld-s"><h4>Кто как оценил<small>${rates.length}</small></h4>${rlist}</div>` : ""}
@@ -460,6 +461,16 @@
         <label>${PLI.cam}Фото меню<input type="file" accept="image/*" multiple hidden data-plmenu="${esc(p.id)}"></label></div></div>
       <p class="pld-meta">Добавил ${esc(p.user_id === ME.id ? "ты" : frNick(p.user_id))} · ${esc(plDay(String(p.created_at).slice(0, 10)))}</p>
     </div>`;
+  }
+  // 7.29: мероприятия, привязанные к заведению
+  function plEvHTML(p){
+    if (typeof EV === "undefined") return "";
+    if (!EV){ if (typeof loadEvents === "function") loadEvents(); return ""; }
+    const list = EV.events.filter(e => e.kind !== "watch" && e.place_id === p.id).sort((a, b) => String(b.starts_at || "9").localeCompare(String(a.starts_at || "9")));
+    const MON = ["янв", "фев", "мар", "апр", "мая", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"];
+    const row = e => { const s = evStart(e), go_ = evMem(e.id).filter(m => m.status === "going"), past = evPast(e);
+      return `<button type="button" class="pld-ev${past ? " past" : ""}" data-pla="evgo" data-e="${esc(e.id)}"><span class="d">${s ? `<b>${s.getDate()}</b><small>${MON[s.getMonth()]}</small>` : "<b>?</b>"}</span><span class="t"><b>${esc(e.title)}</b><small>${esc(past ? "прошло" : evIn(e) || "дата не назначена")}${go_.length ? ` · ${go_.length} ${plural(go_.length, past ? "был" : "идёт", past ? "были" : "идут", past ? "были" : "идут")}` : ""}</small></span>${go_.length ? avaStack(go_.map(m => m.user_id), 4) : ""}</button>`; };
+    return `<div class="pld-s"><h4>Мероприятия здесь<small>${list.length || ""}</small></h4>${list.length ? `<div class="pld-evs">${list.map(row).join("")}</div>` : `<p class="pld-hint">Сюда ещё не собирались. Создай встречу — она появится и в «Мероприятиях».</p>`}<div class="acts" style="margin-top:8px"><button type="button" class="pl-btn sm cy" data-pla="evnew">${ICON.party || ICON.plus}Собраться здесь</button></div></div>`;
   }
   // черновик моей оценки — за выбранный поход (по умолчанию последний, где я был); новую оценку начинаем с прошлой
   function plDraftOf(pid){
@@ -517,6 +528,8 @@
     const b = t.closest("[data-pla]"); if (!b || !root.contains(b)) return;
     const pid = plPidOf(b), p = plById(pid), a = b.dataset.pla; if (!p && a !== "back") return;
     if (a === "back"){ plS.panel = null; plDrawSide(); return; }
+    if (a === "evgo"){ if (plSheet) plSheet.s.close(); go("event:" + b.dataset.e); return; }
+    if (a === "evnew"){ if (typeof eventSheet === "function"){ if (typeof FR !== "undefined" && !FR) await loadFriends(); eventSheet(null, {place_id: pid}); } return; }
     if (a === "fly"){ if (plSheet) plSheet.s.close(); plSelect(pid, {fly: true}); return; }
     if (a === "visit"){ plVisitSheet(pid); return; }
     if (a === "edit"){ plForm(p); return; }
@@ -637,7 +650,7 @@
   function plAdd(){ if (!plReady()) return; plS.panel = null; plStartPlacing({title: "Новое место: тапни по карте, где оно", skip: true, done: (u, v) => plForm(null, {lng: u, lat: v})}); }
   function plMovePin(p){ const ll = plLL(p); plStartPlacing({title: `Новая точка для «${p.name}»: тапни по карте`, u: ll ? ll[0] : null, v: ll ? ll[1] : null, done: async (u, v) => {
     let {error} = await SB.from("places").update({lng: u, lat: v, x: null, y: null, updated_at: now()}).eq("id", p.id);
-    if (error && plGeoErr(error)){ const o = plToOld(u, v); if (!o){ toast("Сюда точку можно будет ставить после обновления базы (блок 5.2 в schema.sql)"); return; } ({error} = await SB.from("places").update({...o, updated_at: now()}).eq("id", p.id)); }
+    if (error && plGeoErr(error)){ const o = plToOld(u, v); if (!o){ toast("Точку здесь база пока не принимает — нужно обновление базы (блок 7.29 в schema.sql), напиши владельцу"); return; } ({error} = await SB.from("places").update({...o, updated_at: now()}).eq("id", p.id)); }
     if (error){ plFail(error); return; }
     toast("Точка перенесена"); await loadPlaces(true); plSelect(p.id, {fly: true}); } }); }
   function plForm(p, init = {}){
@@ -683,7 +696,7 @@
         const row = {name: name.slice(0, 120), kind, gis_url: gis || null, address: q("#plfA").value.trim().slice(0, 200) || null, photo};
         let id = p && p.id;
         if (isNew){ let r = await SB.from("places").insert({...row, user_id: ME.id, ...(init.lng != null ? {lng: init.lng, lat: init.lat} : {})}).select().single();
-          if (r.error && plGeoErr(r.error) && init.lng != null){ const o = plToOld(init.lng, init.lat); if (!o){ const g = "Сюда точку можно будет ставить после обновления базы (блок 5.2 в schema.sql)"; toast(g); throw {message: g, shown: 1}; } r = await SB.from("places").insert({...row, user_id: ME.id, ...o}).select().single(); }
+          if (r.error && plGeoErr(r.error) && init.lng != null){ const o = plToOld(init.lng, init.lat); if (!o){ const g = "Точку здесь база пока не принимает — нужно обновление базы (блок 7.29 в schema.sql), напиши владельцу"; toast(g); throw {message: g, shown: 1}; } r = await SB.from("places").insert({...row, user_id: ME.id, ...o}).select().single(); }
           if (r.error) throw r.error; id = r.data.id;
           await loadPlaces(true);
           if (mode === "been") await plSaveVisit(id, q("#plfD").value, [...who]);

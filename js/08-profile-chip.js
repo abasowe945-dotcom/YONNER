@@ -2,7 +2,7 @@
   let SECBG = null;
   const SEC_NAMES = {home: "Главная", games: "Игры", kino: "Кино", read: "Читалка", slop: "СЛОП", calendar: "Календарь", people: "Активность", more: "Ещё"};
   function fillMeSlots(){
-    const html = ME ? `<button class="me-chip" data-profile="1" title="Профиль и настройки">${avaHTML(myProf(), "sm")}<span class="nm">${esc(NICK)}</span></button>` : "";
+    const html = ME ? `<button class="me-chip" data-profile="1" title="Профиль и настройки"><span class="me-avw">${avaHTML(myProf(), "sm")}<i class="e7-avb sm" role="button" tabindex="-1" data-avaedit="1" title="Сменить аватарку" aria-label="Сменить аватарку">${ICON.img}</i></span><span class="nm">${esc(NICK)}</span></button>` : "";
     document.querySelectorAll(".me-slot").forEach(e => { if (e.innerHTML !== html) e.innerHTML = html; });
   }
   function applySecBg(){

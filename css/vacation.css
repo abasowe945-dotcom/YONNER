@@ -38,7 +38,7 @@
 .vc-ovl p{margin:0;font:500 13.5px/1.4 var(--ios);color:var(--c-dim)}.vc-ovl b{color:var(--c-fg)}
 .vc-ovl i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px}
 .vc-note{margin:10px 2px 0;color:var(--c-dim);font:500 12.5px/1.45 var(--ios)}
-.vc-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:12px;user-select:none;-webkit-user-select:none}
+.vc-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:12px;user-select:none;-webkit-user-select:none}
 .vc-m{padding:14px 12px 12px;border-radius:18px;background:var(--c-cell);box-shadow:var(--c-shadow)}
 .vc-m h3{margin:0 4px 10px;font:700 15px/1 var(--ios);text-transform:capitalize}
 .vc-w,.vc-d{display:grid;grid-template-columns:repeat(7,1fr)}

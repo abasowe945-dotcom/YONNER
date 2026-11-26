@@ -5,7 +5,7 @@
 // вход, запись и realtime — только сеть. При выходе из аккаунта кэш данных стирается.
 // АВАРИЙНЫЙ ВЫКЛЮЧАТЕЛЬ: поставь KILL = true и закоммить — service worker удалится у всех при следующем заходе.
 const KILL = false;
-const VERSION = "7.28";
+const VERSION = "7.29";
 const SITE = "nexus-site", LIBS = "nexus-libs", DATA = "nexus-data";
 
 self.addEventListener("install", () => self.skipWaiting());
@@ -17,6 +17,8 @@ self.addEventListener("activate", e => e.waitUntil((async () => {
     return;
   }
   for (const k of await caches.keys()) if (![SITE, LIBS, DATA].includes(k)) await caches.delete(k);
+  // старые версии скриптов и стилей (?v=…) больше не нужны
+  try { const c = await caches.open(SITE); for (const r of await c.keys()){ const v = new URL(r.url).searchParams.get("v"); if (v && v !== VERSION && /\/(js|css)\//.test(r.url)) await c.delete(r); } } catch(_){ /* ожидаемо: кэш недоступен */ }
   await self.clients.claim();
 })()));
 
@@ -28,6 +30,9 @@ self.addEventListener("fetch", e => {
   const u = new URL(req.url);
   if (u.origin === location.origin){
     if (u.pathname.endsWith("/sw.js")) return;
+    // 7.29: скрипты и стили с ?v= не меняются внутри версии — берём из кэша сразу, без 25 запросов к GitHub при каждом заходе.
+    // Новая версия = новый ?v= в index.html (а он всегда из сети), значит и файлы скачаются новые.
+    if (/(^|&)v=/.test(u.search.slice(1))){ e.respondWith(versioned(req)); return; }
     e.respondWith(networkFirst(req)); return;
   }
   if (u.hostname.endsWith(".supabase.co") && u.pathname.startsWith("/rest/v1/")){ e.respondWith(dataFirst(req)); return; }
@@ -49,6 +54,15 @@ async function networkFirst(req){
     if (hit) return hit;
     throw err;
   }
+}
+async function versioned(req){
+  const c = await caches.open(SITE);
+  const hit = await c.match(req.url); if (hit) return hit;
+  try {
+    const r = await fetch(req);
+    if (r && r.ok){ c.put(req.url, r.clone()).catch(() => {}); c.put(stripSearch(req), r.clone()).catch(() => {}); } // ожидаемо: кончилось место
+    return r;
+  } catch (err){ const old = await c.match(stripSearch(req)); if (old) return old; throw err; }
 }
 async function dataFirst(req){
   const c = await caches.open(DATA);

@@ -13,7 +13,7 @@ function fixtures(nItemsFriend) {
   const items = []; for (let i = 0; i < nItemsFriend; i++) items.push({id: "f" + i, user_id: FUID, data: {title: "Игра " + i, kind: "game", status: "done", added: now}, updated_at: now});
   return {
     profiles: [{user_id: UID, nick: "TESTER", created_at: now}, {user_id: FUID, nick: "FRIEND", created_at: now}],
-    public_items: items, is_nexus_admin: true,
+    public_items: items, public_items_lite: items.map(x => ({...x, data: {...x.data, desc: undefined}})), public_items_of: items, is_nexus_admin: true,
     // живая лента: всё от друга, свежее
     events: [{id: "e1", owner: FUID, title: "Шашлыки", created_at: now, kind: "meet"}, {id: "e2", owner: FUID, title: "ДР СК", created_at: now, kind: "meet", starts_at: new Date(Date.now() + 3 * 864e5).toISOString()}, {id: "e3", owner: UID, title: "Прошлая встреча", created_at: now, kind: "meet", starts_at: new Date(Date.now() - 5 * 864e5).toISOString()}],
     item_reactions: [{owner: FUID, item_id: "x", user_id: UID, kind: "base", created_at: now}],

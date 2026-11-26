@@ -715,11 +715,13 @@
     const at = it => mine ? `data-id="${esc(it.id)}"` : `data-fi="${esc(uid + "/" + it.id)}"`;
     const gDate = it => it.finishedAt || it.date || null;
     const byDate = list => [...list].sort((a, b) => (gDate(b) || "").localeCompare(gDate(a) || ""));
-    const big = (it, sub, drop) => `<button class="v6-pc${drop ? " v6-drop" : ""}" ${at(it)} title="${esc(it.title)}">${posterHTML(it, {tgt: false, badge: !drop})}${drop ? `<span class="v6-stamp">ДРОП</span>` : ""}<span class="ti">${esc(it.title)}</span>${sub ? `<small>${sub}</small>` : ""}</button>`;
+    const big = (it, sub, drop) => `<button class="v6-pc${drop ? " v6-drop" : ""}" ${at(it)} title="${esc(it.title)}">${posterHTML(it, {tgt: false, badge: !drop})}${drop ? `<span class="v6-stamp">ДРОП</span>` : ""}<span class="ti">${esc(it.title)}</span>${sub ? `<small>${sub}</small>` : ""}<span class="e7-gx">${esc([genres(it).slice(0, 3).join(", "), it.year].filter(Boolean).join(" · "))}</span></button>`;
+    // 7.29: витрина тянется по ширине от числа карточек — при трёх и меньше крупные карточки с подписью, без пустоты справа
+    const topCls = n => `v6-top n${n}${n <= 3 ? " feat" : ""}" style="--n:${n}`;
     const favN = Math.max(1, Math.min(6, +((p.cosm && p.cosm.favN) || 6)));
     const favBlock = (list, key) => { if (!list.length) return empty("Пока не выбрал любимые", key);
-      return `<div class="v6-top">${list.slice(0, favN).map((it, i) => big(it, `<b>#${i + 1}</b>${typeof it.rating === "number" ? ` · <span class="r ${rateCls(it.rating)}">${num1(it.rating)}</span>` : ""}`)).join("")}</div>`; };
-    const lastBlock = (list, txt, drop) => list.length ? `<div class="v6-top">${byDate(list).slice(0, 6).map(it => big(it, gDate(it) ? fmtShort(gDate(it)) : "без даты", drop)).join("")}</div>` : empty(txt);
+      return `<div class="${topCls(Math.min(favN, list.length))}">${list.slice(0, favN).map((it, i) => big(it, `<b>#${i + 1}</b>${typeof it.rating === "number" ? ` · <span class="r ${rateCls(it.rating)}">${num1(it.rating)}</span>` : ""}`)).join("")}</div>`; };
+    const lastBlock = (list, txt, drop) => list.length ? `<div class="${topCls(Math.min(6, list.length))}">${byDate(list).slice(0, 6).map(it => big(it, gDate(it) ? fmtShort(gDate(it)) : "без даты", drop)).join("")}</div>` : empty(txt);
     const allBtn = (k, n, l) => n > 0 ? `<button class="pf-mini v6-all-b" type="button" data-v6all="${k}${mine ? "" : ":" + esc(uid)}">${l} · ${n}</button>` : "";
     const fh = (ic, title, href, kind) => `<div class="pf-fh"><span class="ic">${ic}</span><h2>${title}</h2><span class="pf-fh-r"><button class="pf-fh-b upd" type="button" data-upd="${kind}${mine ? "" : ":" + esc(uid)}">${ICON.clock}Обновления</button><a href="${href}">вся полка ›</a></span></div>`;
     // ---- кино
@@ -748,7 +750,7 @@
         <div class="pf-acts">${mine ? `<button class="pf-btn v6-cs-b" type="button" data-cosm="1">${ICON.palette || ICON.edit}<span>Оформление</span></button><button class="pf-btn ic" type="button" data-pfbg="1" title="Фон профиля" aria-label="Фон профиля">${ICON.wall}</button><button class="pf-btn ic" type="button" data-profile="1" title="Редактировать профиль" aria-label="Редактировать профиль">${ICON.edit}</button>${vacHas(ME.id) ? `<button class="pf-btn ic" type="button" data-vacof="${esc(ME.id)}" title="Отпуск" aria-label="Отпуск">${VC_I.palm}</button>` : ""}`
           : `<a class="pf-btn" href="#fv:${esc(uid)}:games">${ICON.games}<span>Полка игр</span></a><a class="pf-btn" href="#fv:${esc(uid)}:kino">${ICON.kino}<span>Полка кино</span></a>${vacHas(uid) ? `<button class="pf-btn ic" type="button" data-vacof="${esc(uid)}" title="Отпуск" aria-label="Отпуск">${VC_I.palm}</button>` : ""}`}</div>
         <div class="d7-top">
-          <div class="pf-ava v6s-${avaShape(p)}${csOf(p).frame ? " has-frame" : ""}">${avaBigHTML(p)}${csFrameHTML(p)}</div>
+          <div class="pf-ava v6s-${avaShape(p)}${csOf(p).frame ? " has-frame" : ""}" style="${avaBoxStyle(p)}">${avaBigHTML(p)}${csFrameHTML(p)}${mine ? `<button type="button" class="e7-avb" data-avaedit="1" title="Сменить аватарку" aria-label="Сменить аватарку">${ICON.img}</button>` : ""}</div>
           <div class="pf-id">
             <div class="d7-k">${p.pid ? `<button class="pf-pid" type="button" data-pid="${esc(p.pid)}" title="Скопировать ID">ИГРОК № ${esc(p.pid)}</button>` : "<span>ИГРОК</span>"}<span class="pf-lvl" title="Уровень растёт за дела на сайте: 30 опыта — уровень. Сейчас ${L.xp} опыта, до следующего ${L.next - L.xp}">УРОВЕНЬ ${L.lv}<i class="d7-lb"><i style="width:${Math.round(L.pct)}%"></i></i></span>${typeof v6Tags === "function" ? v6Tags(mine ? ME.id : uid) : ""}</div>
             <h1 style="--nl:${Math.max(3, nl)}">${esc(nk)}</h1>
@@ -790,6 +792,8 @@
     wireHScrolls(); csFxApply(p); csCheckNew();
   }
 
+  // 7.29: кнопка смены аватарки прямо на аватарке (в профиле и в шапке сайта)
+  document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-avaedit]"); if (!b || !ME) return; e.preventDefault(); e.stopPropagation(); avaSheet(false).then(st => { if (st) render(); }); }, true);
   // выбор любимых и «сейчас играю» из своей полки
   function pfPick(key){
     const [kind, flag] = key.split(":");

@@ -1084,3 +1084,37 @@ alter table public.notifications add constraint notifications_kind_check check (
 -- ===== 7.14: эмодзи-реакции на записи (kind вида e_skull, e_rose...) =====
 alter table public.item_reactions drop constraint if exists item_reactions_kind_check;
 alter table public.item_reactions add constraint item_reactions_kind_check check (kind in ('base','want','cringe','skull') or kind ~ '^e_[a-z0-9]{1,12}$');
+
+-- ===== 7.29: большой патч — одним куском, можно запускать сколько угодно раз =====
+-- (а) живая карта: координаты мест. Без них новое место можно было поставить только в старом центре карты
+alter table public.places add column if not exists lat double precision check (lat is null or (lat between 61.5 and 62.5));
+alter table public.places add column if not exists lng double precision check (lng is null or (lng between 129 and 130.6));
+grant update (lat, lng) on public.places to authenticated;
+-- (б) эмодзи-реакции на записи (повтор 7.14 на случай, если его не запускали)
+alter table public.item_reactions drop constraint if exists item_reactions_kind_check;
+alter table public.item_reactions add constraint item_reactions_kind_check check (kind in ('base','want','cringe','skull') or kind ~ '^e_[a-z0-9]{1,12}$');
+-- (в) мероприятие можно привязать к заведению: в мероприятии видно место, в заведении — его мероприятия
+alter table public.events add column if not exists place_id uuid references public.places (id) on delete set null;
+create index if not exists events_place_idx on public.events (place_id);
+-- (г) быстрая загрузка: записи друзей без длинных описаний и актёров; полная запись — по запросу, когда её открывают
+create or replace function public.public_items_lite()
+returns table (id text, user_id uuid, data jsonb, updated_at timestamptz)
+language sql stable security definer set search_path = ''
+as $$
+  select i.id, i.user_id, i.data - 'note' - 'dropReason' - 'desc' - 'short' - 'cast' - 'screens' - 'screenshots', i.updated_at
+  from public.items i
+  where (select auth.uid()) is not null
+$$;
+revoke all on function public.public_items_lite() from public, anon;
+grant execute on function public.public_items_lite() to authenticated;
+create or replace function public.public_items_of(p_uid uuid)
+returns table (id text, user_id uuid, data jsonb, updated_at timestamptz)
+language sql stable security definer set search_path = ''
+as $$
+  select i.id, i.user_id, i.data - 'note' - 'dropReason', i.updated_at
+  from public.items i
+  where (select auth.uid()) is not null and i.user_id = p_uid
+$$;
+revoke all on function public.public_items_of(uuid) from public, anon;
+grant execute on function public.public_items_of(uuid) to authenticated;
+notify pgrst, 'reload schema';
