@@ -1118,3 +1118,22 @@ $$;
 revoke all on function public.public_items_of(uuid) from public, anon;
 grant execute on function public.public_items_of(uuid) to authenticated;
 notify pgrst, 'reload schema';
+
+-- ===== 7.31: студия профиля — видео и звук в хранилище, лайки тем =====
+-- (а) в хранилище можно класть видео и звук (фон профиля, звук профиля), не только картинки
+update storage.buckets set allowed_mime_types = array['image/png','image/jpeg','image/webp','image/gif','video/mp4','video/webm','audio/mpeg','audio/mp4','audio/ogg','audio/wav','audio/x-m4a','audio/aac'] where id = 'media';
+-- (б) лайки на темы, которые друзья сохранили у себя в профиле
+create table if not exists public.theme_likes (
+  owner      uuid not null references auth.users (id) on delete cascade,
+  tid        text not null check (char_length(tid) between 1 and 40),
+  user_id    uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (owner, tid, user_id)
+);
+alter table public.theme_likes enable row level security;
+do $$ begin create policy thl_select on public.theme_likes for select to authenticated using (true); exception when duplicate_object then null; end $$;
+do $$ begin create policy thl_insert on public.theme_likes for insert to authenticated with check ((select auth.uid()) = user_id); exception when duplicate_object then null; end $$;
+do $$ begin create policy thl_delete on public.theme_likes for delete to authenticated using ((select auth.uid()) = user_id); exception when duplicate_object then null; end $$;
+revoke all on public.theme_likes from anon;
+grant select, insert, delete on public.theme_likes to authenticated;
+notify pgrst, 'reload schema';

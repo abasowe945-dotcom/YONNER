@@ -56,7 +56,7 @@
     const body = k => k === "track" ? lyTrackHTML(p, mine, ed) : k === "cnt" ? lyCntHTML(p, mine) : parts[k] || "";
     const tools = (x, i) => ed ? `<div class="ly-tb"><span class="ly-h" data-lydrag="${x.k}" title="Тащи, чтобы переставить">${ICON.drag}</span><b>${esc(LY_NAME[x.k])}</b>
       ${x.z === "m" ? `<span class="ly-ws">${[1, 2, 3, 4].map(w => `<button type="button" data-lyw="${x.k}:${w}" aria-pressed="${x.w === w}" title="Ширина ${w}/4">${w}</button>`).join("")}</span>` : ""}
-      <button type="button" class="ly-z" data-lyz="${x.k}" title="${x.z === "m" ? "Убрать в колонку сбоку" : "Вернуть в основную часть"}">${x.z === "m" ? "в колонку" : "в основу"}</button><button type="button" class="ly-x" data-lyhide="${x.k}" title="Убрать блок" aria-label="Убрать блок">${ICON.x}</button></div>` : "";
+      <button type="button" class="ly-z" data-stbb="${x.k}" title="Свой фон за этим блоком">фон</button><button type="button" class="ly-z" data-lyz="${x.k}" title="${x.z === "m" ? "Убрать в колонку сбоку" : "Вернуть в основную часть"}">${x.z === "m" ? "в колонку" : "в основу"}</button><button type="button" class="ly-x" data-lyhide="${x.k}" title="Убрать блок" aria-label="Убрать блок">${ICON.x}</button></div>` : "";
     const blk = (x, i) => { let h = body(x.k);
       if (!h){ if (!ed) return ""; h = `<div class="ly-ph">${LY_ONLY_ME[x.k] ? "Этот блок видишь только ты — друзьям он не покажется" : LY_ONLY_THEM[x.k] ? "Появится, когда к тебе зайдёт друг: ваше совпадение вкусов" : "Пока пусто"}</div>`; }
       return `<div class="ly-b${x.z === "m" ? " w" + x.w : ""}" data-lyk="${x.k}">${tools(x, i)}${h}</div>`; };
@@ -88,6 +88,7 @@
   const lyParallax = () => { lyPx = 0; const y = scrollY; document.querySelectorAll(".lyx-l").forEach(el => { el.style.transform = `translate3d(0,${(-y * (+el.dataset.dp || 0) * .5).toFixed(1)}px,0)`; }); };
   window.addEventListener("scroll", () => { if (lyPx || !document.querySelector(".lyx-l")) return; if (matchMedia("(prefers-reduced-motion: reduce)").matches) return; lyPx = requestAnimationFrame(lyParallax); }, {passive: true});
   function lyAfter(p, mine){
+    if (typeof stAfter === "function") stAfter(p, mine);
     if (document.querySelector(".lyx-l")) lyParallax();
     document.body.classList.toggle("has-lyx", !!document.querySelector(".lyx"));
     document.body.classList.toggle("ly-editing", lyEditing(mine));
@@ -98,14 +99,16 @@
     if (!lyEditing(mine)) return "";
     const c = lyNorm(LY_ED.grid) || lyNorm(LY_PRESET.launcher());
     return `<div class="ly-bar" role="toolbar" aria-label="Конструктор профиля"><div class="ly-bar-in">
-      <div class="ly-lays">${LY_LAYS.map(([k, l, d]) => `<button type="button" data-lylay="${k}" aria-pressed="${c.lay === k}" title="${esc(d)}">${esc(l)}</button>`).join("")}${c.lay === "custom" ? `<button type="button" aria-pressed="true" disabled>Своя</button>` : ""}</div>
-      <div class="ly-bacts"><button type="button" class="pf-btn" data-lyhd="1">Шапка</button><button type="button" class="pf-btn" data-lybg="1">Фон</button><button type="button" class="pf-btn" data-lyadd="1">${ICON.plus}Блок</button><button type="button" class="pf-btn" data-lyreset="1" title="Вернуть профиль как был">Сбросить</button><span class="sp"></span><button type="button" class="pf-btn" data-lyno="1">Отмена</button><button type="button" class="pf-btn ly-ok" data-lyok="1">Готово</button></div></div></div>`;
+      <div class="ly-lays">${LY_LAYS.map(([k, l, d]) => `<button type="button" data-lylay="${k}" aria-pressed="${c.lay === k}" title="${esc(d)}">${esc(l)}</button>`).join("")}${c.lay === "custom" ? `<button type="button" aria-pressed="true" disabled>Своя</button>` : ""}<span class="sp"></span><button type="button" class="pf-btn" data-lyno="1">Отмена</button><button type="button" class="pf-btn ly-ok" data-lyok="1">Готово</button></div>
+      <div class="ly-bacts"><button type="button" class="pf-btn" data-lyhd="1">Шапка</button><button type="button" class="pf-btn" data-stnk="1">Ник</button><button type="button" class="pf-btn" data-lybg="1">Фон</button><button type="button" class="pf-btn" data-stpal="1">Палитра</button><button type="button" class="pf-btn" data-stadd="1">Стикер</button><button type="button" class="pf-btn" data-stsnd="1">${ICON.sound || ""}Звук</button><button type="button" class="pf-btn" data-lyadd="1">${ICON.plus}Блок</button><button type="button" class="pf-btn" data-stgal="1">Темы друзей</button><button type="button" class="pf-btn" data-stsave="1">Сохранить как тему</button><button type="button" class="pf-btn" data-lyreset="1" title="Вернуть профиль как был">Сбросить</button></div></div></div>`;
   }
   const lyJ = o => JSON.parse(JSON.stringify(o == null ? null : o));
-  function lyStart(){
-    if (!ME) return; if (route !== "home"){ go("home"); setTimeout(lyStart, 400); return; }
+  function lyStart(quiet){
+    if (!ME) return; if (route !== "home" && !quiet){ go("home"); setTimeout(lyStart, 400); return; }
     const c = (MEP && MEP.cosm) || {};
-    LY_ED = {grid: lyNorm(c.grid) || lyNorm(LY_PRESET.launcher()), track: lyJ(c.track) || null, cnt: lyJ(c.cnt) || [], bgx: lyJ(c.bgx) || null, files: {}};
+    LY_ED = {grid: lyNorm(c.grid) || lyNorm(LY_PRESET.launcher()), track: lyJ(c.track) || null, cnt: lyJ(c.cnt) || [], bgx: lyJ(c.bgx) || null, files: {},
+      pal: lyJ(c.pal) || null, nk: lyJ(c.nk) || {}, stk: lyJ(c.stk) || [], bb: lyJ(c.bb) || {}, snd: lyJ(c.snd) || null};
+    if (quiet) return;
     toast("Конструктор: тащи блоки за ручку, меняй ширину, раскладку, шапку и фон. В конце — «Готово»"); render();
   }
   const lyDraw = () => { const y = scrollY; render(); scrollTo(0, y); };
@@ -120,8 +123,15 @@
       if (bgx && Array.isArray(bgx.ly)) for (const l of bgx.ly){ const f = LY_ED.files["ly" + l.key]; if (f) l.img = await up(f, 3.4 * 1024 * 1024); delete l.key; }
       if (bgx && bgx.media && String(bgx.media.id || "").startsWith("blob:")) delete bgx.media;
       if (bgx && Array.isArray(bgx.ly)) bgx.ly = bgx.ly.filter(l => l.img && !String(l.img).startsWith("blob:"));
-      const cosm = {...((MEP && MEP.cosm) || {}), grid: LY_ED.grid, track: LY_ED.track || undefined, cnt: (LY_ED.cnt || []).length ? LY_ED.cnt : undefined, bgx: bgx || undefined};
-      if (await saveProf({cosm})){ LY_ED = null; toast("Профиль сохранён"); SND.click(); render(); return; }
+      // 7.31: стикеры, фон блоков и звук — тоже файлы
+      const stk = lyJ(LY_ED.stk || []); for (const x of stk){ if (x.fk){ const f = LY_ED.files[x.fk]; if (f) x.img = await up(f, 1.5 * 1024 * 1024); delete x.fk; } }
+      const bb = lyJ(LY_ED.bb || {}); for (const k of Object.keys(bb)){ const x = bb[k]; if (x && x.fk){ const f = LY_ED.files[x.fk]; if (f) x.img = await up(f, 3.4 * 1024 * 1024); delete x.fk; } if (x && String(x.img || "").startsWith("blob:")) delete x.img; if (!x || !(x.img || x.grad)) delete bb[k]; }
+      let snd = LY_ED.snd ? lyJ(LY_ED.snd) : null; if (snd && LY_ED.files.snd){ snd.id = await up(LY_ED.files.snd, 3.4 * 1024 * 1024); } if (snd && String(snd.id || "").startsWith("blob:")) snd = null;
+      const stkOk = stk.filter(x => x.e || (x.img && !String(x.img).startsWith("blob:")));
+      const cosm = {...((MEP && MEP.cosm) || {}), ...(LY_ED.cs || {}), grid: LY_ED.grid, track: LY_ED.track || undefined, cnt: (LY_ED.cnt || []).length ? LY_ED.cnt : undefined, bgx: bgx || undefined,
+        pal: LY_ED.pal || undefined, nk: LY_ED.nk && Object.keys(LY_ED.nk).some(k => LY_ED.nk[k] != null) ? LY_ED.nk : undefined, stk: stkOk.length ? stkOk : undefined, bb: Object.keys(bb).length ? bb : undefined, snd: snd || undefined};
+      if (LY_ED.saveAs){ const look = stLook(cosm), sv = Array.isArray(cosm.saved) ? cosm.saved.slice() : []; sv.unshift({id: "t" + Date.now().toString(36), name: LY_ED.saveAs, look, at: today()}); cosm.saved = sv.slice(0, 8); }
+      if (await saveProf({cosm})){ const sa = LY_ED.saveAs; LY_ED = null; CS_PREV = null; stSel = null; toast(sa ? `Профиль сохранён, тема «${sa}» в галерее` : "Профиль сохранён"); SND.click(); render(); return; }
     } catch(err){ toast(err && err.code === "too_large" ? "Файл тяжелее 3,4 МБ — сожми его, иначе он не откроется у друзей без VPN" : "Не сохранилось"); if (!(err && err.code)) logErr("конструктор: сохранение", err); }
     if (b){ b.disabled = false; b.textContent = "Готово"; }
   }
@@ -142,7 +152,7 @@
     if (d.lyhd){ lyHeadSheet(); return; }
     if (d.lybg){ lyBgSheet(); return; }
     if (d.lyreset){ if (!confirm("Вернуть профиль как был до конструктора? Трек, счётчики и фон останутся, раскладка станет обычной.")) return; LY_ED.grid = lyNorm(LY_PRESET.launcher()); LY_ED.reset = true; lyDraw(); return; }
-    if (d.lyno){ LY_ED = null; document.body.classList.remove("ly-editing"); render(); return; }
+    if (d.lyno){ LY_ED = null; CS_PREV = null; stSel = null; document.querySelectorAll(".stk-tb").forEach(x => x.remove()); document.body.classList.remove("ly-editing"); render(); return; }
     if (d.lyok){ if (LY_ED.reset && LY_ED.grid && LY_ED.grid.lay === "launcher") LY_ED.grid = null; lySave(); return; }
   }, true);
   // ---- перетаскивание блоков за ручку (мышь и палец)
