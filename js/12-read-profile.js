@@ -745,9 +745,9 @@
     // 7.0: шапка «Журнал» — огромный ник, тонкая типографика, игры в процессе таблетками
     const HD = csHdr(p), lb = (n, a, b) => `${n} ${plural(n, ...a)}${b != null ? `, ${b}` : ""}`;
     const nk = p.nick || NICK, nl = [...nk].length;
-    const head = `<section class="pf-head d7${HD ? " has-hb hb-" + HD.h : ""}">
+    const head = `<section class="pf-head d7${HD ? " has-hb hb-" + HD.h : ""}${typeof lyHeadCls === "function" ? lyHeadCls(p) : ""}">
         ${HD ? `<div class="d7-hb" aria-hidden="true"><i style="background-image:url('${esc(HD.url)}');background-position:${HD.x}% ${HD.y}%;${HD.blur ? `filter:blur(${HD.blur}px);inset:-${HD.blur * 2}px;` : ""}"></i></div><div class="d7-dim" style="--dim:${HD.dim / 100}"></div>` : ""}
-        <div class="pf-acts">${mine ? `<button class="pf-btn v6-cs-b" type="button" data-cosm="1">${ICON.palette || ICON.edit}<span>Оформление</span></button><button class="pf-btn ic" type="button" data-pfbg="1" title="Фон профиля" aria-label="Фон профиля">${ICON.wall}</button><button class="pf-btn ic" type="button" data-profile="1" title="Редактировать профиль" aria-label="Редактировать профиль">${ICON.edit}</button>${vacHas(ME.id) ? `<button class="pf-btn ic" type="button" data-vacof="${esc(ME.id)}" title="Отпуск" aria-label="Отпуск">${VC_I.palm}</button>` : ""}`
+        <div class="pf-acts">${mine ? `<button class="pf-btn ly-eb" type="button" data-lyedit="1" title="Двигать блоки, менять раскладку, шапку и фон прямо здесь">${ICON.drag}<span>Конструктор</span></button><button class="pf-btn v6-cs-b" type="button" data-cosm="1">${ICON.palette || ICON.edit}<span>Оформление</span></button><button class="pf-btn ic" type="button" data-pfbg="1" title="Фон профиля" aria-label="Фон профиля">${ICON.wall}</button><button class="pf-btn ic" type="button" data-profile="1" title="Редактировать профиль" aria-label="Редактировать профиль">${ICON.edit}</button>${vacHas(ME.id) ? `<button class="pf-btn ic" type="button" data-vacof="${esc(ME.id)}" title="Отпуск" aria-label="Отпуск">${VC_I.palm}</button>` : ""}`
           : `<a class="pf-btn" href="#fv:${esc(uid)}:games">${ICON.games}<span>Полка игр</span></a><a class="pf-btn" href="#fv:${esc(uid)}:kino">${ICON.kino}<span>Полка кино</span></a>${vacHas(uid) ? `<button class="pf-btn ic" type="button" data-vacof="${esc(uid)}" title="Отпуск" aria-label="Отпуск">${VC_I.palm}</button>` : ""}`}</div>
         <div class="d7-top">
           <div class="pf-ava v6s-${avaShape(p)}${csOf(p).frame ? " has-frame" : ""}" style="${avaBoxStyle(p)}">${avaBigHTML(p)}${csFrameHTML(p)}${mine ? `<button type="button" class="e7-avb" data-avaedit="1" title="Сменить аватарку" aria-label="Сменить аватарку">${ICON.img}</button>` : ""}</div>
@@ -780,16 +780,25 @@
         ${show("Сейчас читаю", nowR.length || null, rack(nowR, "read:now", "Ничего не отметил", true), {cls: "shelf", act: R("rnow", nowR)})}
         ${show("Прочитанные", doneR.length || null, rack(doneR, null, "Пока ничего не дочитал"), {cls: "shelf", act: R("rdone", doneR)})}
       </section>`;
-    const side = `<aside class="pf-side">${mine ? `<div class="v6-d-only">${evNextCard()}</div>${v6TasksCard()}${v6NagCard()}${v6RxCard()}` : ""}
-        <div class="pf-card"><h3>${ICON.trophy}Рейтинг<small>сезон месяца</small></h3>${topHTML3(10)}</div>
-        <div class="pf-card"><h3>${ICON.people}${mine ? "Лента друзей" : "Активность"}${mine ? `<small><a href="#people">вся ›</a></small>` : ""}</h3>${FR ? (feed.length ? `<div class="pf-feed">${feed.map(e => pfFeedRow(e, mine)).join("")}</div>` : `<p class="pf-mute">Пока тихо.</p>`) : `<p class="pf-mute">Загружаю…</p>`}</div>
-        ${c.pct != null ? `<div class="pf-card"><h3>${HEART_O}Совпадение вкусов<small>${c.common.length} общих</small></h3><div class="pf-cmp"><b class="${pctCls(c.pct)}">${c.pct}%</b>${[...c.common].sort((a, b) => a.d - b.d).slice(0, 4).map(x => `<div class="r"><span>${esc(x.f.title)}</span><span>${num1(x.m.rating)} / ${num1(x.f.rating)}</span></div>`).join("")}</div></div>` : ""}
+    // 7.30: боковые карточки — отдельными кусками, чтобы конструктор профиля мог ставить их куда угодно
+    const SC = {
+      ev: mine ? evNextCard() : "", tasks: mine ? v6TasksCard() : "", nag: mine ? v6NagCard() : "", rx: mine ? v6RxCard() : "",
+      top: `<div class="pf-card"><h3>${ICON.trophy}Рейтинг<small>сезон месяца</small></h3>${topHTML3(10)}</div>`,
+      feed: `<div class="pf-card"><h3>${ICON.people}${mine ? "Лента друзей" : "Активность"}${mine ? `<small><a href="#people">вся ›</a></small>` : ""}</h3>${FR ? (feed.length ? `<div class="pf-feed">${feed.map(e => pfFeedRow(e, mine)).join("")}</div>` : `<p class="pf-mute">Пока тихо.</p>`) : `<p class="pf-mute">Загружаю…</p>`}</div>`,
+      cmp: c.pct != null ? `<div class="pf-card"><h3>${HEART_O}Совпадение вкусов<small>${c.common.length} общих</small></h3><div class="pf-cmp"><b class="${pctCls(c.pct)}">${c.pct}%</b>${[...c.common].sort((a, b) => a.d - b.d).slice(0, 4).map(x => `<div class="r"><span>${esc(x.f.title)}</span><span>${num1(x.m.rating)} / ${num1(x.f.rating)}</span></div>`).join("")}</div></div>` : ""};
+    const side = `<aside class="pf-side">${mine ? `<div class="v6-d-only">${SC.ev}</div>${SC.tasks}${SC.nag}${SC.rx}` : ""}
+        ${SC.top}
+        ${SC.feed}
+        ${SC.cmp}
       </aside>`;
     const CSA = csPfAttrs(p);
-    box.innerHTML = `<div class="pf${bg ? " has-bg" : ""}${CSA.cls}" style="--ac:${esc(p.ava_color || avaBg(p))};${CSA.style}">${csCss(p)}
+    const FL = {games, kino, books, tl: tlFloor(mine ? ME.id : uid, mine, g, k), sc: scFloor(mine ? ME.id : uid, mine)};
+    const legacy = `<div class="pf-cols"><div class="pf-main">${mine ? `<button type="button" class="v6-work" id="workHome" data-worksheet="1" hidden></button><div class="v6-m-only">${SC.ev}</div>` : ""}${csOrder(p, FL)}</div>${side}</div>`;
+    const LY = typeof lyCols === "function" ? lyCols(p, mine, {...FL, ...SC}, legacy) : {html: legacy, cls: ""};
+    box.innerHTML = `<div class="pf${bg ? " has-bg" : ""}${CSA.cls}${LY.cls}" style="--ac:${esc(p.ava_color || avaBg(p))};${CSA.style}">${csCss(p)}${typeof lyBg === "function" ? lyBg(p) : ""}
       ${head}
-      <div class="pf-cols"><div class="pf-main">${mine ? `<button type="button" class="v6-work" id="workHome" data-worksheet="1" hidden></button><div class="v6-m-only">${evNextCard()}</div>` : ""}${csOrder(p, {games, kino, books, tl: tlFloor(mine ? ME.id : uid, mine, g, k), sc: scFloor(mine ? ME.id : uid, mine)})}</div>${side}</div></div>`;
-    wireHScrolls(); csFxApply(p); csCheckNew();
+      ${LY.html}</div>${typeof lyBar === "function" ? lyBar(mine) : ""}`;
+    wireHScrolls(); csFxApply(p); csCheckNew(); if (typeof lyAfter === "function") lyAfter(p, mine);
   }
 
   // 7.29: кнопка смены аватарки прямо на аватарке (в профиле и в шапке сайта)
