@@ -151,7 +151,8 @@
     if (d.lyadd){ lyAddSheet(); return; }
     if (d.lyhd){ lyHeadSheet(); return; }
     if (d.lybg){ lyBgSheet(); return; }
-    if (d.lyreset){ if (!confirm("Вернуть профиль как был до конструктора? Трек, счётчики и фон останутся, раскладка станет обычной.")) return; LY_ED.grid = lyNorm(LY_PRESET.launcher()); LY_ED.reset = true; lyDraw(); return; }
+    if (d.lyreset){ if (!confirm("Вернуть профиль к изначальному виду? Сбросятся раскладка, шапка, фон, фон блоков, палитра, ник и стикеры. Трек, счётчики и звук останутся. Шрифты и тема сбрасываются в «Оформлении».")) return;
+      LY_ED.grid = lyNorm(LY_PRESET.launcher()); LY_ED.reset = true; LY_ED.bgx = null; LY_ED.pal = null; LY_ED.nk = {}; LY_ED.stk = []; LY_ED.bb = {}; if (typeof stSel !== "undefined") stSel = null; lyDraw(); toast("Сброшено — «Готово», чтобы сохранить"); return; }
     if (d.lyno){ LY_ED = null; CS_PREV = null; stSel = null; document.querySelectorAll(".stk-tb").forEach(x => x.remove()); document.body.classList.remove("ly-editing"); render(); return; }
     if (d.lyok){ if (LY_ED.reset && LY_ED.grid && LY_ED.grid.lay === "launcher") LY_ED.grid = null; lySave(); return; }
   }, true);
