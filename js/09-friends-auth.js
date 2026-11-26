@@ -387,24 +387,57 @@
   const pxOff = () => { try { return localStorage.getItem("nexus_px") === "0" || sessionStorage.getItem("nexus_px_off") === "1"; } catch(_){ return false; } };
   const pxOn = () => !!PROXY && !pxOff() && Date.now() >= pxDownUntil;
   const viaPx = url => pxOn() && SB_BASE && url.startsWith(SB_BASE + "/") ? PROXY + "?p=" + encodeURIComponent(url.slice(SB_BASE.length)) : url;
-  // для клиента Supabase: всё через прокси, а если он лежит — минуту напрямую
+  // очередь к прокси: не больше PX_MAX запросов одновременно. Функция Яндекса на всплеске из 20–30 запросов
+  // при входе иногда зависала на 10 с на отдельных запросах; по 8 за раз они идут ровно и не теряются.
+  const PX_MAX = 8; let pxBusy = 0; const pxQ = [];
+  const pxTake = () => pxBusy < PX_MAX ? (pxBusy++, Promise.resolve()) : new Promise(ok => pxQ.push(ok));
+  const pxGive = () => { const n = pxQ.shift(); if (n) n(); else pxBusy--; };
+  // таймаут одной попытки + сигнал отмены от вызывающего кода
+  function pxSignal(outer, ms){
+    const c = new AbortController(), t = setTimeout(() => c.abort(new DOMException("timeout", "TimeoutError")), ms);
+    if (outer){ if (outer.aborted) c.abort(outer.reason); else outer.addEventListener("abort", () => c.abort(outer.reason), {once: true}); }
+    return {signal: c.signal, done: () => clearTimeout(t)};
+  }
+  const pxSleep = ms => new Promise(ok => setTimeout(ok, ms));
+  // для клиента Supabase: всё через прокси. Чтение при зависании или сбое повторяем через прокси (до 3 попыток),
+  // и только потом пробуем напрямую. Запись не повторяем, чтобы не создать запись дважды.
   async function pxFetch(input, init){
     const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
     if (!pxOn() || !url.startsWith(SB_BASE + "/")) return fetch(input, init);
+    const outer = init && init.signal;
+    const method = String((init && init.method) || (input instanceof Request ? input.method : "GET")).toUpperCase();
+    const safe = method === "GET" || method === "HEAD";
+    const upload = /\/storage\/v1\/object\//.test(url) && !safe;
+    // шлюз Яндекса принимает заголовок Authorization за свой токен и отвечает 403, поэтому токен идёт под другим именем, а функция возвращает его обратно
+    const hd = new Headers((init && init.headers) || (input instanceof Request ? input.headers : undefined));
+    if (hd.has("authorization")){ hd.set("x-nx-auth", hd.get("authorization")); hd.delete("authorization"); }
+    const tries = safe ? 3 : 1;
+    let err = null;
+    for (let i = 0; i < tries; i++){
+      if (i) await pxSleep(400 * i);
+      await pxTake();
+      const sg = pxSignal(outer, upload ? 60000 : safe ? 7000 : 20000);
+      try {
+        const r = await fetch(viaPx(url), {...(init || {}), headers: hd, signal: sg.signal});
+        if (r.status === 429 || r.status === 502 || r.status === 503 || r.status === 504) throw new Error("прокси ответил " + r.status);
+        return r;
+      } catch(e){
+        if (outer && outer.aborted) throw e;
+        err = e;
+      } finally { sg.done(); pxGive(); }
+    }
+    // прокси не ответил — пробуем напрямую (с VPN сработает). «Прокси лежит» запоминаем, только если напрямую сработало,
+    // иначе в России без VPN отрежем себе единственный путь
+    const sg = pxSignal(outer, 8000);
     try {
-      // шлюз Яндекса принимает заголовок Authorization за свой токен и отвечает 403, поэтому токен идёт под другим именем, а функция возвращает его обратно
-      const hd = new Headers((init && init.headers) || (input instanceof Request ? input.headers : undefined));
-      if (hd.has("authorization")){ hd.set("x-nx-auth", hd.get("authorization")); hd.delete("authorization"); }
-      const r = await fetch(viaPx(url), {...(init || {}), headers: hd});
-      if (r.status === 502 || r.status === 503 || r.status === 504) throw new Error("прокси ответил " + r.status);
+      const r = await fetch(input, {...(init || {}), signal: sg.signal});
+      pxDownUntil = Date.now() + 60e3; logErr("прокси к базе", err);
       return r;
     } catch(e){
-      if (init && init.signal && init.signal.aborted) throw e;
-      // пробуем напрямую; «прокси лежит» запоминаем, только если напрямую сработало (иначе в России без VPN отрежем себе единственный путь)
-      const r = await fetch(input, init);
-      pxDownUntil = Date.now() + 60e3; logErr("прокси к базе", e);
-      return r;
-    }
+      if (outer && outer.aborted) throw e;
+      logErr("прокси к базе (и напрямую не вышло)", err);
+      throw err;
+    } finally { sg.done(); }
   }
   const publicUrl = path => viaPx(`${SB_BASE}/storage/v1/object/public/media/${String(path).split("/").map(encodeURIComponent).join("/")}`);
   function makeBackend(sb, uid){

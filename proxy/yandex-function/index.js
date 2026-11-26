@@ -47,6 +47,8 @@ module.exports.handler = async function (event) {
 
   const out = {...base};
   r.headers.forEach((v, k) => { if (!DROP_RES.has(k) && !k.startsWith("access-control-") && !k.startsWith("cf-") && !k.startsWith("sb-")) out[k] = v; });
+  // публичные картинки лежат по случайным ссылкам и не меняются — пусть браузер держит их год и не дёргает функцию повторно
+  if (r.status === 200 && p.startsWith("/storage/v1/object/public/")) out["cache-control"] = "public, max-age=31536000, immutable";
   let buf = Buffer.from(await r.arrayBuffer());
   const type = String(r.headers.get("content-type") || "");
   // текст жмём сами: ответы базы большие, а провайдеру меньше работы
