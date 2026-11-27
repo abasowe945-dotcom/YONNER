@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NEXUS — оформление с backgrounds.gallery
 // @namespace    nexus
-// @version      2.2
+// @version      2.3
 // @description  Кнопка «В NEXUS» на рамках, аватарах, мини-профилях, стикерах, стартап-мувиках и фонах. Открывает NEXUS, там выбираешь, куда поставить.
 // @match        https://backgrounds.gallery/*
 // @downloadURL  https://abasowe945-dotcom.github.io/YONNER/nexus.user.js
@@ -52,17 +52,23 @@
       cursor: 'pointer', zIndex: 9999, boxShadow: '0 2px 8px rgba(0,0,0,.4)',
     });
     if (floating) Object.assign(b.style, { position: 'absolute', top: '6px', left: '6px' });
-    b.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); open(itemUrl); });
+    b.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); open(itemUrl || location.href); });
     return b;
   }
 
-  // страница одного предмета или фона
+  // страница одного предмета или фона: большая кнопка рядом с названием (сайт меняет страницы без перезагрузки — следим за адресом)
   function onPage() {
-    if (!LINK.test(location.pathname) || document.querySelector('[data-nexus-main]')) return;
-    const b = btn(location.href, false);
+    const path = location.pathname, old = document.querySelector('[data-nexus-main]');
+    if (old && (old.dataset.path !== path || !LINK.test(path) || !old.isConnected)) old.remove();
+    if (!LINK.test(path) || document.querySelector('[data-nexus-main]')) return;
+    const b = btn(null, false);
     b.dataset.nexusMain = '1';
-    Object.assign(b.style, { position: 'fixed', right: '20px', bottom: '20px', fontSize: '14px' });
-    document.body.appendChild(b);
+    b.dataset.path = path;
+    b.textContent = '+ Добавить в NEXUS';
+    Object.assign(b.style, { fontSize: '15px', padding: '12px 18px', margin: '10px 0', alignSelf: 'flex-start', display: 'inline-block' });
+    const h1 = document.querySelector('main h1, h1');
+    if (h1 && h1.parentElement) h1.insertAdjacentElement('afterend', b);
+    else { Object.assign(b.style, { position: 'fixed', right: '20px', bottom: '20px', margin: '0' }); document.body.appendChild(b); }
   }
 
   // карточки в каталогах (все разделы)
