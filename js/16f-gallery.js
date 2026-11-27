@@ -7,12 +7,15 @@
   const BG_DONE = {avatar: "Аватар поставлен", frame: "Рамка надета", header: "Шапка поставлена", bg: "Фон профиля поставлен", sticker: "Стикер в шапке — двигай его в конструкторе"};
   const BG_TYPE = {background: "Фон", sticker: "Стикер", miniprofile: "Мини-профиль", frame: "Рамка", avatar: "Анимированный аватар", movie: "Стартап-видео"};
   const BG_SECS = [["items/frames", "Рамки"], ["items/avatars", "Аватары"], ["items/mini-profiles", "Мини-профили"], ["items/stickers", "Стикеры"], ["items/startup-movies", "Стартап-видео"], ["", "Фоны"], ["animated", "Анимированные фоны"]];
-  const bgUrlOk = u => { try { const x = new URL(String(u || "").trim()); return /(^|\.)backgrounds\.gallery$/.test(x.hostname) && /^\/(item\/\d+\/\d+|backgrounds\/\d+\/\d+)/.test(x.pathname); } catch(_){ return false; /* ожидаемо: это не ссылка */ } };
+  const bgUrlOk = u => { try { const x = new URL(String(u || "").trim()); return /(^|\.)backgrounds\.gallery$/.test(x.hostname) && /^\/(item|animated|backgrounds)\/\d+\/\d+/.test(x.pathname); } catch(_){ return false; /* ожидаемо: это не ссылка */ } };
   const bgLib = () => { const l = (MEP && MEP.cosm && MEP.cosm.lib) || {}; return {stk: Array.isArray(l.stk) ? l.stk : [], bg: Array.isArray(l.bg) ? l.bg : []}; };
   // лёгкий режим: экономия трафика или «меньше движения» — вместо видео картинка-превью
   const bgLite = () => { try { return !!(navigator.connection && navigator.connection.saveData) || matchMedia("(prefers-reduced-motion: reduce)").matches; } catch(_){ return false; /* ожидаемо: старый браузер */ } };
 
+  // анимированные фоны (/animated/<игра>/<id>) — это предметы магазина очков, как /item/
+  const bgNorm = u => String(u || "").trim().replace(/^(https?:\/\/(?:www\.)?backgrounds\.gallery)\/animated\/(\d+)\/(\d+)[^?#]*/i, "$1/item/$2/$3");
   async function bgCall(body){
+    if (body.url) body = {...body, url: bgNorm(body.url)};
     const {data, error} = await SB.functions.invoke("gallery-import", {body});
     if (error){ let m = error.message || "ошибка";
       try { const j = error.context && await error.context.json(); if (j && j.error) m = j.error; } catch(_){ /* ожидаемо: ответ не json */ }
@@ -79,7 +82,7 @@
     const q = x => s.el.querySelector(x), inp = q("#bgiU"), box = q("#bgiP");
     let cur = null, busy = false;
     const show = async () => { const u = inp.value.trim(); if (!u) return;
-      if (!bgUrlOk(u)){ box.innerHTML = `<p class="bgi-err">Это не ссылка на предмет с backgrounds.gallery. Нужна вида <code>backgrounds.gallery/item/…</code> или <code>backgrounds.gallery/backgrounds/…</code></p>`; return; }
+      if (!bgUrlOk(u)){ box.innerHTML = `<p class="bgi-err">Это не ссылка на предмет с backgrounds.gallery. Нужна вида <code>backgrounds.gallery/item/…</code>, <code>…/animated/…</code> или <code>…/backgrounds/…</code></p>`; return; }
       box.innerHTML = `<p class="a-sub">Ищу предмет в Steam…</p>`; cur = null;
       try { const info = await bgCall({url: u, action: "preview"}); cur = {url: u, info};
         box.innerHTML = `<div class="bgi-card"><div class="bgi-pv${info.type === "frame" || info.type === "sticker" || info.type === "avatar" ? " sq" : ""}">${bgPrevHTML(info)}</div><div class="bgi-i"><small>${esc(BG_TYPE[info.type] || "Предмет")}${info.animated ? " · анимированный" : ""}</small><b>${esc(info.title || "Без названия")}</b>

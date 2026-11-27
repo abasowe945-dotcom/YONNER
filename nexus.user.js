@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NEXUS — оформление с backgrounds.gallery
 // @namespace    nexus
-// @version      2.1
+// @version      2.2
 // @description  Кнопка «В NEXUS» на рамках, аватарах, мини-профилях, стикерах, стартап-мувиках и фонах. Открывает NEXUS, там выбираешь, куда поставить.
 // @match        https://backgrounds.gallery/*
 // @downloadURL  https://abasowe945-dotcom.github.io/YONNER/nexus.user.js
@@ -32,7 +32,7 @@
     return v;
   }
 
-  const LINK = /^\/(item\/\d+\/\d+|backgrounds\/\d+\/\d+)/;
+  const LINK = /^\/(item|animated|backgrounds)\/\d+\/\d+/;
 
   function open(itemUrl) {
     const base = nexusUrl();
@@ -67,11 +67,11 @@
 
   // карточки в каталогах (все разделы)
   function onCards() {
-    document.querySelectorAll('a[href*="/item/"], a[href*="/backgrounds/"]').forEach((a) => {
+    document.querySelectorAll('a[href*="/item/"], a[href*="/backgrounds/"], a[href*="/animated/"]').forEach((a) => {
       if (a.querySelector('[data-nexus]')) return;
       let path;
       try { path = new URL(a.href).pathname; } catch { return; }
-      if (!LINK.test(path) || !a.querySelector('img, video')) return;
+      if (!LINK.test(path) || !a.querySelector('img, video, [role="img"], [style*="background-image"]')) return;
       if (getComputedStyle(a).position === 'static') a.style.position = 'relative';
       a.appendChild(btn(a.href, true));
     });
