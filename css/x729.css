@@ -788,3 +788,31 @@ body.ly-editing #aMain{padding-bottom:230px}
 .hx-b svg{width:55%;height:55%}
 .hx-drag{cursor:grabbing!important;user-select:none;-webkit-user-select:none;scroll-behavior:auto!important;scroll-snap-type:none!important}
 .hx-drag *{pointer-events:none}
+
+/* ================= 7.14: на компьютере конструктор — панель слева ================= */
+@keyframes lybIn{from{transform:translateX(-110%);opacity:0}to{transform:none;opacity:1}}
+@media (min-width:901px){
+  .ly-bar{left:12px;top:12px;bottom:12px;width:360px;transform:none;animation:lybIn .38s cubic-bezier(.2,.8,.2,1)}
+  .ly-bar.min{bottom:auto}
+  .ly-bar-in{height:100%;display:flex;flex-direction:column;border-radius:20px;border-color:rgba(10,132,255,.45);box-shadow:0 0 0 1px rgba(10,132,255,.15),0 30px 80px rgba(0,0,0,.65)}
+  .lyb-top{display:contents}
+  .lyb-t{order:0;flex:none;padding:18px 18px 12px;border-bottom:1px solid rgba(255,255,255,.08)}
+  .lyb-t b{font-size:18px;display:flex;align-items:center;gap:8px}
+  .lyb-t b::before{content:"";width:9px;height:9px;border-radius:50%;background:#30d158;box-shadow:0 0 0 4px rgba(48,209,88,.2)}
+  .lyb-t small{white-space:normal;font-size:12px;margin-top:3px}
+  .lyb-tabs{order:1;margin:12px 14px 0;flex:none}
+  .lyb-tabs button{flex:1 1 0;padding:0 4px;font-size:12px}
+  .lyb-body{order:2;flex:1;min-height:0;overflow-y:auto;padding:12px 14px;scrollbar-width:thin}
+  .ly-bar.min .lyb-body{display:none}
+  .lyb-acts{order:3;flex:none;display:grid;grid-template-columns:36px 1fr 1fr 1.3fr;gap:6px;padding:12px 14px 14px;border-top:1px solid rgba(255,255,255,.08)}
+  .lyb-b{justify-content:center;padding:0 8px}
+  .lyb-row,.lyb-row.tl{display:grid;overflow:visible;gap:8px}
+  .lyb-row{grid-template-columns:1fr 1fr}
+  .lyb-row.tl{grid-template-columns:1fr}
+  .lyb-lay{flex:none;min-width:0}
+  .lyb-tl{flex:none;padding:10px 12px}
+  .lyb-help{grid-template-columns:1fr}
+  body.ly-editing{padding-left:384px}
+  body.ly-editing .tabbar{display:none}
+  body.ly-editing #aMain{padding-bottom:40px}
+}
