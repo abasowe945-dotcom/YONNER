@@ -40,6 +40,8 @@
         from: t => builder("from", t),
         rpc: (n, a) => builder("rpc", n, a),
         channel: chan, removeChannel() {}, removeAllChannels() {},
+        // функции: ответ берётся из window.__FN[имя](body), вызовы пишутся в __SBLOG
+        functions: {invoke: async (n, o) => { window.__SBLOG.push({name: "fn:" + n, ops: [String((o && o.body && o.body.action) || "")]}); const f = (window.__FN || {})[n]; return f ? {data: await f((o && o.body) || {}), error: null} : {data: null, error: {message: "нет функции " + n}}; }},
         storage: {from: () => ({upload: async p => ({data: {path: p}, error: null}), remove: async () => ({data: [], error: null}), getPublicUrl: p => ({data: {publicUrl: p}})})},
         auth: {
           getSession: async () => ({data: {session: s}}),

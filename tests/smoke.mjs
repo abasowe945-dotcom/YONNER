@@ -113,6 +113,31 @@ async function run() {
     await p.evaluate(() => { location.hash = "#more"; }); await p.waitForTimeout(400);
     const tile = await p.evaluate(async () => { document.querySelector('[data-fold="site"]').click(); await new Promise(r => setTimeout(r, 600)); const b = document.querySelector("[data-errlog]"); if (!b) return false; b.click(); await new Promise(r => setTimeout(r, 400)); return !!document.getElementById("elList"); });
     if (!tile) fails.push("журнал ошибок: нет плитки или окна у владельца");
+    // 7.11: оформление из Steam — превью, импорт в шапку (видео), стикер, рамка, вкладка «Из Steam»
+    const st = await p.evaluate(async () => { const w = ms => new Promise(r => setTimeout(r, ms)), out = {};
+      window.__FN = {"gallery-import": b => b.action === "preview"
+        ? {type: "movie", targets: ["header", "bg"], title: "Тест-видео", animated: true, files: {mp4: "https://x.test/a.mp4", poster: "https://x.test/a.jpg"}}
+        : {target: b.target, type: "movie", title: "Тест", path: "u/bg_a." + (b.target === "sticker" ? "png" : "mp4"), poster_path: "u/bg_a.jpg", media: b.target === "sticker" ? "image" : "video", cosmetic_id: b.target === "frame" ? "fr_st_test" : undefined}};
+      document.querySelectorAll(".sh-wrap").forEach(x => x.remove()); sheets.length = 0; location.hash = "#home"; await w(600);
+      bgSheet("https://backgrounds.gallery/item/730/123-test"); await w(500);
+      const sh = document.querySelectorAll(".sh")[document.querySelectorAll(".sh").length - 1];
+      out.btns = [...sh.querySelectorAll("[data-bgt]")].map(b => b.dataset.bgt).join(",");
+      out.vid = !!sh.querySelector(".bgi-pv video");
+      sh.querySelector('[data-bgt="header"]').click(); await w(700);
+      out.hdr = MEP && MEP.cosm && MEP.cosm.hdr; out.hdrVideo = !!document.querySelector(".pf-head .d7-hb video");
+      out.lib = MEP.cosm.lib && MEP.cosm.lib.bg.length;
+      await bgApply({target: "sticker", path: "u/bg_s.png", title: "Стикер", media: "image"}); await w(300);
+      out.stk = (MEP.cosm.stk || []).length; out.libS = MEP.cosm.lib.stk.length;
+      out.bad = (bgSheet("https://example.com/x"), await w(300), !!document.querySelector(".bgi-err"));
+      document.querySelectorAll(".sh-wrap").forEach(x => x.remove()); sheets.length = 0;
+      csTab = "steam"; document.querySelector("[data-cosm]").click(); await w(400); out.tut = !!document.querySelector(".bgi-tut");
+      document.querySelectorAll(".sh-wrap").forEach(x => x.remove()); sheets.length = 0; csTab = "theme";
+      return out; });
+    if (st.btns !== "header,bg" || !st.vid) fails.push("импорт из Steam: окно превью без кнопок или видео " + JSON.stringify(st));
+    if (!st.hdr || !st.hdr.v || st.hdr.img !== "u/bg_a.mp4" || !st.hdrVideo) fails.push("импорт из Steam: видео не встало в шапку " + JSON.stringify(st));
+    if (st.lib !== 1 || st.stk !== 1 || st.libS !== 1) fails.push("импорт из Steam: «Мои фоны/стикеры» не пополнились " + JSON.stringify(st));
+    if (!st.bad) fails.push("импорт из Steam: чужая ссылка не отбилась");
+    if (!st.tut) fails.push("импорт из Steam: нет туториала во вкладке «Из Steam»");
     errs.forEach(e => fails.push("вошедший: " + e)); await ctx.close(); }
   await browser.close();
   if (fails.length) { console.error("ПРОВАЛ:\n - " + [...new Set(fails)].join("\n - ")); process.exit(1); }

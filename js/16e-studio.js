@@ -117,10 +117,12 @@
   function stAddSheet(){
     const s = openSheet(`<h3>Стикер</h3><p class="sub">Встанет в шапку — потом тащи куда хочешь, хоть поверх полок. Колесо мыши — размер, Shift + колесо — поворот.</p>
       <div class="st-emo">${STK_EMO.map(e => `<button type="button" data-ste="${e}">${e}</button>`).join("")}</div>
-      <div class="acts" style="margin-top:12px"><button type="button" class="ib" id="stImg">${ICON.img}Своя картинка (PNG, GIF)</button></div>`, {wide: true});
+      <div class="acts" style="margin-top:12px"><button type="button" class="ib" id="stImg">${ICON.img}Своя картинка (PNG, GIF)</button></div>${typeof bgLibHTML === "function" ? bgLibHTML("stk") : ""}`, {wide: true});
     const add = o => { LY_ED.stk = Array.isArray(LY_ED.stk) ? LY_ED.stk : []; if (LY_ED.stk.length >= 40){ toast("Хватит 40 стикеров"); return; }
       const id = "s" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5); LY_ED.stk.push({id, b: "head", x: 40 + Math.random() * 30, y: 30 + Math.random() * 40, s: 1, r: Math.round(Math.random() * 30 - 15), z: LY_ED.stk.length, ...o}); stSel = id; lyMark(); s.close(); lyDraw(); };
-    s.el.addEventListener("click", e => { const b = e.target.closest("[data-ste]"); if (b) add({e: b.dataset.ste}); });
+    s.el.addEventListener("click", e => { const b = e.target.closest("[data-ste]"); if (b) add({e: b.dataset.ste});
+      if (e.target.closest("[data-bgopen]")){ s.close(); bgSheet(); return; }
+      const l = e.target.closest("[data-bgl]"); if (l){ const it = bgLib().stk[+l.dataset.bgl]; if (it) add({img: it.img}); } });
     s.el.querySelector("#stImg").onclick = () => { const i = document.createElement("input"); i.type = "file"; i.accept = "image/png,image/gif,image/webp,image/*"; i.onchange = () => { const f = i.files[0]; if (!f) return; if (f.size > 1.5 * 1024 * 1024){ toast("Стикер тяжелее 1,5 МБ — сожми его"); return; }
       const key = "stk" + Date.now(); LY_ED.files[key] = f; add({img: URL.createObjectURL(f), fk: key}); }; i.click(); };
   }

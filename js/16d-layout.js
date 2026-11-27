@@ -95,7 +95,7 @@
     const dim = Math.max(0, Math.min(90, +x.dim || 0)) / 100, pop = Math.max(5, Math.min(100, +x.pop || 35)) / 100, ps = Math.max(8, Math.min(120, +x.ps || 28));
     const isV = m && /\.(mp4|webm|mov)$/i.test(String(m.id || "")) || (m && m.v);
     return `<div class="lyx" aria-hidden="true">${x.grad ? `<i class="lyx-g" style="background:${lyGrad(x)}"></i>` : ""}
-      ${m && m.id ? (isV ? `<video class="lyx-m" src="${esc(lyMedia(m.id))}" autoplay muted loop playsinline preload="metadata"></video>` : `<i class="lyx-m" style="background-image:url('${esc(lyMedia(m.id))}');${m.blur ? `filter:blur(${+m.blur}px);inset:-${+m.blur * 2}px;` : ""}"></i>`) : ""}
+      ${m && m.id ? (isV && m.pst && typeof bgLite === "function" && bgLite() ? `<i class="lyx-m" style="background-image:url('${esc(lyMedia(m.pst))}')"></i>` : isV ? `<video class="lyx-m" src="${esc(lyMedia(m.id))}"${m.pst ? ` poster="${esc(lyMedia(m.pst))}"` : ""} autoplay muted loop playsinline preload="metadata"></video>` : `<i class="lyx-m" style="background-image:url('${esc(lyMedia(m.id))}');${m.blur ? `filter:blur(${+m.blur}px);inset:-${+m.blur * 2}px;` : ""}"></i>`) : ""}
       ${x.pat ? `<i class="lyx-p pat-${esc(x.pat)}" style="opacity:${pop};--ps:${ps}px;--pc:${lyCol(x.pc) || "#ffffff"}"></i>` : ""}
       ${layers.map((l, i) => `<img class="lyx-l" alt="" src="${esc(lyMedia(l.img))}" data-dp="${Math.max(-1, Math.min(1, +l.d || (i + 1) * .25))}" style="--ly:${Math.max(-40, Math.min(140, +l.y || 0))}%;--lx:${Math.max(-40, Math.min(140, +l.x || 50))}%;--lw:${Math.max(10, Math.min(160, +l.w || 60))}%;${l.o != null ? `opacity:${Math.max(.05, Math.min(1, +l.o))};` : ""}" draggable="false">`).join("")}
       ${dim ? `<i class="lyx-d" style="opacity:${dim}"></i>` : ""}</div>`;
@@ -109,7 +109,7 @@
     if (document.querySelector(".lyx-l")) lyParallax();
     document.body.classList.toggle("has-lyx", !!document.querySelector(".lyx"));
     document.body.classList.toggle("ly-editing", lyEditing(mine));
-    const v = document.querySelector(".lyx video"); if (v && v.paused){ const r = v.play(); if (r && r.catch) r.catch(() => { /* ожидаемо: браузер не дал автозапуск */ }); }
+    document.querySelectorAll(".lyx video, .d7-hb video").forEach(v => { if (!v.paused) return; v.muted = true; const r = v.play(); if (r && r.catch) r.catch(() => { /* ожидаемо: браузер не дал автозапуск */ }); });
   }
   // ---- нижняя панель режима правки
   function lyBar(mine){
@@ -267,6 +267,7 @@
           <input type="color" data-lybc="c1" value="${lyCol(x.c1) || "#1a1a2e"}"><input type="color" data-lybc="c2" value="${lyCol(x.c2) || "#6a1b9a"}"><input type="color" data-lybc="c3" value="${lyCol(x.c3) || "#000000"}" title="третий цвет">${x.c3 ? `<button type="button" class="ib" data-lyb3="1">без третьего</button>` : ""}</div>
           <div class="cs-tabs ly-seg">${[["linear", "Линейный"], ["radial", "Круглый"], ["conic", "Веер"]].map(([k, l]) => `<button type="button" data-lybt="${k}" aria-pressed="${(x.gt || "linear") === k}">${l}</button>`).join("")}</div>${rng("ang", "Угол", 0, 360, 5, x.ang ?? 135, "°")}</div>
         <div class="cs-sr"><b>Видео или гифка</b><small>MP4, WebM или GIF; играет без звука по кругу</small><div class="cs-acs"><button type="button" class="ib" data-lybm="1">${m ? "Другой файл" : "Выбрать файл"}</button>${m ? `<button type="button" class="ib red" data-lybmx="1">Убрать</button>` : ""}</div>${m && !m.v && !/\.(mp4|webm|mov)$/i.test(m.id || "") ? rng("blur", "Размытие", 0, 20, 1, m.blur || 0, "px") : ""}</div>
+        ${typeof bgLibHTML === "function" ? bgLibHTML("bg") : ""}
         <div class="cs-sr"><b>Узор</b><div class="cs-tabs ly-seg ly-pats">${LY_PAT.map(([k, l]) => `<button type="button" data-lybp="${k}" aria-pressed="${(x.pat || "") === k}">${l}</button>`).join("")}</div>${x.pat ? `<div class="cs-acs"><input type="color" data-lybc="pc" value="${lyCol(x.pc) || "#ffffff"}" title="цвет узора"></div>${rng("pop", "Заметность", 5, 100, 5, x.pop ?? 35, "%")}${rng("ps", "Размер", 8, 120, 2, x.ps ?? 28, "px")}` : ""}</div>
         <div class="cs-sr"><b>Параллакс</b><small>до трёх картинок (лучше PNG без фона), которые едут с разной скоростью при прокрутке</small>
           ${x.ly.map((l, i) => `<div class="ly-lr"><b>Слой ${i + 1}</b>${rng("ly" + i + ".d", "Скорость", -1, 1, .05, l.d ?? (i + 1) * .25, "")}${rng("ly" + i + ".x", "По горизонтали", -40, 140, 1, l.x ?? 50, "%")}${rng("ly" + i + ".y", "По вертикали", -40, 140, 1, l.y ?? 0, "%")}${rng("ly" + i + ".w", "Ширина", 10, 160, 1, l.w ?? 60, "%")}<button type="button" class="ib red" data-lybl="${i}">Убрать слой</button></div>`).join("")}
@@ -280,6 +281,8 @@
         const mm = /^ly(\d)\.(\w)$/.exec(d.lybr); if (mm){ x.ly[+mm[1]][mm[2]] = v; } else if (d.lybr === "blur"){ if (x.media) x.media.blur = v; } else x[d.lybr] = v; live(); } });
     s.el.addEventListener("change", e => { if (e.target.dataset.lybg2){ x.grad = e.target.checked; live(); } });
     s.el.addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; const d = b.dataset;
+      if (d.bgopen){ s.close(); bgSheet(); return; }
+      if (d.bgl != null){ const it = bgLib().bg[+d.bgl]; if (!it) return; delete LY_ED.files.media; x.media = {id: it.id, v: it.v || undefined, pst: it.pst || undefined}; draw(); live(); return; }
       if (d.lybt){ x.gt = d.lybt; x.grad = true; draw(); live(); }
       else if (d.lyb3){ delete x.c3; draw(); live(); }
       else if (d.lybp != null){ x.pat = d.lybp; draw(); live(); }

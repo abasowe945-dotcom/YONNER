@@ -92,7 +92,11 @@
 
   // картинка шапки: что надето (или черновик), с проверкой чисел
   function csHdr(p){ const h = csCosm(p).hdr; if (!h || !(h.img || h.blob)) return null;
-    return {url: h.blob || publicUrl(h.img), h: ["s", "m", "l", "xl"].includes(h.h) ? h.h : "m", dim: csNum(h.dim, 0, 90, 35), x: csNum(h.x, 0, 100, 50), y: csNum(h.y, 0, 100, 50), blur: csNum(h.blur, 0, 16, 0)}; }
+    return {url: h.blob || publicUrl(h.img), v: !!h.v && !h.blob, pst: h.pst && !h.blob ? publicUrl(h.pst) : "", h: ["s", "m", "l", "xl"].includes(h.h) ? h.h : "m", dim: csNum(h.dim, 0, 90, 35), x: csNum(h.x, 0, 100, 50), y: csNum(h.y, 0, 100, 50), blur: csNum(h.blur, 0, 16, 0)}; }
+  // 7.11: содержимое шапки — картинка или видео из Steam (в лёгком режиме вместо видео постер)
+  function csHdrIn(H){ const bl = H.blur ? `filter:blur(${H.blur}px);inset:-${H.blur * 2}px;` : "";
+    if (H.v && !(typeof bgLite === "function" && bgLite())) return `<video src="${esc(H.url)}"${H.pst ? ` poster="${esc(H.pst)}"` : ""} autoplay muted loop playsinline preload="auto" style="object-position:${H.x}% ${H.y}%;${bl}"></video>`;
+    return `<i style="background-image:url('${esc(H.v ? H.pst : H.url)}');background-position:${H.x}% ${H.y}%;${bl}"></i>`; }
   // шрифты, размеры и цвета разделов — стили только внутри профиля
   function csCss(p, root){ const T = csCosm(p).txt; if (!T || typeof T !== "object") return "";
     const S = root || "#aMain .pf", H = `${S} .pf-head`;
@@ -197,7 +201,7 @@
     const lock = u => !(IS_ADMIN || csOk(u, st));
     const card = (on, locked, prev, t, d, u, attr) => `<button type="button" class="cs-c${on ? " on" : ""}${locked ? " lk" : ""}" ${locked ? "disabled" : attr}>${prev}<b>${esc(t)}</b><small>${locked ? esc(csNeed(u)) + (u && st && st[u.t] != null && u.n ? ` — сейчас ${st[u.t]} из ${u.n}` : "") : esc(d || "")}</small></button>`;
     const draw = () => {
-      q("#csT").innerHTML = [["theme", "Темы"], ["sty", "Стиль"], ["hdr", "Шапка"], ["txt", "Шрифты"], ["frame", "Рамки"], ["fx", "Эффекты"], ["layout", "Блоки"]].map(([k, l]) => `<button type="button" data-cst="${k}" aria-pressed="${csTab === k}">${l}</button>`).join("");
+      q("#csT").innerHTML = [["theme", "Темы"], ["sty", "Стиль"], ["hdr", "Шапка"], ["txt", "Шрифты"], ["frame", "Рамки"], ["fx", "Эффекты"], ["layout", "Блоки"], ["steam", "Из Steam"]].map(([k, l]) => `<button type="button" data-cst="${k}" aria-pressed="${csTab === k}">${l}</button>`).join("");
       let h = "";
       if (csTab === "theme") h = `<div class="cs-g">${csThemesAll().map(t => card(cur.theme === t.id, lock(t.u), `<span class="cs-pv v6t-pv-${t.db ? "db" : t.id}" style="${t.db && t.db.img ? `background-image:url('${publicUrl(t.db.img)}')` : ""}${t.db && t.db.data && t.db.data.ac ? `;--tac:${esc(t.db.data.ac)}` : ""}"><i></i><i></i><i></i></span>`, t.t, t.d, t.u, `data-csv="theme:${esc(t.id)}"`)).join("")}</div>${IS_ADMIN && !COSM_OFF ? `<button type="button" class="ib cs-adm" data-csadd="theme">+ Своя тема (фон и цвет)</button>` : ""}`;
       else if (csTab === "frame") h = COSM_OFF ? `<p class="a-sub">Рамки появятся после обновления базы.</p>` : `<div class="cs-g">${card(!cur.frame, false, `<span class="cs-pv fr">${avaHTML(p, "big")}</span>`, "Без рамки", "", null, `data-csv="frame:"`)}${csFrames().map(f => card(cur.frame === f.id, lock(f.unlock), `<span class="cs-pv fr">${avaHTML(p, "big")}<img alt="" src="${publicUrl(f.img)}"${csFrPrev(f)}></span>`, f.title, (f.data && f.data.d) || "", f.unlock, `data-csv="frame:${esc(f.id)}"`)).join("")}</div>${csFrames().length ? "" : `<p class="a-sub">Рамок пока нет — их рисует и загружает админ.</p>`}${IS_ADMIN ? `<button type="button" class="ib cs-adm" data-csadd="frame">+ Загрузить рамки</button>${csFrames().length ? `<div class="cs-fadj"><small>Подогнать масштаб и сдвиг:</small>${csFrames().map(f => `<button type="button" class="ib" data-csfadj="${esc(f.id)}">${esc(f.title)}${csFrAud(f) ? " · личная" : ""}</button>`).join("")}</div>` : ""}` : ""}`;
@@ -216,11 +220,12 @@
             ${tg("dense", "Плотнее", "меньше отступов — больше влезает на экран")}
           </div>`; }
       else if (csTab === "hdr"){ const d = cur.hdr || {}, has = !!(d.img || d.blob), H = has ? csHdr({cosm: {hdr: d}}) : null;
-        h = `<p class="a-sub">Картинка или гифка во всю шапку профиля — поверх фона профиля. GIF до 12 МБ, обычные картинки любые (сожмём сами).</p>
+        h = `<p class="a-sub">Картинка или гифка во всю шапку профиля — поверх фона профиля. GIF до 12 МБ, обычные картинки любые (сожмём сами). Видео из Steam — во вкладке «Из Steam»${has && H.v ? ". Сейчас стоит видео — тут показан его кадр" : ""}.</p>
           <div class="cs-hp${has ? " hb-" + H.h : " blank"}" id="csHp" role="button" tabindex="0">${has ? `<i id="csHpI"></i><div class="d7-dim" id="csHpD"></div>` : `<span>Нажми, чтобы выбрать картинку или GIF</span>`}<b>${esc(p.nick || NICK)}</b></div>
           <div class="acts" style="margin:10px 0 4px"><button type="button" class="ib" data-cshp="1">${has ? "Другая картинка" : "Выбрать файл"}</button>${has ? `<button type="button" class="ib red" data-cshx="1">Убрать</button>` : ""}</div>
           ${has ? `<div class="cs-lbl">Высота</div><div class="cs-tabs cs-hh">${CS_HH.map(([k, l]) => `<button type="button" data-cshh="${k}" aria-pressed="${H.h === k}">${l}</button>`).join("")}</div>
-          <div class="cs-rgs">${[["dim", "Затемнение", 0, 90, 5, H.dim, "%"], ["y", "Сдвиг вверх-вниз", 0, 100, 1, H.y, "%"], ["x", "Сдвиг влево-вправо", 0, 100, 1, H.x, "%"], ["blur", "Размытие", 0, 16, 1, H.blur, "px"]].map(([k, l, a, b, st, v, u]) => `<label class="cs-rg"><span>${l}<em data-csrv="${k}">${v}${u}</em></span><input type="range" min="${a}" max="${b}" step="${st}" value="${v}" data-csr="${k}" data-u="${u}"></label>`).join("")}</div>` : ""}`; }
+          <div class="cs-rgs">${[["dim", "Затемнение", 0, 90, 5, H.dim, "%"], ["y", "Сдвиг вверх-вниз", 0, 100, 1, H.y, "%"], ["x", "Сдвиг влево-вправо", 0, 100, 1, H.x, "%"], ["blur", "Размытие", 0, 16, 1, H.blur, "px"]].map(([k, l, a, b, st, v, u]) => `<label class="cs-rg"><span>${l}<em data-csrv="${k}">${v}${u}</em></span><input type="range" min="${a}" max="${b}" step="${st}" value="${v}" data-csr="${k}" data-u="${u}"></label>`).join("")}</div>` : ""}${typeof bgLibHTML === "function" ? bgLibHTML("bg") : ""}`; }
+      else if (csTab === "steam") h = `<p class="a-sub">Рамки, анимированные аватары, мини-профили, стартап-видео, фоны и стикеры из Steam — бесплатно, по ссылке с backgrounds.gallery.</p><div class="acts" style="margin:0 0 12px"><button type="button" class="ib blue" data-bgopen="1">Добавить по ссылке</button></div>${typeof bgTutHTML === "function" ? bgTutHTML(true) : ""}`;
       else if (csTab === "txt"){ const T = cur.txt; csFontLoad(CS_FONTS.map(f => f[0]));
         h = `<div class="acts" style="margin:0 0 10px"><button type="button" class="ib" data-csreset="txt">Сбросить все шрифты, размеры и цвета</button></div><p class="a-sub">Шрифт, размер и цвет для ника и каждого раздела профиля. «Все заголовки разделов» — для всех сразу, отдельный раздел его перебивает. Ниже сразу видно, как это будет выглядеть у тебя в профиле — в твоей теме и с выбранным цветом.</p>${pvBox()}<div class="cs-ft">${CS_SECS.map(([k, l]) => { const v = T[k] || {}, s = csNum(v.s, 60, 220, 100), dirty = v.f || csCol(v.c) || s !== 100;
           return `<div class="cs-fr${k === "box" || k === "nick" ? " big" : ""}"><b>${esc(l)}</b><select data-csf="${k}" aria-label="Шрифт: ${esc(l)}">${CS_FONTS.map(([f, n]) => `<option value="${esc(f)}"${f === (v.f || "") ? " selected" : ""}${f ? ` style="font-family:${esc(csFam(f))}"` : ""}>${esc(n)}</option>`).join("")}</select><label class="cs-sz" title="Размер"><input type="range" min="60" max="${k === "nick" ? 160 : 220}" step="10" value="${s}" data-css="${k}" aria-label="Размер: ${esc(l)}"><em>${s}%</em></label><label class="cs-cl${csCol(v.c) ? "" : " def"}" title="Цвет"><input type="color" value="${csCol(v.c) || "#ffffff"}" data-csc="${k}" aria-label="Цвет: ${esc(l)}"></label><button type="button" class="cs-x" data-csx="${k}" ${dirty ? "" : "disabled"} title="Как было">×</button></div>`; }).join("")}</div>`; }
@@ -232,14 +237,14 @@
       const t = n => g[n] || ["Название игры", "Ещё одна игра", "Третья игра"][n], pb = p.bg ? `background:linear-gradient(rgba(0,0,0,${(p.bg_dim ?? 45) / 100}),rgba(0,0,0,${(p.bg_dim ?? 45) / 100})),url('${esc(publicUrl(p.bg))}') center/cover;` : "";
       const row = ks => `<div class="cs-pvr">${ks.map(x => `<span class="cs-pvc"><i></i><span class="ti">${esc(x)}</span></span>`).join("")}</div>`;
       return `<div class="cs-live" style="${pb}"><div id="csPrevCss">${csCss(p, "#csPrev")}</div><div class="pf${at.cls}" id="csPrev" style="${at.style}">
-        <section class="pf-head d7${H ? " has-hb hb-" + H.h : ""}">${H ? `<div class="d7-hb" aria-hidden="true"><i style="background-image:url('${esc(H.url)}');background-position:${H.x}% ${H.y}%;${H.blur ? `filter:blur(${H.blur}px);inset:-${H.blur * 2}px;` : ""}"></i></div><div class="d7-dim" style="--dim:${H.dim / 100}"></div>` : ""}
+        <section class="pf-head d7${H ? " has-hb hb-" + H.h : ""}">${H ? `<div class="d7-hb" aria-hidden="true">${csHdrIn(H)}</div><div class="d7-dim" style="--dim:${H.dim / 100}"></div>` : ""}
           <div class="d7-top"><div class="pf-ava v6s-${avaShape(p)}">${avaBigHTML(p)}</div><div class="pf-id"><div class="d7-k"><span>ИГРОК</span><span class="pf-lvl">УРОВЕНЬ ${L.lv}</span></div><h1>${esc(nk)}</h1><div class="d7-row"><span>Сейчас играю: ${esc(t(0))}</span></div></div></div></section>
         <div class="pf-fh"><h2>Игры</h2></div>
         <section class="pf-box" data-sk="gfav"><header><h3>Любимые игры<small>3</small></h3></header>${row([t(0), t(1), t(2)])}</section>
         <section class="pf-box" data-sk="gdone"><header><h3>Пройденные<small>2</small></h3></header>${row([t(1), t(2)])}</section></div></div>`; };
     const pvRefresh = () => { const w = q("#csPrevCss"); if (w) w.innerHTML = csCss(p, "#csPrev"); };
     const hpPaint = () => { const I = q("#csHpI"); if (!I || !cur.hdr) return; const H = csHdr({cosm: {hdr: cur.hdr}}); if (!H) return;
-      Object.assign(I.style, {backgroundImage: `url('${H.url}')`, backgroundPosition: `${H.x}% ${H.y}%`, filter: H.blur ? `blur(${H.blur}px)` : "", inset: H.blur ? `-${H.blur * 2}px` : "0"}); q("#csHpD").style.setProperty("--dim", H.dim / 100);
+      Object.assign(I.style, {backgroundImage: `url('${H.v ? H.pst : H.url}')`, backgroundPosition: `${H.x}% ${H.y}%`, filter: H.blur ? `blur(${H.blur}px)` : "", inset: H.blur ? `-${H.blur * 2}px` : "0"}); q("#csHpD").style.setProperty("--dim", H.dim / 100);
       q("#csHp").className = "cs-hp hb-" + H.h; };
     const hpPick = () => { const i = document.createElement("input"); i.type = "file"; i.accept = "image/*"; i.onchange = () => hpTake(i.files[0]); i.click(); };
     const hpTake = async f => { if (!f || !f.type.startsWith("image/")) return;
@@ -249,7 +254,7 @@
             f = await new Promise((ok, no) => c.toBlob(b => b ? ok(new File([b], "hdr.jpg", {type: "image/jpeg"})) : no(new Error("canvas")), "image/jpeg", .88)); }
         } catch(err){ logErr("шапка: сжатие картинки", err); } }
       if (cur.hdr && cur.hdr.blob) URL.revokeObjectURL(cur.hdr.blob);
-      hdrFile = f; cur.hdr = {h: "m", dim: 35, x: 50, y: 50, blur: 0, ...(cur.hdr || {}), blob: URL.createObjectURL(f)}; draw(); live(); };
+      hdrFile = f; cur.hdr = {h: "m", dim: 35, x: 50, y: 50, blur: 0, ...(cur.hdr || {}), v: undefined, pst: undefined, blob: URL.createObjectURL(f)}; draw(); live(); };
     s.el.addEventListener("input", e => { const el = e.target;
       if (el.dataset.csyc){ cur.sty[el.dataset.csyc] = el.value; live(); clearTimeout(draw.t); draw.t = setTimeout(draw, 400); return; }
       if (el.dataset.csyr){ cur.sty.rad = +el.value; const sm = el.closest(".cs-sr").querySelector("small"); if (sm) sm.textContent = el.value + " px"; live(); return; }
@@ -264,6 +269,9 @@
       const x = q(`[data-csx="${k}"]`); if (x) x.disabled = false; pvRefresh(); live(); });
     s.el.addEventListener("click", async e => {
       const t = e.target.closest("[data-cst]"); if (t){ csTab = t.dataset.cst; draw(); return; }
+      if (e.target.closest("[data-bgopen]")){ s.close(); bgSheet(); return; }
+      const bl = e.target.closest("[data-bgl]"); if (bl){ const x = bgLib().bg[+bl.dataset.bgl]; if (!x) return; if (cur.hdr && cur.hdr.blob) URL.revokeObjectURL(cur.hdr.blob); hdrFile = null;
+        cur.hdr = {h: "l", dim: 25, x: 50, y: 50, blur: 0, ...(cur.hdr || {}), blob: undefined, img: x.id, v: x.v || undefined, pst: x.pst || undefined}; draw(); live(); return; }
       // 7.32: сброс к изначальным параметрам — применяется после «Сохранить»
       const rs = e.target.closest("[data-csreset]"); if (rs){ const k = rs.dataset.csreset;
         if (k === "txt"){ cur.txt = {}; pvRefresh(); toast("Шрифты, размеры и цвета сброшены — нажми «Сохранить»"); }
@@ -289,7 +297,7 @@
     q("#csOk").onclick = async () => { const b = q("#csOk"); b.disabled = true; lsSet("nexus_fx_off", q("#csFxOff").checked ? "1" : "0");
       try {
         if (hdrFile && cur.hdr){ b.textContent = "Загружаю шапку…"; cur.hdr.img = (await assets.upload(hdrFile, {type: hdrFile.type})).id; hdrFile = null; }
-        const out = {...cur, st: (MEP && MEP.cosm && MEP.cosm.st) || undefined, hdr: cur.hdr ? {img: cur.hdr.img, h: cur.hdr.h, dim: cur.hdr.dim, x: cur.hdr.x, y: cur.hdr.y, blur: cur.hdr.blur} : null};
+        const out = {...cur, st: (MEP && MEP.cosm && MEP.cosm.st) || undefined, hdr: cur.hdr ? {img: cur.hdr.img, v: cur.hdr.v || undefined, pst: cur.hdr.pst || undefined, h: cur.hdr.h, dim: cur.hdr.dim, x: cur.hdr.x, y: cur.hdr.y, blur: cur.hdr.blur} : null};
         Object.keys(out.txt || {}).forEach(k => { const v = out.txt[k]; if (!v || !(v.f || csCol(v.c) || csNum(v.s, 60, 220, 100) !== 100)) delete out.txt[k]; });
         if (await saveProf({cosm: out})){ saved = true; toast("Оформление сохранено"); s.close(); }
       } catch(err){ toast(err && err.code ? upErr(err) : "Не сохранилось"); if (!(err && err.code)) logErr("оформление: сохранение", err); }
