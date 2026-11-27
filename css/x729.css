@@ -706,3 +706,77 @@ body.ly-editing .st-snd{bottom:150px}
   .pf.v6t-valve .d7 .pf-ava .fr-ava{width:84px!important;height:84px!important}
   .pf.v6t-valve .pf-head.d7 .pf-id h1{font-size:22px!important}
 }
+
+/* ================= 7.12: панель конструктора ================= */
+.ly-bar{bottom:14px;width:min(1180px,calc(100vw - 24px))}
+.ly-bar-in{gap:0;padding:0;border-radius:22px;overflow:hidden;background:rgba(16,16,22,.94);border:1px solid rgba(255,255,255,.12)}
+.lyb-top{display:flex;align-items:center;gap:14px;padding:10px 12px 10px 18px;border-bottom:1px solid rgba(255,255,255,.08)}
+.ly-bar.min .lyb-top{border-bottom:0}
+.lyb-t{display:flex;flex-direction:column;min-width:0;flex:0 1 270px}
+.lyb-t b{font:800 15px Manrope,sans-serif;letter-spacing:-.01em}
+.lyb-t small{font:500 11.5px/1.3 Manrope,sans-serif;opacity:.55;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lyb-tabs{display:flex;gap:2px;padding:3px;border-radius:12px;background:rgba(255,255,255,.06);margin-right:auto;overflow-x:auto;scrollbar-width:none}
+.lyb-tabs button{flex:none;height:32px;padding:0 14px;border:0;border-radius:9px;background:none;color:rgba(255,255,255,.7);font:700 13px Manrope,sans-serif;cursor:pointer;transition:background .15s,color .15s}
+.lyb-tabs button:hover{color:#fff}
+.lyb-tabs button[aria-selected="true"]{background:#fff;color:#0b0b0f}
+.lyb-acts{display:flex;gap:6px;flex:none}
+.lyb-b{height:36px;padding:0 14px;border-radius:11px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#fff;font:700 13px Manrope,sans-serif;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.lyb-b:hover{background:rgba(255,255,255,.12)}
+.lyb-b.ic{width:36px;padding:0;justify-content:center}.lyb-b svg{width:18px;height:18px;transition:transform .2s}
+.lyb-b.red{color:#ff6b6b;border-color:rgba(255,69,58,.3);background:rgba(255,69,58,.08)}.lyb-b.red:hover{background:rgba(255,69,58,.18)}
+.lyb-b.ok{background:#30d158;color:#04140a;border-color:transparent;font-weight:800;padding:0 20px}.lyb-b.ok:hover{background:#3ee068}
+.lyb-body{padding:12px}
+.lyb-row{display:flex;gap:8px;overflow-x:auto;scrollbar-width:thin;padding-bottom:2px}
+.lyb-lay{flex:0 0 150px;display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:8px 8px 10px;border-radius:14px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:#fff;text-align:left;cursor:pointer;transition:border-color .15s,background .15s,transform .15s}
+.lyb-lay:hover{border-color:rgba(255,255,255,.3);transform:translateY(-1px)}
+.lyb-lay[aria-pressed="true"]{border-color:#0a84ff;background:rgba(10,132,255,.14);box-shadow:0 0 0 1px #0a84ff inset}
+.lyb-lay b{font:800 13px Manrope,sans-serif;margin-top:4px}
+.lyb-lay small{font:500 11px/1.3 Manrope,sans-serif;opacity:.55}
+.lyb-sk{position:relative;display:block;width:100%;height:64px;border-radius:9px;background:rgba(255,255,255,.05);overflow:hidden}
+.lyb-sk i{position:absolute;box-sizing:border-box;border:3px solid transparent;background-clip:padding-box;background-color:rgba(255,255,255,.22);border-radius:6px}
+.lyb-sk i.h{background-color:rgba(10,132,255,.6)}.lyb-sk i.s{background-color:rgba(255,255,255,.12)}
+.lyb-sk i.c{border-color:transparent;outline:1.5px solid rgba(255,255,255,.6);outline-offset:-4px;transform:rotate(-1.5deg)}
+.lyb-sk.k{background:#1b2838}.lyb-sk i.k{background-color:rgba(103,193,245,.28);border-radius:2px}.lyb-sk i.h.k{background-color:rgba(103,193,245,.55)}.lyb-sk i.o{border-radius:50%;background-color:rgba(103,193,245,.6);width:auto!important;aspect-ratio:1}
+.lyb-tl{flex:0 0 196px;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:#fff;text-align:left;cursor:pointer;transition:border-color .15s,background .15s,transform .15s}
+.lyb-tl:hover{border-color:rgba(10,132,255,.7);background:rgba(10,132,255,.1);transform:translateY(-1px)}
+.lyb-ic{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,rgba(10,132,255,.35),rgba(191,90,242,.3))}
+.lyb-ic svg{width:19px;height:19px}
+.lyb-tx{display:flex;flex-direction:column;min-width:0}
+.lyb-tx b{font:800 13.5px Manrope,sans-serif}
+.lyb-tx small{font:500 11.5px/1.3 Manrope,sans-serif;opacity:.6}
+.lyb-help{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
+.lyb-help>div{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;background:rgba(255,255,255,.04)}
+.lyb-help>div>span:last-child{display:flex;flex-direction:column;font:500 12px/1.35 Manrope,sans-serif;opacity:.85}
+.lyb-help b{font:800 13px Manrope,sans-serif;opacity:1}
+.lyb-k{flex:none;display:grid;place-items:center;min-width:44px;height:30px;padding:0 8px;border-radius:8px;background:#0a84ff;color:#fff;font:800 12px Manrope,sans-serif;white-space:nowrap}
+.lyb-k svg{width:16px;height:16px}
+body.ly-editing #aMain{padding-bottom:230px}
+/* панель на самих блоках */
+.ly-tb .ly-ws{background:rgba(0,0,0,.3)}
+.ly-tb .ly-ws button{min-width:28px;font-size:13px}
+.ly-z{display:inline-flex;align-items:center;gap:4px;height:28px;padding:0 9px;font-size:12px}
+.ly-z svg{width:13px;height:13px}
+.ly-x{height:28px;min-width:28px}
+@media (max-width:900px){
+  .lyb-top{flex-wrap:wrap;gap:8px;padding:10px}
+  .lyb-t{flex:1 1 auto}
+  .lyb-tabs{order:3;flex:1 1 100%;margin-right:0}
+  .lyb-tabs button{flex:1 0 auto;padding:0 10px;font-size:12.5px}
+  .lyb-b{padding:0 11px;font-size:12.5px}.lyb-b.ok{padding:0 14px}
+  .lyb-body{padding:8px 10px 10px}
+  .lyb-lay{flex-basis:128px}.lyb-sk{height:52px}
+  .lyb-tl{flex-basis:170px;padding:8px 10px}.lyb-ic{width:32px;height:32px}
+  body.ly-editing #aMain{padding-bottom:280px}
+}
+@media (max-width:520px){.lyb-t small{display:none}.lyb-b{padding:0 9px}}
+@media (min-width:901px){
+  .lyb-row.tl{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));overflow:visible}
+  .lyb-row.tl .lyb-tl{flex:none}
+}
+@media (min-width:901px){.ly-bar{left:calc(50% + var(--sbw,0px) / 2);width:min(1180px,calc(100vw - var(--sbw,0px) - 32px))}}
+@media (max-width:900px){.lyb-body{max-height:38vh;overflow-y:auto}}
+@media (max-width:600px){
+  .lyb-t{display:none}
+  .lyb-acts{flex:1 1 100%}.lyb-acts .ok{margin-left:auto}
+  .lyb-tabs{order:0}
+}

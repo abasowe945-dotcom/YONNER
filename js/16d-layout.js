@@ -72,8 +72,8 @@
     if (!c) c = lyNorm(LY_PRESET.launcher());
     const body = k => k === "track" ? lyTrackHTML(p, mine, ed) : k === "cnt" ? lyCntHTML(p, mine) : k === "lvl" ? lyLvlHTML(p, mine) : k === "lst" ? lyLstHTML(p, mine) : parts[k] || "";
     const tools = (x, i) => ed ? `<div class="ly-tb"><span class="ly-h" data-lydrag="${x.k}" title="Тащи, чтобы переставить">${ICON.drag}</span><b>${esc(LY_NAME[x.k])}</b>
-      ${x.z === "m" ? `<span class="ly-ws">${[1, 2, 3, 4].map(w => `<button type="button" data-lyw="${x.k}:${w}" aria-pressed="${x.w === w}" title="Ширина ${w}/4">${w}</button>`).join("")}</span>` : ""}
-      <button type="button" class="ly-z" data-stbb="${x.k}" title="Свой фон за этим блоком">фон</button><button type="button" class="ly-z" data-lyz="${x.k}" title="${x.z === "m" ? "Убрать в колонку сбоку" : "Вернуть в основную часть"}">${x.z === "m" ? "в колонку" : "в основу"}</button><button type="button" class="ly-x" data-lyhide="${x.k}" title="Убрать блок" aria-label="Убрать блок">${ICON.x}</button></div>` : "";
+      ${x.z === "m" ? `<span class="ly-ws" title="Ширина блока">${[1, 2, 3, 4].map(w => `<button type="button" data-lyw="${x.k}:${w}" aria-pressed="${x.w === w}" title="Ширина ${w}/4">${["¼", "½", "¾", "1"][w - 1]}</button>`).join("")}</span>` : ""}
+      <button type="button" class="ly-z" data-stbb="${x.k}" title="Своя картинка или градиент за этим блоком">${ICON.wall || ""}Фон</button><button type="button" class="ly-z" data-lyz="${x.k}" title="${x.z === "m" ? "Убрать в узкую колонку справа" : "Вернуть в основную часть"}">${x.z === "m" ? "→ сбоку" : "← в основу"}</button><button type="button" class="ly-x" data-lyhide="${x.k}" title="Спрятать блок" aria-label="Спрятать блок">${ICON.x}</button></div>` : "";
     const blk = (x, i) => { let h = body(x.k);
       if (!h){ if (!ed) return ""; h = `<div class="ly-ph">${LY_ONLY_ME[x.k] ? "Этот блок видишь только ты — друзьям он не покажется" : LY_ONLY_THEM[x.k] ? "Появится, когда к тебе зайдёт друг: ваше совпадение вкусов" : "Пока пусто"}</div>`; }
       return `<div class="ly-b${x.z === "m" ? " w" + x.w : ""}" data-lyk="${x.k}">${tools(x, i)}${h}</div>`; };
@@ -112,13 +112,53 @@
     document.querySelectorAll(".lyx video, .d7-hb video").forEach(v => { if (!v.paused) return; v.muted = true; const r = v.play(); if (r && r.catch) r.catch(() => { /* ожидаемо: браузер не дал автозапуск */ }); });
   }
   // ---- нижняя панель режима правки
+  // 7.12: панель конструктора — вкладки, схемы раскладок, инструменты с подписями, сворачивается
+  let LY_TAB = "lay", LY_MIN = false;
+  const LY_SK = { // схема раскладки: прямоугольники в процентах [x, y, w, h, класс]
+    launcher: [[0, 0, 100, 24, "h"], [0, 30, 66, 20], [0, 55, 66, 20], [0, 80, 66, 20], [70, 30, 30, 70, "s"]],
+    journal: [[0, 0, 100, 40, "h"], [0, 46, 48, 24], [52, 46, 48, 24], [0, 76, 48, 24], [52, 76, 48, 24]],
+    wall: [[0, 0, 100, 22, "h"], [0, 28, 100, 22], [0, 54, 100, 22], [0, 80, 100, 20]],
+    lbx: [[0, 0, 30, 100, "s"], [34, 0, 66, 24, "h"], [34, 30, 66, 33], [34, 68, 66, 32]],
+    min: [[25, 0, 50, 24, "h"], [25, 30, 50, 20], [25, 55, 50, 20], [25, 80, 50, 20]],
+    comic: [[0, 0, 100, 26, "h c"], [0, 32, 46, 30, "c"], [50, 34, 50, 28, "c"], [0, 68, 100, 32, "c"]],
+    steam: [[0, 0, 100, 22, "h k"], [0, 28, 72, 22, "k"], [0, 54, 72, 22, "k"], [0, 80, 72, 20, "k"], [78, 28, 22, 22, "o"]]};
+  const lySk = k => `<span class="lyb-sk${k === "steam" ? " k" : ""}">${(LY_SK[k] || LY_SK.launcher).map(([x, y, w, h, c]) => `<i class="${c || ""}" style="left:${x}%;top:${y}%;width:${w}%;height:${h}%"></i>`).join("")}</span>`;
+  const LY_TOOLS = [
+    ["lyhd", "img", "Шапка", "высота, где аватарка и ник"],
+    ["stnk", "edit", "Ник", "шрифт, цвет, глитч, неон"],
+    ["lybg", "wall", "Фон профиля", "видео, градиент, узор, параллакс"],
+    ["stpal", "palette", "Палитра", "5 цветов на весь профиль"],
+    ["stadd", "star", "Стикеры", "эмодзи и картинки поверх"],
+    ["stsnd", "sound", "Звук", "трек, который включат гости"],
+    ["lyadd", "plus", "Добавить блок", "полки, трек дня, счётчики"],
+    ["lysteam", "link", "Из Steam", "рамки, видео, стикеры"]];
+  const LY_THEMES = [["stgal", "people", "Темы друзей", "посмотри и примерь чужое оформление"], ["stsave", "pin", "Сохранить как тему", "запомнить этот вид, чтобы вернуться или поделиться"]];
+  const lyTile = ([k, ic, t, d]) => `<button type="button" class="lyb-tl" data-${k}="1"><span class="lyb-ic">${ICON[ic] || ""}</span><span class="lyb-tx"><b>${t}</b><small>${d}</small></span></button>`;
   function lyBar(mine){
     if (!lyEditing(mine)) return "";
-    const c = lyNorm(LY_ED.grid) || lyNorm(LY_PRESET.launcher());
-    return `<div class="ly-bar" role="toolbar" aria-label="Конструктор профиля"><div class="ly-bar-in">
-      <div class="ly-lays">${LY_LAYS.map(([k, l, d]) => `<button type="button" data-lylay="${k}" aria-pressed="${c.lay === k}" title="${esc(d)}">${esc(l)}</button>`).join("")}${c.lay === "custom" ? `<button type="button" aria-pressed="true" disabled>Своя</button>` : ""}<span class="sp"></span><button type="button" class="pf-btn" data-lyno="1">Отмена</button><button type="button" class="pf-btn ly-ok" data-lyok="1">Готово</button></div>
-      <div class="ly-bacts"><button type="button" class="pf-btn" data-lyhd="1">Шапка</button><button type="button" class="pf-btn" data-stnk="1">Ник</button><button type="button" class="pf-btn" data-lybg="1">Фон</button><button type="button" class="pf-btn" data-stpal="1">Палитра</button><button type="button" class="pf-btn" data-stadd="1">Стикер</button><button type="button" class="pf-btn" data-stsnd="1">${ICON.sound || ""}Звук</button><button type="button" class="pf-btn" data-lyadd="1">${ICON.plus}Блок</button><button type="button" class="pf-btn" data-stgal="1">Темы друзей</button><button type="button" class="pf-btn" data-stsave="1">Сохранить как тему</button><button type="button" class="pf-btn" data-lyreset="1" title="Вернуть профиль как был">Сбросить</button></div></div></div>`;
+    const c = lyNorm(LY_ED.grid) || lyNorm(LY_PRESET.launcher()), cur = LY_LAYS.find(l => l[0] === c.lay);
+    const tabs = [["lay", "Раскладка"], ["look", "Оформление"], ["th", "Темы"], ["help", "Подсказки"]];
+    let body = "";
+    if (LY_TAB === "lay") body = `<div class="lyb-row">${LY_LAYS.map(([k, l, d]) => `<button type="button" class="lyb-lay" data-lylay="${k}" aria-pressed="${c.lay === k}">${lySk(k)}<b>${esc(l)}</b><small>${esc(d)}</small></button>`).join("")}${c.lay === "custom" ? `<div class="lyb-lay on" aria-pressed="true">${lySk("launcher")}<b>Своя</b><small>ты переставил блоки сам — выбери готовую, чтобы начать заново</small></div>` : ""}</div>`;
+    else if (LY_TAB === "look") body = `<div class="lyb-row tl">${LY_TOOLS.map(lyTile).join("")}</div>`;
+    else if (LY_TAB === "th") body = `<div class="lyb-row tl">${LY_THEMES.map(lyTile).join("")}</div>`;
+    else body = `<div class="lyb-help">
+        <div><span class="lyb-k">${ICON.drag || "⋮⋮"}</span><span><b>Переставить блок</b>тащи за синюю ручку слева от названия блока</span></div>
+        <div><span class="lyb-k">¼ ½ ¾ 1</span><span><b>Ширина</b>сколько места блок занимает в строке</span></div>
+        <div><span class="lyb-k">→ сбоку</span><span><b>Колонка сбоку</b>узкая колонка справа — для мелких блоков</span></div>
+        <div><span class="lyb-k">${ICON.wall || ""}</span><span><b>Фон блока</b>своя картинка или градиент за одним блоком</span></div>
+        <div><span class="lyb-k">${ICON.x}</span><span><b>Спрятать</b>блок пропадёт, вернуть — «Оформление» → «Добавить блок»</span></div>
+        <div><span class="lyb-k">✓</span><span><b>Сохранить</b>всё видно сразу, но сохранится только по «Готово»</span></div></div>`;
+    return `<div class="ly-bar${LY_MIN ? " min" : ""}" role="toolbar" aria-label="Конструктор профиля"><div class="ly-bar-in">
+      <div class="lyb-top"><div class="lyb-t"><b>Конструктор профиля</b><small>${cur ? "Раскладка «" + esc(cur[1]) + "»" : "Своя раскладка"} · меняется сразу, сохранится по «Готово»</small></div>
+        <div class="lyb-tabs" role="tablist">${tabs.map(([k, l]) => `<button type="button" role="tab" data-lytab="${k}" aria-selected="${!LY_MIN && LY_TAB === k}">${l}</button>`).join("")}</div>
+        <div class="lyb-acts"><button type="button" class="lyb-b ic" data-lymin="1" title="${LY_MIN ? "Развернуть панель" : "Свернуть панель"}" aria-label="${LY_MIN ? "Развернуть панель" : "Свернуть панель"}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="transform:rotate(${LY_MIN ? 180 : 0}deg)"><path d="M6 9l6 6 6-6"/></svg></button><button type="button" class="lyb-b red" data-lyreset="1" title="Вернуть профиль как был">Сбросить</button><button type="button" class="lyb-b" data-lyno="1">Отмена</button><button type="button" class="lyb-b ok" data-lyok="1">Готово</button></div></div>
+      ${LY_MIN ? "" : `<div class="lyb-body">${body}</div>`}</div></div>`;
   }
+  document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-lytab],[data-lymin],[data-lysteam]"); if (!b || !LY_ED) return;
+    if (b.dataset.lytab){ LY_TAB = b.dataset.lytab; LY_MIN = false; lyDraw(); }
+    else if (b.dataset.lymin){ LY_MIN = !LY_MIN; lyDraw(); }
+    else if (b.dataset.lysteam && typeof bgSheet === "function") bgSheet(); });
   const lyJ = o => JSON.parse(JSON.stringify(o == null ? null : o));
   function lyStart(quiet){
     if (!ME) return; if (route !== "home" && !quiet){ go("home"); setTimeout(lyStart, 400); return; }
@@ -126,7 +166,7 @@
     LY_ED = {grid: lyNorm(c.grid) || lyNorm(LY_PRESET.launcher()), track: lyJ(c.track) || null, cnt: lyJ(c.cnt) || [], bgx: lyJ(c.bgx) || null, files: {},
       pal: lyJ(c.pal) || null, nk: lyJ(c.nk) || {}, stk: lyJ(c.stk) || [], bb: lyJ(c.bb) || {}, snd: lyJ(c.snd) || null};
     if (quiet) return;
-    toast("Конструктор: тащи блоки за ручку, меняй ширину, раскладку, шапку и фон. В конце — «Готово»"); render();
+    LY_TAB = "lay"; LY_MIN = false; render();
   }
   const lyDraw = () => { const y = scrollY; render(); scrollTo(0, y); };
   const lyGrid = () => LY_ED.grid || (LY_ED.grid = lyNorm(LY_PRESET.launcher()));
