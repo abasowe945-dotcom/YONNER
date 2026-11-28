@@ -316,7 +316,7 @@
   // латиница из адреса → кириллица, чтобы найти на YummyAnime по названию
   const ANI_TR = [["shch","щ"],["sch","щ"],["yo","ё"],["zh","ж"],["kh","х"],["ts","ц"],["ch","ч"],["sh","ш"],["yu","ю"],["ya","я"],["iy","ий"],["yy","ый"],["ye","е"],["a","а"],["b","б"],["v","в"],["g","г"],["d","д"],["e","е"],["z","з"],["i","и"],["y","ы"],["k","к"],["l","л"],["m","м"],["n","н"],["o","о"],["p","п"],["r","р"],["s","с"],["t","т"],["u","у"],["f","ф"],["h","х"],["c","к"],["j","й"],["w","в"],["x","кс"],["q","к"]];
   const aniCyr = s => { s = String(s).toLowerCase(); let o = "", i = 0; while (i < s.length){ const m = ANI_TR.find(([l]) => s.startsWith(l, i)); if (m){ o += m[1]; i += m[0].length; } else { o += s[i]; i++; } } return o; };
-  const aniNorm = s => String(s || "").toLowerCase().replace(/ё/g, "е").replace(/[^a-zа-я0-9]+/g, " ").trim();
+  const aniNorm = s => String(s || "").toLowerCase().replace(/ё/g, "е").replace(/[ьъ]/g, "").replace(/[^a-zа-я0-9]+/g, " ").trim();
   async function aniFind(slug){
     const words = slug.replace(/-/g, " "), qs = [aniCyr(words), words];
     let list = [];
@@ -326,7 +326,7 @@
     const score = a => { if (a.anime_url === slug) return 99;
       const tw = new Set(aniNorm(a.title).split(" ").filter(Boolean)), uw = new Set(aniNorm(a.anime_url).split(" ").filter(Boolean));
       const j = (A, B) => { if (!A.size || !B.size) return 0; let k = 0; A.forEach(x => { if (B.has(x)) k++; }); return k / (A.size + B.size - k); };
-      return Math.max(j(want, tw), j(wantL, uw)); };
+      return j(want, tw) + 0.3 * j(wantL, uw); };
     const sorted = list.map(a => [score(a), a]).sort((x, y) => y[0] - x[0]).map(x => x[1]);
     return {best: sorted[0] || null, alts: sorted};
   }
