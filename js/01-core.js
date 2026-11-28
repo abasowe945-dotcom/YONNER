@@ -171,7 +171,7 @@
   const srcLink = it => { if (!it) return null; const u = it.srcUrl || it.url; if (u && /^https?:\/\//i.test(u)) return u;
     if (it.steamId && isGame(it)) return `https://store.steampowered.com/app/${encodeURIComponent(it.steamId)}/`;
     if (it.kpId && !isGame(it)) return `https://www.kinopoisk.ru/film/${encodeURIComponent(it.kpId)}/`; return null; };
-  const linkName = u => { try { const hst = new URL(u).hostname.replace(/^www\./, ""); return /steam/.test(hst) ? "Steam" : /kinopoisk/.test(hst) ? "Кинопоиск" : /myshows/.test(hst) ? "MyShows" : /mangalib|lib\.social/.test(hst) ? "MangaLib" : /remanga/.test(hst) ? "ReManga" : hst; } catch(_){ return "сайт"; } };
+  const linkName = u => { try { const hst = new URL(u).hostname.replace(/^www\./, ""); return /steam/.test(hst) ? "Steam" : /kinopoisk/.test(hst) ? "Кинопоиск" : /myshows/.test(hst) ? "MyShows" : /mangalib|lib\.social/.test(hst) ? "MangaLib" : /remanga/.test(hst) ? "ReManga" : /animego/.test(hst) ? "AnimeGO" : /yummy|yani/.test(hst) ? "YummyAnime" : hst; } catch(_){ return "сайт"; } };
   const linkBadge = it => { const u = srcLink(it); return u ? `<span class="ln" role="link" tabindex="0" data-href="${esc(u)}" title="Открыть на ${esc(linkName(u))}" aria-label="Открыть на ${esc(linkName(u))}">${LINK_I2}</span>` : ""; };
   ["pointerdown", "mousedown", "touchstart"].forEach(t => document.addEventListener(t, e => { if (e.target.closest && e.target.closest(".ln[data-href]")) e.stopPropagation(); }, {capture: true, passive: true}));
   document.addEventListener("click", e => { const l = e.target.closest && e.target.closest(".ln[data-href]"); if (!l) return; e.preventDefault(); e.stopPropagation(); window.open(l.dataset.href, "_blank", "noopener"); }, true);

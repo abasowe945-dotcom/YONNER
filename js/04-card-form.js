@@ -298,6 +298,38 @@
     return "всё досмотрено";
   }
   // общая обвязка: выезжающая панель подробностей и строка-итог под ссылкой
+  // 7.15: ссылки AnimeGO / YummyAnime → API YummyAnime (api.yani.tv отвечает сайту напрямую)
+  const YANI = "https://api.yani.tv";
+  function aniRef(raw){
+    const v = String(raw || "").trim(); if (!v || /\s/.test(v)) return null;
+    try { const u = new URL(/^https?:\/\//i.test(v) ? v : "https://" + v), h = u.hostname;
+      if (/yummy|yani\.tv/i.test(h)){ const m = u.pathname.match(/\/(?:catalog\/item|anime)\/([^/?#]+)/); return m ? {src: "yummy", slug: decodeURIComponent(m[1]), url: u.href} : null; }
+      if (/animego/i.test(h)){ const m = u.pathname.match(/\/anime\/([^/?#]+)/); return m ? {src: "animego", slug: decodeURIComponent(m[1]).replace(/-\d+$/, ""), url: u.href} : null; }
+    } catch(e){ /* ожидаемо: это не ссылка */ }
+    return null;
+  }
+  async function aniGet(slug){
+    const r = await fetch(`${YANI}/anime/${encodeURIComponent(slug)}`); if (r.status === 404) return null;
+    if (!r.ok) throw new Error("YummyAnime не ответил, попробуй ещё раз");
+    const j = await r.json(); return j && j.response || null;
+  }
+  // латиница из адреса → кириллица, чтобы найти на YummyAnime по названию
+  const ANI_TR = [["shch","щ"],["sch","щ"],["yo","ё"],["zh","ж"],["kh","х"],["ts","ц"],["ch","ч"],["sh","ш"],["yu","ю"],["ya","я"],["iy","ий"],["yy","ый"],["ye","е"],["a","а"],["b","б"],["v","в"],["g","г"],["d","д"],["e","е"],["z","з"],["i","и"],["y","ы"],["k","к"],["l","л"],["m","м"],["n","н"],["o","о"],["p","п"],["r","р"],["s","с"],["t","т"],["u","у"],["f","ф"],["h","х"],["c","к"],["j","й"],["w","в"],["x","кс"],["q","к"]];
+  const aniCyr = s => { s = String(s).toLowerCase(); let o = "", i = 0; while (i < s.length){ const m = ANI_TR.find(([l]) => s.startsWith(l, i)); if (m){ o += m[1]; i += m[0].length; } else { o += s[i]; i++; } } return o; };
+  const aniNorm = s => String(s || "").toLowerCase().replace(/ё/g, "е").replace(/[^a-zа-я0-9]+/g, " ").trim();
+  async function aniFind(slug){
+    const words = slug.replace(/-/g, " "), qs = [aniCyr(words), words];
+    let list = [];
+    for (const q of qs){ const r = await fetch(`${YANI}/search?limit=6&q=${encodeURIComponent(q)}`); if (!r.ok) throw new Error("YummyAnime не ответил, попробуй ещё раз");
+      const j = await r.json(); list = (j && j.response) || []; if (list.length) break; }
+    const want = new Set(aniNorm(aniCyr(words)).split(" ").filter(Boolean)), wantL = new Set(aniNorm(words).split(" ").filter(Boolean));
+    const score = a => { if (a.anime_url === slug) return 99;
+      const tw = new Set(aniNorm(a.title).split(" ").filter(Boolean)), uw = new Set(aniNorm(a.anime_url).split(" ").filter(Boolean));
+      const j = (A, B) => { if (!A.size || !B.size) return 0; let k = 0; A.forEach(x => { if (B.has(x)) k++; }); return k / (A.size + B.size - k); };
+      return Math.max(j(want, tw), j(wantL, uw)); };
+    const sorted = list.map(a => [score(a), a]).sort((x, y) => y[0] - x[0]).map(x => x[1]);
+    return {best: sorted[0] || null, alts: sorted};
+  }
   function formKit(isNew, src){
     const dr = $("afDr"), tog = $("afTog");
     const openDr = (on = true) => { dr.classList.toggle("open", on); tog.setAttribute("aria-expanded", on); };
@@ -315,7 +347,7 @@
     };
     $("f_title").addEventListener("input", () => sum($("afSum").classList.contains("ok") ? "ok" : ""));
     openDr(!isNew); sum(isNew ? "" : "");
-    return {openDr, sum};
+    return {openDr, sum, setSrc: x => { src = x; }};
   }
   function openForm(it, kind, opts = {}){
     const isNew = !it, lock = opts.lock || null;
@@ -479,9 +511,9 @@
             <h2 class="k-title" style="font-size:40px;margin:0">${lock === "future" ? (isNew ? "На будущее" : "Изменить: на будущее") : lock === "soon" ? (isNew ? "Ждать релиз" : "Изменить релиз") : isNew ? "Новое кино" : "Правка"}</h2>
             ${isNew && !lock ? impSeg("kino", "Один фильм") : ""}
             ${lock ? `<p style="margin:0;color:var(--k-dim);text-transform:none;letter-spacing:0">${lock === "future" ? "Попадёт в «На будущее» и в пул рулетки." : "Попадёт в календарь выходов. Дата премьеры подтянется из Кинопоиска."}</p>` : ""}
-            <div class="af-row"><p class="af-cap">Ссылка на Кинопоиск</p>
-              <div class="af-link"><span class="lk">${LINK_I}<input class="k-in" id="f_url" inputmode="url" autocomplete="off" placeholder="kinopoisk.ru/film/301"></span><button type="button" class="k-btn white sm" id="f_urlGo">Заполнить</button></div>
-              <div class="af-sum" id="afSum"></div></div>${isNew ? frFindHTML(g ? "s-in" : "k-in") : ""}
+            <div class="af-row"><p class="af-cap">Ссылка: Кинопоиск, AnimeGO или YummyAnime</p>
+              <div class="af-link"><span class="lk">${LINK_I}<input class="k-in" id="f_url" inputmode="url" autocomplete="off" placeholder="kinopoisk.ru/film/301 · animego · yummyani"></span><button type="button" class="k-btn white sm" id="f_urlGo">Заполнить</button></div>
+              <div class="af-sum" id="afSum"></div><div class="af-alt" id="afAlt" hidden></div></div>${isNew ? frFindHTML(g ? "s-in" : "k-in") : ""}
             <div class="af-row"><div><span class="af-seg" id="f_typeSeg">${Object.entries(KTYPES).map(([k,l]) => `<button type="button" data-t="${k}" aria-pressed="${k===it.type}">${l}</button>`).join("")}</span></div>
               <select id="f_type" hidden>${Object.entries(KTYPES).map(([k,l]) => `<option value="${k}"${k===it.type?" selected":""}>${l}</option>`).join("")}</select></div>
             ${lock ? "" : `<div class="af-row"><div class="ks-chips" id="f_stc"></div><select id="f_status" hidden>${["playing","done","played","paused","dropped","future"].map(s => `<option value="${s}"${s===st?" selected":""}>${s}</option>`).join("")}</select></div>`}
@@ -558,8 +590,8 @@
       $("f_typeSeg").onclick = e => { const b = e.target.closest("[data-t]"); if (!b) return; $("f_type").value = b.dataset.t; $("f_type").dataset.touched = "1"; serToggle(); };
       serToggle();
       const kpFill = async raw => {
-        if (!/kinopoisk\.ru\/(film|series)\/\d+/i.test(String(raw || "")) && !/^\s*\d{2,10}\s*$/.test(String(raw || ""))){ kit.sum("bad", "Это не похоже на ссылку на Кинопоиск. Заполни вручную в «Подробнее»"); kit.openDr(true); return; }
-        const btn = $("f_urlGo"); btn.disabled = true; btn.textContent = "Ищу…"; kit.sum("busy");
+        if (!/kinopoisk\.ru\/(film|series)\/\d+/i.test(String(raw || "")) && !/^\s*\d{2,10}\s*$/.test(String(raw || ""))){ kit.sum("bad", "Это не похоже на ссылку на Кинопоиск, AnimeGO или YummyAnime. Заполни вручную в «Подробнее»"); kit.openDr(true); return; }
+        const btn = $("f_urlGo"); btn.disabled = true; btn.textContent = "Ищу…"; kit.setSrc("Кинопоиске"); kit.sum("busy"); $("afAlt").hidden = true;
         try {
           const kpm = String(raw || "").match(/kinopoisk\.ru\/(?:film|series)\/(\d+)/i); if (kpm) FORM_IDS.kpId = kpm[1];
           const {data: d, error} = await SB.functions.invoke("kino", {body: {url: raw}});
@@ -586,7 +618,58 @@
         } catch(e){ kit.sum("bad", (e.message || "Не получилось достать данные с Кинопоиска") + ". Заполни вручную — поля ниже"); kit.openDr(true); setTimeout(() => $("f_title").focus(), 350); }
         btn.disabled = false; btn.textContent = "Заполнить";
       };
-      $("f_urlGo").onclick = () => kpFill($("f_url").value);
+
+      // 7.15: аниме по ссылке AnimeGO / YummyAnime — данные берём из открытого API YummyAnime
+      let aniCover = false;
+      const aniFill = async (raw, pick) => {
+        const ref = aniRef(raw); if (!ref && !pick) return;
+        const btn = $("f_urlGo"); btn.disabled = true; btn.textContent = "Ищу…"; kit.setSrc(ref && ref.src === "animego" ? "AnimeGO" : "YummyAnime"); kit.sum("busy"); $("afAlt").hidden = true;
+        try {
+          let a = pick ? await aniGet(pick) : null, alts = [];
+          if (!a && ref) a = await aniGet(ref.slug);
+          if (!a && ref){ const r = await aniFind(ref.slug); alts = r.alts; if (r.best) a = await aniGet(r.best.anime_url) || r.best; }
+          if (!a) throw new Error("Не нашёл это аниме");
+          const got = [], set = (id, v, label) => { if (v != null && v !== "" && $(id)){ $(id).value = v; if (label) got.push(label); } };
+          const lat = (a.other_titles || []).find(x => /^[\x20-\x7e]+$/.test(x)) || "";
+          set("f_title", a.title, "название"); set("f_originalTitle", lat); set("f_year", a.year, "год");
+          if (!$("f_type").dataset.touched){ $("f_type").value = "anime"; serToggle(); }
+          if (a.genres && a.genres.length) set("f_genre", normGenres(a.genres.map(x => x.title).join(", "), false), "жанры");
+          const desc = String(a.description || "").replace(/<br\s*\/?>/gi, "\n").replace(/<[^>]+>/g, "").replace(/\n{3,}/g, "\n\n").trim();
+          set("f_desc", desc, desc ? "описание" : null);
+          const movie = a.type && /movie|film|фильм/i.test((a.type.alias || "") + (a.type.name || ""));
+          const eps = a.episodes && (+a.episodes.count || +a.episodes.aired) || null;
+          if (!movie && eps){ seArr = [eps]; seKnown = eps; seRender(); got.push(eps + " " + plural(eps, "серия", "серии", "серий")); }
+          if (a.creators && a.creators.length) set("f_director", a.creators.map(x => x.title).join(", "));
+          if (a.min_age && a.min_age.title) set("f_age", a.min_age.title);
+          if (a.duration) set("f_duration", a.duration + " мин" + (movie ? "" : " / серия"));
+          if (a.rating && a.rating.kp_rating) set("f_kpRating", a.rating.kp_rating);
+          set("f_country", "Япония");
+          const ids = a.remote_ids || {}; FORM_IDS.kpId = ids.kp_id ? String(ids.kp_id) : FORM_IDS.kpId;
+          FORM_IDS.srcUrl = ref ? ref.url : FORM_IDS.srcUrl;
+          const pu = a.poster && (a.poster.fullsize || a.poster.huge || a.poster.big);
+          if (pu && ((!cover.file && !(cover.url && !isNew)) || aniCover)){
+            try { const r = await fetch(/^\/\//.test(pu) ? "https:" + pu : pu); if (!r.ok) throw new Error("постер " + r.status);
+              const b = await r.blob(), f = new File([b], "anime-poster.jpg", {type: b.type || "image/jpeg"});
+              cover = {file: f, url: URL.createObjectURL(f), pos: null, remove: false}; aniCover = true;
+              $("fPoster").outerHTML = posterBox(); wireFormPoster(); got.push("постер");
+            } catch(e){ logErr("аниме-постер", e); }
+          }
+          kit.sum("ok"); ffHasChk(); toast("Подтянул: " + got.join(", "));
+          const others = alts.filter(x => x.anime_url !== a.anime_url).slice(0, 3);
+          if (others.length){ $("afAlt").innerHTML = `<small>Не то?</small>${others.map(x => `<button type="button" data-au="${esc(x.anime_url)}">${esc(x.title)}${x.year ? ` <i>${x.year}</i>` : ""}</button>`).join("")}`; $("afAlt").hidden = false; }
+          // актёры озвучки и остальное — с Кинопоиска, если у аниме есть его номер; не вышло — не страшно
+          if (ids.kp_id) SB.functions.invoke("kino", {body: {url: `https://www.kinopoisk.ru/film/${ids.kp_id}/`}}).then(({data: d}) => {
+            if (!d || d.error) return; const emp = id => $(id) && !$(id).value.trim();
+            if (d.cast && emp("f_cast")) $("f_cast").value = d.cast;
+            KPF.forEach(([k]) => { if (d[k] != null && d[k] !== "" && emp("f_" + k)) $("f_" + k).value = d[k]; });
+            if (emp("f_originalTitle") && d.originalTitle) $("f_originalTitle").value = d.originalTitle;
+          }).catch(e => { /* ожидаемо: Кинопоиск иногда отвечает капчей, данные с YummyAnime уже есть */ });
+        } catch(e){ kit.sum("bad", (e.message || "Не получилось достать данные") + ". Заполни вручную — поля ниже"); kit.openDr(true); setTimeout(() => $("f_title").focus(), 350); }
+        btn.disabled = false; btn.textContent = "Заполнить";
+      };
+      $("afAlt").onclick = e => { const b = e.target.closest("[data-au]"); if (b) aniFill($("f_url").value, b.dataset.au); };
+      const anyFill = v => aniRef(v) ? aniFill(v) : kpFill(v);
+      $("f_urlGo").onclick = () => anyFill($("f_url").value);
       wireFrFind(false, async fi => {
         const set = (id, v) => { if (v != null && v !== "" && $(id)) $(id).value = v; };
         set("f_title", fi.title); set("f_originalTitle", fi.originalTitle); set("f_year", fi.year);
@@ -598,9 +681,10 @@
         if (fi.kpId) FORM_IDS.kpId = fi.kpId; if (rel && fi.releaseDate) rel.fill(fi.releaseDate);
         if (!cover.file){ const f = await frCoverFile(fi); if (f){ cover = {file: f, url: URL.createObjectURL(f), pos: fi.coverPos || null, remove: false}; $("fPoster").outerHTML = posterBox(); wireFormPoster(); } }
         kit.sum("ok"); });
-      $("f_url").addEventListener("keydown", e => { if (e.key === "Enter"){ e.preventDefault(); kpFill($("f_url").value); } });
-      $("f_url").addEventListener("paste", () => setTimeout(() => { const v = $("f_url").value.trim(); if (v) kpFill(v); }, 0));
+      $("f_url").addEventListener("keydown", e => { if (e.key === "Enter"){ e.preventDefault(); anyFill($("f_url").value); } });
+      $("f_url").addEventListener("paste", () => setTimeout(() => { const v = $("f_url").value.trim(); if (v) anyFill(v); }, 0));
       $("f_quick").addEventListener("input", () => {
+        if (aniRef($("f_quick").value.trim()) && !/\s/.test($("f_quick").value.trim())){ $("f_url").value = $("f_quick").value.trim(); $("f_quick").value = ""; aniFill($("f_url").value); return; }
         if (/^\s*https?:\/\/(www\.)?kinopoisk\.ru\/(film|series)\/\d+\S*\s*$/i.test($("f_quick").value)){ $("f_url").value = $("f_quick").value.trim(); $("f_quick").value = ""; kpFill($("f_url").value); return; }
         const r = parseKP($("f_quick").value), got = [];
         const NAMES = {title:"название",originalTitle:"оригинал",year:"год",genre:"жанры",short:"коротко",desc:"описание",cast:"актёров"};
@@ -652,6 +736,7 @@
       else { if (cover.file) body.cover = await upload(cover.file); if (cover.url || cover.file) body.coverPos = cover.pos || null; }
       let id = it.id;
       if (FORM_IDS.steamId && isGame(body)) body.steamId = FORM_IDS.steamId; if (FORM_IDS.kpId && !isGame(body)) body.kpId = FORM_IDS.kpId;
+      if (FORM_IDS.srcUrl && !isGame(body)) body.srcUrl = FORM_IDS.srcUrl;
       if (isNew && isGame(body) && (body.status === "done" || body.status === "dropped" || body.status === "youtube")) body.addedDone = true;
       if (isNew && pfPend && Date.now() - pfPend.t < 15 * 6e4 && (pfPend.kind === "games") === isGame(body)){ body[pfPend.flag] = true; body[pfPend.flag + "At"] = body.updatedAt; pfPend = null; }
       if (isNew){ body.createdAt = body.updatedAt; id = (await db.collection("items").add(body)).id; }
