@@ -3546,3 +3546,5 @@ html:has(body.view-open),body.view-open{overflow:hidden}
 .af-alt button{border:0;border-radius:999px;padding:6px 12px;background:rgba(128,128,128,.16);color:inherit;font:inherit;cursor:pointer}
 .af-alt button:hover{background:rgba(128,128,128,.28)}
 .af-alt button i{font-style:normal;opacity:.55;margin-left:4px}
+/* 7.15: крестик «убрать с полки» справа, значок ссылки — слева, чтобы не налезали */
+:is(.pf-c,.sc-c):has(.sc-x) .ln{right:auto;left:7px}

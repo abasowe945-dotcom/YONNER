@@ -737,6 +737,8 @@
       let id = it.id;
       if (FORM_IDS.steamId && isGame(body)) body.steamId = FORM_IDS.steamId; if (FORM_IDS.kpId && !isGame(body)) body.kpId = FORM_IDS.kpId;
       if (FORM_IDS.srcUrl && !isGame(body)) body.srcUrl = FORM_IDS.srcUrl;
+      // статус «Смотрю»/«Играю» сразу кладёт на полку «Смотрю»/«Сейчас играю» на главной
+      if (body.status === "playing" && (isNew || it.status !== "playing") && !(it && it.now)){ body.now = true; body.nowAt = body.updatedAt; }
       if (isNew && isGame(body) && (body.status === "done" || body.status === "dropped" || body.status === "youtube")) body.addedDone = true;
       if (isNew && pfPend && Date.now() - pfPend.t < 15 * 6e4 && (pfPend.kind === "games") === isGame(body)){ body[pfPend.flag] = true; body[pfPend.flag + "At"] = body.updatedAt; pfPend = null; }
       if (isNew){ body.createdAt = body.updatedAt; id = (await db.collection("items").add(body)).id; }
